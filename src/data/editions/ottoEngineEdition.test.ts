@@ -92,7 +92,7 @@ describe("US 194,047 manual source edition", () => {
     }
   });
 
-  test("uses an isolated upright source-faithful Fig. 10 crop from the rotated drawing sheet", () => {
+  test("uses Fig. 10's complete primary drawing sheet", () => {
     const fig10 = ottoEngineArchivalEdition.blocks.flatMap((block) => {
       if (!("inlines" in block)) return [];
       return block.inlines.filter(
@@ -107,9 +107,9 @@ describe("US 194,047 manual source edition", () => {
     for (const reference of fig10) {
       expect(reference.figurePreviews).toContainEqual(
         expect.objectContaining({
-          src: "/patents/figures/us-194047-otto-engine/fig-10-source-crop-v3.png",
-          width: 760,
-          height: 220,
+          src: "/patents/figures/us-194047-otto-engine/source-sheet-4-v1.png",
+          width: 2320,
+          height: 3408,
         }),
       );
     }

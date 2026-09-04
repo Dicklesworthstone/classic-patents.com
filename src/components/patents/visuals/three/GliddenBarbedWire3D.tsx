@@ -147,6 +147,7 @@ export const GliddenBarbedWire3D = memo(() => {
     const cfg = gliddenBarbedWireCameraForViewport(
       preset,
       containerRef.current?.clientWidth ?? 1000,
+      containerRef.current?.clientHeight ?? 700,
     );
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
@@ -161,7 +162,11 @@ export const GliddenBarbedWire3D = memo(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = gliddenBarbedWireCameraForViewport("iso", container.clientWidth);
+    const iso = gliddenBarbedWireCameraForViewport(
+      "iso",
+      container.clientWidth,
+      container.clientHeight,
+    );
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -213,7 +218,11 @@ export const GliddenBarbedWire3D = memo(() => {
     const restoreResponsiveView = () => {
       const container = containerRef.current;
       if (!container) return;
-      const view = gliddenBarbedWireCameraForViewport(activeCamera, container.clientWidth);
+      const view = gliddenBarbedWireCameraForViewport(
+        activeCamera,
+        container.clientWidth,
+        container.clientHeight,
+      );
       studioRef.current?.controls.setView(view.pos, view.target);
     };
     window.addEventListener("resize", restoreResponsiveView);

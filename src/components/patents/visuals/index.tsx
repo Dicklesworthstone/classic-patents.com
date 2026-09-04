@@ -95,6 +95,10 @@ const McCormickPhysicsRuntimeOwner = dynamic(
   () => import("./PatentPhysicsRuntimeOwner").then((module) => module.McCormickPhysicsRuntimeOwner),
   { ssr: false },
 );
+const ColtPhysicsRuntimeOwner = dynamic(
+  () => import("./PatentPhysicsRuntimeOwner").then((module) => module.ColtPhysicsRuntimeOwner),
+  { ssr: false },
+);
 // 2D sims are lazy: the dispatcher defaults to the 3D face, so each page only
 // downloads the vector-diagram code when the visitor actually toggles it.
 const AmfVersatranSim = dynamic(() => import("./AMFVersatranSim").then((m) => m.AmfVersatranSim), {
@@ -1159,7 +1163,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
                 </>
               );
             case "us-x9430-colt-revolver":
-              return renderMode === "3d-physics" ? <ColtRevolver3D /> : <ColtRevolverSim />;
+              return (
+                <>
+                  <ColtPhysicsRuntimeOwner patentId={patentId} />
+                  {renderMode === "3d-physics" ? <ColtRevolver3D /> : <ColtRevolverSim />}
+                </>
+              );
             case "us-132-davenport-electric-motor":
               return renderMode === "3d-physics" ? (
                 <DavenportElectricMotor3D />

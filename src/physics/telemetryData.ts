@@ -59,6 +59,7 @@ import {
   stepZeppelinAirship,
 } from "./catalogKernels";
 import { stepClavelDeltaRobotTopology } from "./clavelDeltaRobotKernel";
+import { readColtRuntimeControls, stepColtLockwork } from "./coltRevolverKernel";
 import { stepCortPuddlingRolling } from "./cortKernel";
 import { CRUMP_FDM_DEFAULT_CONTROLS, readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
 import {
@@ -4340,99 +4341,94 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "US 593,138 prints a checkable example: at 925 Hz and 185,000 mi/s, the wavelength is 200 mi and the quarter-wave secondary is 50 mi. The shared fs-flux kernel computes that distributed-wave geometry; it does not invent voltage, coupling, loss, Q, or discharge length.",
   },
   "us-x9430-colt-revolver": {
-    domain: "continuum_elasticity",
-    domainTitle: "Pawl-Ratchet Angular Discretization & Internal Ballistic Hoop Stress",
-    equationName: "Hoop Stress Limit & 72° Cylinder Indexing",
+    domain: "multibody_topology",
+    domainTitle: "Source-Ordered Locking, Ratchet, and Cylinder Turning",
+    equationName: "Unlock → Ratchet Advance → Lockup",
     governingEquation:
-      "\\sigma_{\\text{hoop}} = \\frac{P_{\\text{combustion}} \\cdot r}{t} \\quad \\text{and} \\quad \\Delta \\theta = \\frac{360^\\circ}{N_{\\text{chambers}}} = 72^\\circ",
-    engineMethod: "FrankenSimEngine.stepColtRevolver",
+      "p \\uparrow \\Rightarrow r\\;\\text{withdraws} \\Rightarrow d \\to s \\Rightarrow \\text{shackle carries cylinder} \\Rightarrow m\\;\\text{seats }r",
+    engineMethod: "stepColtLockwork source-bounded host topology",
     controls: [
       {
-        id: "chamberPressure",
-        label: "Black Powder Combustion Peak Pressure",
-        min: 40,
-        max: 140,
-        step: 5,
-        defaultValue: 85,
-        unit: "MPa",
+        id: "cockingTravelPct",
+        label: "Cocking Travel",
+        min: 0,
+        max: 100,
+        step: 1,
+        defaultValue: 0,
+        unit: "% display",
+        provenance: "topology-normalized",
       },
       {
-        id: "cockingAngle",
-        label: "Hammer Cocking Arc Angle",
-        min: 0,
-        max: 45,
+        id: "chamberIndex",
+        label: "Starting Display Ward",
+        min: 1,
+        max: 5,
         step: 1,
-        defaultValue: 45,
-        unit: "deg",
+        defaultValue: 1,
+        unit: "display index",
+        provenance: "topology-normalized",
       },
     ],
     computeMetrics: (p) => {
-      const colt = FrankenSimEngine.stepColtRevolver({
-        chamberPressureMpa: p.chamberPressure ?? 85,
-        cockingAngleDeg: p.cockingAngle ?? 45,
-      });
-      const hoopStressMpa = colt.hoopStressMpa.toFixed(1);
-      const indexAngleDeg = colt.indexAngleDeg.toFixed(1);
-      const isLocked = colt.isLocked;
-      const muzzleVelocityMps = colt.muzzleVelocityMps;
-      const powderGrains = colt.powderGrains;
+      const colt = stepColtLockwork(readColtRuntimeControls(p));
+      const ratchetPercent = Math.round(colt.ratchetAdvanceFraction * 100);
+      const cylinderPercent = Math.round(colt.cylinderAdvanceFraction * 100);
 
       return [
         {
-          label: "Cylinder Hoop Stress (Model)",
-          value: hoopStressMpa,
-          unit: "MPa",
-          badgeColor: Number(hoopStressMpa) < 180 ? "emerald" : "amber",
-          progressPct: clampProgress((Number(hoopStressMpa) / 250) * 100),
-          provenance: "scenario-modern",
-          provenanceCitation:
-            "Modern thin-walled cylinder hoop stress equation under black powder combustion.",
+          label: "Lockwork Stage",
+          value: colt.stage.replaceAll("-", " ").toUpperCase(),
+          unit: "source order",
+          badgeColor: colt.sourceSequenceClosed ? "emerald" : "amber",
+          progressPct: clampProgress(colt.cockingProgress01 * 100),
+          provenance: "source-derived",
         },
         {
-          label: "Cylinder Index Rotation",
-          value: `${indexAngleDeg}°`,
-          unit: "deg (72° step)",
+          label: "Key r",
+          value: colt.keySeated ? "SEATED" : "WITHDRAWN",
+          unit: "ward state",
+          badgeColor: colt.keySeated ? "emerald" : "amber",
+          progressPct: clampProgress((1 - colt.keyRetraction01) * 100),
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Ratchet Advance",
+          value: `${ratchetPercent}%`,
+          unit: "display step",
           badgeColor: "cyan",
-          progressPct: clampProgress((Number(indexAngleDeg) / 72) * 100),
+          progressPct: clampProgress(ratchetPercent),
+          provenance: "topology-normalized",
+        },
+        {
+          label: "Cylinder Transfer",
+          value: colt.cylinderAndRatchetCoupled ? `${cylinderPercent}%` : "UNCOUPLED",
+          unit: "display step",
+          badgeColor: colt.cylinderAndRatchetCoupled ? "cyan" : "amber",
+          progressPct: clampProgress(cylinderPercent),
+          provenance: "source-derived",
+        },
+        {
+          label: "Hammer Release",
+          value: colt.safeToReleaseHammer ? "PERMITTED" : "WITHHELD",
+          unit: "after lockup",
+          badgeColor: colt.safeToReleaseHammer ? "emerald" : "amber",
+          progressPct: clampProgress(colt.safeToReleaseHammer ? 100 : 0),
           provenance: "source-disclosed",
         },
         {
-          label: "Muzzle Exit Velocity (Model)",
-          value: muzzleVelocityMps.toString(),
-          unit: "m/s",
+          label: "Ballistic Card",
+          value: "NOT COMPUTABLE",
+          unit: "source boundary",
           badgeColor: "amber",
-          progressPct: clampProgress((muzzleVelocityMps / 360) * 100),
-          provenance: "scenario-modern",
-          provenanceCitation: "Internal ballistics expansion estimate.",
-        },
-        {
-          label: "Cylinder Bolt Lock",
-          value: isLocked ? "LOCKED" : "INDEXING",
-          unit: "detent",
-          badgeColor: isLocked ? "emerald" : "amber",
-          progressPct: clampProgress(isLocked ? 100 : 30),
-          provenance: "source-disclosed",
-        },
-        {
-          label: "Muzzle Energy (Model)",
-          value: `${colt.muzzleEnergyJoules} J`,
-          unit: "J",
-          badgeColor: "purple",
-          progressPct: clampProgress((colt.muzzleEnergyJoules / 400) * 100),
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Powder Charge (Scenario)",
-          value: `${powderGrains} gr`,
-          unit: "grains",
-          badgeColor: "amber",
-          progressPct: clampProgress((powderGrains / 60) * 100),
-          provenance: "scenario-reader",
+          progressPct: 0,
+          provenance: "refusal-bounded",
+          provenanceCitation:
+            "US X9430 gives no caliber, pressure, charge, mass, geometry, timing, velocity, force, or material card.",
         },
       ];
     },
     pedagogicalInsight:
-      "Drawing back the hammer with the thumb lifts the pawl to advance the ratchet 72 degrees, while simultaneously withdrawing and re-engaging the perimeter bolt to lock the next chamber directly into concentric alignment with the stationary rifled barrel.",
+      "The exhibit follows the described causal chain: hammer pin p withdraws key r; lifter arm d advances ratchet tooth s; the shackle carries the cylinder; spring m seats the key in the succeeding ward. The source establishes that order, not a force, angle, timing, chamber dimension, or ballistic result.",
   },
   "us-31128-otis-elevator": {
     domain: "multibody_topology",
@@ -7691,7 +7687,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     controls: [
       {
         id: "strokeRateSpm",
-        label: "Beam Stroke Rate",
+        label: "Scenario Beam Stroke Rate",
         min: 10,
         max: 30,
         step: 2,
@@ -7701,7 +7697,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "boilerPressureKpa",
-        label: "Effective Steam Pressure",
+        label: "Scenario Effective Steam Pressure",
         min: 40,
         max: 120,
         step: 5,
@@ -7721,7 +7717,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "flywheelMassKg",
-        label: "Flywheel Mass",
+        label: "Scenario Flywheel Mass",
         min: 1000,
         max: 6000,
         step: 250,
@@ -7748,9 +7744,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           provenance: "scenario-modern",
         },
         {
-          label: "Indicated Shaft Power",
+          label: "Scenario Ideal Shaft Power",
           value: `${watt.meanPowerKw.toFixed(1)} kW`,
-          unit: `${watt.brakeHorsepower.toFixed(1)} hp`,
+          unit: `${watt.indicatedHorsepower.toFixed(1)} hp indicated`,
           badgeColor: "emerald",
           progressPct: Math.min(100, (watt.meanPowerKw / 40.0) * 100),
           provenance: "scenario-modern",

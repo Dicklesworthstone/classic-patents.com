@@ -171,6 +171,27 @@ describe("US 808,897 Carrier wet air washer visual boundary", () => {
     }
   });
 
+  test("reselects only the overview for a desktop-to-phone resize", () => {
+    const source = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "CarrierAirConditioner3D.tsx"),
+      "utf8",
+    );
+    expect(carrierAirConditionerCameraForViewport("iso", 1216, 460)).toEqual(
+      CARRIER_AIR_CONDITIONER_CAMERA_PRESETS.iso,
+    );
+    expect(carrierAirConditionerCameraForViewport("iso", 286, 380)).not.toEqual(
+      CARRIER_AIR_CONDITIONER_CAMERA_PRESETS.iso,
+    );
+    expect(carrierAirConditionerCameraForViewport("fan", 286, 380)).toEqual(
+      CARRIER_AIR_CONDITIONER_CAMERA_PRESETS.fan,
+    );
+    expect(source).toContain('if (activeCamera !== "iso") return;');
+    expect(source).toContain('window.addEventListener("resize", reselectResponsiveOverview)');
+    expect(source).toContain(
+      'window.addEventListener("orientationchange", reselectResponsiveOverview)',
+    );
+  });
+
   test("forbids raw control formulas in the renderer update boundary", () => {
     const modelSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "carrierAirConditionerModel.ts"),

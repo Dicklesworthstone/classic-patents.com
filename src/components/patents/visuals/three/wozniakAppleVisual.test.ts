@@ -149,6 +149,26 @@ describe("US 4,136,359 Steve Wozniak Apple II Microcomputer visual & bus timing 
     }
   });
 
+  test("reselects only the overview for a desktop-to-phone resize", () => {
+    const source = readFileSync(join(VISUALS_DIRECTORY, "three", "WozniakApple3D.tsx"), "utf8");
+    expect(wozniakAppleCameraForViewport("iso", 1216, 460)).toEqual({
+      pos: [0, 8, 9.5],
+      target: [0, 0, 0],
+    });
+    expect(wozniakAppleCameraForViewport("iso", 286, 380)).not.toEqual(
+      wozniakAppleCameraForViewport("iso", 1216, 460),
+    );
+    expect(wozniakAppleCameraForViewport("cpu", 286, 380)).toEqual({
+      pos: [-2.5, 3.5, 4],
+      target: [-1.2, 0, 0],
+    });
+    expect(source).toContain('if (activeCamera !== "iso") return;');
+    expect(source).toContain('window.addEventListener("resize", reselectResponsiveOverview)');
+    expect(source).toContain(
+      'window.addEventListener("orientationchange", reselectResponsiveOverview)',
+    );
+  });
+
   test("computes genuine CPU clock rate, cycle time, DRAM window, and color subcarrier in SI units", () => {
     const result = stepWozniakApple({
       crystalFreq: 14.31818,

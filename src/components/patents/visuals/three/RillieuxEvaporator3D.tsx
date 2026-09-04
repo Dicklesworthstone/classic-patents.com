@@ -69,6 +69,7 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
     const target = rillieuxEvaporatorCameraForViewport(
       preset,
       containerRef.current?.clientWidth ?? 1000,
+      containerRef.current?.clientHeight ?? 700,
     );
     studioRef.current?.controls.setView(target.pos, target.target);
   };
@@ -98,8 +99,16 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
 
     const studio = createThreeStudioScene({
       container,
-      cameraPos: rillieuxEvaporatorCameraForViewport("overview", container.clientWidth).pos,
-      targetPos: rillieuxEvaporatorCameraForViewport("overview", container.clientWidth).target,
+      cameraPos: rillieuxEvaporatorCameraForViewport(
+        "overview",
+        container.clientWidth,
+        container.clientHeight,
+      ).pos,
+      targetPos: rillieuxEvaporatorCameraForViewport(
+        "overview",
+        container.clientWidth,
+        container.clientHeight,
+      ).target,
     });
     studioRef.current = studio;
 
@@ -149,7 +158,11 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
     const restoreResponsiveView = () => {
       const container = containerRef.current;
       if (!container) return;
-      const view = rillieuxEvaporatorCameraForViewport(cameraPreset, container.clientWidth);
+      const view = rillieuxEvaporatorCameraForViewport(
+        cameraPreset,
+        container.clientWidth,
+        container.clientHeight,
+      );
       studioRef.current?.controls.setView(view.pos, view.target);
     };
     window.addEventListener("resize", restoreResponsiveView);

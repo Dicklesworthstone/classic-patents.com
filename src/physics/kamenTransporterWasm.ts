@@ -317,12 +317,12 @@ export function stepKamenTransporterPhysics(
         touchingRiser: decoded.riser_contact_mask[index] ?? false,
       } satisfies KamenTransporterWheelContact;
     });
-    const contactWheelIds = wheelContacts
-      .filter((wheel) => wheel.touching)
-      .map((wheel) => wheel.id);
-    const riserContactWheelIds = wheelContacts
-      .filter((wheel) => wheel.touchingRiser)
-      .map((wheel) => wheel.id);
+    const contactWheelIds: KamenTransporterWheelContact["id"][] = [];
+    const riserContactWheelIds: KamenTransporterWheelContact["id"][] = [];
+    for (const wheel of wheelContacts) {
+      if (wheel.touching) contactWheelIds.push(wheel.id);
+      if (wheel.touchingRiser) riserContactWheelIds.push(wheel.id);
+    }
 
     return {
       ...fallback,

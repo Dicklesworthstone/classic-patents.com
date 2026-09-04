@@ -625,23 +625,29 @@ export function resolveKamenTransporterDisplayPose(
         Math.abs(signedRiserClearanceM) <= KAMEN_CONTACT_TOLERANCE_M,
     } satisfies KamenTransporterWheelContact;
   });
-  const contactWheelIds = wheelContacts.filter((wheel) => wheel.touching).map((wheel) => wheel.id);
+  const contactWheelIds: KamenTransporterWheelContact["id"][] = [];
+  const riserContactWheelIds: KamenTransporterWheelContact["id"][] = [];
+  const finiteRiserClearances: number[] = [];
+  let minimumGapM = Number.POSITIVE_INFINITY;
+
+  for (const wheel of wheelContacts) {
+    minimumGapM = Math.min(minimumGapM, wheel.signedVerticalGapM);
+    if (wheel.touching) contactWheelIds.push(wheel.id);
+    if (wheel.touchingRiser) riserContactWheelIds.push(wheel.id);
+    if (wheel.signedRiserClearanceM !== null) {
+      finiteRiserClearances.push(wheel.signedRiserClearanceM);
+    }
+  }
   if (contactWheelIds.length === 0) {
     throw new Error(`Kamen ${topologyState} source pose has no horizontal support contact.`);
   }
-  const riserContactWheelIds = wheelContacts
-    .filter((wheel) => wheel.touchingRiser)
-    .map((wheel) => wheel.id);
-  const finiteRiserClearances = wheelContacts
-    .map((wheel) => wheel.signedRiserClearanceM)
-    .filter((clearance): clearance is number => clearance !== null);
 
   return {
     ...pose,
     wheelContacts,
     contactWheelIds,
     contactCount: contactWheelIds.length,
-    minimumGapM: Math.min(...wheelContacts.map((wheel) => wheel.signedVerticalGapM)),
+    minimumGapM,
     riserContactWheelIds,
     riserContactCount: riserContactWheelIds.length,
     minimumRiserClearanceM:

@@ -890,16 +890,22 @@ export function materialProbe(
   }
   if (patentId.includes("colt") || patentId.includes("us-138")) {
     const colt = stepColtRevolver({
-      chamberPressureMpa: params.chamberPressure,
-      cockingAngleDeg: params.cockingAngle,
+      cockingTravelPct: params.cockingTravelPct,
+      chamberIndex: params.chamberIndex,
+      claim1CapsPresent: params.claim1CapsPresent,
+      claim2PartitionsPresent: params.claim2PartitionsPresent,
+      claim5ShacklePresent: params.claim5ShacklePresent,
+      claim6LockingAndTurningPresent: params.claim6LockingAndTurningPresent,
     });
     return {
       part: calloutLabel,
-      material: ".36 Paterson cylinder, folding trigger",
-      qty: "v",
-      value: colt.muzzleVelocityMps.toString(),
-      unit: "m/s",
-      note: `Hoop ${colt.hoopStressMpa} MPa. ${colt.isLocked ? "Locked." : "Indexing."}`,
+      material: "Source-described cylinder, ratchet, shackle, key, and spring",
+      qty: "lockwork stage",
+      value: colt.stage.replaceAll("-", " "),
+      unit: "source order",
+      note: colt.cylinderAndRatchetCoupled
+        ? `Ratchet ${Math.round(colt.ratchetAdvanceFraction * 100)}% and cylinder ${Math.round(colt.cylinderAdvanceFraction * 100)}% through the normalized display step; key r is ${colt.keySeated ? "seated" : "withdrawn"}.`
+        : "Claim 5 shackle coupling withheld: the ratchet display coordinate does not carry the cylinder.",
     };
   }
   return null;

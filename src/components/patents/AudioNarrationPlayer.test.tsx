@@ -17,4 +17,11 @@ describe("AudioNarrationPlayer component", () => {
     expect(html).toContain("Mute");
     expect(html).toContain("min listen");
   });
+
+  test("keeps the server-rendered narration control available until browser capability is read", () => {
+    const html = renderToStaticMarkup(<AudioNarrationPlayer patent={wrightFlyerPatent} />);
+
+    expect(html).toContain('aria-label="Play Narration"');
+    expect(html).not.toContain('disabled=""');
+  });
 });

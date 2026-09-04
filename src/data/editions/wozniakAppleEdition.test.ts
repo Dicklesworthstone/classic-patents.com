@@ -123,4 +123,13 @@ describe("US 4,136,359 manual source edition", () => {
     expect(ledger).toContain("The apparatus defined by claim 7");
     expect(ledger).toContain("Color data for the presently preferred embodiment");
   });
+
+  test("accepts the complete review with all 30 figure occurrences and locators", () => {
+    const { evaluateArchivalPublicationState } = require("./publicationApproval");
+    const decision = evaluateArchivalPublicationState(wozniakApplePatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.state.kind).toBe("accepted");
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest.acceptedFigureCount).toBe(30);
+  });
 });

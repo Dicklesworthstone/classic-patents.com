@@ -68,17 +68,27 @@ describe("US 233,692 Lester Pelton source-bounded visual", () => {
     expect(source).not.toContain("tailrace");
   });
 
-  test("builds and articulates the source bucket, nozzle, and spray particles correctly", () => {
+  test("supports the posed runner and nozzle while keeping the support outside claimed topology", () => {
     const model = buildPeltonWheelModel();
 
     expect(model.rootGroup.children.length).toBeGreaterThan(3);
     expect(model.runnerGroup).toBeDefined();
     expect(model.sourceArrangementGroup).toBeDefined();
+    expect(model.displaySupportGroup.parent).toBe(model.rootGroup);
+    expect(model.displaySupportGroup.name).toBe("NeutralDisplaySupportNotClaimedApparatus");
+    expect(
+      model.displaySupportGroup.getObjectsByProperty("name", "DisplayShaftCradle"),
+    ).toHaveLength(2);
     expect(model.materials.bronzeBucket).toBeDefined();
     expect(model.materials.waterJet).toBeDefined();
 
     updatePeltonWheelKinematics(model, true);
     expect(model.jetPoints.visible).toBe(true);
+    expect(model.sprayPoints.visible).toBe(true);
+
+    updatePeltonWheelKinematics(model, true, false);
+    expect(model.jetPoints.visible).toBe(true);
+    expect(model.sprayPoints.visible).toBe(false);
 
     model.dispose();
   });

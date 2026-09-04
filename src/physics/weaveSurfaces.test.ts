@@ -39,6 +39,18 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     });
     expect(fermiProbe).toBeDefined();
     expect(fermiProbe?.material.toLowerCase()).toContain("graphite");
+
+    const coltProbe = materialProbe("us-x9430-colt-revolver", "ratchet and shackle", {
+      cockingTravelPct: 100,
+      chamberIndex: 1,
+    });
+    expect(coltProbe).toMatchObject({
+      qty: "lockwork stage",
+      value: "full cock locked",
+      unit: "source order",
+    });
+    expect(coltProbe?.note).toContain("Ratchet 100%");
+    expect(coltProbe?.note).not.toContain("MPa");
   });
 
   test("computes interval ghosts for bounded SI physics quantities", () => {

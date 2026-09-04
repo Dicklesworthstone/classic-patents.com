@@ -98,10 +98,17 @@ const objectCandidates = (value: unknown, seen = new Set<unknown>()): THREE.Obje
   if (!value || typeof value !== "object" || seen.has(value)) return [];
   seen.add(value);
   if (value instanceof THREE.Object3D) return [value];
-  if (Array.isArray(value)) return value.flatMap((child) => objectCandidates(child, seen));
-  return Object.entries(value)
-    .filter(([key, child]) => key !== "dispose" && typeof child !== "function")
-    .flatMap(([, child]) => objectCandidates(child, seen));
+  const candidates: THREE.Object3D[] = [];
+  if (Array.isArray(value)) {
+    for (const child of value) candidates.push(...objectCandidates(child, seen));
+    return candidates;
+  }
+  for (const [key, child] of Object.entries(value)) {
+    if (key !== "dispose" && typeof child !== "function") {
+      candidates.push(...objectCandidates(child, seen));
+    }
+  }
+  return candidates;
 };
 
 const modelBuilder = async (
@@ -114,10 +121,17 @@ const modelBuilder = async (
     throw new Error(`${component}: no model module import found`);
   }
 
+  const modelModules = await Promise.all(
+    moduleSpecifiers.map(async (specifier) => {
+      const moduleURL = new URL(`${specifier}.ts`, threeSourceURL);
+      return {
+        specifier,
+        modelModule: (await import(moduleURL.href)) as Record<string, unknown>,
+      };
+    }),
+  );
   const attempts: string[] = [];
-  for (const specifier of moduleSpecifiers) {
-    const moduleURL = new URL(`${specifier}.ts`, threeSourceURL);
-    const modelModule = (await import(moduleURL.href)) as Record<string, unknown>;
+  for (const { modelModule } of modelModules) {
     const builders = Object.entries(modelModule).filter(
       ([name, value]) =>
         typeof value === "function" && /^(?:build|create).*(?:Model|Airframe)$/i.test(name),
@@ -200,9 +214,12 @@ if (manifestOnly) {
     const existing = existingByID.get(record.id);
     if (existing) manifest.push(existing);
   }
-  const pendingModelIDs = records
-    .filter((record) => record.sourceVisualization.kind === "model" && !existingByID.has(record.id))
-    .map((record) => record.id);
+  const pendingModelIDs: string[] = [];
+  for (const record of records) {
+    if (record.sourceVisualization.kind === "model" && !existingByID.has(record.id)) {
+      pendingModelIDs.push(record.id);
+    }
+  }
   if (pendingModelIDs.length > 0) {
     console.log(
       `Manifest-only export retained ${manifest.length} existing native exhibits; ` +
@@ -211,11 +228,15 @@ if (manifestOnly) {
     );
   }
 } else {
-  for (const [index, record] of records.entries()) {
+  // USDZExporter assigns process-global identifiers. Preserve the existing
+  // record order by exporting one model at a time, without an await in a loop.
+  const exportModelsInRecordOrder = async (index: number): Promise<void> => {
+    const record = records[index];
+    if (!record) return;
     if (record.sourceVisualization.kind === "source-bound-pdf-only") {
       manifest.push(sourceBoundManifestEntry(record.id, record.sourceVisualization.sourceBoundary));
       console.log(`[${index + 1}/${records.length}] ${record.id}: source-bound PDF-only exhibit`);
-      continue;
+      return exportModelsInRecordOrder(index + 1);
     }
 
     const { spatialComponent, vectorComponent } = record.sourceVisualization;
@@ -239,7 +260,7 @@ if (manifestOnly) {
       console.log(
         `[${index + 1}/${records.length}] ${record.id}: source-bounded live chemistry exhibit`,
       );
-      continue;
+      return exportModelsInRecordOrder(index + 1);
     }
     const { name: builder, root } = built;
     prepareForUSDZ(root);
@@ -279,7 +300,9 @@ if (manifestOnly) {
     console.log(
       `[${index + 1}/${records.length}] ${record.id}: ${meshCount} meshes via ${builder}`,
     );
-  }
+    return exportModelsInRecordOrder(index + 1);
+  };
+  await exportModelsInRecordOrder(0);
 }
 
 await Bun.write(nativeVisualizationManifestURL, `${JSON.stringify(manifest, null, 2)}\n`);

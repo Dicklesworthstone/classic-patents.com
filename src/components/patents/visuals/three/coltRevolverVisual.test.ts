@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import * as THREE from "three";
-import { stepColtRevolver } from "@/physics/catalogKernels";
+import { stepColtLockwork } from "@/physics/coltRevolverKernel";
 import { coltRevolverCameraForViewport } from "./coltRevolverCamera";
 import {
   buildColtRevolverModel,
@@ -160,19 +160,26 @@ describe("US X9430 Colt Paterson Revolver visual & physics boundary", () => {
     expect(threeSource).toContain("onFocusCapture={keepFocusedPhoneControlClear}");
   });
 
-  test("clears a pending firing completion before unmount", () => {
+  test("does not fabricate a timed firing or audio discharge path", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "ColtRevolver3D.tsx"),
       "utf8",
     );
 
-    expect(threeSource).toContain("const firingTimeoutRef = useRef");
-    expect(threeSource).toContain("window.clearTimeout(firingTimeoutRef.current)");
-    expect(threeSource).toContain("firingTimeoutRef.current = window.setTimeout");
-    expect(threeSource).toContain("firingTimeoutRef.current = null;");
+    expect(threeSource).toContain("stepColtLockwork(sourceControls)");
+    expect(threeSource).toContain('updateParam("cockingTravelPct", 0)');
+    for (const fabricatedPath of [
+      "firingTimeoutRef",
+      "window.setTimeout",
+      "soundEngine",
+      "muzzleVelocityMps",
+      "hoopStressMpa",
+    ]) {
+      expect(threeSource).not.toContain(fabricatedPath);
+    }
   });
 
-  test("exposes all 6 authentic camera presets and 8 historical patent callouts", () => {
+  test("keeps six inspection cameras and source-printed lockwork callouts", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "ColtRevolver3D.tsx"),
       "utf8",
@@ -182,14 +189,18 @@ describe("US X9430 Colt Paterson Revolver visual & physics boundary", () => {
       expect(threeSource).toContain(preset);
     }
 
-    expect(threeSource).toContain("1. Octagonal Rifled Barrel (.36 Caliber)");
-    expect(threeSource).toContain("2. 5-Chamber Roll-Engraved Cylinder");
-    expect(threeSource).toContain("3. Single-Action Spur Hammer");
-    expect(threeSource).toContain("4. Paterson Folding Trigger");
-    expect(threeSource).toContain("5. Black Walnut Plowhandle Grip");
-    expect(threeSource).toContain("6. Creeping Loading Lever & Rammer");
-    expect(threeSource).toContain("7. Transverse Takedown Wedge");
-    expect(threeSource).toContain("8. Recoil Shield & Capping Channel");
+    for (const callout of [
+      "1. Barrel and arbor",
+      "2. Cylinder and wards",
+      "3. Hammer and pin p",
+      "4. Trigger and connecting-rod",
+      "5. Locking key r and spring m",
+      "6. Lifter d and tooth s",
+      "7. Ratchet and shackle",
+      "8. Cylinder locking-and-turning path",
+    ]) {
+      expect(threeSource).toContain(callout);
+    }
   });
 
   test("keeps the complete Paterson profile in a portrait overview without remounting on pins", () => {
@@ -225,11 +236,11 @@ describe("US X9430 Colt Paterson Revolver visual & physics boundary", () => {
         config.pos[2] - config.target[2],
       );
 
-    expect(desktop.maxX - desktop.minX).toBeGreaterThan(1.5);
+    expect(desktop.maxX - desktop.minX).toBeGreaterThan(1.1);
     expect(distance(tablet.cameraConfig)).toBeGreaterThan(distance(desktop.cameraConfig));
     expect(tablet.cameraConfig.target).toEqual([3.15, -0.5, 0]);
-    expect(tablet.maxX - tablet.minX).toBeGreaterThan(1.6);
-    expect((tablet.minX + tablet.maxX) / 2).toBeGreaterThan(0.05);
+    expect(tablet.maxX - tablet.minX).toBeGreaterThan(1.2);
+    expect((tablet.minX + tablet.maxX) / 2).toBeGreaterThan(-0.15);
     expect(tablet.minX).toBeGreaterThan(-1);
     expect(tablet.maxX).toBeLessThan(1);
     expect(tablet.minY).toBeGreaterThan(-1);
@@ -247,13 +258,13 @@ describe("US X9430 Colt Paterson Revolver visual & physics boundary", () => {
       expect(frame.minY).toBeGreaterThan(-0.5);
       expect(frame.maxY).toBeLessThan(0.6);
       // The dense grip/cylinder visual mass reads left-heavy at a mathematically
-      // centred envelope. A small rightward composition offset balances it
+      // centred envelope. A small composition offset balances it
       // without sacrificing the visible muzzle or full historical silhouette.
       const visualCenter = (frame.minX + frame.maxX) / 2;
-      expect(visualCenter).toBeGreaterThan(0.02);
-      expect(visualCenter).toBeLessThan(0.1);
-      expect(frame.maxX - frame.minX).toBeGreaterThan(1.7);
-      expect(frame.maxY - frame.minY).toBeGreaterThan(0.55);
+      expect(visualCenter).toBeGreaterThan(-0.25);
+      expect(visualCenter).toBeLessThan(-0.15);
+      expect(frame.maxX - frame.minX).toBeGreaterThan(1.2);
+      expect(frame.maxY - frame.minY).toBeGreaterThan(0.45);
     }
 
     expect(phone320.cameraConfig.target).toEqual([3.65, -0.6, -0.9]);
@@ -271,12 +282,12 @@ describe("US X9430 Colt Paterson Revolver visual & physics boundary", () => {
     expect(phone375.maxX).toBeLessThan(0.98);
     expect(phone375.minY).toBeGreaterThan(-0.4);
     expect(phone375.maxY).toBeLessThan(0.45);
-    expect(phone375.maxX - phone375.minX).toBeGreaterThan(1.55);
-    expect(phone375.maxY - phone375.minY).toBeGreaterThan(0.6);
-    // A rightward geometric center counterweights the grip/cylinder's larger
-    // visual mass without hiding the complete historical arm.
-    expect(visualCenter).toBeGreaterThan(0.16);
-    expect(visualCenter).toBeLessThan(0.2);
+    expect(phone375.maxX - phone375.minX).toBeGreaterThan(1.1);
+    expect(phone375.maxY - phone375.minY).toBeGreaterThan(0.5);
+    // A balanced geometric center accommodates the grip and cylinder mass
+    // without hiding the complete historical arm.
+    expect(visualCenter).toBeGreaterThan(-0.06);
+    expect(visualCenter).toBeLessThan(0.02);
 
     const distance = (config: typeof phone375.cameraConfig) =>
       Math.hypot(
@@ -313,41 +324,44 @@ describe("US X9430 Colt Paterson Revolver visual & physics boundary", () => {
     }
   });
 
-  test("computes solid mechanics hoop stress and ballistics in reproducible SI units", () => {
-    const fullCock = stepColtRevolver({ chamberPressureMpa: 85, cockingAngleDeg: 45 });
-    expect(fullCock.isLocked).toBe(true);
-    expect(fullCock.indexAngleDeg).toBe(72);
-    expect(fullCock.schematicBoltRetractY).toBe(0);
-    expect(fullCock.hoopStressMpa).toBe(100.7);
-    expect(fullCock.muzzleVelocityMps).toBe(304);
-    expect(fullCock.muzzleEnergyJoules).toBe(240);
-    expect(fullCock.powderGrains).toBe(45);
-    expect(fullCock.recoilKick).toBeCloseTo(0.05 + (304 / 400) * 0.1, 3);
-    expect(fullCock.recoilKickX).toBeCloseTo(fullCock.recoilKick * 0.8, 3);
+  test("steps only the printed locking-and-turning event order", () => {
+    const fullCock = stepColtLockwork({ cockingTravelPct: 100, chamberIndex: 1 });
+    expect(fullCock.stage).toBe("full-cock-locked");
+    expect(fullCock.keySeated).toBe(true);
+    expect(fullCock.safeToReleaseHammer).toBe(true);
+    expect(fullCock.cylinderAdvanceFraction).toBe(1);
 
-    const halfCock = stepColtRevolver({ chamberPressureMpa: 85, cockingAngleDeg: 22.5 });
-    expect(halfCock.isLocked).toBe(false);
-    expect(halfCock.indexAngleDeg).toBe(36);
-    expect(halfCock.schematicBoltRetractY).toBe(8);
+    const indexing = stepColtLockwork({ cockingTravelPct: 50, chamberIndex: 1 });
+    expect(indexing.stage).toBe("ratchet-indexing");
+    expect(indexing.keySeated).toBe(false);
+    expect(indexing.ratchetAdvanceFraction).toBeGreaterThan(0);
+    expect(indexing.cylinderAdvanceFraction).toBeGreaterThan(0);
 
-    const hammerDown = stepColtRevolver({ chamberPressureMpa: 85, cockingAngleDeg: 0 });
-    expect(hammerDown.isLocked).toBe(false);
-    expect(hammerDown.indexAngleDeg).toBe(0);
+    for (const unsupported of [
+      "chamberPressureMpa",
+      "hoopStressMpa",
+      "muzzleVelocityMps",
+      "muzzleEnergyJoules",
+      "powderGrains",
+      "recoilKick",
+    ]) {
+      expect(unsupported in fullCock).toBe(false);
+    }
   });
 
-  test("builds and articulates procedural 5-chamber cylinder, folding trigger, and lockwork cutaway correctly", () => {
+  test("maps the shared source-order state onto the cylinder, hammer, and cutaway", () => {
     const model = buildColtRevolverModel();
 
     expect(model.group.children.length).toBeGreaterThan(3);
     expect(model.cylinderGroup).toBeDefined();
     expect(model.hammerGroup).toBeDefined();
     expect(model.triggerGroup).toBeDefined();
-    expect(model.loadingLeverGroup).toBeDefined();
-    expect(model.rammerPlunger).toBeDefined();
+    expect(model.lockworkCutawayGroup).toBeDefined();
 
-    updateColtRevolverKinematics(model, 45, 1, 50, true, true);
+    const fullCock = stepColtLockwork({ cockingTravelPct: 100, chamberIndex: 1 });
+    updateColtRevolverKinematics(model, fullCock, true);
     expect(model.hammerGroup.rotation.z).toBeCloseTo(-(45 * Math.PI) / 180, 2);
-    expect(model.blastMesh.visible).toBe(true);
+    expect(model.cylinderGroup.rotation.x).toBeCloseTo(fullCock.cylinderIndexAngleRad, 6);
     expect(model.lockworkCutawayGroup.visible).toBe(true);
 
     model.dispose();

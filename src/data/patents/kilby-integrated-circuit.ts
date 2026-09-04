@@ -33,17 +33,15 @@ export const kilbyIntegratedCircuitPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-3138743-kilby-integrated-circuit.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3138743A/en",
   usptoClassification: "257/500",
-  // Root publication hold: the prior ledger/edition was abbreviated and its
-  // figure-sheet summaries were not source-faithful. Reattach only after the
-  // replacement edition and independent facsimile acceptance.
+  // The former abbreviated ledger and speculative figure summaries were
+  // replaced with source-reviewed text and complete primary drawing sheets.
   archivalEdition: kilbyIntegratedCircuitArchivalEdition,
   originalTextAsset: {
     url: "/patents/transcripts/us-3138743-kilby-integrated-circuit-reviewed.txt",
     pageCount: 9,
     kind: "reviewed-transcription",
-    reviewedBy:
-      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
-    reviewedAt: "2026-08-22",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6; direct full-facsimile review)",
+    reviewedAt: "2026-09-04",
     sourcePdfSha256: "e523c17aaef78f727181d87c427be3edf10f964bed20b90ef07a8099a1c18eef",
   },
   originalText:

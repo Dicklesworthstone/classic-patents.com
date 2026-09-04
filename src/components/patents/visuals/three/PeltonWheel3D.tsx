@@ -133,7 +133,7 @@ export function PeltonWheel3D() {
       clock.pump(now);
       const p = live.current;
 
-      updatePeltonWheelKinematics(model, p.showJet);
+      updatePeltonWheelKinematics(model, p.showJet, p.claim1Active);
       model.runnerGroup.visible = p.claim1Active;
 
       controls.update();

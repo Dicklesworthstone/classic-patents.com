@@ -10,11 +10,63 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { Patent } from "@/types/patent";
 
 interface AudioNarrationPlayerProps {
   patent: Patent;
+}
+
+type NarrationSentence = {
+  id: string;
+  text: string;
+};
+
+const WORDS_PER_MINUTE = 150;
+const SERVER_SPEECH_SYNTHESIS_SUPPORTED = true;
+
+function subscribeToSpeechSynthesisSupport(): () => void {
+  return () => {};
+}
+
+function speechSynthesisIsSupported(): boolean {
+  return typeof window !== "undefined" && "speechSynthesis" in window;
+}
+
+function getServerSpeechSynthesisSupport(): boolean {
+  return SERVER_SPEECH_SYNTHESIS_SUPPORTED;
+}
+
+function splitNarrationSentences(sections: readonly string[]): NarrationSentence[] {
+  const sentences: NarrationSentence[] = [];
+
+  for (const [sectionIndex, section] of sections.entries()) {
+    const matches = section.match(/[^.!?]+[.!?]+(\s+|$)/g) ?? [section];
+    for (const [sentenceIndex, match] of matches.entries()) {
+      const text = match.trim();
+      if (text) {
+        sentences.push({ id: `${sectionIndex}:${sentenceIndex}:${text}`, text });
+      }
+    }
+  }
+
+  return sentences;
+}
+
+function joinNarrationSentences(sentences: readonly NarrationSentence[]): string {
+  const parts: string[] = [];
+  for (const sentence of sentences) {
+    parts.push(sentence.text);
+  }
+  return parts.join(" ");
+}
+
+function estimateNarrationMinutes(sentences: readonly NarrationSentence[]): number {
+  let wordCount = 0;
+  for (const sentence of sentences) {
+    wordCount += sentence.text.match(/\S+/g)?.length ?? 0;
+  }
+  return Math.max(1, Math.round(wordCount / WORDS_PER_MINUTE));
 }
 
 export function AudioNarrationPlayer({ patent }: AudioNarrationPlayerProps) {
@@ -24,7 +76,13 @@ export function AudioNarrationPlayer({ patent }: AudioNarrationPlayerProps) {
   const [isMuted, setIsMuted] = useState(false);
   const [isTranscriptOpen, setIsTranscriptOpen] = useState(false);
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
-  const [isSupported, setIsSupported] = useState(true);
+  // The optimistic server snapshot preserves the original SSR control state;
+  // hydration then reads the real browser capability without a mount-time setState.
+  const isSupported = useSyncExternalStore(
+    subscribeToSpeechSynthesisSupport,
+    speechSynthesisIsSupported,
+    getServerSpeechSynthesisSupport,
+  );
 
   // Compile the curated audio script from high-yield Plain English sections
   const narrationScript = useMemo(() => {
@@ -48,20 +106,10 @@ export function AudioNarrationPlayer({ patent }: AudioNarrationPlayerProps) {
   }, [patent]);
 
   // Break text into sentences for sentence-level follow-along highlights
-  const sentences = useMemo(() => {
-    return narrationScript
-      .flatMap((sec) => sec.match(/[^.!?]+[.!?]+(\s+|$)/g) || [sec])
-      .map((s) => s.trim())
-      .filter(Boolean);
-  }, [narrationScript]);
+  const sentences = useMemo(() => splitNarrationSentences(narrationScript), [narrationScript]);
+  const estimatedMinutes = useMemo(() => estimateNarrationMinutes(sentences), [sentences]);
 
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-      setIsSupported(false);
-    }
-  }, []);
 
   const stopPlayback = useCallback(() => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -86,7 +134,7 @@ export function AudioNarrationPlayer({ patent }: AudioNarrationPlayerProps) {
 
     window.speechSynthesis.cancel();
 
-    const fullText = sentences.join(" ");
+    const fullText = joinNarrationSentences(sentences);
     const utterance = new SpeechSynthesisUtterance(fullText);
     utteranceRef.current = utterance;
 
@@ -111,7 +159,7 @@ export function AudioNarrationPlayer({ patent }: AudioNarrationPlayerProps) {
       if (event.name === "sentence" || event.charIndex !== undefined) {
         let accumulated = 0;
         for (let i = 0; i < sentences.length; i++) {
-          accumulated += sentences[i].length + 1;
+          accumulated += sentences[i].text.length + 1;
           if (event.charIndex < accumulated) {
             setCurrentSentenceIndex(i);
             break;
@@ -157,8 +205,6 @@ export function AudioNarrationPlayer({ patent }: AudioNarrationPlayerProps) {
       startPlayback();
     }
   };
-
-  const estimatedMinutes = Math.max(1, Math.round(sentences.join(" ").split(/\s+/).length / 150));
 
   return (
     <div
@@ -277,8 +323,8 @@ export function AudioNarrationPlayer({ patent }: AudioNarrationPlayerProps) {
 
       {/* Real-time Subtitle / Sentence Highlight Banner */}
       {isPlaying && sentences[currentSentenceIndex] && (
-        <div className="p-3 rounded-xl bg-amber-100/60 dark:bg-amber-950/40 border border-amber-300/40 dark:border-amber-800/40 text-xs sm:text-sm font-serif italic text-ink-900 dark:text-parchment-100 transition-all leading-relaxed">
-          &ldquo;{sentences[currentSentenceIndex]}&rdquo;
+        <div className="p-3 rounded-xl bg-amber-100/60 dark:bg-amber-950/40 border border-amber-300/40 dark:border-amber-800/40 text-xs sm:text-sm font-serif italic text-ink-900 dark:text-parchment-100 leading-relaxed">
+          &ldquo;{sentences[currentSentenceIndex].text}&rdquo;
         </div>
       )}
 
@@ -291,14 +337,14 @@ export function AudioNarrationPlayer({ patent }: AudioNarrationPlayerProps) {
           <div className="p-3 rounded-xl bg-parchment-100 dark:bg-ink-900 text-ink-800 dark:text-parchment-200 font-serif space-y-2 max-h-48 overflow-y-auto leading-relaxed border border-parchment-300 dark:border-ink-800">
             {sentences.map((sentence, idx) => (
               <span
-                key={idx}
+                key={sentence.id}
                 className={`transition-colors mr-1 ${
                   isPlaying && idx === currentSentenceIndex
                     ? "bg-amber-300/50 dark:bg-amber-700/50 font-semibold text-ink-950 dark:text-white px-1 py-0.5 rounded-sm"
                     : ""
                 }`}
               >
-                {sentence}{" "}
+                {sentence.text}{" "}
               </span>
             ))}
           </div>

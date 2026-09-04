@@ -417,15 +417,9 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-x9430-colt-revolver": {
-      const pChamberMpa = params.chamberPressure ?? 85.0;
-      const vMuzzleMps = Math.round(180 + Math.sqrt(pChamberMpa) * 13.5);
-      const bulletMassKg = 0.0052; // .36 caliber round lead ball (~80 grains / 5.2 grams)
-      kinetic = 0.5 * bulletMassKg * vMuzzleMps * vMuzzleMps; // Projectile kinetic muzzle energy (~240 J)
-      const powderGrains = (pChamberMpa - 40) / 1.5 + 15;
-      const powderGrams = powderGrains * 0.0648;
-      powerIn = powderGrams * 3000.0; // Total chemical deflagration enthalpy (Joules)
-      dissipated = powerIn - kinetic; // Gas expansion blast and barrel wall heating
-      thermal = 1.1 * 460.0 * 25.0; // Steel barrel and cylinder thermal capacity
+      // US X9430 supplies a linked lockwork sequence, not a mass, charge,
+      // pressure, geometry, thermal, or timing card.  Keep the universal
+      // energy ledger empty rather than presenting a fictitious firing cycle.
       break;
     }
 

@@ -1514,21 +1514,22 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-x9430-colt-revolver") {
-    const angle = params.cockingAngle ?? 72;
+    const travel = params.cockingTravelPct ?? 0;
     return [
       {
         id: "cylinder",
         phrase: "cylinder",
-        active: angle >= 30,
+        active: travel >= 18,
         tone: "live",
-        caption: `Cocking Angle=${angle}°: Revolving cylinder rotates one chamber position when the hammer is cocked.`,
+        caption: `Normalized cocking travel ${travel}%: the source order has admitted the lifter to the ratchet; the display does not infer a physical angle or rate.`,
       },
       {
         id: "hammer",
         phrase: "hammer",
         active: true,
         tone: "held",
-        caption: "Central hammer cocks lockwork pawl to index cylinder and compress mainspring.",
+        caption:
+          "Hammer pin p first withdraws key r; only then does lifter arm d advance ratchet tooth s through the shackle.",
       },
     ];
   }

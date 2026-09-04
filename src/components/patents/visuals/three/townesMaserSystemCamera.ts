@@ -21,7 +21,7 @@ export const TOWNES_MASER_DESKTOP_CAMERA_PRESETS: Record<
   detector: { pos: [3.05, 1.6, 4.1], target: [2.7, 0, 0] },
 };
 
-const COMPACT_STUDIO_MAX_WIDTH_PX = 640;
+const COMPACT_PHONE_MAX_WIDTH_PX = 480;
 
 // The 320 px phone audit has a 286 x 410 px studio. Its prior system camera
 // displayed the entire train only 72 px tall, leaving the resonators and
@@ -46,11 +46,16 @@ export const TOWNES_COMPACT_SYSTEM_SAFE_ZONE = {
   minimumActiveBeamPathWidthPx: 110,
 } as const;
 
+function isPortraitPhoneViewport(viewportWidth: number, viewportHeight: number) {
+  return viewportWidth <= COMPACT_PHONE_MAX_WIDTH_PX && viewportHeight > viewportWidth;
+}
+
 export function townesMaserSystemCameraForViewport(
   preset: TownesMaserSystemCameraPreset,
   viewportWidth: number,
+  viewportHeight: number,
 ): TownesMaserSystemCameraView {
-  return preset === "system" && viewportWidth < COMPACT_STUDIO_MAX_WIDTH_PX
+  return preset === "system" && isPortraitPhoneViewport(viewportWidth, viewportHeight)
     ? COMPACT_SYSTEM_VIEW
     : TOWNES_MASER_DESKTOP_CAMERA_PRESETS[preset];
 }

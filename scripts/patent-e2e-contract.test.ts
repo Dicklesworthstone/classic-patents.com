@@ -248,8 +248,10 @@ describe("patent E2E scenario contract", () => {
     expect(scenarios.some((scenario) => !scenario.hasEnergyChannels)).toBe(true);
     expect(scenarios.some((scenario) => scenario.controls.length > 0)).toBe(true);
 
-    const gatlingGun = scenarios.find((scenario) => scenario.patentId === "us-36836-gatling-gun");
-    expect(gatlingGun?.sourceDecision.figureAttestation).toMatchObject({
+    const lemelsonProduction = scenarios.find(
+      (scenario) => scenario.patentId === "us-3313014-lemelson-automatic-production",
+    );
+    expect(lemelsonProduction?.sourceDecision.figureAttestation).toMatchObject({
       reviewer: expect.any(String),
       reviewedAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
       acceptanceBasis: expect.any(String),
@@ -257,20 +259,54 @@ describe("patent E2E scenario contract", () => {
       matchesEdition: true,
       matchesLocators: false,
     });
-    expect(gatlingGun?.sourceDecision.figureAttestation?.acceptedOccurrenceCount).toBe(
-      gatlingGun?.sourceDecision.requiredFigureCount,
+    expect(lemelsonProduction?.sourceDecision.figureAttestation?.acceptedOccurrenceCount).toBe(
+      lemelsonProduction?.sourceDecision.requiredFigureCount,
     );
-    expect(gatlingGun?.sourceState).toBe("edition");
-    expect(gatlingGun?.sourceReasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
-    expect(gatlingGun?.sourceDecision.acceptedFigureCount).toBe(0);
+    expect(lemelsonProduction?.sourceState).toBe("edition");
+    expect(lemelsonProduction?.sourceReasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+    expect(lemelsonProduction?.sourceDecision.acceptedFigureCount).toBe(0);
     expect(
-      gatlingGun?.sourceDecision.figures.every(
+      lemelsonProduction?.sourceDecision.figures.every(
         (figure) =>
           figure.status === "pending" &&
           figure.sourcePdfPage === null &&
           figure.sourceRegion === null,
       ),
     ).toBe(true);
+
+    const gatlingGun = scenarios.find((scenario) => scenario.patentId === "us-36836-gatling-gun");
+    expect(gatlingGun?.sourceDecision.figureAttestation).toMatchObject({
+      matchesEdition: true,
+      matchesLocators: true,
+    });
+    expect(gatlingGun?.sourceReasonCode).toBe("ACCEPTED");
+    expect(gatlingGun?.sourceDecision.acceptedFigureCount).toBe(
+      gatlingGun?.sourceDecision.requiredFigureCount,
+    );
+
+    const marconiRadio = scenarios.find(
+      (scenario) => scenario.patentId === "us-586193-marconi-radio",
+    );
+    expect(marconiRadio?.sourceDecision.figureAttestation).toMatchObject({
+      matchesEdition: true,
+      matchesLocators: true,
+    });
+    expect(marconiRadio?.sourceReasonCode).toBe("ACCEPTED");
+    expect(marconiRadio?.sourceDecision.acceptedFigureCount).toBe(
+      marconiRadio?.sourceDecision.requiredFigureCount,
+    );
+
+    const zeppelinAirship = scenarios.find(
+      (scenario) => scenario.patentId === "us-621195-zeppelin-airship",
+    );
+    expect(zeppelinAirship?.sourceDecision.figureAttestation).toMatchObject({
+      matchesEdition: true,
+      matchesLocators: true,
+    });
+    expect(zeppelinAirship?.sourceReasonCode).toBe("ACCEPTED");
+    expect(zeppelinAirship?.sourceDecision.acceptedFigureCount).toBe(
+      zeppelinAirship?.sourceDecision.requiredFigureCount,
+    );
 
     const renoEscalator = scenarios.find(
       (scenario) => scenario.patentId === "us-470918-reno-escalator",

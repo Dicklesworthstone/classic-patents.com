@@ -7,14 +7,7 @@ const SOURCES = [
     "BaekelandBakeliteSim.tsx",
     ["transition-[stroke,stroke-width,stroke-dasharray]", "transition-[width,background-color]"],
   ],
-  [
-    "ColtRevolverSim.tsx",
-    [
-      "transition-[background-color,color,opacity]",
-      "transition-[background-color,transform]",
-      "transition-[background-color,color,border-color,transform]",
-    ],
-  ],
+  ["ColtRevolverSim.tsx", ["transition-[background-color,transform]"]],
   ["MaimanRubyLaserSim.tsx", ["transition-[background-color,opacity]"]],
   ["PageRankSim.tsx", ["transition-[background-color,color]"]],
 ] as const;

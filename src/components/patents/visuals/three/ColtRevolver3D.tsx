@@ -1,29 +1,19 @@
 "use client";
 
-import {
-  Activity,
-  Eye,
-  EyeOff,
-  Flame,
-  Layers,
-  RotateCcw,
-  Sparkles,
-  Target,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+import { Activity, Eye, EyeOff, Layers, RotateCcw, Target, Zap } from "lucide-react";
 import { type FocusEvent, useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "@/components/patents/visuals/PortHamiltonianEnergyStrip";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
-import { coltNextChamber } from "@/physics/catalogKernels";
-import { FrankenSimEngine } from "@/physics/engine";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
+import {
+  COLT_SOURCE_BOUNDARY,
+  readColtRuntimeControls,
+  stepColtLockwork,
+} from "@/physics/coltRevolverKernel";
 import { ensureGenericWasm } from "@/physics/genericWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
 import { type ColtRevolverCameraPreset, coltRevolverCameraForViewport } from "./coltRevolverCamera";
 import {
   buildColtRevolverModel,
@@ -33,7 +23,6 @@ import {
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
-import { usePatentAudio } from "./usePatentAudio";
 
 /**
  * Keep a keyboard-focused phone control in the lower safe viewing lane.
@@ -62,39 +51,23 @@ function keepFocusedPhoneControlClear(event: FocusEvent<HTMLElement>) {
 export function ColtRevolver3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const { params, updateParam, resetParams } = usePatentPhysics("us-x9430-colt-revolver");
+  const { params, effectiveParams, claimStates, updateParam, resetParams } =
+    usePatentPhysics("us-x9430-colt-revolver");
 
-  // Reactive Physics & Mechanical Parameters
-  const chamberPressureMpa = Number(params.chamberPressure ?? 85);
-  const cockingAngleDeg = Number(params.cockingAngle ?? 45); // 0 (hammer down) to 45 (full cock)
-  const rammerPositionPct = Number(params.rammerPosition ?? 0); // 0 (latched) to 100 (seated)
-  const currentChamberIndex = Math.max(1, Math.round(Number(params.chamberIndex ?? 1)));
-
-  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
-  const [isFiring, setIsFiring] = useState<boolean>(false);
-  const [showLockworkCutaway, setShowLockworkCutaway] = useState<boolean>(false);
-  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
-  const [activeCamera, setActiveCamera] = useState<ColtRevolverCameraPreset>("iso");
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
-  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const sourceControls = readColtRuntimeControls(effectiveParams);
+  const lockwork = stepColtLockwork(sourceControls);
+  const cockingTravelPct = sourceControls.cockingTravelPct;
+  const currentChamberIndex = sourceControls.chamberIndex;
 
   useEffect(() => {
     void ensureGenericWasm();
   }, []);
 
-  // Solid Mechanics & Ballistics via FrankenSim Engine
-  const coltMech = FrankenSimEngine.stepColtRevolver({
-    chamberPressureMpa,
-    cockingAngleDeg,
-  });
-
   useFrankenSimPhysics("us-x9430-colt-revolver", {
     domain: "solid_mechanics",
-    timestampMs: Date.now(),
-    timeStepDt: 0.016,
     refusal: { isRefused: false },
     continuum: {
-      tensileStressMpa: coltMech.hoopStressMpa,
+      tensileStressMpa: 0,
       tensileStrainPct: 0,
       elasticModulusGpa: 200,
       crossLinkDensityMolesPerCm3: 0,
@@ -104,48 +77,17 @@ export function ColtRevolver3D() {
     },
   });
 
-  const hoopStressMpa = coltMech.hoopStressMpa;
-  const muzzleVelocityMps = coltMech.muzzleVelocityMps;
-  const muzzleEnergyJoules = coltMech.muzzleEnergyJoules;
-  const powderGrains = coltMech.powderGrains;
-  const isFullCock = coltMech.isLocked;
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
+  const [showLockworkCutaway, setShowLockworkCutaway] = useState<boolean>(false);
+  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<ColtRevolverCameraPreset>("iso");
+  const isFullCock = lockwork.safeToReleaseHammer;
 
   const live = useLiveSimParams({
-    chamberPressureMpa,
-    powderGrains,
-    cockingAngleDeg,
-    rammerPositionPct,
-    currentChamberIndex,
-    isFiring,
+    ...sourceControls,
     showLockworkCutaway,
     showCalloutPins,
-    isAudioMuted,
-    muzzleVelocityMps,
-    recoilKick: coltMech.recoilKick,
-    recoilKickX: coltMech.recoilKickX,
-    hoopStressMpa,
-    isLocked: coltMech.isLocked ? 1 : 0,
   });
-
-  const animRef = useRef({
-    visualCockingAngle: cockingAngleDeg,
-    visualCylinderAngle: -((currentChamberIndex - 1) * 2 * Math.PI) / 5,
-    visualRammerPct: rammerPositionPct,
-    isFiringSeq: false,
-    firingProgress: 0,
-    recoilZ: 0,
-    recoilX: 0,
-  });
-  const firingTimeoutRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (firingTimeoutRef.current !== null) {
-        window.clearTimeout(firingTimeoutRef.current);
-        firingTimeoutRef.current = null;
-      }
-    };
-  }, []);
 
   const applyCameraPreset = (preset: ColtRevolverCameraPreset) => {
     setActiveCamera(preset);
@@ -159,59 +101,14 @@ export function ColtRevolver3D() {
   };
 
   const handleCockHammer = useCallback(() => {
-    updateParam("cockingAngle", 45);
-    soundEngine.playMicroswitchClick();
+    updateParam("cockingTravelPct", 100);
   }, [updateParam]);
 
-  const handleStepChamber = useCallback(() => {
-    const nextIdx = coltNextChamber(currentChamberIndex, coltMech.chamberCount);
-    updateParam("chamberIndex", nextIdx);
-    animRef.current.visualCylinderAngle = -((nextIdx - 1) * 2 * Math.PI) / 5;
-    soundEngine.playMicroswitchClick();
-  }, [updateParam, currentChamberIndex, coltMech.chamberCount]);
-
-  const handleRamChamber = useCallback(() => {
-    updateParam("rammerPosition", rammerPositionPct > 50 ? 0 : 100);
-    soundEngine.playSwitchClick();
-  }, [updateParam, rammerPositionPct]);
-
-  const handlePullTrigger = useCallback(() => {
-    if (!isFullCock || isFiring) return;
-    if (firingTimeoutRef.current !== null) {
-      window.clearTimeout(firingTimeoutRef.current);
-    }
-    setIsFiring(true);
-    animRef.current.isFiringSeq = true;
-    animRef.current.firingProgress = 0;
-
-    // Gunshot percussion blast & lockwork clack
-    soundEngine.playLockstitchClack();
-
-    // Trigger impulse
-    const kick = coltMech.recoilKick;
-    const kickX = coltMech.recoilKickX;
-    animRef.current.recoilZ = Math.min(0.22, kick * 1.5);
-    animRef.current.recoilX = Math.max(-0.4, -kickX * 1.8);
-
-    firingTimeoutRef.current = window.setTimeout(() => {
-      firingTimeoutRef.current = null;
-      setIsFiring(false);
-      animRef.current.isFiringSeq = false;
-      const nextChamber = coltNextChamber(currentChamberIndex, coltMech.chamberCount);
-      updateParam("cockingAngle", 0);
-      updateParam("chamberIndex", nextChamber);
-      animRef.current.visualCockingAngle = 0;
-      animRef.current.visualCylinderAngle = -((nextChamber - 1) * 2 * Math.PI) / 5;
-    }, 450);
-  }, [
-    isFullCock,
-    isFiring,
-    updateParam,
-    currentChamberIndex,
-    coltMech.chamberCount,
-    coltMech.recoilKick,
-    coltMech.recoilKickX,
-  ]);
+  const handleReleaseHammer = useCallback(() => {
+    if (!lockwork.safeToReleaseHammer) return;
+    updateParam("chamberIndex", lockwork.alignedChamberIndex);
+    updateParam("cockingTravelPct", 0);
+  }, [lockwork.alignedChamberIndex, lockwork.safeToReleaseHammer, updateParam]);
 
   // 3D Scene Initialization
   // The mounted scene reads the stable, layout-effect-synchronized live ref so toggling visual controls never destroys and flashes the WebGL canvas.
@@ -241,14 +138,14 @@ export function ColtRevolver3D() {
     pinGroup.visible = live.current.showCalloutPins;
 
     const callouts = [
-      { pos: [4.8, 0.82, 0], text: "1. Octagonal Rifled Barrel (.36 Caliber)" },
-      { pos: [0.0, 0.0, 0], text: "2. 5-Chamber Roll-Engraved Cylinder" },
-      { pos: [-2.5, 0.8, 0], text: "3. Single-Action Spur Hammer" },
-      { pos: [-2.1, -1.8, 0], text: "4. Paterson Folding Trigger" },
-      { pos: [-3.0, -1.8, 0], text: "5. Black Walnut Plowhandle Grip" },
-      { pos: [3.5, -0.4, 0], text: "6. Creeping Loading Lever & Rammer" },
-      { pos: [2.35, 0.0, 0], text: "7. Transverse Takedown Wedge" },
-      { pos: [-1.4, 0.0, 0], text: "8. Recoil Shield & Capping Channel" },
+      { pos: [4.8, 0.82, 0], text: "1. Barrel and arbor" },
+      { pos: [0.0, 0.0, 0], text: "2. Cylinder and wards" },
+      { pos: [-2.5, 0.8, 0], text: "3. Hammer and pin p" },
+      { pos: [-2.1, -1.8, 0], text: "4. Trigger and connecting-rod" },
+      { pos: [-3.0, -1.8, 0], text: "5. Locking key r and spring m" },
+      { pos: [3.5, -0.4, 0], text: "6. Lifter d and tooth s" },
+      { pos: [2.35, 0.0, 0], text: "7. Ratchet and shackle" },
+      { pos: [-1.4, 0.0, 0], text: "8. Cylinder locking-and-turning path" },
     ];
 
     for (const c of callouts) {
@@ -274,51 +171,18 @@ export function ColtRevolver3D() {
       reqId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
       const p = live.current;
-      const anim = animRef.current;
+      const state = stepColtLockwork({
+        cockingTravelPct: p.cockingTravelPct,
+        chamberIndex: p.chamberIndex,
+        claim1CapsPresent: p.claim1CapsPresent,
+        claim2PartitionsPresent: p.claim2PartitionsPresent,
+        claim5ShacklePresent: p.claim5ShacklePresent,
+        claim6LockingAndTurningPresent: p.claim6LockingAndTurningPresent,
+      });
 
-      // Smooth kinematic interpolation
-      if (anim.isFiringSeq) {
-        anim.firingProgress = Math.min(1.0, anim.firingProgress + 0.035);
-        // Hammer strikes forward rapidly from 45° to 0°
-        anim.visualCockingAngle = Math.max(0, 45 * (1.0 - anim.firingProgress * 2.5));
-      } else {
-        // Smoothly follow cocking slider
-        const diff = p.cockingAngleDeg - anim.visualCockingAngle;
-        anim.visualCockingAngle += diff * 0.22;
-
-        // Smoothly track target cylinder angle
-        const targetCyl = -((p.currentChamberIndex - 1) * 2 * Math.PI) / 5;
-        const targetWithCock = targetCyl - (anim.visualCockingAngle / 45) * ((2 * Math.PI) / 5);
-        const cylDiff = targetWithCock - anim.visualCylinderAngle;
-        anim.visualCylinderAngle += cylDiff * 0.2;
-      }
-
-      // Smoothly track rammer
-      const rammerDiff = p.rammerPositionPct - anim.visualRammerPct;
-      anim.visualRammerPct += rammerDiff * 0.2;
-
-      // Update Kinematics on Three.js Model
-      updateColtRevolverKinematics(
-        model,
-        anim.visualCockingAngle,
-        p.currentChamberIndex,
-        anim.visualRammerPct,
-        anim.isFiringSeq,
-        p.showLockworkCutaway,
-        anim.firingProgress,
-        anim.visualCylinderAngle,
-      );
-
-      // Recoil Damping
-      if (anim.isFiringSeq) {
-        model.group.rotation.z = anim.recoilZ;
-        model.group.position.x = anim.recoilX;
-        anim.recoilZ *= 0.88;
-        anim.recoilX *= 0.88;
-      } else {
-        model.group.rotation.z *= 0.82;
-        model.group.position.x *= 0.82;
-      }
+      // The model receives only the shared source-order state.  There is no
+      // recoil, muzzle flash, pressure, time law, or other ballistic proxy.
+      updateColtRevolverKinematics(model, state, p.showLockworkCutaway);
 
       pinGroup.visible = p.showCalloutPins;
 
@@ -338,7 +202,9 @@ export function ColtRevolver3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-clip border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <div className="sr-only">Samuel Colt Revolving Gun Paterson 3D</div>
+      <div className="sr-only" title={COLT_SOURCE_BOUNDARY}>
+        Samuel Colt revolving-gun source-ordered lockwork model; ballistics are not modeled.
+      </div>
       {/* 3D WebGL Canvas Viewport */}
       <div className="relative min-h-[420px] sm:min-h-[500px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -352,7 +218,7 @@ export function ColtRevolver3D() {
                 ["cylinder", "Cylinder"],
                 ["lockwork", "Action"],
                 ["sightline", "Sightline"],
-                ["loading_lever", "Loading Lever"],
+                ["loading_lever", "Under-barrel"],
                 ["top", "Top Plan"],
               ] as [ColtRevolverCameraPreset, string][]
             ).map(([preset, label]) => (
@@ -416,14 +282,6 @@ export function ColtRevolver3D() {
           >
             <RotateCcw className="w-4 h-4" />
           </button>
-          <button
-            type="button"
-            onClick={toggleEngine}
-            className="p-2 rounded-xl bg-white/85 dark:bg-ink-900/85 backdrop-blur-md text-ink-700 dark:text-parchment-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
         </div>
 
         {/* Live Telemetry Overlay (Bottom-Left in Canvas) */}
@@ -433,47 +291,49 @@ export function ColtRevolver3D() {
               <div className="flex items-center justify-between text-xs font-mono">
                 <span className="font-bold text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
                   <Target className="w-3.5 h-3.5" />
-                  Chamber #{currentChamberIndex} Ballistics
+                  Display Ward #{currentChamberIndex} Lockwork
                 </span>
                 <span
                   className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
                     isFullCock
                       ? "bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700"
-                      : cockingAngleDeg > 0
+                      : cockingTravelPct > 0
                         ? "bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700"
                         : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300"
                   }`}
                 >
                   {isFullCock
-                    ? "Locked (Ready)"
-                    : cockingAngleDeg > 0
-                      ? "Half-Cock"
-                      : "Hammer Down"}
+                    ? "Locked for Release"
+                    : cockingTravelPct > 0
+                      ? lockwork.stage.replaceAll("-", " ")
+                      : "Rest Locked"}
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs font-sans">
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Hoop Stress:</span>{" "}
-                  <span className="font-mono font-bold text-red-600 dark:text-red-400">
-                    {hoopStressMpa} MPa
+                  <span className="text-ink-600 dark:text-ink-400">Key r:</span>{" "}
+                  <span className="font-mono font-bold text-emerald-700 dark:text-emerald-300">
+                    {lockwork.keySeated ? "seated" : "withdrawn"}
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Velocity:</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">Ratchet:</span>{" "}
                   <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
-                    {muzzleVelocityMps} m/s
+                    {(lockwork.ratchetAdvanceFraction * 100).toFixed(0)}% step
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Energy:</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">Cylinder:</span>{" "}
                   <span className="font-mono font-bold text-amber-700 dark:text-amber-300">
-                    {muzzleEnergyJoules} J
+                    {lockwork.cylinderAndRatchetCoupled
+                      ? `${(lockwork.cylinderAdvanceFraction * 100).toFixed(0)}% step`
+                      : "uncoupled"}
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Powder:</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">Release:</span>{" "}
                   <span className="font-mono font-bold text-ink-800 dark:text-parchment-200">
-                    {powderGrains} gr FFFg
+                    {lockwork.safeToReleaseHammer ? "permitted" : "withheld"}
                   </span>
                 </div>
               </div>
@@ -481,43 +341,36 @@ export function ColtRevolver3D() {
           </div>
         )}
 
-        {/* Bottom SI Telemetry Chip Strip */}
+        {/* Bottom source-order telemetry strip */}
         <StudioKernelChips
           side="right"
           visible={showUiOverlay}
-          title="REVOLVING CYLINDER INTERNAL BALLISTICS"
+          title="SOURCE-ORDERED LOCKWORK"
           chips={[
             {
-              label: "v_muzzle",
-              value: `${muzzleVelocityMps.toFixed(0)}`,
-              unit: "m/s",
-              tone: "hot",
+              label: "cock",
+              value: `${cockingTravelPct.toFixed(0)}`,
+              unit: "% display",
             },
             {
-              label: "E_muzzle",
-              value: `${muzzleEnergyJoules.toFixed(0)}`,
-              unit: "J",
+              label: "key r",
+              value: lockwork.keySeated ? "seated" : "withdrawn",
             },
             {
-              label: "P_chamber",
-              value: `${chamberPressureMpa.toFixed(0)}`,
-              unit: "MPa",
+              label: "ratchet",
+              value: `${(lockwork.ratchetAdvanceFraction * 100).toFixed(0)}`,
+              unit: "% step",
             },
             {
-              label: "Hoop Stress",
-              value: `${hoopStressMpa.toFixed(0)}`,
-              unit: "MPa",
+              label: "cylinder",
+              value: `${(lockwork.cylinderAdvanceFraction * 100).toFixed(0)}`,
+              unit: "% step",
             },
             {
-              label: "Powder Charge",
-              value: `${powderGrains.toFixed(0)}`,
-              unit: "grains FFFg",
+              label: "release",
+              value: lockwork.safeToReleaseHammer ? "permitted" : "withheld",
             },
-            { label: "Cylinder", value: `Chamber ${currentChamberIndex} / 5` },
-            {
-              label: "Lockwork",
-              value: isFullCock ? "Locked Full Cock" : `${cockingAngleDeg.toFixed(0)}° Rotating`,
-            },
+            { label: "ward", value: `display ${currentChamberIndex}` },
           ]}
         />
       </div>
@@ -535,85 +388,51 @@ export function ColtRevolver3D() {
             className="flex-1 min-w-[140px] flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-98 text-white font-mono text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-[background-color,transform] cursor-pointer"
           >
             <Activity className="w-4 h-4" />
-            Cock Hammer (45°)
+            Cock Hammer (Display Pose)
           </button>
 
           <button
             type="button"
-            onClick={handlePullTrigger}
-            disabled={!isFullCock || isFiring}
+            onClick={handleReleaseHammer}
+            disabled={!isFullCock}
             className={`flex-1 min-w-[160px] flex items-center justify-center gap-2 px-4 py-2.5 font-mono text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-[background-color,color,border-color,transform] cursor-pointer ${
-              isFullCock && !isFiring
-                ? "bg-red-600 hover:bg-red-700 active:scale-98 text-white ring-2 ring-red-400/50 animate-pulse"
+              isFullCock
+                ? "bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white ring-2 ring-emerald-400/50"
                 : "bg-parchment-300 dark:bg-ink-800 text-ink-400 dark:text-ink-600 cursor-not-allowed border border-parchment-400 dark:border-ink-700"
             }`}
           >
-            <Flame className="w-4 h-4" />
-            {isFiring ? "Discharging..." : "Pull Trigger (Fire)"}
-          </button>
-
-          <button
-            type="button"
-            onClick={handleStepChamber}
-            className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 font-mono text-xs sm:text-sm font-medium rounded-xl border border-parchment-300 dark:border-ink-700 transition-colors cursor-pointer"
-            title="Step Cylinder 72° to Next Chamber"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            Rotate Cylinder
-          </button>
-
-          <button
-            type="button"
-            onClick={handleRamChamber}
-            className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 font-mono text-xs sm:text-sm font-medium rounded-xl border border-parchment-300 dark:border-ink-700 transition-colors cursor-pointer"
-            title="Toggle Creeping Loading Lever Rammer"
-          >
             <Target className="w-3.5 h-3.5" />
-            Ram Chamber
+            Release Hammer (No Ballistics Model)
           </button>
         </div>
 
         {/* Sensitivity Sliders Grid */}
-        <div className="grid grid-cols-1 gap-4 pt-1 max-sm:[&_input[type=range]]:scroll-mt-72 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 pt-1 max-sm:[&_input[type=range]]:scroll-mt-72 md:grid-cols-2">
           <SensitivitySlider
-            id="us-x9430-colt-revolver-chamberpressure"
+            id="us-x9430-colt-revolver-cockingtravel"
             patentId="us-x9430-colt-revolver"
-            paramKey="chamberPressure"
-            label="Chamber Pressure / Powder"
-            value={chamberPressureMpa}
-            min={40}
-            max={140}
-            step={5}
-            unit="MPa"
-            onChange={(val) => updateParam("chamberPressure", val)}
-            allParams={params}
-          />
-
-          <SensitivitySlider
-            id="us-x9430-colt-revolver-cockingangle"
-            patentId="us-x9430-colt-revolver"
-            paramKey="cockingAngle"
-            label="Hammer Cocking Angle"
-            value={cockingAngleDeg}
-            min={0}
-            max={45}
-            step={1}
-            unit="deg"
-            onChange={(val) => updateParam("cockingAngle", val)}
-            allParams={params}
-          />
-
-          <SensitivitySlider
-            id="us-x9430-colt-revolver-rammerposition"
-            patentId="us-x9430-colt-revolver"
-            paramKey="rammerPosition"
-            label="Loading Lever Rammer"
-            value={rammerPositionPct}
+            paramKey="cockingTravelPct"
+            label="Normalized Cocking Travel"
+            value={cockingTravelPct}
             min={0}
             max={100}
-            step={2}
-            unit="%"
-            onChange={(val) => updateParam("rammerPosition", val)}
+            step={1}
+            unit="% display"
+            onChange={(val) => updateParam("cockingTravelPct", val)}
+            allParams={params}
+          />
+
+          <SensitivitySlider
+            id="us-x9430-colt-revolver-chamberindex"
+            patentId="us-x9430-colt-revolver"
+            paramKey="chamberIndex"
+            label="Starting Display Ward"
+            value={currentChamberIndex}
+            min={1}
+            max={5}
+            step={1}
+            unit="display index"
+            onChange={(val) => updateParam("chamberIndex", val)}
             allParams={params}
           />
         </div>
@@ -623,28 +442,19 @@ export function ColtRevolver3D() {
           patentId="us-x9430-colt-revolver"
           claimStates={claimStates}
           onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0)
           }
           className="mt-2 max-sm:[&_button]:scroll-mt-72 max-sm:[&_button]:scroll-mb-[calc(4rem+env(safe-area-inset-top))]"
-        />
-
-        {/* Port-Hamiltonian Dirac Energy Strip */}
-        <PortHamiltonianEnergyStrip
-          patentId="us-x9430-colt-revolver"
-          params={params}
-          className="mt-3"
         />
 
         {/* Footer Attribution Banner */}
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] font-sans text-ink-600 dark:text-ink-400 border-t border-parchment-200 dark:border-ink-800/80">
           <span className="flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-            <span>
-              Samuel Colt (US X9430 · 1836) — 5-Chamber Indexing Percussion Revolver Mechanism
-            </span>
+            <Layers className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+            <span>Samuel Colt (US X9430 · 1836) — locking-and-turning cylinder mechanism</span>
           </span>
           <span className="font-mono text-[10px] text-amber-700 dark:text-amber-400">
-            FrankenSim Solid Mechanics Core
+            Source-bounded host topology · no ballistic telemetry
           </span>
         </div>
       </div>

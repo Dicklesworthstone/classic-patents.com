@@ -72,7 +72,7 @@ describe("US 586,193 Marconi Radio manual archival edition", () => {
     for (const term of terms) expect(term.definition.length).toBeGreaterThan(80);
   });
 
-  test("uses the signature-free p3 crop for Figures 9 through 11", () => {
+  test("uses the complete primary p3 drawing sheet for Figures 9 through 11", () => {
     const figurePreviews = marconiRadioArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
         ? block.inlines.flatMap((inline) =>
@@ -83,21 +83,21 @@ describe("US 586,193 Marconi Radio manual archival edition", () => {
         : [],
     );
     const preview = figurePreviews.find((candidate) =>
-      candidate.src.includes("figs-9-to-11-source-crop-v2.png"),
+      candidate.src.includes("source-sheet-3-v1.png"),
     );
-    if (!preview) throw new Error("US 586,193 is missing the Figures 9-11 v2 source crop.");
+    if (!preview) throw new Error("US 586,193 is missing complete drawing sheet 3.");
 
     expect(preview).toEqual({
-      src: "/patents/figures/us-586193-marconi-radio/figs-9-to-11-source-crop-v2.png",
-      alt: "Figures 9 through 11 from US 586,193: long-distance, earth-or-water transmission arrangements.",
-      width: 1520,
-      height: 1850,
+      src: "/patents/figures/us-586193-marconi-radio/source-sheet-3-v1.png",
+      alt: "Complete primary drawing sheet 3 of 3 from US 586,193: Figures 9 through 11.",
+      width: 2320,
+      height: 3408,
     });
 
     const png = readFileSync(resolve(process.cwd(), "public", preview.src.slice(1)));
     expect(png.subarray(1, 4).toString("ascii")).toBe("PNG");
-    expect(png.readUInt32BE(16)).toBe(1520);
-    expect(png.readUInt32BE(20)).toBe(1850);
+    expect(png.readUInt32BE(16)).toBe(2320);
+    expect(png.readUInt32BE(20)).toBe(3408);
   });
 
   test("pairs every prose paragraph with an authored parallel reading", () => {

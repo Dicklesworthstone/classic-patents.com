@@ -29,6 +29,7 @@ bun.lockb
 
 # OS
 .DS_Store
+._*
 *.pem
 /-.png
 
@@ -66,6 +67,7 @@ artifacts/nobel-maxim-live-vision/
 artifacts/threejs-physics-audit/
 artifacts/deploy-sweeps/
 artifacts/test-tmp/
+artifacts/redundant-untracked/
 artifacts/*.md
 artifacts/*.json
 tmp

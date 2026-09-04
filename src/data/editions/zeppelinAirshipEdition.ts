@@ -12,26 +12,24 @@ const claim = (number: number, value: string) => ({
   inlines: text(value),
 });
 
-const crop = (number: number, width: number, height: number) => ({
-  src: `/patents/figures/us-621195-zeppelin-airship/fig-${number}-source-crop-v${
-    number === 7 ? 2 : 1
-  }.png`,
-  alt: `Source-facsimile crop of Fig. ${number} from US 621,195.`,
-  width,
-  height,
+const sourceSheet = (sheet: number, figures: string) => ({
+  src: `/patents/figures/us-621195-zeppelin-airship/source-sheet-${sheet}-v1.png`,
+  alt: `Complete primary drawing sheet ${sheet} of 4 from US 621,195: ${figures}.`,
+  width: 2320,
+  height: 3408,
 });
 
 const FIGURES = {
-  "Fig. 1": [crop(1, 1856, 2385)],
-  "Fig. 2": [crop(2, 1856, 2385)],
-  "Fig. 3": [crop(3, 1856, 2385)],
-  "Fig. 4": [crop(4, 800, 700)],
-  "Fig. 5": [crop(5, 800, 400)],
-  "Fig. 6": [crop(6, 800, 720)],
-  "Fig. 7": [crop(7, 720, 480)],
-  "Fig. 8": [crop(8, 460, 720)],
-  "Fig. 9": [crop(9, 580, 1050)],
-  "Fig. 10": [crop(10, 500, 1840)],
+  "Fig. 1": [sourceSheet(1, "Figures 1 and 2")],
+  "Fig. 2": [sourceSheet(1, "Figures 1 and 2")],
+  "Fig. 3": [sourceSheet(2, "Figures 3 through 5")],
+  "Fig. 4": [sourceSheet(2, "Figures 3 through 5")],
+  "Fig. 5": [sourceSheet(2, "Figures 3 through 5")],
+  "Fig. 6": [sourceSheet(3, "Figures 6 through 8")],
+  "Fig. 7": [sourceSheet(3, "Figures 6 through 8")],
+  "Fig. 8": [sourceSheet(3, "Figures 6 through 8")],
+  "Fig. 9": [sourceSheet(4, "Figures 9 and 10")],
+  "Fig. 10": [sourceSheet(4, "Figures 9 and 10")],
 } as const;
 
 const figure = (
@@ -42,7 +40,7 @@ const figure = (
   text: sourceText,
   href: "#",
   referenceType: "figure",
-  label: `Open the source-facsimile crop for ${label} in US 621,195`,
+  label: `Open the complete primary source sheet for ${label} in US 621,195`,
   figurePreviews: FIGURES[label],
 });
 

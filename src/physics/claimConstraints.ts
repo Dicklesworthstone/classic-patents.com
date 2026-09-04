@@ -650,8 +650,8 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       activeDescription:
         "Claim 1 places percussion caps directly on nipples at the rear end of the rotating cylinder, aligning cap strike with the axial line of fire.",
       invertedDescription:
-        "Without end-mounted percussion caps, external priming troughs or lateral nipples cause ignition hang-fires and off-axis hammer jars deviating from the line of sight.",
-      failureModeName: "Off-Axis Ignition Jar & Priming Failure",
+        "Source-bounded comparison: withhold the end-mounted caps; no substitute ignition layout or quantitative firing consequence is inferred.",
+      failureModeName: "Claim 1 End-Mounted Caps Withheld",
       historicalPriorArt:
         "Flintlock and external primer repeaters suffered slow ignition, priming loss from moisture, and lateral hammer strike that threw off aim.",
     },
@@ -662,10 +662,22 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       activeDescription:
         "Claim 2 forms solid partition walls between adjoining percussion caps at the cylinder end to isolate exploding primer flash.",
       invertedDescription:
-        "Unshielded adjacent percussion caps allow burning primer gas to flash over to adjoining nipples, causing simultaneous catastrophic multi-cylinder chain fire.",
-      failureModeName: "Catastrophic Multi-Chamber Chain Fire",
+        "Source-bounded comparison: remove the partitions that the specification says prevent fire from communicating between adjoining caps; no event probability or damage magnitude is invented.",
+      failureModeName: "Claim 2 Cap Partitions Withheld",
       historicalPriorArt:
         "Early multi-chamber arms lacked physical barriers between percussion nipples, leading to chain fires that ruptured cylinders and injured hands.",
+    },
+    {
+      claimNumber: 5,
+      patentId: "us-x9430-colt-revolver",
+      claimTitle: "Shackle Connection Between Cylinder and Ratchet",
+      activeDescription:
+        "Claim 5 connects the cylinder to the ratchet through the shackle, so the lifter-driven ratchet step carries the cylinder with it.",
+      invertedDescription:
+        "With the shackle connection withheld, the lifter can advance the ratchet display coordinate but the cylinder is not attributed that motion.",
+      failureModeName: "Claim 5 Ratchet-to-Cylinder Coupling Withheld",
+      historicalPriorArt:
+        "The grant presents the shackle as the coupling between its ratchet and revolving cylinder; it supplies no measured comparison for an uncoupled state.",
     },
     {
       claimNumber: 6,
@@ -674,8 +686,8 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       activeDescription:
         "Claim 6 mechanically couples hammer cocking to cylinder rotation via the pawl-ratchet shackle and locks the cylinder in battery prior to discharge.",
       invertedDescription:
-        "Manual cylinder rotation without positive mechanical locking causes chamber-to-barrel misalignment, lead shaving, and dangerous pressure blowback.",
-      failureModeName: "Manual Cylinder Misalignment & Lead Shaving",
+        "With the locking-and-turning principle withheld, the exhibit cannot establish a seated key in the succeeding ward and therefore refuses hammer release.",
+      failureModeName: "Claim 6 Locking-and-Turning Sequence Withheld",
       historicalPriorArt:
         "Collier and Pepperbox arms required manual hand rotation, leading to frequent off-center strikes and misaligned bore discharge.",
     },
@@ -1907,6 +1919,30 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "SOURCE-BOUND REFUSAL: Tesla Claim 1 requires the stated motor/generator circuit correspondence and progressive pole shift; this inversion reports only that apparatus condition as absent.";
+      }
+      break;
+    }
+
+    case "us-x9430-colt-revolver": {
+      modified.claim1CapsPresent = (claimStates[1] ?? true) ? 1 : 0;
+      modified.claim2PartitionsPresent = (claimStates[2] ?? true) ? 1 : 0;
+      modified.claim5ShacklePresent = (claimStates[5] ?? true) ? 1 : 0;
+      modified.claim6LockingAndTurningPresent = (claimStates[6] ?? true) ? 1 : 0;
+      if (!(claimStates[1] ?? true)) {
+        activeFailures.push("Claim 1 end-mounted caps withheld");
+      }
+      if (!(claimStates[2] ?? true)) {
+        activeFailures.push("Claim 2 partitions between adjoining caps withheld");
+      }
+      if (!(claimStates[5] ?? true)) {
+        activeFailures.push("Claim 5 shackle no longer couples ratchet to cylinder");
+      }
+      if (!(claimStates[6] ?? true)) {
+        activeFailures.push("Claim 6 locking-and-turning sequence withheld");
+      }
+      if (activeFailures.length > 0) {
+        refusalWarning =
+          "SOURCE-BOUND CLAIM PROBE: selected printed structures are visibly withheld; no ballistic, force, stress, timing, or failure magnitude is inferred.";
       }
       break;
     }

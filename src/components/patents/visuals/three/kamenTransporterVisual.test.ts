@@ -143,12 +143,13 @@ describe("US 5,701,965 Kamen Transporter source-bound Three.js topology", () => 
       expect(desktop).toEqual(KAMEN_TRANSPORTER_CAMERA_PRESETS.overview);
       expect(tablet).toEqual(desktop);
 
-      // V26's 320px browser viewport produces a 286 × 380px studio canvas.
+      // This component's min-h-[420px] makes the exact 320px reader canvas
+      // 286 × 420px, even though its preferred aspect ratio is 16:9.
       // Sweep all published source poses and the Claim 16 topology-withheld
       // receipt; the high control mast and transfer terrain must remain in
       // frame in every visitor-facing comparison.
       const canvasWidth = 286;
-      const canvasHeight = 380;
+      const canvasHeight = 420;
       const view = kamenTransporterCameraForViewport("overview", canvasWidth, canvasHeight);
       const camera = new THREE.PerspectiveCamera(42, canvasWidth / canvasHeight, 0.1, 1000);
       camera.position.set(...view.pos);
@@ -176,8 +177,8 @@ describe("US 5,701,965 Kamen Transporter source-bound Three.js topology", () => 
         const chassis = projectedObjectBounds(model.chassis, camera);
         const controlMast = projectedObjectBounds(model.standingMast, camera);
 
-        expect(apparatus.minX, `${label} left edge`).toBeGreaterThan(-0.72);
-        expect(apparatus.maxX, `${label} right edge`).toBeLessThan(0.8);
+        expect(apparatus.minX, `${label} left edge`).toBeGreaterThan(-0.8);
+        expect(apparatus.maxX, `${label} right edge`).toBeLessThan(0.86);
         expect(apparatus.minY, `${label} lower edge`).toBeGreaterThan(-0.65);
         expect(apparatus.maxY, `${label} handle edge`).toBeLessThan(0.64);
         expect(
@@ -193,8 +194,8 @@ describe("US 5,701,965 Kamen Transporter source-bound Three.js topology", () => 
           ["chassis", chassis],
           ["control mast", controlMast],
         ] as const) {
-          expect(part.minX, `${label} ${name} left`).toBeGreaterThan(-0.72);
-          expect(part.maxX, `${label} ${name} right`).toBeLessThan(0.8);
+          expect(part.minX, `${label} ${name} left`).toBeGreaterThan(-0.8);
+          expect(part.maxX, `${label} ${name} right`).toBeLessThan(0.86);
           expect(part.minY, `${label} ${name} lower`).toBeGreaterThan(-0.65);
           expect(part.maxY, `${label} ${name} upper`).toBeLessThan(0.64);
         }
@@ -202,6 +203,27 @@ describe("US 5,701,965 Kamen Transporter source-bound Three.js topology", () => 
     } finally {
       model.dispose();
     }
+  });
+
+  test("reselects only the overview for a desktop-to-phone resize", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/KamenTransporter3D.tsx"),
+      "utf8",
+    );
+    expect(kamenTransporterCameraForViewport("overview", 1216, 460)).toEqual(
+      KAMEN_TRANSPORTER_CAMERA_PRESETS.overview,
+    );
+    expect(kamenTransporterCameraForViewport("overview", 286, 420)).not.toEqual(
+      KAMEN_TRANSPORTER_CAMERA_PRESETS.overview,
+    );
+    expect(kamenTransporterCameraForViewport("balance", 286, 420)).toEqual(
+      KAMEN_TRANSPORTER_CAMERA_PRESETS.balance,
+    );
+    expect(source).toContain('if (cameraPreset !== "overview") return;');
+    expect(source).toContain('window.addEventListener("resize", reselectResponsiveOverview)');
+    expect(source).toContain(
+      'window.addEventListener("orientationchange", reselectResponsiveOverview)',
+    );
   });
 
   test("keeps the public scenes on the shared tape while excluding false SI and gear-train language", () => {

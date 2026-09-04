@@ -37,7 +37,7 @@ export const RILLIEUX_EVAPORATOR_CAMERA_PRESETS: Record<
   },
 };
 
-const COMPACT_STUDIO_MAX_WIDTH_PX = 640;
+const COMPACT_PHONE_MAX_WIDTH_PX = 480;
 
 // A 320 px phone renders this studio in a 286 x 380 px canvas. The original
 // overview projects the three-effect train from -1.97 to +1.97 NDC there, so
@@ -57,6 +57,10 @@ export const RILLIEUX_COMPACT_OVERVIEW_SAFE_ZONE = {
   minimumVaporLinkWidthPx: 64,
 } as const;
 
+function isPortraitPhoneViewport(viewportWidth: number, viewportHeight: number) {
+  return viewportWidth <= COMPACT_PHONE_MAX_WIDTH_PX && viewportHeight > viewportWidth;
+}
+
 function pullCameraBack(
   view: RillieuxEvaporatorCameraView,
   multiplier: number,
@@ -75,9 +79,10 @@ function pullCameraBack(
 export function rillieuxEvaporatorCameraForViewport(
   preset: RillieuxEvaporatorCameraPreset,
   viewportWidth: number,
+  viewportHeight: number,
 ): RillieuxEvaporatorCameraView {
   const view = RILLIEUX_EVAPORATOR_CAMERA_PRESETS[preset];
-  return preset === "overview" && viewportWidth < COMPACT_STUDIO_MAX_WIDTH_PX
+  return preset === "overview" && isPortraitPhoneViewport(viewportWidth, viewportHeight)
     ? pullCameraBack(view, COMPACT_OVERVIEW_DISTANCE_MULTIPLIER)
     : view;
 }

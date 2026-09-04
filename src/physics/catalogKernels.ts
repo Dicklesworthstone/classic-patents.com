@@ -3,6 +3,7 @@
  * but previously missing from engine.ts. Badge and 3D must call these.
  */
 
+import { type ColtRuntimeControlInput, stepColtLockwork } from "./coltRevolverKernel";
 import {
   bardeenPointPotential,
   edisonFilamentHeat,
@@ -2814,76 +2815,16 @@ export function marconiMastHeightFromHz(fundamentalHz: number): number {
   return Math.round(3e8 / (4 * Math.max(1, fundamentalHz)));
 }
 
-export function stepColtRevolver(params: {
-  chamberPressureMpa?: number;
-  cockingAngleDeg?: number;
-}) {
-  const pMpa = params.chamberPressureMpa ?? 85;
-  const cockDeg = params.cockingAngleDeg ?? 45;
-  const muzzleVelocityMps = Math.round(180 + Math.sqrt(pMpa) * 13.5);
-  return {
-    hoopStressMpa: Number(((pMpa * 4.5) / 3.8).toFixed(1)),
-    indexAngleDeg: Number(((cockDeg / 45) * 72).toFixed(1)),
-    isLocked: cockDeg >= 44,
-    schematicBoltRetractY: cockDeg > 2 && cockDeg < 44 ? 8 : 0,
-    muzzleVelocityMps,
-    muzzleEnergyJoules: Math.round(0.5 * 0.0052 * muzzleVelocityMps ** 2),
-    powderGrains: Math.round((pMpa - 40) / 1.5 + 15),
-    cycleDisplayMs: 800,
-    chamberCount: 5,
-    boltRetractY: 12,
-    boltHomeY: 0,
-    lockReleaseDeg: 2,
-    recoilKick: Number((0.05 + (muzzleVelocityMps / 400) * 0.1).toFixed(4)),
-    recoilKickX: Number(((0.05 + (muzzleVelocityMps / 400) * 0.1) * 0.8).toFixed(4)),
-    schematicArborX1: 80,
-    schematicArborX2: 340,
-    schematicArborY: 110,
-    schematicBarrelX: 210,
-    schematicBarrelY: 68,
-    schematicBarrelW: 150,
-    schematicBarrelH: 28,
-    schematicBoreY: 82,
-    schematicBoreX2: 360,
-    schematicLugD: "M 210 96 L 250 96 L 250 128 L 210 128 Z",
-    schematicLugPinX: 224,
-    schematicLugPinY: 104,
-    schematicLugPinW: 12,
-    schematicLugPinH: 16,
-    schematicFrameD: "M 50 50 L 125 50 L 125 155 L 85 155 L 60 190 L 30 170 L 45 110 Z",
-    schematicCylinderX: 125,
-    schematicCylinderY: 60,
-    schematicCylinderW: 85,
-    schematicCylinderH: 100,
-    schematicTopBoreY: 74,
-    schematicBoreW: 80,
-    schematicBoreH: 16,
-    schematicBottomBoreY: 130,
-    schematicBoreMouthX: 195,
-    schematicBoreMouthR: 5,
-    schematicFlashX: 120,
-    schematicFlashY0: 65,
-    schematicFlashY1: 100,
-    schematicHammerPivotX: 80,
-    schematicHammerPivotY: 110,
-    schematicHammerD: "M 0 0 L -15 -35 L 6 -62 L 20 -58 L 10 -30 Z",
-    schematicPawlX1: 8,
-    schematicPawlY1: -20,
-    schematicPawlX2: 48,
-    schematicPawlY2: -16,
-    schematicRatchetR: 10,
-    schematicBoltX: 160,
-    schematicBoltY: 158,
-    schematicBoltW: 12,
-    schematicBoltH: 14,
-    schematicTriggerX: 95,
-    schematicTriggerW: 6,
-    schematicTriggerCockY: 155,
-    schematicTriggerRestY: 145,
-    schematicTriggerCockH: 20,
-    schematicTriggerRestH: 8,
-  };
+/**
+ * Compatibility export for the shared engine and schematic. The historical
+ * grant supports only this source-ordered lockwork state—not ballistics,
+ * material stress, recoil, or a timed firing cycle.
+ */
+export function stepColtRevolver(params: ColtRuntimeControlInput) {
+  return stepColtLockwork(params);
 }
+
+export { coltNextChamber } from "./coltRevolverKernel";
 
 export const LAMARR_RECORD_ROWS = ["A", "B", "C", "D", "E", "F", "G"] as const;
 
@@ -2917,13 +2858,6 @@ export function stepLamarrRecordControl(params: {
     rudderStep: (params.rudderStep ?? 0) + (commandAccepted ? commandDelta : 0),
     recordIndexAngleRad: (recordPosition * Math.PI * 2) / LAMARR_RECORD_ROWS.length,
   };
-}
-
-/** 1-based cylinder index after one ratchet step. Shared by 2D. */
-export function coltNextChamber(prev: number, chamberCount = 5) {
-  const count = Math.max(1, Math.floor(chamberCount));
-  const current = Math.max(1, Math.floor(prev));
-  return (current % count) + 1;
 }
 
 /** Folding-trigger seat on the schematic. Shared by the schematic. */

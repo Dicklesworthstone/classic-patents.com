@@ -11,6 +11,7 @@
  */
 
 import { stepLandPolaroidInstantFilm } from "./catalogKernels";
+import { stepColtLockwork } from "./coltRevolverKernel";
 import { readCrumpFdmControls } from "./crumpFdmKernel";
 import { fermiKeff } from "./fermiKinetics";
 import {
@@ -734,29 +735,19 @@ export function computeParameterSensitivity(
     }
 
     case "us-x9430-colt-revolver": {
-      if (
-        controlKey === "chamberPressure" ||
-        controlKey === "chamberPressureMpa" ||
-        controlKey === "pressure"
-      ) {
-        const p = Number(params.chamberPressure ?? params.chamberPressureMpa ?? 85.0);
-        const dv_dp = 13.5 / (2 * Math.sqrt(Math.max(1, p)));
+      if (controlKey === "cockingTravelPct") {
+        const travel = Number(params.cockingTravelPct ?? 0);
+        const lower = stepColtLockwork({ ...params, cockingTravelPct: travel - 0.5 });
+        const upper = stepColtLockwork({ ...params, cockingTravelPct: travel + 0.5 });
         return {
-          metricName: "Muzzle Velocity Sensitivity",
-          derivativeSymbol: "∂v_muzzle / ∂P_chamber",
-          derivativeValue: Number(dv_dp.toFixed(2)),
-          derivativeUnit: "(m/s) / MPa",
+          metricName: "Normalized Cylinder Advance",
+          derivativeSymbol: "∂q_{cylinder} / ∂u_{cock}",
+          derivativeValue: Number(
+            (upper.cylinderAdvanceFraction - lower.cylinderAdvanceFraction).toFixed(3),
+          ),
+          derivativeUnit: "display-step / % display",
           interpretation:
-            "Gas expansion ballistic velocity gain per unit increase in peak chamber deflagration pressure.",
-        };
-      }
-      if (controlKey === "cockingAngle" || controlKey === "cockingAngleDeg") {
-        return {
-          metricName: "Cylinder Indexing Advance",
-          derivativeSymbol: "∂θ_cyl / ∂θ_cock",
-          derivativeValue: 1.6,
-          derivativeUnit: "deg / deg",
-          interpretation: "Linear 72° chamber indexing ratio per 45° of single-action hammer draw.",
+            "Central difference of the shared source-order display coordinate; it is not a physical angle, time law, torque, or ballistic sensitivity.",
         };
       }
       break;

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import { dieselCameraPresetForViewport } from "./dieselEngineCamera";
 import { buildDieselEngineModel, updateDieselEngineKinematics } from "./dieselEngineModel";
 
@@ -61,5 +62,43 @@ describe("US 542,846 Diesel source-bounded visual", () => {
     expect(nodes.cylinderJacketCutaway.visible).toBe(false);
     expect(nodes.cylinderHeadSolid.visible).toBe(true);
     expect(nodes.cylinderHeadCutaway.visible).toBe(false);
+  });
+
+  test("keeps the wrist pin, connecting rod, and crank pin closed through a full revolution", () => {
+    const { root, nodes } = buildDieselEngineModel();
+
+    for (const phase of [0, Math.PI / 3, Math.PI / 2, Math.PI, (3 * Math.PI) / 2]) {
+      updateDieselEngineKinematics(nodes, phase, false);
+      root.updateMatrixWorld(true);
+
+      const wrist = nodes.wristPin.getWorldPosition(new THREE.Vector3());
+      const crank = nodes.crankPin.getWorldPosition(new THREE.Vector3());
+      const center = nodes.connectingRod.getWorldPosition(new THREE.Vector3());
+      const halfLength = (1.2 * nodes.connectingRod.scale.x) / 2;
+      const rodDirection = new THREE.Vector3(1, 0, 0).applyQuaternion(
+        nodes.connectingRod.getWorldQuaternion(new THREE.Quaternion()),
+      );
+      const endpointA = center.clone().addScaledVector(rodDirection, -halfLength);
+      const endpointB = center.clone().addScaledVector(rodDirection, halfLength);
+
+      expect(wrist.distanceTo(crank)).toBeCloseTo(1.2, 6);
+      expect(Math.min(endpointA.distanceTo(wrist), endpointB.distanceTo(wrist))).toBeLessThan(1e-6);
+      expect(Math.min(endpointA.distanceTo(crank), endpointB.distanceTo(crank))).toBeLessThan(1e-6);
+    }
+  });
+
+  test("spins the flywheel in one fixed plane around the transverse shaft", () => {
+    const { root, nodes } = buildDieselEngineModel();
+
+    for (const phase of [0, Math.PI / 2, Math.PI]) {
+      updateDieselEngineKinematics(nodes, phase, false);
+      root.updateMatrixWorld(true);
+      const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(
+        nodes.flywheelRim.getWorldQuaternion(new THREE.Quaternion()),
+      );
+      expect(normal.x).toBeCloseTo(0, 6);
+      expect(normal.y).toBeCloseTo(0, 6);
+      expect(Math.abs(normal.z)).toBeCloseTo(1, 6);
+    }
   });
 });

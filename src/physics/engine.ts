@@ -55,6 +55,7 @@ import {
   type ClavelDeltaRobotTopologyState,
   stepClavelDeltaRobotTopology as stepClavelDeltaRobotTopologyKernel,
 } from "./clavelDeltaRobotKernel";
+import type { ColtRuntimeControlInput } from "./coltRevolverKernel";
 import { stepCrumpFdmSi } from "./crumpFdmKernel";
 import { tryDaimlerMarineWasmStep } from "./daimlerWasm";
 import {
@@ -809,29 +810,11 @@ export const FrankenSimEngine = {
   },
 
   /**
-   * Samuel Colt Revolving Gun (US X9430)
-   * Single-Action Pawl-Ratchet Indexing & Hoop Stress Mechanics
+   * Samuel Colt Revolving Gun (US X9430): source-ordered lockwork only.
+   * The grant contains no calibrated ballistic or solid-mechanics inputs.
    */
-  stepColtRevolver(params: { chamberPressureMpa?: number; cockingAngleDeg?: number }) {
-    const cat = catalogStepColt(params);
-    return {
-      chamberPressureMpa: params.chamberPressureMpa ?? 85,
-      cockingAngleDeg: params.cockingAngleDeg ?? 45,
-      hoopStressMpa: cat.hoopStressMpa,
-      indexAngleDeg: cat.indexAngleDeg,
-      isLocked: cat.isLocked,
-      muzzleVelocityMps: cat.muzzleVelocityMps,
-      muzzleEnergyJoules: cat.muzzleEnergyJoules,
-      powderGrains: cat.powderGrains,
-      cycleDisplayMs: cat.cycleDisplayMs,
-      recoilKick: cat.recoilKick,
-      recoilKickX: cat.recoilKickX,
-      schematicBoltRetractY: cat.schematicBoltRetractY,
-      chamberCount: cat.chamberCount,
-      boltRetractY: cat.boltRetractY,
-      boltHomeY: cat.boltHomeY,
-      lockReleaseDeg: cat.lockReleaseDeg,
-    };
+  stepColtRevolver(params: ColtRuntimeControlInput) {
+    return catalogStepColt(params);
   },
 
   /**

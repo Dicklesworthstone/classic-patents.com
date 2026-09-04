@@ -15,6 +15,8 @@ import {
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 const COMPACT_AUDIT_VIEWPORT = { width: 286, height: 380 };
+const LANDSCAPE_AUDIT_VIEWPORT = { width: 639, height: 380 };
+const TABLET_AUDIT_VIEWPORT = { width: 718, height: 1024 };
 
 function projectedObjectBounds(root: THREE.Object3D, camera: THREE.PerspectiveCamera) {
   const bounds = {
@@ -119,12 +121,23 @@ describe("US 157,124 Joseph Glidden Twisted Wire Barbed Fence visual & kinematic
 
   test("keeps both source-described working ends inside the compact overview through animation", () => {
     const { width, height } = COMPACT_AUDIT_VIEWPORT;
-    const compactIso = gliddenBarbedWireCameraForViewport("iso", width);
+    const compactIso = gliddenBarbedWireCameraForViewport("iso", width, height);
 
     expect(compactIso).toEqual({ pos: [15.675, 10.725, 17.325], target: [0, 0, 0] });
-    expect(gliddenBarbedWireCameraForViewport("iso", 718)).toEqual(
-      GLIDDEN_BARBED_WIRE_CAMERA_PRESETS.iso,
-    );
+    expect(
+      gliddenBarbedWireCameraForViewport(
+        "iso",
+        LANDSCAPE_AUDIT_VIEWPORT.width,
+        LANDSCAPE_AUDIT_VIEWPORT.height,
+      ),
+    ).toEqual(GLIDDEN_BARBED_WIRE_CAMERA_PRESETS.iso);
+    expect(
+      gliddenBarbedWireCameraForViewport(
+        "iso",
+        TABLET_AUDIT_VIEWPORT.width,
+        TABLET_AUDIT_VIEWPORT.height,
+      ),
+    ).toEqual(GLIDDEN_BARBED_WIRE_CAMERA_PRESETS.iso);
     for (const preset of [
       "barb_lock",
       "twisting_helix",
@@ -132,7 +145,7 @@ describe("US 157,124 Joseph Glidden Twisted Wire Barbed Fence visual & kinematic
       "feed_spools",
       "top",
     ] as const) {
-      expect(gliddenBarbedWireCameraForViewport(preset, width)).toEqual(
+      expect(gliddenBarbedWireCameraForViewport(preset, width, height)).toEqual(
         GLIDDEN_BARBED_WIRE_CAMERA_PRESETS[preset],
       );
     }

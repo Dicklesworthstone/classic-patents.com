@@ -23,6 +23,26 @@ import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSi
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { useLiveSimParams } from "./three/useLiveSimParams";
 
+function KamenTransporterHeader() {
+  return (
+    <div className="flex w-full flex-col justify-between gap-4 border-b border-parchment-200 pb-4 sm:flex-row sm:items-center dark:border-ink-800">
+      <div>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full border border-cyan-300 bg-cyan-100 px-2.5 py-0.5 text-xs font-bold text-cyan-800 dark:border-cyan-700 dark:bg-cyan-900/60 dark:text-cyan-200">
+            US 5,701,965
+          </span>
+          <span className="font-mono text-xs font-medium text-ink-500 dark:text-ink-400">
+            DEAN L. KAMEN (1997)
+          </span>
+        </div>
+        <h3 className="mt-1 font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+          Source-Dimensioned Balance, Transfer &amp; Climb Contact Geometry
+        </h3>
+      </div>
+    </div>
+  );
+}
+
 export function KamenTransporterSim({
   patentId = "us-5701965-kamen-transporter",
 }: {
@@ -108,21 +128,7 @@ export function KamenTransporterSim({
       data-kamen-stair-rise-m={KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairRiseM}
       data-kamen-stair-tread-m={KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairTreadM}
     >
-      <div className="flex w-full flex-col justify-between gap-4 border-b border-parchment-200 pb-4 sm:flex-row sm:items-center dark:border-ink-800">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="rounded-full border border-cyan-300 bg-cyan-100 px-2.5 py-0.5 text-xs font-bold text-cyan-800 dark:border-cyan-700 dark:bg-cyan-900/60 dark:text-cyan-200">
-              US 5,701,965
-            </span>
-            <span className="font-mono text-xs font-medium text-ink-500 dark:text-ink-400">
-              DEAN L. KAMEN (1997)
-            </span>
-          </div>
-          <h3 className="mt-1 font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Source-Dimensioned Balance, Transfer &amp; Climb Contact Geometry
-          </h3>
-        </div>
-      </div>
+      <KamenTransporterHeader />
 
       <div className="relative aspect-[4/3] w-full max-w-[640px] select-none overflow-hidden rounded-xl border border-parchment-300 bg-parchment-100 dark:border-ink-800 dark:bg-ink-900">
         <svg viewBox={`0 0 ${width} ${height}`} className="h-full w-full" role="img">

@@ -144,6 +144,26 @@ export default function KamenTransporter3D({
     };
   }, []);
 
+  useEffect(() => {
+    if (cameraPreset !== "overview") return;
+    const reselectResponsiveOverview = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const view = kamenTransporterCameraForViewport(
+        "overview",
+        container.clientWidth,
+        container.clientHeight,
+      );
+      studioRef.current?.controls.setView(view.pos, view.target);
+    };
+    window.addEventListener("resize", reselectResponsiveOverview);
+    window.addEventListener("orientationchange", reselectResponsiveOverview);
+    return () => {
+      window.removeEventListener("resize", reselectResponsiveOverview);
+      window.removeEventListener("orientationchange", reselectResponsiveOverview);
+    };
+  }, [cameraPreset]);
+
   const handleCameraPreset = (preset: KamenTransporterCameraPreset) => {
     setCameraPreset(preset);
     if (!studioRef.current) return;

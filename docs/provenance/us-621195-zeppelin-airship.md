@@ -25,21 +25,24 @@
 
 ## Figure-source boundary
 
-The specification on PDF pages 5 and 6 explicitly prints references to Figs. 11 and 12. The immutable seven-page facsimile supplies four drawing sheets, visibly labelled only Figs. 1 through 10. The edition preserves the exact textual references and presents a visible source-omission note; it does not fabricate Figs. 11 or 12, generate a substitute, or attach a misleading preview. The ten available local crops are individual selections from the corresponding supplied source panels.
+The specification on PDF pages 5 and 6 explicitly prints references to Figs. 11 and 12. The immutable seven-page facsimile supplies four drawing sheets, visibly labelled only Figs. 1 through 10. The edition preserves the exact textual references and presents a visible source-omission note; it does not fabricate Figs. 11 or 12, generate a substitute, or attach a misleading preview. Every available figure citation uses its complete corresponding source sheet.
 
-| Printed figure panel present | PDF page | Local preview asset |
+| Printed figure panel present | PDF page | Active complete source sheet |
 | --- | --- | --- |
-| Fig. 1 | 1 | `fig-1-source-crop-v1.png` |
-| Fig. 2 | 1 | `fig-2-source-crop-v1.png` |
-| Fig. 3 | 2 | `fig-3-source-crop-v1.png` |
-| Fig. 4 | 2 | `fig-4-source-crop-v1.png` |
-| Fig. 5 | 2 | `fig-5-source-crop-v1.png` |
-| Fig. 6 | 3 | `fig-6-source-crop-v1.png` |
-| Fig. 7 | 3 | `fig-7-source-crop-v1.png` |
-| Fig. 8 | 3 | `fig-8-source-crop-v1.png` |
-| Fig. 9 | 4 | `fig-9-source-crop-v1.png` |
-| Fig. 10 | 4 | `fig-10-source-crop-v1.png` |
+| Figs. 1-2 | 1 | `source-sheet-1-v1.png` |
+| Figs. 3-5 | 2 | `source-sheet-2-v1.png` |
+| Figs. 6-8 | 3 | `source-sheet-3-v1.png` |
+| Figs. 9-10 | 4 | `source-sheet-4-v1.png` |
 | Figs. 11-12 | not present in supplied PDF | no preview; explicit source-omission annotation |
+
+## Complete source-sheet acceptance — 2026-09-04
+
+Direct visual review at 300 DPI confirmed that all active assets are complete signed primary drawing sheets: page 1 (Figs. 1-2), page 2 (Figs. 3-5), page 3 (Figs. 6-8), and page 4 (Figs. 9-10). The SHA-256 values are:
+
+- `source-sheet-1-v1.png`: `9c04ee18093ac1b2c2244aac248d948acf5a0e13b0839bee8559a81aa26fc0c9`
+- `source-sheet-2-v1.png`: `68cba10e20aec4a1b32bf7a3b98fd5ab87201bd6eb5fe6eef5f9e4d6326e4a6a`
+- `source-sheet-3-v1.png`: `7ccc45d75934d6b11ec1ebcd762e9f0cf21a4b22d3c505b02f0cc864dfc1073d`
+- `source-sheet-4-v1.png`: `f5f76c7119df39598e5c7296a986d8c295dc2b79b1b790a05895a8c6d216c1fa`
 
 ## Editorial and preservation boundaries
 

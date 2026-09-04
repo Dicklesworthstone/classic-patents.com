@@ -13,13 +13,13 @@ function figure(text: string, sheet: number) {
     text,
     href: `#${text.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
     referenceType: "figure" as const,
-    label: `Open ${text} on source drawing sheet ${sheet} of US 3,313,014`,
+    label: `Open the complete primary source drawing sheet ${sheet} for ${text} in US 3,313,014`,
     figurePreviews: [
       {
-        src: `${FIGURE_ROOT}/sheet-${sheet}-source-crop-v1.png`,
-        alt: `Source-facsimile drawing sheet ${sheet} for ${text} in US 3,313,014.`,
-        width: 851,
-        height: 1250,
+        src: `${FIGURE_ROOT}/source-sheet-${sheet}-v1.png`,
+        alt: `Complete primary drawing sheet ${sheet} of 6 for ${text} in US 3,313,014.`,
+        width: 2320,
+        height: 3408,
       },
     ],
   };

@@ -125,6 +125,41 @@ describe("InteractiveDiagramViewer React rendering", () => {
     expect(source).not.toContain("Hot Tube");
   });
 
+  test("renders Colt's source-bounded lockwork sequence without ballistic stand-ins", () => {
+    const patent = allPatents.find((candidate) => candidate.id === "us-x9430-colt-revolver");
+    if (!patent) throw new Error("Colt revolver patent fixture is missing");
+
+    setPatentPhysicsParam(patent.id, "cockingTravelPct", 100);
+    try {
+      const html = renderToStaticMarkup(
+        React.createElement(InteractiveDiagramViewer, {
+          drawings: patent.drawings,
+          patentId: patent.id,
+          patentNumber: patent.patentNumber,
+        }),
+      );
+      expect(html).toContain('data-colt-lockwork="full-cock-locked"');
+      expect(html).toContain("hammer pin p / key r");
+      expect(html).toContain("normalized source-order diagram; no ballistic or stress telemetry");
+    } finally {
+      resetPatentPhysicsParams(patent.id);
+    }
+
+    const source = readFileSync(
+      join(process.cwd(), "src/components/patents/InteractiveDiagramViewer.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("stepColtLockwork(controls)");
+    for (const staleField of [
+      "colt.schematicArborX1",
+      "colt.hoopStressMpa",
+      "colt.muzzleVelocityMps",
+      "colt.recoilKick",
+    ]) {
+      expect(source).not.toContain(staleField);
+    }
+  });
+
   test("does not retain a latent Kwolek polymer schematic behind the source-bound record", () => {
     const source = readFileSync(
       join(process.cwd(), "src/components/patents/InteractiveDiagramViewer.tsx"),

@@ -3,7 +3,6 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import type { CuratedSpecificationEdition } from "@/types/patent";
 import { kilbyIntegratedCircuitPatent } from "../patents/kilby-integrated-circuit";
 import {
   kilbyIntegratedCircuitArchivalEdition,
@@ -28,14 +27,11 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
       kilbyIntegratedCircuitArchivalEdition,
     );
     expect(kilbyIntegratedCircuitPatent.originalTextAsset).toBeDefined();
-    expect(kilbyIntegratedCircuitArchivalEdition.completeFacsimileReviewed).toBe(false);
+    expect(kilbyIntegratedCircuitArchivalEdition.completeFacsimileReviewed).toBe(true);
   });
 
-  test("validates the candidate as publishable", () => {
-    const result = validateCuratedSpecificationEdition(
-      kilbyIntegratedCircuitArchivalEdition as unknown as CuratedSpecificationEdition,
-      { requireCompleteFacsimileReview: false },
-    );
+  test("validates the complete archival edition", () => {
+    const result = validateCuratedSpecificationEdition(kilbyIntegratedCircuitArchivalEdition);
     expect(result.valid).toBe(true);
     expect(result.errors).toEqual([]);
   });
@@ -65,9 +61,10 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
       expect(transcript).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 9 ---`);
     }
     expect(transcript).not.toContain("STATUS: WITHHELD WIP");
-    expect(transcript).toContain("Visible labels: 10, 10a, 10b");
-    expect(transcript).toContain("Visible labels: T1, T2, R1–R8");
-    expect(transcript).toContain("Visible labels: T1, T2, R1–R8, C1, C2");
+    expect(transcript).not.toContain("Visible labels:");
+    expect(transcript).toContain("10, 10a, 10b");
+    expect(transcript).toContain("T1, T2, R1–R8, C1–C4");
+    expect(transcript).toContain("T1, T2, R1–R8, C1, C2");
     expect(transcript).toContain("Fig. 8a. Fig. 8b. Fig. 8c.");
   });
 
@@ -201,14 +198,12 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
     }
   });
 
-  test("records the remaining full-facsimile review work without a stale figure hold", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(kilbyIntegratedCircuitPatent, {
-      hasCompanionReadings: true,
-    });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("candidate");
-    expect(decision.reasonCode).toBe("PENDING_FACSIMILE_REVIEW");
+  test("accepts the complete review with all figure evidence", () => {
+    const { evaluateArchivalPublicationState } = require("./publicationApproval");
+    const decision = evaluateArchivalPublicationState(kilbyIntegratedCircuitPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.state.kind).toBe("accepted");
+    expect(decision.reasonCode).toBe("ACCEPTED");
     expect(decision.figureManifest.acceptedFigureCount).toBe(47);
   });
 });

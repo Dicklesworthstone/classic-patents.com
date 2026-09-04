@@ -209,6 +209,18 @@ describe("US 470,918 Jesse Reno Inclined Elevator visual & mechanics boundary", 
     }
   });
 
+  test("reselects only the overview for a desktop-to-phone resize", () => {
+    const source = readFileSync(join(VISUALS_DIRECTORY, "three", "RenoEscalator3D.tsx"), "utf8");
+    expect(renoCameraForViewport("iso", 1216, 460)).toEqual(RENO_CAMERA_PRESETS.iso);
+    expect(renoCameraForViewport("iso", 286, 380)).not.toEqual(RENO_CAMERA_PRESETS.iso);
+    expect(renoCameraForViewport("top_drive", 286, 380)).toEqual(RENO_CAMERA_PRESETS.top_drive);
+    expect(source).toContain('if (activeCamera !== "iso") return;');
+    expect(source).toContain('window.addEventListener("resize", reselectResponsiveOverview)');
+    expect(source).toContain(
+      'window.addEventListener("orientationchange", reselectResponsiveOverview)',
+    );
+  });
+
   test("keeps the public Reno readout on disclosed speed, clearance, and capacity facts", () => {
     const result = stepRenoEscalator({
       inclineAngleDeg: 25,

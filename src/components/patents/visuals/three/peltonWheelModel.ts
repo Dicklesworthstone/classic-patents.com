@@ -9,10 +9,11 @@
  *    inclined discharge sides, and a sloped front for clear jet entry.
  * 3. Generic nozzle and distributing-box arrangement shown in the source drawing.
  * 4. Source-described water stream and twin split discharge paths.
+ * 5. A visually neutral display foundation and shaft cradle, explicitly not
+ *    represented as claimed Pelton apparatus, so the exhibit obeys gravity.
  *
- * The grant supplies no casing, bearing, runoff basin, material, head, speed, or
- * bucket count. Those are deliberately absent rather than inferred from a
- * modern Pelton turbine.
+ * The grant supplies no casing, bearing design, runoff basin, material, head,
+ * speed, or bucket count. None of those are inferred as historical features.
  */
 
 import * as THREE from "three";
@@ -21,6 +22,7 @@ export interface PeltonWheelModel {
   rootGroup: THREE.Group;
   runnerGroup: THREE.Group;
   sourceArrangementGroup: THREE.Group;
+  displaySupportGroup: THREE.Group;
   jetPoints: THREE.Points;
   sprayPoints: THREE.Points;
   materials: {
@@ -128,7 +130,44 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
   });
   materialsToDispose.push(brass);
 
-  // --- 2. RUNNER ASSEMBLY ---
+  // --- 2. NEUTRAL DISPLAY SUPPORT ---
+  // The grant does not define a bearing or foundation design. A subdued,
+  // unlabelled cradle is nevertheless required to keep the shaft and source
+  // arrangement physically supported in the museum scene.
+  const displaySupportGroup = new THREE.Group();
+  displaySupportGroup.name = "NeutralDisplaySupportNotClaimedApparatus";
+  rootGroup.add(displaySupportGroup);
+
+  const foundationGeo = new THREE.BoxGeometry(9.4, 0.28, 6.2);
+  geometriesToDispose.push(foundationGeo);
+  const foundation = new THREE.Mesh(foundationGeo, darkCastIron);
+  foundation.position.set(-0.7, -2.48, 0);
+  foundation.receiveShadow = true;
+  displaySupportGroup.add(foundation);
+
+  const pedestalGeo = new THREE.BoxGeometry(0.72, 2.35, 0.64);
+  geometriesToDispose.push(pedestalGeo);
+  const bearingGeo = new THREE.CylinderGeometry(0.44, 0.44, 0.5, 24);
+  geometriesToDispose.push(bearingGeo);
+  for (const z of [-2.3, 2.3]) {
+    const pedestal = new THREE.Mesh(pedestalGeo, darkCastIron);
+    pedestal.position.set(0, -1.18, z);
+    pedestal.castShadow = true;
+    displaySupportGroup.add(pedestal);
+
+    const bearing = new THREE.Mesh(bearingGeo, darkCastIron);
+    bearing.name = "DisplayShaftCradle";
+    bearing.position.set(0, 0, z);
+    bearing.rotation.x = Math.PI / 2;
+    displaySupportGroup.add(bearing);
+  }
+
+  const sourceSaddle = new THREE.Mesh(new THREE.BoxGeometry(3.25, 0.38, 1.35), darkCastIron);
+  geometriesToDispose.push(sourceSaddle.geometry);
+  sourceSaddle.position.set(-3.75, -2.26, 0);
+  displaySupportGroup.add(sourceSaddle);
+
+  // --- 3. RUNNER ASSEMBLY ---
   const runnerGroup = new THREE.Group();
   rootGroup.add(runnerGroup);
 
@@ -265,7 +304,7 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
     runnerGroup.add(bucketGroup);
   }
 
-  // --- 3. SOURCE NOZZLE ARRANGEMENT ---
+  // --- 4. SOURCE NOZZLE ARRANGEMENT ---
   const nozzleGroup = new THREE.Group();
   nozzleGroup.position.set(-3.4, -2.25, 0);
   rootGroup.add(nozzleGroup);
@@ -289,14 +328,14 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
   nozzle.castShadow = true;
   nozzleGroup.add(nozzle);
 
-  // --- 4. SOURCE ARRANGEMENT ---
+  // --- 5. SOURCE ARRANGEMENT ---
   // Keep the group for the separately drawn nozzle/manifold arrangement. The
-  // patent does not show or claim a surrounding casing, bearings, or runoff basin.
+  // patent does not show or claim a surrounding casing, bearing design, or runoff basin.
   const sourceArrangementGroup = new THREE.Group();
   rootGroup.add(sourceArrangementGroup);
   sourceArrangementGroup.add(nozzleGroup);
 
-  // --- 5. STATIC SOURCE-DESCRIBED STREAMS ---
+  // --- 6. STATIC SOURCE-DESCRIBED STREAMS ---
   // These are posed source illustrations, not a simulated pressure or flow.
   const jetCount = 200;
   const jetGeo = new THREE.BufferGeometry();
@@ -358,6 +397,7 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
     rootGroup,
     runnerGroup,
     sourceArrangementGroup,
+    displaySupportGroup,
     jetPoints,
     sprayPoints,
     materials: {
@@ -377,7 +417,11 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
  * Updates only source visibility. The grant has no operating speed or
  * hydraulic measurements, so the visitor sees a faithful posed apparatus.
  */
-export function updatePeltonWheelKinematics(model: PeltonWheelModel, showJet: boolean): void {
+export function updatePeltonWheelKinematics(
+  model: PeltonWheelModel,
+  showJet: boolean,
+  splitBucketPresent = true,
+): void {
   model.jetPoints.visible = showJet;
-  model.sprayPoints.visible = showJet;
+  model.sprayPoints.visible = showJet && splitBucketPresent;
 }

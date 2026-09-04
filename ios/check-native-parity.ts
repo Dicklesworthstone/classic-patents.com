@@ -311,11 +311,14 @@ if (requireKwolekSourceBoundary) {
     Bun.file(new URL(`../public/patents/source-text/${KWOLEK_ID}.txt`, import.meta.url)),
     Bun.file(new URL(`../public/patents/transcripts/${KWOLEK_ID}.txt`, import.meta.url)),
   ];
-  for (const legacyFile of preservedLegacyFiles) {
-    assertFocused(
-      await legacyFile.exists(),
-      `a preserved Kwolek legacy file is missing: ${legacyFile.name}`,
-    );
+  const preservedLegacyFileStates = await Promise.all(
+    preservedLegacyFiles.map(async (legacyFile) => ({
+      legacyFile,
+      exists: await legacyFile.exists(),
+    })),
+  );
+  for (const { legacyFile, exists } of preservedLegacyFileStates) {
+    assertFocused(exists, `a preserved Kwolek legacy file is missing: ${legacyFile.name}`);
   }
 
   const [
@@ -439,6 +442,7 @@ for (const record of records) {
   }
 }
 const byId = new Map(records.map((record) => [record.id, record]));
+const publicPatentById = new Map(allPatents.map((patent) => [patent.id, patent]));
 assert(
   records.length === allPatents.length,
   `record count ${records.length} != ${allPatents.length}`,
@@ -774,8 +778,31 @@ assert(
   !manifest.some((path) => path.toLowerCase().endsWith(".pdf")),
   "a PDF was bundled into the app",
 );
+const bundledSourceTextPaths = new Set<string>();
 for (const record of records) {
-  const sourcePatent = allPatents.find((patent) => patent.id === record.id);
+  if (isSourceBoundPDFOnly(record) || record.archivalEdition) continue;
+  const sourceTextPath = record.originalTextAsset?.url?.replace(/^\//, "");
+  if (
+    typeof sourceTextPath === "string" &&
+    sourceTextPath.endsWith(".txt") &&
+    manifestSet.has(sourceTextPath)
+  ) {
+    bundledSourceTextPaths.add(sourceTextPath);
+  }
+}
+const bundledSourceTranscriptions = new Map(
+  await Promise.all(
+    [...bundledSourceTextPaths].map(
+      async (sourceTextPath) =>
+        [
+          sourceTextPath,
+          await Bun.file(new URL(`../public/${sourceTextPath}`, import.meta.url)).text(),
+        ] as const,
+    ),
+  ),
+);
+for (const record of records) {
+  const sourcePatent = publicPatentById.get(record.id);
   const sourceBounded = isSourceBoundPDFOnly(record);
   const editionAssets = sourceBounded ? [] : referencedEditionAssets(sourcePatent?.archivalEdition);
   const expectedWithheld = editionAssets.filter((path) => !manifestSet.has(path));
@@ -794,13 +821,13 @@ for (const record of records) {
   same(record.withheldAssets, expectedWithheld, `${record.id}: withheld asset ledger drifted`);
   for (const path of record.bundledAssets ?? []) {
     assert(
-      manifest.includes(path),
+      manifestSet.has(path),
       `${record.id}: linked asset is absent from the bundle manifest: ${path}`,
     );
   }
   for (const path of record.withheldAssets ?? []) {
     assert(
-      !manifest.includes(path),
+      !manifestSet.has(path),
       `${record.id}: an available asset is incorrectly marked withheld: ${path}`,
     );
     assert(
@@ -824,16 +851,14 @@ for (const record of records) {
       `${record.id}: record without an archival edition has neither a complete bundled source reader nor an explicit reconstruction quarantine`,
     );
     if (typeof sourceTextPath === "string" && manifestSet.has(sourceTextPath)) {
-      const transcription = await Bun.file(
-        new URL(`../public/${sourceTextPath}`, import.meta.url),
-      ).text();
+      const transcription = bundledSourceTranscriptions.get(sourceTextPath);
       // A machine text layer is page-marked `--- SOURCE PDF PAGE n OF N ---`;
       // a human-reviewed ledger uses `--- REVIEWED TRANSCRIPTION PAGE n OF N ---`.
       // The native reader pages either convention, so the parity gate counts
       // whichever marker the bundled ledger actually carries.
       const pageMarkers = Math.max(
-        transcription.match(/--- SOURCE PDF PAGE /g)?.length ?? 0,
-        transcription.match(/--- REVIEWED TRANSCRIPTION PAGE /g)?.length ?? 0,
+        transcription?.match(/--- SOURCE PDF PAGE /g)?.length ?? 0,
+        transcription?.match(/--- REVIEWED TRANSCRIPTION PAGE /g)?.length ?? 0,
       );
       assert(
         pageMarkers === record.originalTextAsset?.pageCount,
@@ -869,9 +894,14 @@ const swiftGlob = new Bun.Glob("Sources/**/*.swift");
 const swiftSources = [
   ...swiftGlob.scanSync({ cwd: new URL(".", import.meta.url).pathname, onlyFiles: true }),
 ];
+const swiftSourceTexts = await Promise.all(
+  swiftSources.map(async (path) => ({
+    path,
+    source: await Bun.file(new URL(path, new URL(".", import.meta.url))).text(),
+  })),
+);
 let urlSessionFiles = 0;
-for (const path of swiftSources) {
-  const source = await Bun.file(new URL(path, new URL(".", import.meta.url))).text();
+for (const { path, source } of swiftSourceTexts) {
   assert(!/\b(?:import WebKit|WKWebView)\b/.test(source), `${path}: WebKit is forbidden`);
   if (path !== "Sources/PatentDetailView.swift") {
     assert(
@@ -946,6 +976,21 @@ const nativeVisualizations = (await Bun.file(
   new URL("./Resources/native-visualizations.json", import.meta.url),
 ).json()) as NativeVisualizationEntry[];
 const nativeVisualById = new Map(nativeVisualizations.map((entry) => [entry.id, entry]));
+const nativeAssetPaths = new Set<string>();
+for (const visual of nativeVisualizations) {
+  if (visual.asset) nativeAssetPaths.add(visual.asset);
+}
+const nativeAssetExistsByPath = new Map(
+  await Promise.all(
+    [...nativeAssetPaths].map(
+      async (assetPath) =>
+        [
+          assetPath,
+          await Bun.file(new URL(`./Resources/${assetPath}`, import.meta.url)).exists(),
+        ] as const,
+    ),
+  ),
+);
 assert(
   nativeVisualizations.length === records.length,
   `native visualization count ${nativeVisualizations.length} != ${records.length}`,
@@ -1017,9 +1062,14 @@ for (const record of records) {
       `${record.id}: native model contains no named articulation nodes`,
     );
     if (visual.asset) {
-      const asset = Bun.file(new URL(`./Resources/${visual.asset}`, import.meta.url));
-      assert(await asset.exists(), `${record.id}: native model asset is absent`);
-      assert(asset.size > 1_000, `${record.id}: native model asset is implausibly small`);
+      assert(
+        nativeAssetExistsByPath.get(visual.asset) === true,
+        `${record.id}: native model asset is absent`,
+      );
+      assert(
+        Bun.file(new URL(`./Resources/${visual.asset}`, import.meta.url)).size > 1_000,
+        `${record.id}: native model asset is implausibly small`,
+      );
       assert(
         generatedProject.includes(`${record.id}.usdz in Resources`),
         `${record.id}: native model exists but the generated Xcode project does not bundle it`,
@@ -1066,7 +1116,8 @@ assert(
       "Manifest-only export altered a preserved native USDZ asset",
     ) &&
     nativeModelExporterSource.includes("if (manifestOnly) {") &&
-    nativeModelExporterSource.includes("} else {\n  for (const [index, record]"),
+    nativeModelExporterSource.includes("const exportModelsInRecordOrder = async") &&
+    nativeModelExporterSource.includes("await exportModelsInRecordOrder(0)"),
   "native model exporter lacks the byte-preserving manifest-only mode",
 );
 const iosReadme = await Bun.file(new URL("./README.md", import.meta.url)).text();

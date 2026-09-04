@@ -178,6 +178,26 @@ export function WozniakApple3D() {
     };
   }, [live]);
 
+  useEffect(() => {
+    if (activeCamera !== "iso") return;
+    const reselectResponsiveOverview = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const view = wozniakAppleCameraForViewport(
+        "iso",
+        container.clientWidth,
+        container.clientHeight,
+      );
+      studioRef.current?.controls.setView(view.pos, view.target);
+    };
+    window.addEventListener("resize", reselectResponsiveOverview);
+    window.addEventListener("orientationchange", reselectResponsiveOverview);
+    return () => {
+      window.removeEventListener("resize", reselectResponsiveOverview);
+      window.removeEventListener("orientationchange", reselectResponsiveOverview);
+    };
+  }, [activeCamera]);
+
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
       <div className="sr-only">Steve Wozniak Apple II Microcomputer 3D</div>

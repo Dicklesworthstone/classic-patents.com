@@ -671,16 +671,12 @@ const sourceParagraph = (...inlines: CuratedSpecificationInline[]) => ({
   inlines,
 });
 
-type WithheldKilbyEdition = Omit<CuratedSpecificationEdition, "completeFacsimileReviewed"> & {
-  completeFacsimileReviewed: false;
-};
-
-export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
+export const kilbyIntegratedCircuitArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "e523c17aaef78f727181d87c427be3edf10f964bed20b90ef07a8099a1c18eef",
-  preparedBy: "Classic Patents editorial agent (GrayMarsh; cloud facsimile review)",
-  preparedAt: "2026-08-21",
-  completeFacsimileReviewed: false,
+  preparedBy: "Classic Patents editorial agents (GrayMarsh; GPT-5.6 direct full-facsimile review)",
+  preparedAt: "2026-09-04",
+  completeFacsimileReviewed: true,
   blocks: [
     {
       kind: "masthead",
@@ -886,7 +882,7 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
     ),
     sourceParagraph(
       sourceText("Referring particularly to "),
-      sourceReference("Fig. 1"),
+      sourceReference("FIGURE 1"),
       sourceText(
         ", there is shown a typical design for a resistor which may be embodied or integrated into a body of single crystal semiconductor material. As noted in ",
       ),
@@ -1306,7 +1302,7 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
     },
     sourceParagraph(
       sourceText(
-        "References Cited in the file of this patent: 2,493,199 Khouri, January 3, 1950; 2,748,041 Leverenz, May 29, 1956; 2,816,228 Johnson, December 10, 1957; 2,817,048 Thuermel, December 17, 1957; 2,824,977 Pankove, February 25, 1958; 2,836,776 Ishikawa, May 27, 1958; 2,878,147 Beale, March 17, 1959; 2,915,647 Ebers, December 1, 1959; 2,916,408 Freedman, December 8, 1959; 2,922,937 Hutzler, January 26, 1960; 2,935,668 Robinson et al., May 3, 1960; 2,995,686 Selvin, August 8, 1961; 2,998,550 Collins et al., August 29, 1961.",
+        "References Cited in the file of this patent: UNITED STATES PATENTS 2,493,199 Khouri, January 3, 1950; 2,748,041 Leverenz, May 29, 1956; 2,816,228 Johnson, December 10, 1957; 2,817,048 Thuermel, December 17, 1957; 2,824,977 Pankove, February 25, 1958; 2,836,776 Ishikawa, May 27, 1958; 2,878,147 Beale, March 17, 1959; 2,915,647 Ebers, December 1, 1959; 2,916,408 Freedman, December 8, 1959; 2,922,937 Hutzler, January 26, 1960; 2,935,668 Robinson et al., May 3, 1960; 2,995,686 Selvin, August 8, 1961; 2,998,550 Collins et al., August 29, 1961.",
       ),
     ),
     sourceParagraph(

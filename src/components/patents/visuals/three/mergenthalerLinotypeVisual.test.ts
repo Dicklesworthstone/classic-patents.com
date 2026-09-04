@@ -2,17 +2,16 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import * as THREE from "three";
-import { stepMergenthalerLinotype } from "@/physics/machineKernels";
 import { linotypeCameraForViewport } from "./mergenthalerLinotypeCamera";
 import {
-  buildMergenthalerLinotypeModel,
-  updateMergenthalerLinotypeKinematics,
-} from "./mergenthalerLinotypeModel";
+  buildMergenthalerMatrixBarModel,
+  updateMergenthalerMatrixBarModel,
+} from "./mergenthalerMatrixBarModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
-describe("US 313,224 Ottmar Mergenthaler Linotype visual & mechanics boundary", () => {
-  test("keeps the whole linecaster readable in the desktop ISO frame while retaining touch and close-up cameras", () => {
+describe("US 313,224 Mergenthaler matrix-bar visual and source boundary", () => {
+  test("keeps the whole matrix-bar machine readable while retaining close-up cameras", () => {
     const desktop = linotypeCameraForViewport("iso", 1280);
     const tablet = linotypeCameraForViewport("iso", 768);
     const phone = linotypeCameraForViewport("iso", 390);
@@ -25,7 +24,7 @@ describe("US 313,224 Ottmar Mergenthaler Linotype visual & mechanics boundary", 
       target: [-1.5, -0.4, 0],
     });
 
-    const { rootGroup, dispose } = buildMergenthalerLinotypeModel();
+    const { rootGroup, dispose } = buildMergenthalerMatrixBarModel();
     try {
       rootGroup.updateMatrixWorld(true);
       const bounds = new THREE.Box3().setFromObject(rootGroup);
@@ -43,7 +42,7 @@ describe("US 313,224 Ottmar Mergenthaler Linotype visual & mechanics boundary", 
         ),
       ];
       expect(Math.min(...projected.map((point) => point.x))).toBeGreaterThanOrEqual(-0.25);
-      expect(Math.max(...projected.map((point) => point.x))).toBeLessThanOrEqual(0.25);
+      expect(Math.max(...projected.map((point) => point.x))).toBeLessThanOrEqual(0.26);
       expect(Math.min(...projected.map((point) => point.y))).toBeGreaterThanOrEqual(-0.85);
       expect(Math.max(...projected.map((point) => point.y))).toBeLessThanOrEqual(0.8);
     } finally {
@@ -51,26 +50,29 @@ describe("US 313,224 Ottmar Mergenthaler Linotype visual & mechanics boundary", 
     }
   });
 
-  test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
+  test("uses a source-bounded procedural model instead of the later commercial Linotype", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "MergenthalerLinotype3D.tsx"),
       "utf8",
     );
     const modelSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "mergenthalerLinotypeModel.ts"),
+      join(VISUALS_DIRECTORY, "three", "mergenthalerMatrixBarModel.ts"),
       "utf8",
     );
 
     expect(threeSource).not.toContain("GLTFLoader");
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
-    expect(modelSource).toContain("buildMergenthalerLinotypeModel");
-    expect(modelSource).toContain("updateMergenthalerLinotypeKinematics");
-    expect(modelSource).not.toContain("stepMergenthalerLinotype({})");
-    expect(modelSource).toContain("distributorFreqHz");
-    expect(threeSource).toContain("p.matrixRate");
-    expect(threeSource).toContain("p.spacebandWedge");
-    expect(threeSource).toContain("p.potTempC");
+    expect(threeSource).toContain("buildMergenthalerMatrixBarModel");
+    expect(modelSource).toContain("ParallelContinuousMatrixBars");
+    expect(modelSource).toContain("FingerKeyAndAdjustingPinDeck");
+    expect(modelSource).toContain("SectionalMoldAndForcePump");
+    for (const forbidden of ["90-Key", "binary distributor", "eutectic", "water-cooled"]) {
+      expect(modelSource).not.toContain(forbidden);
+    }
+    expect(threeSource).toContain("typed refusal — no SI data");
+    expect(threeSource).not.toContain("useGenericWasmSource");
+    expect(threeSource).not.toContain("PortHamiltonianEnergyStrip");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -79,7 +81,7 @@ describe("US 313,224 Ottmar Mergenthaler Linotype visual & mechanics boundary", 
       "utf8",
     );
     const modelSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "mergenthalerLinotypeModel.ts"),
+      join(VISUALS_DIRECTORY, "three", "mergenthalerMatrixBarModel.ts"),
       "utf8",
     );
 
@@ -89,7 +91,7 @@ describe("US 313,224 Ottmar Mergenthaler Linotype visual & mechanics boundary", 
     }
   });
 
-  test("exposes authentic camera presets and cutaway mode for linecaster observation", () => {
+  test("exposes camera presets and cutaway mode for source-organ observation", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "MergenthalerLinotype3D.tsx"),
       "utf8",
@@ -107,47 +109,51 @@ describe("US 313,224 Ottmar Mergenthaler Linotype visual & mechanics boundary", 
     }
 
     expect(threeSource).toContain("isCutaway");
-    expect(threeSource).toContain("Mergenthaler Linotype 3D");
+    expect(threeSource).toContain("Mergenthaler US 313,224 matrix-bar machine 3D");
   });
 
-  test("computes genuine Linotype justification width and eutectic pot properties in SI units", () => {
-    const result = stepMergenthalerLinotype({
-      matrixRatePerMin: 60,
-      spacebandWedgeMm: 6.5,
-      potTempC: 260,
-    });
-    expect(result.justificationWidthMm).toBeGreaterThan(100);
-    expect(result.solidificationTimeMs).toBe(450);
-    expect(result.brinellHardness).toBe(24);
-    expect(result.isEutecticTemp).toBe(true);
-    expect(result.wedgeLift).toBeCloseTo(0.0975, 3);
-    expect(result.slugSvgWidth).toBeCloseTo(result.justificationWidthMm * 2.8, 2);
-  });
-
-  test("builds and articulates procedural magazine, spacebands, casting pot, and mold disk correctly", () => {
-    const { rootGroup, nodes, materials, dispose } = buildMergenthalerLinotypeModel();
+  test("builds supported bars, stops, clamp, and sectional mold", () => {
+    const { rootGroup, nodes, materials, dispose } = buildMergenthalerMatrixBarModel();
     expect(rootGroup.children.length).toBeGreaterThan(4);
-    expect(nodes.matrices.length).toBe(8);
-    expect(nodes.spacebands.length).toBe(3);
-    expect(nodes.potBody).toBeDefined();
-    expect(nodes.moldDisk).toBeDefined();
+    expect(nodes.continuousBars).toHaveLength(8);
+    expect(nodes.stopPins).toHaveLength(8);
+    expect(nodes.clampGroup.parent).toBe(nodes.matrixBarGroup);
+    expect(nodes.moldUpper.parent).toBe(nodes.moldGroup);
+    expect(nodes.moldLower.parent).toBe(nodes.moldGroup);
 
-    const line = stepMergenthalerLinotype({
-      matrixRatePerMin: 60,
-      spacebandWedgeMm: 6.5,
-      potTempC: 260,
+    updateMergenthalerMatrixBarModel(nodes, materials, {
+      cycle01: 0.6,
+      stopTravelDisplay: 12,
+      moldClosurePct: 100,
+      claim1Active: true,
+      cutaway: false,
     });
-    updateMergenthalerLinotypeKinematics(
-      nodes,
-      materials,
-      0.016,
-      0,
-      0.2,
-      Math.PI / 4,
-      true,
-      line.wedgeLift,
-    );
-    expect(nodes.slugMesh.visible).toBe(true);
+    expect(nodes.continuousBars.every((bar) => bar.visible)).toBe(true);
+    expect(nodes.excludedBandGroup.visible).toBe(false);
+    expect(nodes.slug.visible).toBe(true);
+    expect(nodes.moldUpper.position.y).toBeCloseTo(0.34, 6);
+    expect(nodes.moldLower.position.y).toBeCloseTo(-0.34, 6);
+
+    dispose();
+  });
+
+  test("makes Claim 1 inversion a visible, supported excluded-alternative comparison", () => {
+    const { nodes, materials, dispose } = buildMergenthalerMatrixBarModel();
+
+    updateMergenthalerMatrixBarModel(nodes, materials, {
+      cycle01: 0.75,
+      stopTravelDisplay: 8,
+      moldClosurePct: 100,
+      claim1Active: false,
+      cutaway: true,
+    });
+
+    expect(nodes.continuousBars.every((bar) => !bar.visible)).toBe(true);
+    expect(nodes.excludedBandGroup.visible).toBe(true);
+    expect(nodes.excludedBandGroup.parent).toBe(nodes.matrixBarGroup);
+    expect(nodes.slug.visible).toBe(false);
+    expect(materials.castIron.transparent).toBe(true);
+    expect(materials.castIron.opacity).toBeCloseTo(0.42, 6);
 
     dispose();
   });

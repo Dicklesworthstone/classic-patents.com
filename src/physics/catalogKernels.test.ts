@@ -754,17 +754,26 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.sparkGapStudioHalfSpan).toBeGreaterThan(0.35);
   });
 
-  test("Colt revolver computes chamber cylinder index and lock bolt ratchet engagement", () => {
-    const res = stepColtRevolver({ chamberPressureMpa: 85, cockingAngleDeg: 45 });
-    expect(res.indexAngleDeg).toBe(72);
-    expect(res.isLocked).toBe(true);
-    expect(res.schematicBarrelW).toBe(150);
+  test("Colt revolver exposes only the source-ordered lockwork state", () => {
+    const res = stepColtRevolver({ cockingTravelPct: 100, chamberIndex: 1 });
+    expect(res.stage).toBe("full-cock-locked");
+    expect(res.safeToReleaseHammer).toBe(true);
+    expect(res.keySeated).toBe(true);
+    expect(res.cylinderAdvanceFraction).toBe(1);
     expect(coltSchematicTrigger(true).y).toBe(155);
     expect(coltSchematicTrigger(false).h).toBe(8);
-    expect(res.chamberCount).toBe(5);
     expect(coltNextChamber(1)).toBe(2);
     expect(coltNextChamber(5)).toBe(1);
-    expect(res.boltRetractY).toBe(12);
+    for (const unsupported of [
+      "chamberPressureMpa",
+      "hoopStressMpa",
+      "muzzleVelocityMps",
+      "muzzleEnergyJoules",
+      "powderGrains",
+      "recoilKick",
+    ]) {
+      expect(unsupported in res).toBe(false);
+    }
   });
 
   test("Goodyear vulcanized rubber computes crosslink density, tensile modulus, and elastic recovery", () => {

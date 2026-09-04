@@ -11,6 +11,8 @@ import {
 import { createRillieuxEvaporatorModel } from "./rillieuxEvaporatorModel";
 
 const COMPACT_AUDIT_VIEWPORT = { width: 286, height: 380 };
+const LANDSCAPE_AUDIT_VIEWPORT = { width: 639, height: 380 };
+const TABLET_AUDIT_VIEWPORT = { width: 718, height: 1024 };
 
 function projectedObjectBounds(root: THREE.Object3D, camera: THREE.PerspectiveCamera) {
   const bounds = {
@@ -79,15 +81,26 @@ describe("Norbert Rillieux Multiple-Effect Evaporator 3D Visual & Thermodynamics
 
   test("keeps all three effects and both vapor-reuse links legible in the compact overview", () => {
     const { width, height } = COMPACT_AUDIT_VIEWPORT;
-    const compactOverview = rillieuxEvaporatorCameraForViewport("overview", width);
+    const compactOverview = rillieuxEvaporatorCameraForViewport("overview", width, height);
     expect(compactOverview).toEqual({
       label: "3-Effect Cascade Overview",
       pos: [0, 15.2, 30.8],
       target: [0, 2, 0],
     });
-    expect(rillieuxEvaporatorCameraForViewport("overview", 718)).toEqual(
-      RILLIEUX_EVAPORATOR_CAMERA_PRESETS.overview,
-    );
+    expect(
+      rillieuxEvaporatorCameraForViewport(
+        "overview",
+        LANDSCAPE_AUDIT_VIEWPORT.width,
+        LANDSCAPE_AUDIT_VIEWPORT.height,
+      ),
+    ).toEqual(RILLIEUX_EVAPORATOR_CAMERA_PRESETS.overview);
+    expect(
+      rillieuxEvaporatorCameraForViewport(
+        "overview",
+        TABLET_AUDIT_VIEWPORT.width,
+        TABLET_AUDIT_VIEWPORT.height,
+      ),
+    ).toEqual(RILLIEUX_EVAPORATOR_CAMERA_PRESETS.overview);
     const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 1000);
     camera.position.set(...compactOverview.pos);
     camera.lookAt(...compactOverview.target);

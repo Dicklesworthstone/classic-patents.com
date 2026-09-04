@@ -18,11 +18,27 @@ export interface DieselEngineNodes {
   cylinderHeadSolid: THREE.Mesh;
   cylinderHeadCutaway: THREE.Mesh;
   plungerP: THREE.Group;
+  wristPin: THREE.Mesh;
+  connectingRod: THREE.Mesh;
   crank: THREE.Group;
+  crankPin: THREE.Mesh;
+  flywheelRim: THREE.Mesh;
   hopperB: THREE.Group;
   admissionPlugD: THREE.Group;
   airReservoirL: THREE.Group;
   annularSpaceS: THREE.Mesh;
+}
+
+const CRANK_CENTER_X = -1.85;
+const CRANK_RADIUS = 0.35;
+const CONNECTING_ROD_LENGTH = 1.2;
+const WRIST_PIN_LOCAL_X = -0.7;
+
+function setBoxBeamBetween(mesh: THREE.Mesh, start: THREE.Vector3, end: THREE.Vector3): void {
+  const delta = end.clone().sub(start);
+  mesh.position.copy(start).addScaledVector(delta, 0.5);
+  mesh.rotation.set(0, 0, Math.atan2(delta.y, delta.x));
+  mesh.scale.set(delta.length() / CONNECTING_ROD_LENGTH, 1, 1);
 }
 
 export interface DieselEngineMaterials {
@@ -162,20 +178,24 @@ export function buildDieselEngineModel(): {
 
   // Gudgeon Wrist Pin
   const wristPin = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.9, 12), materials.body);
-  wristPin.position.set(-0.7, 0, 0);
+  wristPin.position.set(WRIST_PIN_LOCAL_X, 0, 0);
+  wristPin.rotation.x = Math.PI / 2;
   plungerP.add(wristPin);
 
   // Connecting Rod linking Plunger to Crank Pin
-  const conRod = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.16, 0.18), materials.body);
-  conRod.position.set(-1.25, 0, 0);
-  plungerP.add(conRod);
+  const conRod = new THREE.Mesh(
+    new THREE.BoxGeometry(CONNECTING_ROD_LENGTH, 0.16, 0.18),
+    materials.body,
+  );
+  conRod.name = "ConnectingRod";
+  root.add(conRod);
 
   // ==============================================================
   // 4. Crankshaft, Bearings & Flywheel
   // ==============================================================
   const crank = new THREE.Group();
   crank.name = "Crank";
-  crank.position.set(-1.85, 0, 0);
+  crank.position.set(CRANK_CENTER_X, 0, 0);
 
   // Crank Throw Web
   const crankWeb = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.9, 0.35), materials.body);
@@ -186,17 +206,18 @@ export function buildDieselEngineModel(): {
     new THREE.CylinderGeometry(0.14, 0.14, 0.4, 16),
     materials.accent,
   );
-  crankPin.position.set(0, 0.35, 0);
+  crankPin.position.set(0, CRANK_RADIUS, 0);
+  crankPin.rotation.x = Math.PI / 2;
   crank.add(crankPin);
 
   // Main Shaft
   const mainShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 2.6, 16), materials.body);
   mainShaft.position.set(0, 0, 0);
+  mainShaft.rotation.x = Math.PI / 2;
   crank.add(mainShaft);
 
   // Heavy Cast-Iron Flywheel
   const flywheelRim = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.16, 12, 32), materials.body);
-  flywheelRim.rotation.y = Math.PI / 2;
   flywheelRim.position.z = 1.1;
   flywheelRim.castShadow = true;
   crank.add(flywheelRim);
@@ -205,8 +226,8 @@ export function buildDieselEngineModel(): {
   for (let s = 0; s < 6; s++) {
     const sAngle = (s * Math.PI * 2) / 6;
     const spoke = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 1.5, 8), materials.body);
-    spoke.position.set(0, Math.sin(sAngle) * 0.75, 1.1 + Math.cos(sAngle) * 0.75);
-    spoke.rotation.x = sAngle;
+    spoke.position.set(Math.cos(sAngle) * 0.75, Math.sin(sAngle) * 0.75, 1.1);
+    spoke.rotation.z = sAngle - Math.PI / 2;
     crank.add(spoke);
   }
 
@@ -277,24 +298,31 @@ export function buildDieselEngineModel(): {
 
   root.add(cylinderC, plungerP, crank, hopperB, admissionPlugD, airReservoirL, annularSpaceS);
 
+  const nodes: DieselEngineNodes = {
+    rootGroup: root,
+    cylinderC,
+    cylinderLinerSolid,
+    cylinderLinerCutaway,
+    cylinderJacketSolid,
+    cylinderJacketCutaway,
+    cylinderHeadSolid,
+    cylinderHeadCutaway,
+    plungerP,
+    wristPin,
+    connectingRod: conRod,
+    crank,
+    crankPin,
+    flywheelRim,
+    hopperB,
+    admissionPlugD,
+    airReservoirL,
+    annularSpaceS,
+  };
+  updateDieselEngineKinematics(nodes, 0, false);
+
   return {
     root,
-    nodes: {
-      rootGroup: root,
-      cylinderC,
-      cylinderLinerSolid,
-      cylinderLinerCutaway,
-      cylinderJacketSolid,
-      cylinderJacketCutaway,
-      cylinderHeadSolid,
-      cylinderHeadCutaway,
-      plungerP,
-      crank,
-      hopperB,
-      admissionPlugD,
-      airReservoirL,
-      annularSpaceS,
-    },
+    nodes,
     materials,
   };
 }
@@ -307,7 +335,17 @@ export function updateDieselEngineKinematics(
 ): void {
   const phase = Number.isFinite(phaseRad) ? phaseRad : 0;
   nodes.crank.rotation.z = phase;
-  nodes.plungerP.position.x = -0.12 + Math.sin(phase) * 0.12;
+
+  // Close the slider-crank loop exactly in the crank's XY plane. The grant
+  // does not supply dimensions, so these are stable illustrative proportions;
+  // the mechanical constraint itself is exact at every rendered phase.
+  const crankPin = new THREE.Vector3(0, CRANK_RADIUS, 0)
+    .applyAxisAngle(new THREE.Vector3(0, 0, 1), phase)
+    .add(new THREE.Vector3(CRANK_CENTER_X, 0, 0));
+  const horizontalReach = Math.sqrt(Math.max(CONNECTING_ROD_LENGTH ** 2 - crankPin.y ** 2, 0));
+  const wristPin = new THREE.Vector3(crankPin.x + horizontalReach, 0, 0);
+  nodes.plungerP.position.x = wristPin.x - WRIST_PIN_LOCAL_X;
+  setBoxBeamBetween(nodes.connectingRod, wristPin, crankPin);
   nodes.cylinderLinerSolid.visible = !cutawayMode;
   nodes.cylinderLinerCutaway.visible = cutawayMode;
   nodes.cylinderJacketSolid.visible = !cutawayMode;

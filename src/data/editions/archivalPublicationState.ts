@@ -305,11 +305,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "classic-patentscom-pam",
     "The source hold remains pending independent review.",
   ),
-  "us-x72-whitney-cotton-gin": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-hi0",
-    "Figure provenance must be repaired before publication.",
-  ),
   "gb-1420-cort-puddling-rolling": auditHold(
     "AUDIT_FACSIMILE_REVIEW_PENDING",
     "classic-patentscom-xqu",
@@ -343,6 +338,11 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "AUDIT_FACSIMILE_REVIEW_PENDING",
     "classic-patentscom-qm2",
     "The inherited archival hold remains in force until the source packet is independently accepted.",
+  ),
+  "us-x72-whitney-cotton-gin": auditHold(
+    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
+    "classic-patentscom-hi0",
+    "Lineage across the original and restored drawing sheets remains unresolved; source-sheet evidence is held.",
   ),
   "us-4068536-stackhouse-manipulator": auditHold(
     "FABRICATION_OR_RECONSTRUCTION_QUARANTINE",

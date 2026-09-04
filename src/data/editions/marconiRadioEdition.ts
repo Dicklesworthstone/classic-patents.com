@@ -9,22 +9,22 @@ const text = (value: string): CuratedSpecificationInline => ({ kind: "text", tex
 
 const previews = {
   "1-3": {
-    src: "/patents/figures/us-586193-marconi-radio/figs-1-to-3-source-crop-v1.png",
-    alt: "Figures 1, 2, 2a, and 3 from US 586,193: spark transmitter, reflector, and oscillator section.",
-    width: 1180,
-    height: 1450,
+    src: "/patents/figures/us-586193-marconi-radio/source-sheet-1-v1.png",
+    alt: "Complete primary drawing sheet 1 of 3 from US 586,193: Figures 1, 2, 2a, and 3.",
+    width: 2320,
+    height: 3408,
   },
   "4-8": {
-    src: "/patents/figures/us-586193-marconi-radio/figs-4-to-8-source-crop-v1.png",
-    alt: "Figures 4 through 8 from US 586,193: receiver, sensitive tube, detector, and liquid resistance.",
-    width: 1180,
-    height: 1350,
+    src: "/patents/figures/us-586193-marconi-radio/source-sheet-2-v1.png",
+    alt: "Complete primary drawing sheet 2 of 3 from US 586,193: Figures 4 through 8.",
+    width: 2320,
+    height: 3408,
   },
   "9-11": {
-    src: "/patents/figures/us-586193-marconi-radio/figs-9-to-11-source-crop-v2.png",
-    alt: "Figures 9 through 11 from US 586,193: long-distance, earth-or-water transmission arrangements.",
-    width: 1520,
-    height: 1850,
+    src: "/patents/figures/us-586193-marconi-radio/source-sheet-3-v1.png",
+    alt: "Complete primary drawing sheet 3 of 3 from US 586,193: Figures 9 through 11.",
+    width: 2320,
+    height: 3408,
   },
 } as const;
 

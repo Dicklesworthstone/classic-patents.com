@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import type { ColtLockworkState } from "@/physics/coltRevolverKernel";
+import type { GenericKernelSource } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 
 /**
@@ -40,31 +41,27 @@ export const COLT_HISTORICAL_FINISHES = {
 } as const;
 
 /**
- * Source-informed teaching reconstruction of Samuel Colt's US X9430 pistol.
+ * Samuel Colt's 1836 US X9430 connected lockwork presentation.
  *
- * Display-coordinate geometry (not dimensions printed by the grant):
- * - Center of Cylinder Axis: Y = 0, Z = 0
- * - Five chambers traced from the source drawing on radius R = 0.82 units
- * - Top Firing Chamber: Y = +0.82, Z = 0 (12 o'clock)
- * - Octagonal Barrel Bore: Y = +0.82, Z = 0 (Concentric with Top Chamber)
- * - Center Arbor Axis: Y = 0, Z = 0 (Rigid Axle through Cylinder into Barrel Lug)
- * - Hammer Striker Nose: Y = +0.82, Z = 0 (Strikes Top Percussion Nipple)
+ * The model is a non-dimensional reading aid for the drawing's hammer, key,
+ * lifter, ratchet, shackle, arbor, cylinder, connecting-rod, and trigger.
+ * Its coordinates are display coordinates only; US X9430 supplies no caliber,
+ * scale, mass, force, pressure, timing, ballistic, or stress inputs.
  */
 
 export interface ColtRevolverModel {
   group: THREE.Group;
   cylinderGroup: THREE.Group;
-  ratchetGroup: THREE.Group;
-  shackleCoupling: THREE.Mesh;
-  percussionCapsGroup: THREE.Group;
-  capPartitionsGroup: THREE.Group;
   hammerGroup: THREE.Group;
   triggerGroup: THREE.Group;
+  underbarrelMemberGroup: THREE.Group;
+  underbarrelMember: THREE.Mesh;
   lockworkCutawayGroup: THREE.Group;
   handPawl: THREE.Mesh;
   boltDetent: THREE.Mesh;
   mainspring: THREE.Mesh;
   textures: THREE.Texture[];
+  kernelSource?: GenericKernelSource;
   dispose: () => void;
 }
 
@@ -229,7 +226,7 @@ function createCylinderEngravingTexture(): THREE.CanvasTexture {
 }
 
 /**
- * Builds a connected, source-informed 3D interpretation of the 1836 mechanism.
+ * Builds a procedural, source-bounded lockwork presentation.
  */
 export function buildColtRevolverModel(): ColtRevolverModel {
   const lcg = createLcg(9430);
@@ -283,10 +280,6 @@ export function buildColtRevolverModel(): ColtRevolverModel {
   // Positioned at origin (0, 0, 0)
   const cylinderGroup = new THREE.Group();
   cylinderGroup.position.set(0, 0, 0);
-  const ratchetGroup = new THREE.Group();
-  const percussionCapsGroup = new THREE.Group();
-  const capPartitionsGroup = new THREE.Group();
-  cylinderGroup.add(percussionCapsGroup, capPartitionsGroup);
 
   const cylinderLength = 2.7;
   const cylinderRadius = 1.32;
@@ -324,26 +317,12 @@ export function buildColtRevolverModel(): ColtRevolverModel {
   const centerHole = new THREE.Mesh(centerHoleGeo, boreInteriorMat);
   cylinderGroup.add(centerHole);
 
-  // Rear ratchet is an independently articulated body. Claim 5's shackle is
-  // what transfers this rotation to the cylinder; keeping both coordinates
-  // separate makes the claimed connection observable rather than decorative.
+  // Rear Ratchet Indexing Star (5-Tooth Steel Cam for Hand Pawl)
   const ratchetGeo = new THREE.CylinderGeometry(0.52, 0.56, 0.32, 10);
   ratchetGeo.rotateZ(Math.PI / 2);
   const ratchetStar = new THREE.Mesh(ratchetGeo, caseHardenedMat);
   ratchetStar.position.set(-cylinderLength / 2 - 0.16, 0, 0);
-  ratchetGroup.add(ratchetStar);
-  for (let tooth = 0; tooth < chamberCount; tooth++) {
-    const angle = (tooth * Math.PI * 2) / chamberCount;
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.2, 0.18), caseHardenedMat);
-    mesh.position.set(
-      -cylinderLength / 2 - 0.18,
-      Math.cos(angle) * 0.55,
-      Math.sin(angle) * 0.55,
-    );
-    mesh.rotation.x = angle;
-    ratchetGroup.add(mesh);
-  }
-  rootGroup.add(ratchetGroup);
+  cylinderGroup.add(ratchetStar);
 
   // 5 Chamber Bores, Nipple Recesses, Isolating Partition Walls, and Locking Notches
   for (let c = 0; c < chamberCount; c++) {
@@ -351,7 +330,7 @@ export function buildColtRevolverModel(): ColtRevolverModel {
     const cy = Math.cos(theta) * chamberPitchRadius;
     const cz = Math.sin(theta) * chamberPitchRadius;
 
-    // Chamber bore. The grant does not print a caliber or ballistic load card.
+    // Display chamber opening: this is not a caliber or load geometry.
     const chamberGeo = new THREE.CylinderGeometry(0.23, 0.23, cylinderLength + 0.02, 16);
     chamberGeo.rotateZ(Math.PI / 2);
     const chamberMesh = new THREE.Mesh(chamberGeo, boreInteriorMat);
@@ -377,7 +356,7 @@ export function buildColtRevolverModel(): ColtRevolverModel {
     capGeo.rotateZ(Math.PI / 2);
     const capMesh = new THREE.Mesh(capGeo, percussionCapMat);
     capMesh.position.set(-cylinderLength / 2 - 0.14, cy, cz);
-    percussionCapsGroup.add(capMesh);
+    cylinderGroup.add(capMesh);
 
     // Radial Flash-Barrier Partition Walls (Claim 3) between Nipples
     const partTheta = theta + Math.PI / chamberCount;
@@ -387,7 +366,7 @@ export function buildColtRevolverModel(): ColtRevolverModel {
     partGeo.rotateX(partTheta);
     const partitionWall = new THREE.Mesh(partGeo, bluedBarrelMat);
     partitionWall.position.set(-cylinderLength / 2 - 0.06, partPy, partPz);
-    capPartitionsGroup.add(partitionWall);
+    cylinderGroup.add(partitionWall);
 
     // Fluted Scallop Grooves on Outer Cylinder Body
     const fy = Math.cos(partTheta) * (cylinderRadius + 0.02);
@@ -419,19 +398,12 @@ export function buildColtRevolverModel(): ColtRevolverModel {
   arborPin.position.set(0.6, 0, 0);
   rootGroup.add(arborPin);
 
-  // Source shackle/coupling collar between ratchet and cylinder (Claim 5).
-  const shackleGeo = new THREE.TorusGeometry(0.38, 0.075, 10, 28);
-  shackleGeo.rotateY(Math.PI / 2);
-  const shackleCoupling = new THREE.Mesh(shackleGeo, polishedBrassMat);
-  shackleCoupling.position.set(-cylinderLength / 2 - 0.02, 0, 0);
-  rootGroup.add(shackleCoupling);
-
   // --- 4. OCTAGONAL RIFLED BARREL & UNDER-LUG (US X9430 Fig. 1) ---
   // Barrel Axis is PRECISELY at Y = +0.82, Z = 0 (Concentric with Top Chamber)
   const barrelGroup = new THREE.Group();
   barrelGroup.position.set(0, 0, 0);
 
-  const barrelLength = 6.6;
+  const barrelLength = 6.6; // 7.5-inch Paterson barrel
   const barrelStartX = cylinderLength / 2 + 0.05; // 1.40
   const barrelCenterX = barrelStartX + barrelLength / 2; // 4.70
 
@@ -451,26 +423,26 @@ export function buildColtRevolverModel(): ColtRevolverModel {
   barrelGroup.add(topRibMesh);
 
   // Recessed Muzzle Crown & 7-Groove Rifling Lands
-  const muzzleX = barrelStartX + barrelLength;
+  const barrelEndX = barrelStartX + barrelLength;
   const crownGeo = new THREE.RingGeometry(0.18, 0.38, 16);
   crownGeo.rotateY(Math.PI / 2);
   const crownMesh = new THREE.Mesh(crownGeo, bluedBarrelMat);
-  crownMesh.position.set(muzzleX + 0.005, 0.82, 0);
+  crownMesh.position.set(barrelEndX + 0.005, 0.82, 0);
   barrelGroup.add(crownMesh);
 
   const boreHoleGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.8, 16);
   boreHoleGeo.rotateZ(Math.PI / 2);
   const boreHoleMesh = new THREE.Mesh(boreHoleGeo, boreInteriorMat);
-  boreHoleMesh.position.set(muzzleX - 0.35, 0.82, 0);
+  boreHoleMesh.position.set(barrelEndX - 0.35, 0.82, 0);
   barrelGroup.add(boreHoleMesh);
 
   // German Silver / Brass Bead Front Sight Blade
   const sightBase = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.08, 0.06), bluedBarrelMat);
-  sightBase.position.set(muzzleX - 0.45, 0.82 + 0.45, 0);
+  sightBase.position.set(barrelEndX - 0.45, 0.82 + 0.45, 0);
   barrelGroup.add(sightBase);
 
   const sightBead = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.18, 8), polishedBrassMat);
-  sightBead.position.set(muzzleX - 0.45, 0.82 + 0.56, 0);
+  sightBead.position.set(barrelEndX - 0.45, 0.82 + 0.56, 0);
   barrelGroup.add(sightBead);
 
   // Heavy Forged Barrel Under-Lug (Anchors barrel to arbor pin)
@@ -492,15 +464,15 @@ export function buildColtRevolverModel(): ColtRevolverModel {
 
   rootGroup.add(barrelGroup);
 
-  // --- 5. ARTICULATED LOADING LEVER & RAMMER (1839 Paterson Patent Addendum) ---
-  const loadingLeverGroup = new THREE.Group();
-  loadingLeverGroup.position.set(0, 0, 0);
+  // --- 5. STATIC UNDER-BARREL MEMBER (display geometry; not a load simulation) ---
+  const underbarrelMemberGroup = new THREE.Group();
+  underbarrelMemberGroup.position.set(0, 0, 0);
 
   const leverHandleGeo = new THREE.CylinderGeometry(0.065, 0.085, 4.4, 12);
   leverHandleGeo.rotateZ(Math.PI / 2);
   const leverHandle = new THREE.Mesh(leverHandleGeo, caseHardenedMat);
   leverHandle.position.set(barrelStartX + 2.5, -0.42, 0);
-  loadingLeverGroup.add(leverHandle);
+  underbarrelMemberGroup.add(leverHandle);
 
   // Hinged Fulcrum Linkage pinned to barrel under-lug
   const leverFulcrum = new THREE.Mesh(
@@ -508,31 +480,31 @@ export function buildColtRevolverModel(): ColtRevolverModel {
     polishedBrassMat,
   );
   leverFulcrum.position.set(barrelStartX + 0.7, -0.28, 0);
-  loadingLeverGroup.add(leverFulcrum);
+  underbarrelMemberGroup.add(leverFulcrum);
 
-  // Reciprocating Rammer Plunger (aligned with 6 o'clock bottom chamber at Y = -0.82)
-  const rammerPlunger = new THREE.Mesh(
+  // Static display member below the barrel; it has no loading-cycle state.
+  const underbarrelMember = new THREE.Mesh(
     new THREE.CylinderGeometry(0.18, 0.18, 1.8, 14),
     bluedBarrelMat,
   );
-  rammerPlunger.rotateZ(Math.PI / 2);
-  rammerPlunger.position.set(barrelStartX - 0.2, -0.82, 0);
-  loadingLeverGroup.add(rammerPlunger);
+  underbarrelMember.rotateZ(Math.PI / 2);
+  underbarrelMember.position.set(barrelStartX - 0.2, -0.82, 0);
+  underbarrelMemberGroup.add(underbarrelMember);
 
   // Under-barrel Lever Catch Clip
   const leverCatch = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.24, 0.16), bluedBarrelMat);
   leverCatch.position.set(barrelStartX + 4.2, 0.35, 0);
-  loadingLeverGroup.add(leverCatch);
+  underbarrelMemberGroup.add(leverCatch);
 
-  rootGroup.add(loadingLeverGroup);
+  rootGroup.add(underbarrelMemberGroup);
 
-  // --- 6. CASE-HARDENED RECEIVER FRAME & RECOIL SHIELD (US X9430 Fig. 4) ---
+  // --- 6. CASE-HARDENED RECEIVER FRAME AND SHIELD (US X9430 Fig. 4) ---
   const frameGroup = new THREE.Group();
   frameGroup.position.set(0, 0, 0);
 
   const frameRearX = -cylinderLength / 2 - 0.05; // -1.40
 
-  // Lower Frame Bed (runs beneath cylinder to connect front lug to rear recoil shield)
+  // Lower frame bed connecting the front lug and rear shield.
   const lowerBedGeo = new THREE.BoxGeometry(3.6, 0.55, 0.92);
   const lowerBed = new THREE.Mesh(lowerBedGeo, caseHardenedMat);
   lowerBed.position.set(-0.6, -1.38, 0);
@@ -542,12 +514,12 @@ export function buildColtRevolverModel(): ColtRevolverModel {
   // Curved Recoil Shield & Cap Loading Channel
   const shieldGeo = new THREE.SphereGeometry(1.52, 32, 24, 0, Math.PI, 0, Math.PI / 2);
   shieldGeo.rotateY(Math.PI / 2);
-  const recoilShield = new THREE.Mesh(shieldGeo, caseHardenedMat);
-  recoilShield.position.set(frameRearX - 0.4, 0.0, 0);
-  recoilShield.castShadow = true;
-  frameGroup.add(recoilShield);
+  const rearShield = new THREE.Mesh(shieldGeo, caseHardenedMat);
+  rearShield.position.set(frameRearX - 0.4, 0.0, 0);
+  rearShield.castShadow = true;
+  frameGroup.add(rearShield);
 
-  // Percussion Capping Loading Cutout (Right-hand recoil shield notch)
+  // Percussion-cap shield cutout.
   const capCutout = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.6, 0.5), boreInteriorMat);
   capCutout.position.set(frameRearX - 0.2, 0.4, 0.85);
   frameGroup.add(capCutout);
@@ -697,66 +669,6 @@ export function buildColtRevolverModel(): ColtRevolverModel {
   lockworkCutawayGroup.visible = false;
   rootGroup.add(lockworkCutawayGroup);
 
-  // --- 11. MUZZLE BLAST FLARE, EXPANDING SMOKE & INCANDESCENT SPARKS ---
-  // Centered exactly at the barrel muzzle: X = muzzleX, Y = +0.82, Z = 0
-  const blastGroup = new THREE.Group();
-  blastGroup.position.set(muzzleX + 0.1, 0.82, 0);
-
-  // Incandescent Muzzle Flash Cone & Flame Corona
-  const blastGeo = new THREE.ConeGeometry(0.85, 3.2, 16);
-  blastGeo.rotateZ(-Math.PI / 2);
-  const blastMat = new THREE.MeshBasicMaterial({
-    color: 0xffaa22,
-    transparent: true,
-    opacity: 0,
-    blending: THREE.AdditiveBlending,
-  });
-  const blastMesh = new THREE.Mesh(blastGeo, blastMat);
-  blastMesh.position.set(1.5, 0, 0);
-  blastGroup.add(blastMesh);
-
-  // Expanding Black Powder Smoke Puff Cloud
-  const smokeCount = 45;
-  const smokeGeo = new THREE.BufferGeometry();
-  const smokePositions = new Float32Array(smokeCount * 3);
-  for (let s = 0; s < smokeCount; s++) {
-    smokePositions[s * 3] = 0.5 + lcg() * 3.5;
-    smokePositions[s * 3 + 1] = (lcg() - 0.5) * 1.8;
-    smokePositions[s * 3 + 2] = (lcg() - 0.5) * 1.8;
-  }
-  smokeGeo.setAttribute("position", new THREE.BufferAttribute(smokePositions, 3));
-  const smokeMat = new THREE.PointsMaterial({
-    color: 0xd4d8df,
-    size: 0.9,
-    transparent: true,
-    opacity: 0,
-    blending: THREE.NormalBlending,
-  });
-  const smokeMesh = new THREE.Points(smokeGeo, smokeMat);
-  blastGroup.add(smokeMesh);
-
-  // Burning Charcoal & Potassium Nitrate Spark Trails
-  const sparkCount = 35;
-  const sparkGeo = new THREE.BufferGeometry();
-  const sparkPos = new Float32Array(sparkCount * 3);
-  for (let k = 0; k < sparkCount; k++) {
-    sparkPos[k * 3] = (lcg() - 0.5) * 4;
-    sparkPos[k * 3 + 1] = (lcg() - 0.5) * 2;
-    sparkPos[k * 3 + 2] = (lcg() - 0.5) * 2;
-  }
-  sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPos, 3));
-  const sparkMat = new THREE.PointsMaterial({
-    color: 0xffe066,
-    size: 0.22,
-    transparent: true,
-    opacity: 0,
-    blending: THREE.AdditiveBlending,
-  });
-  const sparkPoints = new THREE.Points(sparkGeo, sparkMat);
-  blastGroup.add(sparkPoints);
-
-  rootGroup.add(blastGroup);
-
   const dispose = () => {
     for (const tex of textures) {
       tex.dispose();
@@ -778,12 +690,8 @@ export function buildColtRevolverModel(): ColtRevolverModel {
     cylinderGroup,
     hammerGroup,
     triggerGroup,
-    loadingLeverGroup,
-    rammerPlunger,
-    blastGroup,
-    blastMesh,
-    smokeMesh,
-    sparkPoints,
+    underbarrelMemberGroup,
+    underbarrelMember,
     lockworkCutawayGroup,
     handPawl,
     boltDetent,
@@ -794,93 +702,38 @@ export function buildColtRevolverModel(): ColtRevolverModel {
 }
 
 /**
- * Updates Colt Paterson revolver hammer cocking, cylinder rotation, folding trigger drop, rammer, lockwork, and firing blast.
+ * Updates the common source-order pose. Display angles are normalized
+ * presentation coordinates emitted by the kernel, not historical measurements.
  */
 export function updateColtRevolverKinematics(
   model: ColtRevolverModel,
-  cockingAngleDeg: number,
-  currentChamberIndex: number,
-  rammerPositionPct: number,
-  isFiring: boolean,
+  state: ColtLockworkState,
   showLockworkCutaway: boolean,
-  firingPhase: number = 0,
-  cylinderRotationOverrideRad?: number,
 ): void {
-  const cockProgress = Math.min(1, Math.max(0, cockingAngleDeg / 45));
+  const cockProgress = state.cockingProgress01;
 
-  // Hammer rotation: 0° (hammer down resting on cap) to 45° (full cock)
-  model.hammerGroup.rotation.z = -(cockingAngleDeg * Math.PI) / 180;
+  model.hammerGroup.rotation.z = -(state.displayHammerAngleDeg * Math.PI) / 180;
 
   // Folding Trigger drop: emerges from frame slot as hammer is cocked
   const triggerDeployY = -0.3 - cockProgress * 0.38;
   model.triggerGroup.position.y = triggerDeployY;
-  const triggerPullZ = isFiring ? 0.12 : -cockProgress * 0.25;
-  model.triggerGroup.rotation.z = triggerPullZ;
+  model.triggerGroup.rotation.z = state.safeToReleaseHammer ? 0 : -cockProgress * 0.25;
 
-  // Cylinder indexing: 5 chambers -> 72° per chamber (-2π/5)
-  if (typeof cylinderRotationOverrideRad === "number") {
-    model.cylinderGroup.rotation.x = cylinderRotationOverrideRad;
-  } else {
-    const targetChamberAngle = -((currentChamberIndex - 1) * 2 * Math.PI) / 5;
-    const prevChamberAngle = targetChamberAngle + (2 * Math.PI) / 5;
-    const currentAngle = isFiring
-      ? targetChamberAngle
-      : prevChamberAngle - cockProgress * ((2 * Math.PI) / 5);
-    model.cylinderGroup.rotation.x = currentAngle;
-  }
-
-  // Loading Lever & Creeping Rammer plunger
-  const rammerProgress = Math.min(1, Math.max(0, rammerPositionPct / 100));
-  model.loadingLeverGroup.rotation.z = -rammerProgress * 0.75;
-  model.rammerPlunger.position.x = -rammerProgress * 0.72;
+  model.cylinderGroup.rotation.x = state.cylinderIndexAngleRad;
 
   // Articulated Lockwork Cutaway parts
   if (model.handPawl) {
     model.handPawl.position.y = 0.45 + cockProgress * 0.28;
     model.handPawl.position.x = 0.45 - cockProgress * 0.1;
-    model.handPawl.rotation.z = isFiring ? -0.35 : -0.3 + cockProgress * 0.22;
+    model.handPawl.rotation.z = -0.3 + cockProgress * 0.22;
   }
   if (model.boltDetent) {
-    const boltDrop = cockProgress > 0.08 && cockProgress < 0.88 && !isFiring ? -0.16 : 0;
+    const boltDrop = state.keySeated ? 0 : -0.16;
     model.boltDetent.position.y = -0.75 + boltDrop;
   }
   if (model.mainspring) {
     const springFlex = 1.0 - cockProgress * 0.08;
     model.mainspring.scale.set(springFlex, 1.0 + cockProgress * 0.08, 1.0);
-  }
-
-  // Muzzle flash / smoke explosion during firing
-  if (isFiring) {
-    const field = wave2dFrames(16, 16, 2);
-    const rms = waveFrameRms(field, 16, 16, ((currentChamberIndex % 16) + 16) % 16);
-    model.blastMesh.visible = firingPhase < 0.35;
-    const blastScale = 1.0 + firingPhase * 1.8;
-    model.blastMesh.scale.set(blastScale, blastScale, blastScale);
-    (model.blastMesh.material as THREE.MeshBasicMaterial).opacity = Math.max(
-      0,
-      1.0 - firingPhase * 3.2,
-    );
-
-    const smokeScale = 1.0 + firingPhase * 3.5;
-    model.smokeMesh.scale.set(smokeScale, smokeScale, smokeScale);
-    (model.smokeMesh.material as THREE.PointsMaterial).opacity = Math.max(
-      0,
-      (1.0 - firingPhase) * (0.65 + rms * 0.3),
-    );
-
-    const sparkScale = 1.0 + firingPhase * 2.8;
-    model.sparkPoints.scale.set(sparkScale, sparkScale, sparkScale);
-    (model.sparkPoints.material as THREE.PointsMaterial).opacity = Math.max(
-      0,
-      (1.0 - firingPhase * 1.5) * (0.8 + rms * 0.2),
-    );
-  } else {
-    model.blastMesh.visible = false;
-    (model.blastMesh.material as THREE.MeshBasicMaterial).opacity = 0;
-    (model.smokeMesh.material as THREE.PointsMaterial).opacity = 0;
-    (model.sparkPoints.material as THREE.PointsMaterial).opacity = 0;
-    model.smokeMesh.scale.set(1, 1, 1);
-    model.sparkPoints.scale.set(1, 1, 1);
   }
 
   // Lockwork Cutaway view

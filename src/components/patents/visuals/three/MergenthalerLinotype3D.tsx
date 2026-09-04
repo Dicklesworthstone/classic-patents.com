@@ -2,26 +2,24 @@
 
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepMergenthalerLinotype } from "@/physics/machineKernels";
+import { ensureGenericWasm } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import {
   globalTransportBus,
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
-import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   linotypeCameraForViewport,
   type MergenthalerLinotypeCameraPreset,
 } from "./mergenthalerLinotypeCamera";
 import {
-  buildMergenthalerLinotypeModel,
-  updateMergenthalerLinotypeKinematics,
-} from "./mergenthalerLinotypeModel";
+  buildMergenthalerMatrixBarModel,
+  updateMergenthalerMatrixBarModel,
+} from "./mergenthalerMatrixBarModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -34,26 +32,26 @@ export function MergenthalerLinotype3D() {
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
-  // Linotype Mechanical Composing Parameters
+  useEffect(() => {
+    void ensureGenericWasm();
+  }, []);
+
   const { params, updateParam } = usePatentPhysics("us-313224-mergenthaler-linotype");
-  const matrixRate = params.matrixRate ?? 60;
-  const spacebandWedge = params.spacebandWedge ?? 6.5;
-  const potTempC = params.potTemp ?? 260;
-  const linotypeIdle = stepMergenthalerLinotype({
-    matrixRatePerMin: matrixRate,
-    spacebandWedgeMm: spacebandWedge,
-    potTempC,
-  });
-  const castingLpm = linotypeIdle.linesPerMin;
-  const charsPerHour = linotypeIdle.charsPerHour;
+  // The registry still carries legacy parameter keys for route compatibility.
+  // This source face interprets them only as declared display coordinates; it
+  // never projects later commercial Linotype measurements onto US 313,224.
+  const selectionCadencePerMin = params.matrixRate ?? 60;
+  const stopTravelDisplay = params.spacebandWedge ?? 6.5;
+  const moldClosurePct = Math.round((((params.potTemp ?? 260) - 220) / 100) * 100);
+  const claim1Active = claimStates[1] !== false;
   const [activeCamera, setActiveCamera] = useState<MergenthalerLinotypeCameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const crateSource = useGenericWasmSource();
 
   const live = useLiveSimParams({
-    matrixRate,
-    spacebandWedge,
-    potTempC,
+    selectionCadencePerMin,
+    stopTravelDisplay,
+    moldClosurePct,
+    claim1Active,
     isAudioMuted,
     isCutaway,
   });
@@ -62,43 +60,28 @@ export function MergenthalerLinotype3D() {
   // publish to the patentId-keyed bus.
   useFrankenSimPhysics("us-313224-mergenthaler-linotype", {
     domain: "thermodynamics_transport",
-    refusal: { isRefused: false },
+    refusal: {
+      isRefused: true,
+      reason:
+        "US 313,224 supplies mechanism topology but no dimensions, loads, temperature, pressure, or cadence for an SI solve.",
+    },
   });
 
-  // One tape-bound integrator: the bus updater owns the casting-cycle kernel
-  // step so every reader shares one deterministic phase. Accumulators live in
-  // refs so re-registering on control changes never snaps the cycle back to
-  // zero; the full typed step result rides a ref because the universal tape
-  // carries only the fitting subset (cycle angle + mode label).
-  const elapsedSRef = useRef(0);
-  const cycleStepRef = useRef(linotypeIdle);
+  const cycle01Ref = useRef(0);
   useEffect(() => {
     const integrate: TapeUpdater = (_prev, dt) => {
-      elapsedSRef.current += dt;
-      const next = stepMergenthalerLinotype({
-        matrixRatePerMin: live.current.matrixRate,
-        spacebandWedgeMm: live.current.spacebandWedge,
-        potTempC: live.current.potTempC,
-        elapsedS: elapsedSRef.current,
-      });
-      cycleStepRef.current = next;
+      if (live.current.claim1Active) {
+        cycle01Ref.current =
+          (cycle01Ref.current + (live.current.selectionCadencePerMin / 60) * dt) % 1;
+      }
       return {
-        thermo: {
-          temperatureCelsius: live.current.potTempC,
-          temperatureKelvin: live.current.potTempC + 273.15,
-          pressureAtm: 0,
-          partialPressureButaneAtm: 0,
-          heatInputWatts: 0,
-          coolingPowerWatts: 0,
-          coefficientOfPerformance: 0,
-          blackbodyRadiantPowerWatts: 0,
-          fluidFlowVelocityMps: 0,
-        },
         machine: {
           poseXMeters: 0,
           poseYMeters: 0,
-          headingRad: next.moldAngle,
-          modeLabel: next.slugOut ? "slug ejection" : "matrix distribution",
+          headingRad: cycle01Ref.current * Math.PI * 2,
+          modeLabel: live.current.claim1Active
+            ? "continuous matrix-bar selection"
+            : "excluded flexible-band comparison",
           wheelSpeedMps: 0,
         },
       };
@@ -137,7 +120,7 @@ export function MergenthalerLinotype3D() {
 
     const { scene, camera, renderer, controls } = studio;
 
-    const { rootGroup, nodes, materials, dispose } = buildMergenthalerLinotypeModel();
+    const { rootGroup, nodes, materials, dispose } = buildMergenthalerMatrixBarModel();
     scene.add(rootGroup);
 
     // Animation Loop
@@ -148,30 +131,15 @@ export function MergenthalerLinotype3D() {
       reqId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
       controls.update();
-      const { dt, simTimeSec: timeSec } = clock.pump(now);
+      clock.pump(now);
       const p = live.current;
-
-      // Pure consumer of the shared transport tape: the bus updater owns the
-      // casting-cycle kernel step; this loop reads its latest result.
-      const step = cycleStepRef.current;
-
-      // Update cutaway transparency on metal pot
-      materials.castIron.opacity = p.isCutaway ? 0.35 : 1.0;
-      materials.castIron.transparent = p.isCutaway;
-
-      updateMergenthalerLinotypeKinematics(
-        nodes,
-        materials,
-        dt,
-        timeSec,
-        step.plungerY,
-        step.moldAngle,
-        step.slugOut,
-        step.wedgeLift,
-        p.matrixRate,
-        p.spacebandWedge,
-        p.potTempC,
-      );
+      updateMergenthalerMatrixBarModel(nodes, materials, {
+        cycle01: cycle01Ref.current,
+        stopTravelDisplay: p.stopTravelDisplay,
+        moldClosurePct: p.moldClosurePct,
+        claim1Active: p.claim1Active,
+        cutaway: p.isCutaway,
+      });
 
       renderer.render(scene, camera);
     };
@@ -188,7 +156,7 @@ export function MergenthalerLinotype3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <div className="sr-only">Mergenthaler Linotype 3D</div>
+      <div className="sr-only">Mergenthaler US 313,224 matrix-bar machine 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
@@ -201,10 +169,10 @@ export function MergenthalerLinotype3D() {
             {(
               [
                 ["iso", "Isometric"],
-                ["matrix_magazine", "Magazine"],
-                ["casting_pot", "Casting Pot"],
-                ["spaceband_justifier", "Spacebands"],
-                ["keyboard", "Keyboard"],
+                ["matrix_magazine", "Matrix Bars"],
+                ["casting_pot", "Mold & Pump"],
+                ["spaceband_justifier", "Stops & Clamp"],
+                ["keyboard", "Finger Keys"],
                 ["top", "Top"],
               ] as [MergenthalerLinotypeCameraPreset, string][]
             ).map(([preset, label]) => (
@@ -229,7 +197,7 @@ export function MergenthalerLinotype3D() {
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Switch to Solid Casting" : "Switch to Framework Cutaway"}
+            title={isCutaway ? "Switch to solid frame" : "Show frame cutaway"}
             className={`min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isCutaway
                 ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-700"
@@ -246,7 +214,7 @@ export function MergenthalerLinotype3D() {
           <button
             type="button"
             onClick={toggleSound}
-            title={isAudioMuted ? "Unmute Linecaster Sound" : "Mute Linecaster Sound"}
+            title={isAudioMuted ? "Unmute mechanism sound" : "Mute mechanism sound"}
             className="min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
           >
             {isAudioMuted ? (
@@ -284,20 +252,13 @@ export function MergenthalerLinotype3D() {
 
         <StudioKernelChips
           visible={showUiOverlay}
-          title="Mergenthaler hot-metal linecaster"
+          title="US 313,224 SOURCE-BOUNDED MATRIX-BAR MACHINE"
           chips={[
-            { label: "Lines", value: castingLpm.toFixed(1), unit: "lpm" },
-            { label: "Throughput", value: String(charsPerHour), unit: "char/hr" },
-            { label: "Wedge", value: String(spacebandWedge), unit: "mm" },
-            { label: "Pot", value: String(Math.round(potTempC)), unit: "°C" },
-            { label: "Width", value: String(linotypeIdle.justificationWidthMm), unit: "mm" },
-            { label: "Solid", value: String(linotypeIdle.solidificationTimeMs), unit: "ms" },
-            { label: "Hardness", value: String(linotypeIdle.brinellHardness), unit: "HB" },
-            { label: "Dist", value: String(linotypeIdle.distributorFreqHz), unit: "Hz" },
-            {
-              label: "Mag crate",
-              value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
-            },
+            { label: "Claim 1", value: claim1Active ? "continuous bar" : "excluded band" },
+            { label: "Cadence", value: String(selectionCadencePerMin), unit: "display/min" },
+            { label: "Stop travel", value: stopTravelDisplay.toFixed(1), unit: "display mm" },
+            { label: "Mold", value: String(moldClosurePct), unit: "% closed" },
+            { label: "Kernel", value: "typed refusal — no SI data" },
           ]}
         />
       </div>
@@ -308,19 +269,19 @@ export function MergenthalerLinotype3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Matrix Assembly Rate
+                Declared Selection Cadence
               </span>
               <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {matrixRate} char/min
+                {selectionCadencePerMin} display/min
               </span>
             </div>
             <input
               type="range"
-              aria-label="Matrix assembly rate"
+              aria-label="Declared matrix-bar selection cadence"
               min="20"
               max="120"
               step="5"
-              value={matrixRate}
+              value={selectionCadencePerMin}
               onChange={(e) => updateParam("matrixRate", Number.parseFloat(e.target.value))}
               className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
             />
@@ -329,19 +290,19 @@ export function MergenthalerLinotype3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Spaceband Wedge Lift
+                Selected-Bar Stop Travel
               </span>
               <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {spacebandWedge.toFixed(1)} mm
+                {stopTravelDisplay.toFixed(1)} display mm
               </span>
             </div>
             <input
               type="range"
-              aria-label="Spaceband wedge lift"
+              aria-label="Selected matrix-bar stop travel"
               min="3"
               max="10"
               step="0.5"
-              value={spacebandWedge}
+              value={stopTravelDisplay}
               onChange={(e) => updateParam("spacebandWedge", Number.parseFloat(e.target.value))}
               className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
             />
@@ -350,20 +311,20 @@ export function MergenthalerLinotype3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Melting Pot Temperature
+                Sectional Mold Closure
               </span>
               <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {potTempC} °C
+                {moldClosurePct}%
               </span>
             </div>
             <input
               type="range"
-              aria-label="Melting pot temperature"
-              min="230"
-              max="320"
+              aria-label="Sectional mold closure percentage"
+              min="0"
+              max="100"
               step="5"
-              value={potTempC}
-              onChange={(e) => updateParam("potTemp", Number.parseFloat(e.target.value))}
+              value={moldClosurePct}
+              onChange={(e) => updateParam("potTemp", 220 + Number.parseFloat(e.target.value))}
               className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-emerald-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
             />
           </div>
@@ -377,12 +338,12 @@ export function MergenthalerLinotype3D() {
           }
           className="mt-2"
         />
-
-        <PortHamiltonianEnergyStrip
-          patentId="us-313224-mergenthaler-linotype"
-          params={params}
-          className="mt-3"
-        />
+        <p className="mt-3 text-[11px] leading-relaxed text-amber-800 dark:text-amber-300">
+          Source boundary: the grant supplies the continuous matrix-bars, key-set stops, clamp,
+          sectional mold, and force-pump topology. It supplies no dimensions, alloy recipe,
+          temperature, pressure, cadence, or later magazine/distributor system; display travel and
+          cadence therefore remain explicitly illustrative, and no WASM/SI step is claimed.
+        </p>
       </div>
     </div>
   );

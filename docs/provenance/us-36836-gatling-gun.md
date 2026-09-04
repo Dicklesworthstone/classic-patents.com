@@ -18,7 +18,7 @@ The published continuous edition in `src/data/editions/gatlingGunEdition.ts` was
 
 | Material | PDF locator | Edition treatment |
 | --- | --- | --- |
-| Signed drawing sheet, title, and Figures 1–7 | PDF sheet 1 | Individual local preview crops; explicit figure-reference nodes in the description and figure-sheet node; reviewed-transcription ledger page 1 |
+| Signed drawing sheet, title, and Figures 1–7 | PDF sheet 1 | Complete 300 DPI primary source sheet; explicit figure-reference nodes in the description and figure-sheet node; reviewed-transcription ledger page 1 |
 | Patent-office masthead, inventor/title, formal notice | PDF sheet 2, top | Authored masthead and opening paragraphs; reviewed-transcription ledger page 2 |
 | Figure descriptions | PDF sheet 2, left column, opening paragraph | Explicit links to Figures 1–7 |
 | Construction of barrels, carrier, lock-cylinder, ring P | PDF sheet 2, both columns | Consecutive authored paragraphs with period terms annotated where needed |
@@ -31,3 +31,15 @@ The published continuous edition in `src/data/editions/gatlingGunEdition.ts` was
 `public/patents/transcripts/us-36836-gatling-gun-reviewed.txt` is the accountable three-page review ledger for the continuous edition. It is pinned in the catalogue as a `reviewed-transcription`, names its reviewer and review date, and carries the source PDF digest above. It records the page coverage without imposing source-sheet breaks on the visitor-facing React edition.
 
 `public/patents/source-text/us-36836-gatling-gun.txt` and `public/patents/transcripts/us-36836-gatling-gun.txt` are retained comparison layers. They are not the published manual edition and must not be used as evidence of source accuracy. The complete visitor-facing source reading is represented only by the explicitly typed `manual-react-edition` nodes.
+
+## Complete source-sheet acceptance — 2026-09-04
+
+`public/patents/figures/us-36836-gatling-gun/source-sheet-1-v1.png` is the
+complete upright 2320 × 3408 pixel render of pinned PDF page 1. Direct visual
+review confirmed the signed title sheet and every printed figure—1 through 7.
+Its SHA-256 is
+`991fa201957e5a571044f89e47342f3b3b645a7c381026619da25be9c003facd`.
+All 21 authored figure-reference occurrences are bound to that full source
+sheet with page-1 locators in `figureOccurrenceSourceLocators.ts`. Older
+isolated previews remain preserved research assets; they are not the active
+archival evidence.

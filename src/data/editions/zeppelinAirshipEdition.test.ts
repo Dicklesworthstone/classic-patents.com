@@ -28,7 +28,7 @@ test("US 621,195 publishes its source face with the reviewed transcript bound", 
   expect(Object.keys(zeppelinAirshipParallelReadings).map(Number)).toEqual(paragraphIndexes);
 });
 
-test("US 621,195 keeps every supplied figure preview at its source citation", () => {
+test("US 621,195 keeps every supplied figure reference on a complete source sheet", () => {
   const references = zeppelinAirshipArchivalEdition.blocks.flatMap((block) => {
     if (!("inlines" in block)) return [];
     return block.inlines.filter(
@@ -37,13 +37,17 @@ test("US 621,195 keeps every supplied figure preview at its source citation", ()
     );
   });
 
-  for (const number of Array.from({ length: 10 }, (_, index) => index + 1)) {
-    const preview = references
-      .flatMap((reference) => reference.figurePreviews ?? [])
-      .find((value) => value.alt.includes(`Fig. ${number} `));
-    expect(preview).toBeDefined();
-    if (!preview) continue;
+  const previews = references.flatMap((reference) => reference.figurePreviews ?? []);
+  expect([...new Set(previews.map((preview) => preview.src)).values()].toSorted()).toEqual([
+    "/patents/figures/us-621195-zeppelin-airship/source-sheet-1-v1.png",
+    "/patents/figures/us-621195-zeppelin-airship/source-sheet-2-v1.png",
+    "/patents/figures/us-621195-zeppelin-airship/source-sheet-3-v1.png",
+    "/patents/figures/us-621195-zeppelin-airship/source-sheet-4-v1.png",
+  ]);
+  for (const preview of previews) {
     expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+    expect(preview.width).toBe(2320);
+    expect(preview.height).toBe(3408);
   }
 
   const renderedSource = JSON.stringify(zeppelinAirshipArchivalEdition);
@@ -107,11 +111,11 @@ test("US 621,195 registers explicit energy channel omission reason", () => {
   expect(energyChannelsFor("us-621195-zeppelin-airship", {})).toEqual([]);
 });
 
-test("US 621,195 enforces figure acceptance pending hold while ledger is verified", () => {
+test("US 621,195 accepts independent figure evidence while retaining the source omission note", () => {
   const { evaluateArchivalPublicationState } = require("./publicationApproval");
   const decision = evaluateArchivalPublicationState(zeppelinAirshipPatent);
-  expect(decision.isPublished).toBe(false);
-  expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+  expect(decision.isPublished).toBe(true);
+  expect(decision.reasonCode).toBe("ACCEPTED");
   expect(decision.state.evidence.ledgerContent.valid).toBe(true);
   expect(decision.state.evidence.ledgerContent.status).toBe("verified");
 });

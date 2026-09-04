@@ -24,10 +24,10 @@ describe("Publication Approval State Machine", () => {
   });
 
   it("withholds a crop-attested edition until every occurrence has a source locator", () => {
-    const gatling = allPatents.find((p) => p.id === "us-36836-gatling-gun");
-    if (!gatling) throw new Error("Gatling gun patent not found");
+    const lemelson = allPatents.find((p) => p.id === "us-3313014-lemelson-automatic-production");
+    if (!lemelson) throw new Error("Lemelson automatic production patent not found");
 
-    const decision = evaluateArchivalPublicationState(gatling);
+    const decision = evaluateArchivalPublicationState(lemelson);
     expect(decision.status).toBe("withheld-pending-review");
     expect(decision.isPublished).toBe(false);
     expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");

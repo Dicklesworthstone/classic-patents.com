@@ -529,6 +529,56 @@ const KILBY_INTEGRATED_CIRCUIT_OCCURRENCES = Object.fromEntries(
     locator.activeAsset,
   ]),
 );
+const GATLING_GUN_ID = "us-36836-gatling-gun";
+const GATLING_GUN_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[GATLING_GUN_ID].assets,
+);
+const GATLING_GUN_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[GATLING_GUN_ID].map((locator) => [
+    locator.occurrenceKey,
+    locator.activeAsset,
+  ]),
+);
+const OTTO_ENGINE_ID = "us-194047-otto-engine";
+const OTTO_ENGINE_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[OTTO_ENGINE_ID].assets,
+);
+const OTTO_ENGINE_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[OTTO_ENGINE_ID].map((locator) => [
+    locator.occurrenceKey,
+    locator.activeAsset,
+  ]),
+);
+const MARCONI_RADIO_ID = "us-586193-marconi-radio";
+const MARCONI_RADIO_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[MARCONI_RADIO_ID].assets,
+);
+const MARCONI_RADIO_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[MARCONI_RADIO_ID].map((locator) => [
+    locator.occurrenceKey,
+    locator.activeAsset,
+  ]),
+);
+const ZEPPELIN_AIRSHIP_ID = "us-621195-zeppelin-airship";
+const ZEPPELIN_AIRSHIP_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[ZEPPELIN_AIRSHIP_ID].assets,
+);
+const ZEPPELIN_AIRSHIP_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[ZEPPELIN_AIRSHIP_ID].map((locator) => [
+    locator.occurrenceKey,
+    locator.activeAsset,
+  ]),
+);
+const LEMELSON_AUTOMATIC_WAREHOUSING_ID = "us-3119501-lemelson-automatic-warehousing";
+const LEMELSON_AUTOMATIC_WAREHOUSING_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[LEMELSON_AUTOMATIC_WAREHOUSING_ID].assets,
+);
+const LEMELSON_AUTOMATIC_WAREHOUSING_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[LEMELSON_AUTOMATIC_WAREHOUSING_ID].map((locator) => [
+    locator.occurrenceKey,
+    locator.activeAsset,
+  ]),
+);
 const WHITNEY_COTTON_GIN_ID = "us-x72-whitney-cotton-gin";
 const WHITNEY_COTTON_GIN_ASSETS = Object.keys(
   ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[WHITNEY_COTTON_GIN_ID].assets,
@@ -1113,8 +1163,17 @@ const OTIS_ELEVATOR_OCCURRENCES = Object.fromEntries(
   FIGURE_OCCURRENCE_SOURCE_LOCATORS[OTIS_ELEVATOR_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
 );
 
+const WOZNIAK_APPLE_ID = "us-4136359-wozniak-apple";
+const WOZNIAK_APPLE_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[WOZNIAK_APPLE_ID].assets,
+);
+const WOZNIAK_APPLE_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[WOZNIAK_APPLE_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
+);
+
 const VALIDATION_OPTIONS = {
   canonicalAssetsByPatent: {
+    [WOZNIAK_APPLE_ID]: WOZNIAK_APPLE_ASSETS,
     [HULL_ID]: HULL_ASSETS,
     [KAMEN_TRANSPORTER_ID]: KAMEN_TRANSPORTER_ASSETS,
     [KAMEN_SEGWAY_ID]: KAMEN_SEGWAY_ASSETS,
@@ -1168,6 +1227,11 @@ const VALIDATION_OPTIONS = {
     [CRUMP_FDM_ID]: CRUMP_FDM_ASSETS,
     [HOLLERITH_TABULATING_ID]: HOLLERITH_TABULATING_ASSETS,
     [KILBY_INTEGRATED_CIRCUIT_ID]: KILBY_INTEGRATED_CIRCUIT_ASSETS,
+    [GATLING_GUN_ID]: GATLING_GUN_ASSETS,
+    [OTTO_ENGINE_ID]: OTTO_ENGINE_ASSETS,
+    [MARCONI_RADIO_ID]: MARCONI_RADIO_ASSETS,
+    [ZEPPELIN_AIRSHIP_ID]: ZEPPELIN_AIRSHIP_ASSETS,
+    [LEMELSON_AUTOMATIC_WAREHOUSING_ID]: LEMELSON_AUTOMATIC_WAREHOUSING_ASSETS,
     [WHITNEY_COTTON_GIN_ID]: WHITNEY_COTTON_GIN_ASSETS,
     [ROOMBA_ID]: ROOMBA_ASSETS,
     [CORLISS_ID]: CORLISS_ASSETS,
@@ -1240,7 +1304,13 @@ const VALIDATION_OPTIONS = {
     [CRUMP_FDM_ID]: CRUMP_FDM_OCCURRENCES,
     [HOLLERITH_TABULATING_ID]: HOLLERITH_TABULATING_OCCURRENCES,
     [KILBY_INTEGRATED_CIRCUIT_ID]: KILBY_INTEGRATED_CIRCUIT_OCCURRENCES,
+    [GATLING_GUN_ID]: GATLING_GUN_OCCURRENCES,
+    [OTTO_ENGINE_ID]: OTTO_ENGINE_OCCURRENCES,
+    [MARCONI_RADIO_ID]: MARCONI_RADIO_OCCURRENCES,
+    [ZEPPELIN_AIRSHIP_ID]: ZEPPELIN_AIRSHIP_OCCURRENCES,
+    [LEMELSON_AUTOMATIC_WAREHOUSING_ID]: LEMELSON_AUTOMATIC_WAREHOUSING_OCCURRENCES,
     [WHITNEY_COTTON_GIN_ID]: WHITNEY_COTTON_GIN_OCCURRENCES,
+    [WOZNIAK_APPLE_ID]: WOZNIAK_APPLE_OCCURRENCES,
     [ROOMBA_ID]: ROOMBA_OCCURRENCES,
     [CORLISS_ID]: CORLISS_OCCURRENCES,
     [LINDE_AIR_LIQUEFACTION_ID]: LINDE_AIR_LIQUEFACTION_OCCURRENCES,
@@ -1259,6 +1329,7 @@ const VALIDATION_OPTIONS = {
     [MCCORMICK_REAPER_ID]: MCCORMICK_REAPER_OCCURRENCES,
   },
   sourcePdfPageCountsByPatent: {
+    [WOZNIAK_APPLE_ID]: 7,
     [HULL_ID]: 16,
     [KAMEN_TRANSPORTER_ID]: 48,
     [KAMEN_SEGWAY_ID]: 29,
@@ -1312,6 +1383,11 @@ const VALIDATION_OPTIONS = {
     [CRUMP_FDM_ID]: 15,
     [HOLLERITH_TABULATING_ID]: 17,
     [KILBY_INTEGRATED_CIRCUIT_ID]: 9,
+    [GATLING_GUN_ID]: 3,
+    [OTTO_ENGINE_ID]: 8,
+    [MARCONI_RADIO_ID]: 11,
+    [ZEPPELIN_AIRSHIP_ID]: 7,
+    [LEMELSON_AUTOMATIC_WAREHOUSING_ID]: 8,
     [WHITNEY_COTTON_GIN_ID]: 12,
     [ROOMBA_ID]: 26,
     [CORLISS_ID]: 8,
@@ -1389,7 +1465,13 @@ describe("figure occurrence source locators", () => {
       CRUMP_FDM_ID,
       HOLLERITH_TABULATING_ID,
       KILBY_INTEGRATED_CIRCUIT_ID,
+      OTTO_ENGINE_ID,
+      MARCONI_RADIO_ID,
+      ZEPPELIN_AIRSHIP_ID,
+      LEMELSON_AUTOMATIC_WAREHOUSING_ID,
+      GATLING_GUN_ID,
       WHITNEY_COTTON_GIN_ID,
+      WOZNIAK_APPLE_ID,
       ROOMBA_ID,
       CORLISS_ID,
       LINDE_AIR_LIQUEFACTION_ID,
@@ -1494,6 +1576,19 @@ describe("figure occurrence source locators", () => {
         "docs/provenance/us-3858581-kamen-medication-injection-device.md#figure-crop-review-and-preservation-boundary",
       );
     }
+  });
+
+  test("validates US 4,136,359 Wozniak Apple microcomputer figure occurrence locators against active edition", () => {
+    expect(FIGURE_OCCURRENCE_SOURCE_LOCATORS[WOZNIAK_APPLE_ID]).toHaveLength(30);
+    const result = validateFigureOccurrenceSourceLocators(
+      { [WOZNIAK_APPLE_ID]: FIGURE_OCCURRENCE_SOURCE_LOCATORS[WOZNIAK_APPLE_ID] },
+      {
+        canonicalAssetsByPatent: { [WOZNIAK_APPLE_ID]: WOZNIAK_APPLE_ASSETS },
+        canonicalOccurrencesByPatent: { [WOZNIAK_APPLE_ID]: WOZNIAK_APPLE_OCCURRENCES },
+        sourcePdfPageCountsByPatent: { [WOZNIAK_APPLE_ID]: 7 },
+      },
+    );
+    expect(result.valid, result.errors.join("\n")).toBe(true);
   });
 
   test("derives normalized rectangles from the exact source pixels", () => {

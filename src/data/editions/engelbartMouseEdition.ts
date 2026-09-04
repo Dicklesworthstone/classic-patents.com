@@ -5,16 +5,14 @@ const p = (value: string | CuratedSpecificationInlines) => ({
   kind: "paragraph" as const,
   inlines: typeof value === "string" ? [text(value)] : value,
 });
-const mouseFigureAssets: Readonly<
-  Record<number, { width: number; height: number; version: "v1" | "v2" | "v4" }>
-> = {
-  1: { width: 1550, height: 850, version: "v2" },
-  2: { width: 1900, height: 640, version: "v4" },
-  3: { width: 2000, height: 1050, version: "v2" },
-  4: { width: 1550, height: 650, version: "v2" },
-  5: { width: 1550, height: 700, version: "v2" },
-  6: { width: 1550, height: 980, version: "v2" },
-  7: { width: 1300, height: 1450, version: "v1" },
+const mouseFigureSourceSheets: Readonly<Record<number, number>> = {
+  1: 1,
+  2: 1,
+  3: 1,
+  4: 2,
+  5: 2,
+  6: 2,
+  7: 3,
 };
 
 const figure = (
@@ -27,18 +25,19 @@ const figure = (
 ) => {
   const previewFigures = options.previewFigures ?? [figureNumber];
   const previews = previewFigures.map((previewFigure) => {
-    const asset = mouseFigureAssets[previewFigure];
-    if (!asset) throw new Error(`US 3,541,541 is missing Figure ${previewFigure} crop metadata.`);
+    const sheet = mouseFigureSourceSheets[previewFigure];
+    if (!sheet)
+      throw new Error(`US 3,541,541 is missing Figure ${previewFigure} source-sheet metadata.`);
 
     const erratumContext =
       figureNumber === 5 && previewFigure === 6
         ? " (shown with FIG. 5 because the source sentence assigns disc 100 to FIG. 5 although disc 100 is drawn in FIG. 6)"
         : "";
     return {
-      src: `/patents/figures/us-3541541-engelbart-mouse/fig-${previewFigure}-source-crop-${asset.version}.png`,
-      alt: `US 3,541,541 source drawing FIG. ${previewFigure}${erratumContext}`,
-      width: asset.width,
-      height: asset.height,
+      src: `/patents/figures/us-3541541-engelbart-mouse/source-sheet-${sheet}-v1.png`,
+      alt: `Complete primary drawing sheet ${sheet} of 3 for US 3,541,541 FIG. ${previewFigure}${erratumContext}`,
+      width: 2320,
+      height: 3408,
     };
   });
 

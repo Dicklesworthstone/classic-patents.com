@@ -44,6 +44,14 @@ const CAMERA_PRESET_OPTIONS: readonly { readonly id: CameraPreset; readonly labe
   { id: "top", label: "Plan View" },
 ];
 
+const HOPKINS_READER_STEPS = [
+  "1 Burn Ashes",
+  "2 Dissolve & Boil",
+  "3 Settle Ley",
+  "4 Make Pearl Ash",
+  "5 Optional Fluxing",
+] as const;
+
 export function HopkinsPotash3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
@@ -151,16 +159,9 @@ export function HopkinsPotash3D() {
     };
   }, [live]);
 
-  const readerSteps = [
-    "1 Burn Ashes",
-    "2 Dissolve & Boil",
-    "3 Settle Ley",
-    "4 Make Pearl Ash",
-    "5 Optional Fluxing",
-  ] as const;
   const currentStageName =
-    readerSteps[
-      Math.min(readerSteps.length - 1, Math.floor((tape?.phases.processCycle01 ?? 0) * 5))
+    HOPKINS_READER_STEPS[
+      Math.min(HOPKINS_READER_STEPS.length - 1, Math.floor((tape?.phases.processCycle01 ?? 0) * 5))
     ];
 
   const kernelChips: KernelChip[] = [

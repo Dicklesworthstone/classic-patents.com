@@ -13,6 +13,9 @@ import {
 } from "./townesMaserSystemCamera";
 import { buildTownesMaserSystemModel } from "./townesMaserSystemModel";
 
+const LANDSCAPE_AUDIT_VIEWPORT = { width: 639, height: 380 };
+const TABLET_AUDIT_VIEWPORT = { width: 718, height: 1024 };
+
 function projectedObjectBounds(root: THREE.Object3D, camera: THREE.PerspectiveCamera) {
   const bounds = {
     minX: Number.POSITIVE_INFINITY,
@@ -84,13 +87,24 @@ describe("US 2,929,922 Arthur L. Schawlow & Charles H. Townes Optical Maser / La
 
   test("keeps the resonator and beam assembly legible in both compact audit states", () => {
     const { viewportWidth: width, viewportHeight: height } = TOWNES_COMPACT_SYSTEM_SAFE_ZONE;
-    const compactSystem = townesMaserSystemCameraForViewport("system", width);
+    const compactSystem = townesMaserSystemCameraForViewport("system", width, height);
     expect(compactSystem).toEqual({ pos: [11.6, 12, 14], target: [-0.4, 0, 0] });
-    expect(townesMaserSystemCameraForViewport("system", 718)).toEqual(
-      TOWNES_MASER_DESKTOP_CAMERA_PRESETS.system,
-    );
+    expect(
+      townesMaserSystemCameraForViewport(
+        "system",
+        LANDSCAPE_AUDIT_VIEWPORT.width,
+        LANDSCAPE_AUDIT_VIEWPORT.height,
+      ),
+    ).toEqual(TOWNES_MASER_DESKTOP_CAMERA_PRESETS.system);
+    expect(
+      townesMaserSystemCameraForViewport(
+        "system",
+        TABLET_AUDIT_VIEWPORT.width,
+        TABLET_AUDIT_VIEWPORT.height,
+      ),
+    ).toEqual(TOWNES_MASER_DESKTOP_CAMERA_PRESETS.system);
     for (const preset of ["generator", "modeSelector", "amplifier", "detector"] as const) {
-      expect(townesMaserSystemCameraForViewport(preset, width)).toEqual(
+      expect(townesMaserSystemCameraForViewport(preset, width, height)).toEqual(
         TOWNES_MASER_DESKTOP_CAMERA_PRESETS[preset],
       );
     }

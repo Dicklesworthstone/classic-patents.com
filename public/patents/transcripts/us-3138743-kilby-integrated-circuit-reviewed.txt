@@ -3,7 +3,7 @@ June 23, 1964 J. S. KILBY 3,138,743
 MINIATURIZED ELECTRONIC CIRCUITS
 Filed Feb. 6, 1959 4 Sheets—Sheet 1
 Fig. 1. Fig. 1a. Fig. 2. Fig. 2a. Fig. 3. Fig. 4. Fig. 5. Fig. 5a.
-Visible labels: 10, 10a, 10b, 11, 11a, 12, 12a, 13, 15, 15a, 16, 17, 17a, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30, 35, 36, 37, 38; N, P, N OR P.
+10, 10a, 10b, 11, 11a, 12, 12a, 13, 15, 15a, 16, 17, 17a, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30, 35, 36, 37, 38; N, P, N OR P.
 INVENTOR Jack S. Kilby.
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 9 ---
@@ -11,7 +11,7 @@ June 23, 1964 J. S. KILBY 3,138,743
 MINIATURIZED ELECTRONIC CIRCUITS
 Filed Feb. 6, 1959 4 Sheets—Sheet 2
 Fig. 6a. Fig. 6b.
-Visible labels: T1, T2, R1–R8, C1–C4, INPUT-1, INPUT-2, OUTPUT-1, OUTPUT-2, +V, -V, GND., 50, 51, 52, 53, 54, 56, 60, 70.
+T1, T2, R1–R8, C1–C4, INPUT-1, INPUT-2, OUTPUT-1, OUTPUT-2, +V, -V, GND., 50, 51, 52, 53, 54, 56, 60, 70.
 INVENTOR Jack S. Kilby.
 
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 9 ---
@@ -19,7 +19,7 @@ June 23, 1964 J. S. KILBY 3,138,743
 MINIATURIZED ELECTRONIC CIRCUITS
 Filed Feb. 6, 1959 4 Sheets—Sheet 3
 Fig. 7.
-Visible labels: T1, T2, R1–R8, C1, C2, 400 ohms, 1.8K, 50 microfarads, INPUT-1, INPUT-2, OUTPUT-1, OUTPUT-2, +V, -V, GND.
+T1, T2, R1–R8, C1, C2, 400 ohms, 1.8K, 50 microfarads, INPUT-1, INPUT-2, OUTPUT-1, OUTPUT-2, +V, -V, GND.
 INVENTOR Jack S. Kilby.
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 9 ---
@@ -80,8 +80,16 @@ First, a semiconducting wafer, preferably silicon or germanium, of the proper re
 Gold plated Kovar leads 50 were attached by alloying to the wafer in the proper positions (as shown). Kovar is a trade name for an iron-nickel-cobalt alloy. Gold was then evaporated through a mask to provide the areas 51-54 which provide ohmic contact with the n region, such as the transistor base connections and the capacitor contacts. Aluminum was evaporated through a properly shaped mask to provide the transistor emitter areas 56, which form rectifying contacts with the n layer.
 The wafer was then coated with a photosensitive resist or lacquer, such as Eastman Photo Resist, supplied by Eastman Kodak Company, and exposed through a negative to a light. The lacquer image remaining after development was used as a resist for etching the wafer to the proper shape. In particular, this etching forms a slot through the wafer to provide isolation between R1 and R2 and the rest of the circuit and also shapes all of the resistor areas to the previously calculated configuration. Either chemical etching or electrolytic etching may be used, although electrolytic etching appears to be preferable.
 After this step, the photoresist was removed with a solvent and the mesa areas 60 masked by the same photographic process. The wafer was again immersed in etchant and the n layer completely removed in the exposed areas. A chemical etch is considered preferable. The photoresist was then removed.
-Gold wires 70 were then thermally bonded to the appropriate areas to complete the connections and a final clean-up etch given. Instead of using the gold wires 70 in making electrical connections, connections may be provided in other ways, including masked silicon oxide and conductive gold laid down on the insulating material.
+Gold wires 70 were then thermally bonded to the appropriate areas to complete the connections and a final clean-up etch given. Instead of using the gold wires 70 in making electrical connections, connections may be provided in other ways. For example, an insulating and inert material such as silicon oxide may be evaporated onto the semiconductor circuit wafer through a mask either to cover the wafer completely except at the points where electrical contact is to be made thereto, or to cover only selected portions joining the points to be electrically connected. Electrically conducting material such as gold may then be laid down on the insulating material to make the necessary electrical circuit connections.
 After testing, the circuit may be hermetically sealed, if required, for protection against contamination. The finished device was smaller by several orders of magnitude than any others which have previously been proposed. Because the fabrication steps required are quite similar to those now used in manufacturing transistors and because of the relatively small number of steps required, these devices are inherently inexpensive and reliable, as well as compact.
+
+A further illustration of the process hereof is shown in FIGURES 8a-8c. Each area of the single crystal semiconductor wafer has been marked with a symbol for the circuit element which it represents. This unit illustrates the use of resistors, transistors, and a distributed R-C network to form a complete phase shift oscillator.
+
+It must be emphasized that the two embodiments described above are merely two of innumerable circuits which can be fabricated by the techniques of the present invention. There is no limit upon the complexity or configuration of circuits which can be made in this manner. While there is a limit upon the types and values of components which can be made in a limited space, the invention hereof nevertheless represents a remarkable improvement over the prior art.
+
+As evidence of the advance in the art accomplished by the present invention, it is possible using the techniques described above to achieve component densities of greater than thirty million per cubic foot as compared with five hundred thousand per cubic foot which is the highest component density attained prior to this invention.
+
+Although the invention has been shown and described in terms of specific embodiments, it will be evident that changes and modifications are possible which do not in fact depart from the inventive concepts taught herein. Hence, such changes and modifications are deemed to fall within the purview of the invention.
 
 What is claimed is:
 1. In an integrated circuit having a plurality of electrical circuit components in a wafer of single-crystal semiconductor material, a plurality of junction transistors defined in the wafer, each transistor including thin layers of semiconductor material of opposite conductivity-types adjacent one major face of the wafer providing a base and an emitter region which overlie a collector region, the base-emitter and base-collector junctions of each of said transistors extending wholly to said one major face, a plurality of thin elongated regions of the wafer exhibiting substantial resistance to provide semiconductor resistors, the elongated regions being spaced on said one major face from the transistors, and conductive means connecting selected ones of the elongated regions to regions of selected ones of the transistors.
@@ -112,6 +120,22 @@ What is claimed is:
 23. In an integrated circuit according to claim 13 said means for applying inputs to said pair of transistors includes separate coupling means connecting the first conductive means to the contact on the base region of said one of the transistors and connecting the second conductive means to the contact on the base region of said other one of the transistors.
 24. An integrated circuit according to claim 16 wherein said discrete region of the passive circuit component includes a thin surface-adjacent region of conductivity type opposite to that of subjacent semiconductor material.
 25. An integrated circuit according to claim 24 wherein said passive circuit component is a P-N junction capacitor.
+
+References Cited in the file of this patent:
+UNITED STATES PATENTS
+2,493,199 Khouri January 3, 1950
+2,748,041 Leverenz May 29, 1956
+2,816,228 Johnson December 10, 1957
+2,817,048 Thuermel December 17, 1957
+2,824,977 Pankove February 25, 1958
+2,836,776 Ishikawa May 27, 1958
+2,878,147 Beale March 17, 1959
+2,915,647 Ebers December 1, 1959
+2,916,408 Freedman December 8, 1959
+2,922,937 Hutzler January 26, 1960
+2,935,668 Robinson et al. May 3, 1960
+2,995,686 Selvin August 8, 1961
+2,998,550 Collins et al. August 29, 1961
 
 INVENTOR:
 JACK S. KILBY,

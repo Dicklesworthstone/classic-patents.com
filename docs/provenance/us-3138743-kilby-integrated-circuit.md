@@ -26,18 +26,18 @@
 | **Page 2** | Drawing Sheet 2: Figures 6a and 6b. Visible labels include T1, T2, R1–R8, C1–C4, INPUT-1, INPUT-2, OUTPUT-1, OUTPUT-2, +V, -V, GND., and 50, 51, 52, 53, 54, 56, 60, 70. | Direct 300 DPI review; complete source sheet accepted. |
 | **Page 3** | Drawing Sheet 3: Figure 7, the conventional multivibrator wiring diagram with T1, T2, R1–R8, C1, C2, resistor values, power rails, inputs, and outputs. | Direct 300 DPI review; complete source sheet accepted. |
 | **Page 4** | Drawing Sheet 4: Figures 8a, 8b, and 8c, the phase-shift oscillator and its two wiring presentations. No Figures 9–20 are printed in this grant. | Direct 300 DPI review; complete source sheet accepted. |
-| **Page 5** | Specification Column 1 & 2: Patent-office masthead, Serial No. 791,602, Preamble, the 'Tyranny of Numbers' problem, and the monolithic circuit concept | Reviewed verbatim against facsimile |
-| **Page 6** | Specification Column 3 & 4: Detailed description of passive components formed from semiconductor material (bulk resistance, p-n junction reverse-bias capacitance) | Reviewed verbatim against facsimile |
-| **Page 7** | Specification Column 5 & 6: Detailed fabrication of active transistors, mesa etching, and multivibrator circuit integration | Reviewed verbatim against facsimile |
-| **Page 8** | Specification continuation and Claims 1–12 | Direct visual review; current staged text is not accepted |
-| **Page 9** | Claim 13, Claims 14–25, and cited references | Direct visual review; current staged text is not accepted |
+| **Page 5** | Specification Column 1 & 2: Patent-office masthead, Serial No. 791,602, Preamble, the 'Tyranny of Numbers' problem, and the monolithic circuit concept | Direct full-facsimile review; ledger reconciled. |
+| **Page 6** | Specification Column 3 & 4: Detailed description of passive components formed from semiconductor material (bulk resistance, p-n junction reverse-bias capacitance) | Direct full-facsimile review; ledger reconciled. |
+| **Page 7** | Specification Column 5 & 6: Detailed fabrication of active transistors, mesa etching, and multivibrator circuit integration | Direct full-facsimile review; ledger reconciled. |
+| **Page 8** | Specification continuation and Claims 1–12 | Direct full-facsimile review; ledger reconciled. |
+| **Page 9** | Claim 13, Claims 14–25, and cited references | Direct full-facsimile review; ledger reconciled. |
 
 ---
 
 ## Preservation Boundaries
 
 1. **Source Face**: Hand-annotated React source face in `src/data/editions/kilbyIntegratedCircuitEdition.ts`.
-2. **Reviewed Ledger**: Page-marked candidate transcription in `public/patents/transcripts/us-3138743-kilby-integrated-circuit-reviewed.txt`; pages 1–4 preserve the printed drawing-sheet labels and pages 5–9 preserve the specification, all 25 printed claims, cited references, and signature matter. Any remaining reconciliation work is an internal audit item and never blocks the complete source reader.
+2. **Reviewed Ledger**: Page-marked reviewed transcription in `public/patents/transcripts/us-3138743-kilby-integrated-circuit-reviewed.txt`; pages 1–4 preserve the printed drawing-sheet labels and pages 5–9 preserve the specification, all 25 printed claims, cited references, and signature matter.
 3. **Figure Source Sheets**: `source-sheet-1-v1.png` through `source-sheet-4-v1.png` are complete 300 DPI renders of PDF pages 1–4 and are the active source-face evidence. Existing `fig-*-source-crop-*` files and grouped `page-1.png`–`page-3.png` assets remain preserved research evidence.
 4. **Claim Count**: Exactly 25 claims are printed on pages 8–9 of the original grant.
 

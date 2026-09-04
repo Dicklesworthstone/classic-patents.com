@@ -18,29 +18,27 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
-const crop = (number: number, width: number, height: number, revision = "") => ({
-  src: `/patents/figures/us-194047-otto-engine/fig-${number}-source-crop${revision}.png`,
-  alt: `Source-facsimile crop of Fig. ${number} from US 194,047.`,
-  width,
-  height,
+const sourceSheet = (page: 1 | 2 | 3 | 4, figure: number) => ({
+  src: `/patents/figures/us-194047-otto-engine/source-sheet-${page}-v1.png`,
+  alt: `Complete primary drawing sheet ${page} containing Fig. ${figure} from US 194,047.`,
+  width: 2320,
+  height: 3408,
 });
 
 const FIGURES = {
-  "Fig. 1": crop(1, 620, 980),
-  "Fig. 2": crop(2, 1160, 1800),
-  "Fig. 3": crop(3, 1120, 1810),
-  "Fig. 4": crop(4, 960, 830),
-  "Fig. 5": crop(5, 620, 560, "-v2"),
-  "Fig. 6": crop(6, 450, 420, "-v2"),
-  "Fig. 7": crop(7, 450, 420, "-v2"),
-  "Fig. 8": crop(8, 520, 500, "-v2"),
-  "Fig. 9": crop(9, 300, 220),
-  // The source sheet is scanned quarter-turned. This source-faithful crop is
-  // rotated upright and excludes the adjacent Fig. 9 and Fig. 11 labels.
-  "Fig. 10": crop(10, 760, 220, "-v3"),
-  "Fig. 11": crop(11, 330, 750),
-  "Fig. 12": crop(12, 470, 320),
-  "Fig. 13": crop(13, 450, 320),
+  "Fig. 1": sourceSheet(1, 1),
+  "Fig. 2": sourceSheet(2, 2),
+  "Fig. 3": sourceSheet(3, 3),
+  "Fig. 4": sourceSheet(1, 4),
+  "Fig. 5": sourceSheet(4, 5),
+  "Fig. 6": sourceSheet(4, 6),
+  "Fig. 7": sourceSheet(4, 7),
+  "Fig. 8": sourceSheet(4, 8),
+  "Fig. 9": sourceSheet(4, 9),
+  "Fig. 10": sourceSheet(4, 10),
+  "Fig. 11": sourceSheet(4, 11),
+  "Fig. 12": sourceSheet(4, 12),
+  "Fig. 13": sourceSheet(4, 13),
 } as const;
 
 const figure = (

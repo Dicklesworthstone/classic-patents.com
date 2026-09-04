@@ -34,6 +34,21 @@ export interface ColtRuntimeControls {
   claim6LockingAndTurningPresent: boolean;
 }
 
+/**
+ * Raw UI / claim-constraint values accepted at the source boundary.  This is
+ * deliberately structural rather than a string-indexed record: a fully read
+ * `ColtRuntimeControls` object has no index signature, but it is still a
+ * valid input to a subsequent source-order step.
+ */
+export interface ColtRuntimeControlInput {
+  cockingTravelPct?: number;
+  chamberIndex?: number;
+  claim1CapsPresent?: number | boolean;
+  claim2PartitionsPresent?: number | boolean;
+  claim5ShacklePresent?: number | boolean;
+  claim6LockingAndTurningPresent?: number | boolean;
+}
+
 export interface ColtLockworkState {
   controls: ColtRuntimeControls;
   stage: ColtLockworkStage;
@@ -84,9 +99,7 @@ export function coltNextChamber(
   return (normalized % count) + 1;
 }
 
-export function readColtRuntimeControls(
-  raw: Record<string, number | boolean | undefined>,
-): ColtRuntimeControls {
+export function readColtRuntimeControls(raw: ColtRuntimeControlInput): ColtRuntimeControls {
   return {
     cockingTravelPct: Number(raw.cockingTravelPct ?? 0),
     chamberIndex: normalizeChamberIndex(Number(raw.chamberIndex ?? 1)),
@@ -101,9 +114,7 @@ export function readColtRuntimeControls(
  * Normalize the source-described event order without inventing a force or
  * time law. Breakpoints are presentation coordinates, not historical angles.
  */
-export function stepColtLockwork(
-  controls: ColtRuntimeControls | Record<string, number | boolean | undefined>,
-): ColtLockworkState {
+export function stepColtLockwork(controls: ColtRuntimeControlInput): ColtLockworkState {
   const c = readColtRuntimeControls(controls);
   const p = clamp01(c.cockingTravelPct / 100);
   const keyCanOperate = c.claim6LockingAndTurningPresent;
@@ -150,7 +161,9 @@ export function stepColtLockwork(
     cylinderAndRatchetCoupled: shackleCoupled,
     safeToReleaseHammer,
     sourceSequenceClosed:
-      keyCanOperate && shackleCoupled && (!fullCock || (keySeated && ratchetAdvanceFraction >= 0.995)),
+      keyCanOperate &&
+      shackleCoupled &&
+      (!fullCock || (keySeated && ratchetAdvanceFraction >= 0.995)),
   };
 }
 
@@ -158,9 +171,7 @@ export function getColtTapeFrame(): ColtTapeFrame | null {
   return latestColtTapeFrame;
 }
 
-export function createColtTransportUpdater(
-  readControls: () => ColtRuntimeControls,
-): TapeUpdater {
+export function createColtTransportUpdater(readControls: () => ColtRuntimeControls): TapeUpdater {
   let ticksSincePublish = 4;
   return () => {
     const controls = readControls();

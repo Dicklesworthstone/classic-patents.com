@@ -51,6 +51,7 @@ export function TownesLaser3D() {
     const config = townesMaserSystemCameraForViewport(
       preset,
       containerRef.current?.clientWidth ?? 1000,
+      containerRef.current?.clientHeight ?? 700,
     );
     studioRef.current?.controls.setView(config.pos, config.target);
   };
@@ -59,7 +60,11 @@ export function TownesLaser3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const initial = townesMaserSystemCameraForViewport("system", container.clientWidth);
+    const initial = townesMaserSystemCameraForViewport(
+      "system",
+      container.clientWidth,
+      container.clientHeight,
+    );
     const studio = createThreeStudioScene({
       container,
       cameraPos: initial.pos,
@@ -96,7 +101,11 @@ export function TownesLaser3D() {
     const restoreResponsiveView = () => {
       const container = containerRef.current;
       if (!container) return;
-      const view = townesMaserSystemCameraForViewport(activeCamera, container.clientWidth);
+      const view = townesMaserSystemCameraForViewport(
+        activeCamera,
+        container.clientWidth,
+        container.clientHeight,
+      );
       studioRef.current?.controls.setView(view.pos, view.target);
     };
     window.addEventListener("resize", restoreResponsiveView);

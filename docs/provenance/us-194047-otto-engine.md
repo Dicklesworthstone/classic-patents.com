@@ -67,17 +67,28 @@ coverage to the test suite but are not rendered into the visitor’s reading
 experience. The older source-text layer remains research evidence, not the
 public complete-source edition.
 
-| Source figure | Local selected crop |
+| Source figure | Active complete primary source sheet |
 | --- | --- |
-| Fig. 1 | `public/patents/figures/us-194047-otto-engine/fig-1-source-crop.png` |
-| Fig. 2 | `public/patents/figures/us-194047-otto-engine/fig-2-source-crop.png` |
-| Fig. 3 | `public/patents/figures/us-194047-otto-engine/fig-3-source-crop.png` |
-| Fig. 4 | `public/patents/figures/us-194047-otto-engine/fig-4-source-crop.png` |
-| Figs. 5-8 | `public/patents/figures/us-194047-otto-engine/fig-<n>-source-crop-v2.png` |
-| Figs. 9-13 | `public/patents/figures/us-194047-otto-engine/fig-<n>-source-crop.png` |
+| Figs. 1 and 4 | `source-sheet-1-v1.png` (PDF page 1) |
+| Fig. 2 | `source-sheet-2-v1.png` (PDF page 2) |
+| Fig. 3 | `source-sheet-3-v1.png` (PDF page 3) |
+| Figs. 5-13 | `source-sheet-4-v1.png` (PDF page 4) |
 
-The crop files are unmodified selections from the pinned drawing sheets. They
-add no reconstructed linework, labels, or historical claims.
+The active sheets are unmodified 300 DPI renders of the pinned drawing pages;
+older isolated crop files remain preserved research evidence.
+
+## Complete source-sheet acceptance — 2026-09-04
+
+Direct visual review confirmed the four original drawing sheets and all
+thirteen printed figures. The active 2320 × 3408 sheets have SHA-256 digests:
+
+- Sheet 1: `b41b87e739ff73106de51ab86c128167f233441b1891b06f08b5b8fdfbca72f4`
+- Sheet 2: `e82e41b38499cf1ead14f3b5bc0f0bfecffce9411d32de2c416375328bef8a10`
+- Sheet 3: `89fed96914f5a2d227c77545e997a70bb28cb74548a2ad51b6455073e59414da`
+- Sheet 4: `5f8d940362db576c0b5c971f92cd550ed63284e4857d365568fb9fd9c6c993b8`
+
+All 41 authored figure-reference occurrences are bound to their source page
+in `figureOccurrenceSourceLocators.ts`.
 
 ## Review boundary
 

@@ -2,50 +2,12 @@ import type { CuratedSpecificationEdition, CuratedSpecificationInlines } from "@
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
-/** Measured with ImageMagick identify against the committed local PNG crops. */
-const previews: Record<number, { src: string; alt: string; width: number; height: number }> = {
-  1: {
-    src: "/patents/figures/us-36836-gatling-gun-fig-1-preview-v2.png",
-    alt: "Figure 1 from US 36,836, Improvement in Revolving Battery-Guns.",
-    width: 590,
-    height: 1120,
-  },
-  2: {
-    src: "/patents/figures/us-36836-gatling-gun-fig-2-preview.png",
-    alt: "Figure 2 from US 36,836, Improvement in Revolving Battery-Guns.",
-    width: 420,
-    height: 1580,
-  },
-  3: {
-    src: "/patents/figures/us-36836-gatling-gun-fig-3-preview.png",
-    alt: "Figure 3 from US 36,836, Improvement in Revolving Battery-Guns.",
-    width: 800,
-    height: 760,
-  },
-  4: {
-    src: "/patents/figures/us-36836-gatling-gun-fig-4-preview.png",
-    alt: "Figure 4 from US 36,836, Improvement in Revolving Battery-Guns.",
-    width: 420,
-    height: 420,
-  },
-  5: {
-    src: "/patents/figures/us-36836-gatling-gun-fig-5-preview.png",
-    alt: "Figure 5 from US 36,836, Improvement in Revolving Battery-Guns.",
-    width: 260,
-    height: 290,
-  },
-  6: {
-    src: "/patents/figures/us-36836-gatling-gun-fig-6-preview-v2.png",
-    alt: "Figure 6 from US 36,836, Improvement in Revolving Battery-Guns.",
-    width: 300,
-    height: 400,
-  },
-  7: {
-    src: "/patents/figures/us-36836-gatling-gun-fig-7-preview-v2.png",
-    alt: "Figure 7 from US 36,836, Improvement in Revolving Battery-Guns.",
-    width: 260,
-    height: 280,
-  },
+/** Complete upright primary drawing sheet rendered from PDF page 1 at 300 DPI. */
+const sourceSheetPreview = {
+  src: "/patents/figures/us-36836-gatling-gun/source-sheet-1-v1.png",
+  alt: "Complete primary drawing sheet for US 36,836, Improvement in Revolving Battery-Guns.",
+  width: 2320,
+  height: 3408,
 };
 
 const figure = (number: number) => ({
@@ -54,7 +16,7 @@ const figure = (number: number) => ({
   href: `#figure-${number}`,
   referenceType: "figure" as const,
   label: `Open Figure ${number} from the pinned US 36,836 facsimile`,
-  figurePreviews: [previews[number]],
+  figurePreviews: [sourceSheetPreview],
 });
 
 const figureGroup = (text: string, ...numbers: number[]) => ({
@@ -63,7 +25,7 @@ const figureGroup = (text: string, ...numbers: number[]) => ({
   href: `#figure-${numbers[0]}`,
   referenceType: "figure" as const,
   label: `${text} in the pinned US 36,836 facsimile`,
-  figurePreviews: numbers.map((number) => previews[number]),
+  figurePreviews: [sourceSheetPreview],
 });
 
 /**
@@ -176,7 +138,7 @@ export const gatlingGunArchivalEdition: CuratedSpecificationEdition = {
         figure(6),
         { kind: "text", text: ", and " },
         figure(7),
-        { kind: "text", text: ". Each preview is cropped directly from the pinned facsimile." },
+        { kind: "text", text: ". Each citation points to the complete primary source sheet." },
       ],
     },
     { kind: "paragraph", inlines: literal("To all whom it may concern:") },

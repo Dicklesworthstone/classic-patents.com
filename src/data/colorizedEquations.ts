@@ -7381,182 +7381,82 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  // 25. Samuel Colt Revolver (US X9430)
+  // 25. Samuel Colt Revolving Gun (US X9430)
   "us-x9430-colt-revolver": [
     {
-      id: "colt-revolver-muzzle-velocity-energy",
+      id: "colt-revolver-lockwork-order",
       patentId: "us-x9430-colt-revolver",
-      title: "Muzzle Kinetic Energy & Ballistic Work",
-      category: "Ballistics & Mechanics",
-      rawLatex: "E_{\\text{kinetic}} = \\frac{1}{2} m_{\\text{bullet}} v_{\\text{muzzle}}^2",
-      colorizedLatex:
-        "\\textcolor{#059669}{E_{\\text{kinetic}}} = \\frac{1}{2}\\,\\textcolor{#2563eb}{m_{\\text{bullet}}}\\,\\textcolor{#dc2626}{v_{\\text{muzzle}}}^2",
-      plainEnglishSentence: [
-        {
-          text: "The ",
-        },
-        {
-          text: "kinetic energy delivered by the fired ball",
-          variableId: "energy_e",
-        },
-        {
-          text: " equals half the ",
-        },
-        {
-          text: "lead projectile mass",
-          variableId: "mass_m",
-        },
-        {
-          text: " multiplied by the square of its ",
-        },
-        {
-          text: "muzzle exit velocity",
-          variableId: "velocity_v",
-        },
-        {
-          text: ", demonstrating the stopping power produced by Colt's sealed rotating chambers.",
-        },
-      ],
-      variables: [
-        {
-          id: "energy_e",
-          symbol: "E_{\\text{kinetic}}",
-          name: "Muzzle Kinetic Energy",
-          color: "emerald",
-          role: "Translational kinetic energy of the bullet upon clearing the rifled barrel muzzle.",
-          unit: "J (Joules)",
-          dimension: "[M L^2 T^-2]",
-          explanation:
-            "For a .36 caliber round lead ball (~80 grains / 5.2 grams) accelerated to ~260 m/s (850 ft/s) by black powder, muzzle kinetic energy is approximately 175 Joules.",
-        },
-        {
-          id: "mass_m",
-          symbol: "m_{\\text{bullet}}",
-          name: "Projectile Mass",
-          color: "sapphire",
-          role: "Mass of the cast lead ball or conical bullet seated into the cylinder chamber.",
-          unit: "kg",
-          dimension: "[M]",
-          explanation:
-            "In Colt's Paterson and Navy revolvers, pure soft lead balls were rammed tightly over black powder charges using the integral lever rammer.",
-        },
-        {
-          id: "velocity_v",
-          symbol: "v_{\\text{muzzle}}",
-          name: "Muzzle Velocity",
-          color: "crimson",
-          role: "Velocity of the projectile as it exits the barrel bore after expanding powder deflagration.",
-          unit: "m/s",
-          dimension: "[L T^-1]",
-          explanation:
-            "Muzzle velocity depends on powder charge, barrel length, cylinder gap seal, and friction in the rifled gain-twist bore.",
-        },
-      ],
-      pedagogicalNote:
-        "Colt's multi-chamber design aligned each rotating chamber with a single rigid barrel, allowing repeated high-velocity shots without reloading between discharges.",
-      claimRef: 1,
-      historicalSignificance:
-        "US X9430 proved that a rotating multi-chamber cylinder could safely channel repeating ballistic energy down a single barrel, creating the modern firearm industry.",
-    },
-    {
-      id: "colt-revolver-indexing-kinematics",
-      patentId: "us-x9430-colt-revolver",
-      title: "Revolver Cylinder Indexing Kinematics & Pawl Torque Transmission",
-      category: "Mechanical Engineering & Firearm Mechanisms",
+      title: "Locking-and-Turning Event Order",
+      category: "Source-Bounded Mechanical Topology",
       rawLatex:
-        "\\Delta \\theta = \\frac{2\\pi}{N_{\\text{chambers}}} \\quad \\text{and} \\quad \\tau_{\\text{index}} = F_{\\text{hammer}} \\cdot r_{\\text{hand}} \\cdot \\cos\\theta",
+        "p \\uparrow \\Rightarrow r\\;\\text{withdraws} \\Rightarrow d \\to s \\Rightarrow \\text{shackle turns cylinder} \\Rightarrow m\\;\\text{seats }r",
       colorizedLatex:
-        "\\textcolor{#2563eb}{\\Delta \\theta} = \\frac{2\\pi}{\\textcolor{#dc2626}{N_{\\text{chambers}}}} \\quad \\text{and} \\quad \\textcolor{#059669}{\\tau_{\\text{index}}} = \\textcolor{#d97706}{F_{\\text{hammer}}} \\cdot \\textcolor{#0891b2}{r_{\\text{hand}}} \\cdot \\cos\\textcolor{#9333ea}{\\theta}",
+        "\\textcolor{#d97706}{p}\\uparrow \\Rightarrow \\textcolor{#dc2626}{r}\\;\\text{withdraws} \\Rightarrow \\textcolor{#2563eb}{d}\\to\\textcolor{#9333ea}{s} \\Rightarrow \\textcolor{#059669}{\\text{shackle turns cylinder}} \\Rightarrow \\textcolor{#0891b2}{m}\\;\\text{seats }\\textcolor{#dc2626}{r}",
       plainEnglishSentence: [
-        { text: "The " },
-        { text: "angular indexing step", variableId: "dtheta" },
-        { text: " equals a full circle divided by " },
-        { text: "cylinder chamber count", variableId: "n_chambers" },
-        { text: ", generating " },
-        { text: "rotational indexing torque", variableId: "tau_index" },
-        { text: " from " },
-        { text: "cocking hammer force", variableId: "f_hammer" },
-        { text: " through " },
-        { text: "pawl lever arm radius", variableId: "r_hand" },
-        { text: " at " },
-        { text: "pawl ratchet contact angle", variableId: "theta" },
-        { text: "." },
+        { text: "Hammer pin ", variableId: "pin_p" },
+        { text: " first withdraws locking key ", variableId: "key_r" },
+        { text: "; lifter arm ", variableId: "lifter_d" },
+        { text: " then drives ratchet tooth ", variableId: "tooth_s" },
+        { text: " through the shackle, after which spring ", variableId: "spring_m" },
+        { text: " seats the key in the succeeding ward." },
       ],
       variables: [
         {
-          id: "dtheta",
-          symbol: "\\Delta \\theta",
-          name: "Angular Indexing Step",
-          color: "sapphire",
-          role: "Discrete angular rotation step required to bring next chamber into axial bore alignment ($60^\\circ$ for 6-chamber)",
-          unit: "Degrees / Radians",
-          dimension: "[1]",
-          explanation:
-            "Advancing one ratchet tooth advances the cylinder by exactly 1/Nth of a turn, locking it in battery alignment with the fixed barrel.",
-          telemetryMetricLabel: "Indexing Step",
-        },
-        {
-          id: "n_chambers",
-          symbol: "N_{\\text{chambers}}",
-          name: "Cylinder Chamber Count",
-          color: "crimson",
-          role: "Number of bored rotating chambers machined circumferentially around the cylinder (5 to 6 chambers)",
-          unit: "Chambers (count)",
-          dimension: "[1]",
-          explanation:
-            "Machined from solid forged steel to withstand detonation pressure in individual rotating chambers.",
-        },
-        {
-          id: "tau_index",
-          symbol: "\\tau_{\\text{index}}",
-          name: "Cylinder Indexing Torque",
-          color: "emerald",
-          role: "Rotational turning moment overcoming cylinder inertia and friction detent springs",
-          unit: "Newton-meters (N·m)",
-          dimension: "[M L^2 T^-2]",
-          explanation:
-            "Transmitted by the spring-loaded hand pawl engaging ratchet teeth cut into the rear face of the cylinder arbor.",
-        },
-        {
-          id: "f_hammer",
-          symbol: "F_{\\text{hammer}}",
-          name: "Hammer Cocking Force",
+          id: "pin_p",
+          symbol: "p",
+          name: "Hammer Pin",
           color: "amber",
-          role: "Thumb force applied to the hammer spur during single-action cocking (approx 15 to 25 N)",
-          unit: "Newtons (N)",
-          dimension: "[M L T^-2]",
+          role: "The named hammer pin that begins the ordered key-withdrawal event during cocking.",
+          unit: "named source part",
           explanation:
-            "Manually drawing back the hammer simultaneously compresses the heavy mainspring and lifts the internal hand pawl.",
-          telemetryKey: "cockingForce",
+            "The source states that pin p operates upon the after end of the key as the hammer is drawn back; it gives no travel, force, or timing value.",
         },
         {
-          id: "r_hand",
-          symbol: "r_{\\text{hand}}",
-          name: "Hand Pawl Pivot Radius",
-          color: "cyan",
-          role: "Effective radial distance from hammer pivot fulcrum to hand pawl articulation pin",
-          unit: "Millimeters (mm)",
-          dimension: "[L]",
+          id: "key_r",
+          symbol: "r",
+          name: "Locking-Key End",
+          color: "crimson",
+          role: "The end of the key that leaves a ward before indexing and returns to the succeeding ward afterward.",
+          unit: "named source part",
           explanation:
-            "Geometric moment arm converting angular hammer stroke into vertical pawl thrust.",
+            "Spring m forces end r into the succeeding ward after pin p has passed the key's upper end; no contact geometry or locking force is printed.",
         },
         {
-          id: "theta",
-          symbol: "\\theta",
-          name: "Pawl Tangential Contact Angle",
+          id: "lifter_d",
+          symbol: "d",
+          name: "Lifter Arm",
+          color: "sapphire",
+          role: "The arm that commences action on the ratchet tooth only after the key has withdrawn.",
+          unit: "named source part",
+          explanation:
+            "The claim-facing exhibit preserves the lifter-to-ratchet order without assigning an unstated lever length, angular speed, torque, or inertia.",
+        },
+        {
+          id: "tooth_s",
+          symbol: "s",
+          name: "Ratchet Tooth",
           color: "amethyst",
-          role: "Pressure angle between hand pawl tip and ratchet tooth flank ($15^\\circ$ to $30^\\circ$)",
-          unit: "Degrees",
-          dimension: "[1]",
+          role: "The named ratchet tooth advanced by lifter arm d and coupled to the cylinder by the shackle.",
+          unit: "named source part",
           explanation:
-            "Maintains positive camming engagement to prevent pawl slip under rapid cocking cycles.",
+            "The specification establishes the connection through the shackle, not a chamber count, tooth pitch, physical angle, or calibrated displacement.",
+        },
+        {
+          id: "spring_m",
+          symbol: "m",
+          name: "Key Spring",
+          color: "cyan",
+          role: "The spring that re-seats the locking key after the indexing event is complete.",
+          unit: "named source part",
+          explanation:
+            "The grant names spring m's function but supplies no spring rate, preload, friction, material, or impact data from which a force law could be calculated.",
         },
       ],
       pedagogicalNote:
-        "Before Colt's 1836 patent, multi-shot firearms required manually turning individual barrels by hand or carrying multiple bulky lock mechanisms. Colt synchronized cylinder rotation, mechanical locking, and hammer cocking into a single thumb stroke.",
-      claimRef: 1,
+        "This is an event-order diagram, not a dynamics equation. US X9430 provides no pressure, charge, caliber, mass, force, dimension, angle, timing, stress, velocity, energy, or recoil card.",
+      claimRef: 6,
       historicalSignificance:
-        "US X9430 created the first practical revolving repeating firearm, transforming small arms manufacturing and pioneering interchangeable parts production at the Colt Hartford Armory.",
+        "Claim 6 names the principle of locking and turning the cylinder; Claim 5 separately names the shackle connection that lets ratchet motion carry the cylinder.",
     },
   ],
 

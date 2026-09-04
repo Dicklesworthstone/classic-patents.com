@@ -32,4 +32,12 @@
 
 ## Editorial and preservation boundaries
 
-The visitor-facing source face is the manually authored semantic edition in `src/data/editions/marconiRadioEdition.ts`. The reviewed page ledger is `public/patents/transcripts/us-586193-marconi-radio-reviewed.txt`; figure previews are local crops under `public/patents/figures/us-586193-marconi-radio/`. The grant prints 56 claims. The earlier `us-586193-marconi-radio.txt` file and legacy record copy are retained only as non-exported comparison evidence: they are not reviewed transcription evidence and are not served by the record. Machine OCR and a PDF text layer were used only to locate passages; all published words and figures were checked against the pinned facsimile.
+The visitor-facing source face is the manually authored semantic edition in `src/data/editions/marconiRadioEdition.ts`. The reviewed page ledger is `public/patents/transcripts/us-586193-marconi-radio-reviewed.txt`; active figure previews are complete source sheets under `public/patents/figures/us-586193-marconi-radio/`. The grant prints 56 claims. The earlier `us-586193-marconi-radio.txt` file and legacy record copy are retained only as non-exported comparison evidence: they are not reviewed transcription evidence and are not served by the record. Machine OCR and a PDF text layer were used only to locate passages; all published words and figures were checked against the pinned facsimile.
+
+## Complete source-sheet acceptance — 2026-09-04
+
+Direct visual review at 300 DPI confirmed that the active assets are the complete primary drawing sheets: page 1 (Figs. 1, 2, 2a, and 3), page 2 (Figs. 4 through 8), and page 3 (Figs. 9 through 11), each retaining its printed title block and signatures. The active asset SHA-256 values are:
+
+- `source-sheet-1-v1.png`: `e8bf1c45d436fca22dd57391a6834858880c2f964c1224173b9210cea0ef45b1`
+- `source-sheet-2-v1.png`: `536e03cbb4511b9b8652c8ef5f542305459cc2960e9e2d30487fc584da7e99b4`
+- `source-sheet-3-v1.png`: `24809400a2db396694fc05e501f4a5f899f88ec7d5242e36cdcea6501613a553`

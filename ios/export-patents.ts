@@ -18,11 +18,10 @@ async function sourceVisualizationRoutes(): Promise<Map<string, SourceVisualizat
 }
 
 const visualizationRoutes = await sourceVisualizationRoutes();
-const sourceBoundedPatentIds = new Set(
-  [...visualizationRoutes.entries()]
-    .filter(([, route]) => route.kind === "source-bound-pdf-only")
-    .map(([patentId]) => patentId),
-);
+const sourceBoundedPatentIds = new Set<string>();
+for (const [patentId, route] of visualizationRoutes) {
+  if (route.kind === "source-bound-pdf-only") sourceBoundedPatentIds.add(patentId);
+}
 
 const patentAssetGlob = new Bun.Glob("**/*.{png,txt}");
 const allPatentAssetPaths = [

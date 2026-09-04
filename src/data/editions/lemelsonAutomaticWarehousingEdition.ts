@@ -19,25 +19,37 @@ const term = (text: string, definition: string): CuratedSpecificationInline => (
   text,
   definition,
 });
+const FIGURE_SOURCE_SHEETS = {
+  "FIG. 1": 1,
+  "FIG. 2": 1,
+  "FIG. 3": 2,
+  "FIG. 4": 3,
+  "FIG. 5": 3,
+  "FIG. 6": 3,
+} as const;
 const figure = (
   label: "FIG. 1" | "FIG. 2" | "FIG. 3" | "FIG. 4" | "FIG. 5" | "FIG. 6",
-  width: number,
-  height: number,
-): CuratedSpecificationInline => ({
-  kind: "reference",
-  text: label,
-  href: "#",
-  referenceType: "figure",
-  label: `Open the source-facsimile crop for ${label} in US 3,119,501`,
-  figurePreviews: [
-    {
-      src: `/patents/figures/us-3119501-lemelson-automatic-warehousing/${label.toLowerCase().replace(".", "").replace(" ", "-")}-source-crop-v1.png`,
-      alt: `Source-facsimile crop of ${label} from US 3,119,501.`,
-      width,
-      height,
-    },
-  ],
-});
+  _width: number,
+  _height: number,
+  sourceText: string = label,
+): CuratedSpecificationInline => {
+  const sheet = FIGURE_SOURCE_SHEETS[label];
+  return {
+    kind: "reference",
+    text: sourceText,
+    href: "#",
+    referenceType: "figure",
+    label: `Open the complete primary source sheet for ${label} in US 3,119,501`,
+    figurePreviews: [
+      {
+        src: `/patents/figures/us-3119501-lemelson-automatic-warehousing/source-sheet-${sheet}-v1.png`,
+        alt: `Complete primary drawing sheet ${sheet} of 3 from US 3,119,501.`,
+        width: 2320,
+        height: 3408,
+      },
+    ],
+  };
+};
 
 /** A continuous manual edition checked against the eight-page US 3,119,501 facsimile. */
 export const lemelsonAutomaticWarehousingArchivalEdition: CuratedSpecificationEdition = {
@@ -164,27 +176,9 @@ export const lemelsonAutomaticWarehousingArchivalEdition: CuratedSpecificationEd
       { kind: "text", text: "." },
     ]),
     paragraph([
-      {
-        kind: "reference",
-        text: "The photoelectric scanning means of FIGS. 1 and 2",
-        href: "#",
-        referenceType: "figure",
-        label: "Open the source-facsimile crops for FIGS. 1 and 2 in US 3,119,501",
-        figurePreviews: [
-          {
-            src: "/patents/figures/us-3119501-lemelson-automatic-warehousing/fig-1-source-crop-v1.png",
-            alt: "Source-facsimile crop of FIG. 1 from US 3,119,501.",
-            width: 3100,
-            height: 2200,
-          },
-          {
-            src: "/patents/figures/us-3119501-lemelson-automatic-warehousing/fig-2-source-crop-v1.png",
-            alt: "Source-facsimile crop of FIG. 2 from US 3,119,501.",
-            width: 2500,
-            height: 1700,
-          },
-        ],
-      },
+      figure("FIG. 1", 3100, 2200, "The photoelectric scanning means of FIGS. 1"),
+      { kind: "text", text: " and " },
+      figure("FIG. 2", 2500, 1700, "2"),
       {
         kind: "text",
         text: ", utilized to generate feedback signals for control of the servo motors positioning the product handling fixture 25, may be replaced by ",
@@ -261,27 +255,9 @@ export const lemelsonAutomaticWarehousingArchivalEdition: CuratedSpecificationEd
         kind: "text",
         text: " shows a means for effecting the remote pre-setting of the predetermining counter controllers PrC of ",
       },
-      {
-        kind: "reference",
-        text: "FIGS. 3 and 4",
-        href: "#",
-        referenceType: "figure",
-        label: "Open the source-facsimile crops for FIGS. 3 and 4 in US 3,119,501",
-        figurePreviews: [
-          {
-            src: "/patents/figures/us-3119501-lemelson-automatic-warehousing/fig-3-source-crop-v1.png",
-            alt: "Source-facsimile crop of FIG. 3 from US 3,119,501.",
-            width: 2800,
-            height: 2800,
-          },
-          {
-            src: "/patents/figures/us-3119501-lemelson-automatic-warehousing/fig-4-source-crop-v1.png",
-            alt: "Source-facsimile crop of FIG. 4 from US 3,119,501.",
-            width: 1600,
-            height: 1550,
-          },
-        ],
-      },
+      figure("FIG. 3", 2800, 2800, "FIGS. 3"),
+      { kind: "text", text: " and " },
+      figure("FIG. 4", 1600, 1550, "4"),
       {
         kind: "text",
         text: ". A pulse generating dial switch 39 or the like is situated at the operator's station and is adapted to transmit pulse trains on its output 39W in accordance with the position or number dialed.",

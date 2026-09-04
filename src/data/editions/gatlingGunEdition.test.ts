@@ -33,7 +33,7 @@ describe("gatlingGunArchivalEdition", () => {
     ).toEqual(gatlingGunPatent.claims.map((claim) => claim.originalText));
   });
 
-  test("uses explicit local figure previews rather than a PDF-page fallback", () => {
+  test("uses the complete primary drawing sheet for every figure citation", () => {
     const figureSheet = gatlingGunArchivalEdition.blocks.find(
       (block) => block.kind === "figure-sheet",
     );
@@ -59,23 +59,23 @@ describe("gatlingGunArchivalEdition", () => {
     ).toBe(true);
     expect(references[0]?.figurePreviews).toContainEqual(
       expect.objectContaining({
-        src: "/patents/figures/us-36836-gatling-gun-fig-1-preview-v2.png",
-        width: 590,
-        height: 1120,
+        src: "/patents/figures/us-36836-gatling-gun/source-sheet-1-v1.png",
+        width: 2320,
+        height: 3408,
       }),
     );
     expect(references[5]?.figurePreviews).toContainEqual(
       expect.objectContaining({
-        src: "/patents/figures/us-36836-gatling-gun-fig-6-preview-v2.png",
-        width: 300,
-        height: 400,
+        src: "/patents/figures/us-36836-gatling-gun/source-sheet-1-v1.png",
+        width: 2320,
+        height: 3408,
       }),
     );
     expect(references[6]?.figurePreviews).toContainEqual(
       expect.objectContaining({
-        src: "/patents/figures/us-36836-gatling-gun-fig-7-preview-v2.png",
-        width: 260,
-        height: 280,
+        src: "/patents/figures/us-36836-gatling-gun/source-sheet-1-v1.png",
+        width: 2320,
+        height: 3408,
       }),
     );
   });

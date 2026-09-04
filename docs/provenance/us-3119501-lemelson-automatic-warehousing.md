@@ -46,13 +46,21 @@ breaks; this map keeps the source comparison reproducible.
 - The page-marked comparison ledger will be
   `public/patents/transcripts/us-3119501-lemelson-automatic-warehousing-reviewed.txt`.
   It supports the edition and is not itself the published reading surface.
-- Local previews under
-  `public/patents/figures/us-3119501-lemelson-automatic-warehousing/` will be
-  crops from the three pinned drawing sheets, preserving their figure labels
-  and printed source context.
+- Active figure previews under
+  `public/patents/figures/us-3119501-lemelson-automatic-warehousing/` are the
+  complete three pinned drawing sheets, preserving their title blocks,
+  signatures, figure labels, and printed source context.
 - The facsimile prints six claims, despite a conflicting machine-indexed claim
   count in some public metadata. All six printed claims must appear in the
   edition and the record must dynamically source them from it.
 - The drawings and specification define a coordinate/control topology; they do
   not provide a tested payload, aisle dimension, travel speed, or motor power.
   A teaching model must not fabricate those operational values.
+
+## Complete source-sheet acceptance — 2026-09-04
+
+Direct visual review at the PDF's native 2320 × 3408 raster confirmed the complete signed primary drawing sheets: page 1 (Figs. 1-2), page 2 (Fig. 3), and page 3 (Figs. 4-6). The active asset SHA-256 values are:
+
+- `source-sheet-1-v1.png`: `bda44d0134aae5768b1cbf842f720f4f17ef43d7806a9226f3241947504d2bce`
+- `source-sheet-2-v1.png`: `1a62d66914d7cd968bc1b255da17b3998eb1c6048012f5d941197dd59f30772e`
+- `source-sheet-3-v1.png`: `154f03b338950f3e18b56de1b3f283ef90e7113b3fcb6577211018d4d1af2848`

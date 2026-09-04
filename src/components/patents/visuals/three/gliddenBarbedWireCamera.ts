@@ -23,7 +23,7 @@ export const GLIDDEN_BARBED_WIRE_CAMERA_PRESETS: Record<
   top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
 };
 
-const COMPACT_STUDIO_MAX_WIDTH_PX = 640;
+const COMPACT_PHONE_MAX_WIDTH_PX = 480;
 
 // A 320 px phone renders this studio in a 286 × 380 px canvas. The desktop
 // overview projects its full bench from -1.13 to +1.41 NDC there: the feed
@@ -40,6 +40,10 @@ export const GLIDDEN_COMPACT_ISOMETRIC_SAFE_ZONE = {
   minY: -0.75,
   maxY: 0.33,
 } as const;
+
+function isPortraitPhoneViewport(viewportWidth: number, viewportHeight: number) {
+  return viewportWidth <= COMPACT_PHONE_MAX_WIDTH_PX && viewportHeight > viewportWidth;
+}
 
 function pullCameraBack(
   view: GliddenBarbedWireCameraView,
@@ -58,9 +62,10 @@ function pullCameraBack(
 export function gliddenBarbedWireCameraForViewport(
   preset: GliddenBarbedWireCameraPreset,
   viewportWidth: number,
+  viewportHeight: number,
 ): GliddenBarbedWireCameraView {
   const view = GLIDDEN_BARBED_WIRE_CAMERA_PRESETS[preset];
-  return preset === "iso" && viewportWidth < COMPACT_STUDIO_MAX_WIDTH_PX
+  return preset === "iso" && isPortraitPhoneViewport(viewportWidth, viewportHeight)
     ? pullCameraBack(view, COMPACT_ISOMETRIC_DISTANCE_MULTIPLIER)
     : view;
 }

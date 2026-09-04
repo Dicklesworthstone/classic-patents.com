@@ -16,6 +16,14 @@ import {
   readBoyleSmithCcdSourceControls,
 } from "@/physics/boyleSmithCcdKernel";
 import {
+  COLT_FRANKENSIM_BOUNDARY,
+  COLT_KERNEL_SOURCE,
+  COLT_SOURCE_BOUNDARY,
+  createColtTransportUpdater,
+  getColtTapeFrame,
+  readColtRuntimeControls,
+} from "@/physics/coltRevolverKernel";
+import {
   CORT_FRANKENSIM_BOUNDARY,
   CORT_KERNEL_SOURCE,
   CORT_SOURCE_BOUNDARY,
@@ -348,6 +356,47 @@ export function McCormickPhysicsRuntimeOwner({ patentId }: { patentId: string })
       data-mccormick-cutter-crank-rad={tape?.phases.cutterCrankRad ?? ""}
       data-mccormick-reel-rad={tape?.phases.reelRad ?? ""}
       data-mccormick-travel-m={tape?.phases.travelM ?? ""}
+    />
+  );
+}
+
+/** Stable owner for Colt's source-printed lock, lifter, ratchet, and shackle sequence. */
+export function ColtPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
+  const mount = useRuntimeOwnerMount();
+  const { effectiveParams } = usePatentPhysics(patentId);
+  const liveParams = useLiveSimParams(effectiveParams);
+  const { frame } = useFrankenSimPhysics(patentId, {
+    domain: "solid_mechanics",
+    refusal: { isRefused: true, reason: COLT_SOURCE_BOUNDARY },
+  });
+
+  useEffect(() => {
+    return globalTransportBus.registerUpdater(
+      patentId,
+      createColtTransportUpdater(() => readColtRuntimeControls(liveParams.current)),
+      "TS_FALLBACK",
+    );
+  }, [patentId, liveParams]);
+
+  const tape = getColtTapeFrame();
+  return (
+    <span
+      hidden
+      data-testid="patent-physics-runtime-owner"
+      data-patent-id={patentId}
+      data-runtime-tick={frame.tick}
+      data-runtime-owner-mount={mount}
+      data-runtime-digest={frame.digest}
+      data-runtime-provenance={frame.provenance}
+      data-colt-kernel-source={COLT_KERNEL_SOURCE}
+      data-colt-frankensim-boundary={COLT_FRANKENSIM_BOUNDARY}
+      data-colt-stage={tape?.outputs.stage ?? ""}
+      data-colt-cocking-progress={tape?.outputs.cockingProgress01 ?? ""}
+      data-colt-key-retraction={tape?.outputs.keyRetraction01 ?? ""}
+      data-colt-ratchet-advance={tape?.outputs.ratchetAdvanceFraction ?? ""}
+      data-colt-cylinder-advance={tape?.outputs.cylinderAdvanceFraction ?? ""}
+      data-colt-key-seated={tape?.outputs.keySeated ?? ""}
+      data-colt-sequence-closed={tape?.outputs.sourceSequenceClosed ?? ""}
     />
   );
 }

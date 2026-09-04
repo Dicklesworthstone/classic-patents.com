@@ -13,7 +13,6 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   bardeenSchematicDie,
-  coltSchematicTrigger,
   corlissSchematicValve,
   davenportSchematicArmature,
   delavalSchematicDiscY,
@@ -41,7 +40,6 @@ import {
   nobelSchematicKieselguhr,
   stepBardeenTransistor,
   stepBellTelephone,
-  stepColtRevolver,
   stepCorlissEngine,
   stepDavenportMotor,
   stepDeLavalSeparator,
@@ -74,6 +72,7 @@ import {
   zeppelinSchematicGondola,
 } from "@/physics/catalogKernels";
 import { stepClavelDeltaRobotTopology } from "@/physics/clavelDeltaRobotKernel";
+import { readColtRuntimeControls, stepColtLockwork } from "@/physics/coltRevolverKernel";
 import { stepDevolProgrammedTransfer } from "@/physics/devolProgrammedTransferKernel";
 import { FrankenSimEngine, lamarrSchematicHop, lamarrSchematicStaffY } from "@/physics/engine";
 import { fermiSchematicSlug, stepFermiKinetics } from "@/physics/fermiKinetics";
@@ -2018,177 +2017,96 @@ function _renderHistoricalSchematic(
       );
     }
     case "colt-revolver": {
-      const cockDeg = params?.cockingAngle ?? 45;
-      const colt = stepColtRevolver({ cockingAngleDeg: cockDeg });
-      const rotDeg = colt.indexAngleDeg;
-      const isFullCock = colt.isLocked;
-      const boltRetractY = colt.schematicBoltRetractY;
-      const trigger = coltSchematicTrigger(
-        isFullCock,
-        colt.schematicTriggerX,
-        colt.schematicTriggerW,
-        colt.schematicTriggerCockY,
-        colt.schematicTriggerRestY,
-        colt.schematicTriggerCockH,
-        colt.schematicTriggerRestH,
-      );
+      const controls = readColtRuntimeControls({
+        cockingTravelPct: params?.cockingTravelPct,
+        chamberIndex: params?.chamberIndex,
+        claim1CapsPresent: params?.claim1CapsPresent,
+        claim2PartitionsPresent: params?.claim2PartitionsPresent,
+        claim5ShacklePresent: params?.claim5ShacklePresent,
+        claim6LockingAndTurningPresent: params?.claim6LockingAndTurningPresent,
+      });
+      const colt = stepColtLockwork(controls);
+      const displayRotation = -(colt.cylinderAdvanceFraction * 360) / 5;
+      const keyY = 69 + colt.keyRetraction01 * 19;
+      const triggerY = colt.safeToReleaseHammer ? 151 : 143;
       return (
-        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          <line
-            x1={colt.schematicArborX1}
-            y1={colt.schematicArborY}
-            x2={colt.schematicArborX2}
-            y2={colt.schematicArborY}
-            stroke="#475569"
-            strokeWidth="3"
-          />
-          <line
-            x1={colt.schematicArborX1}
-            y1={colt.schematicArborY}
-            x2={colt.schematicArborX2}
-            y2={colt.schematicArborY}
-            stroke="#94a3b8"
-            strokeWidth="1"
-            strokeDasharray="4,3"
-          />
-          <rect
-            x={colt.schematicBarrelX}
-            y={colt.schematicBarrelY}
-            width={colt.schematicBarrelW}
-            height={colt.schematicBarrelH}
-            stroke="#60a5fa"
-            strokeWidth="2"
-            fill="#1e3a8a"
-            fillOpacity="0.25"
-            rx="2"
-          />
-          <line
-            x1={colt.schematicBarrelX}
-            y1={colt.schematicBoreY}
-            x2={colt.schematicBoreX2}
-            y2={colt.schematicBoreY}
-            stroke="#93c5fd"
-            strokeWidth="6"
-          />
-          <line
-            x1={colt.schematicBarrelX}
-            y1={colt.schematicBoreY}
-            x2={colt.schematicBoreX2}
-            y2={colt.schematicBoreY}
-            stroke="#0369a1"
-            strokeWidth="3"
-          />
+        <g data-colt-lockwork={colt.stage} stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <path
-            d={colt.schematicLugD}
-            stroke="#60a5fa"
-            strokeWidth="1.5"
-            fill="#1e3a8a"
-            fillOpacity="0.3"
-          />
-          <rect
-            x={colt.schematicLugPinX}
-            y={colt.schematicLugPinY}
-            width={colt.schematicLugPinW}
-            height={colt.schematicLugPinH}
-            fill="#94a3b8"
-            stroke="#cbd5e1"
-          />
-          <path
-            d={colt.schematicFrameD}
-            stroke="#38bdf8"
-            strokeWidth="2"
+            d="M 42 63 L 103 63 L 122 88 L 122 151 L 91 177 L 59 162 L 45 118 Z"
             fill="#0369a1"
             fillOpacity="0.2"
-          />
-          <rect
-            x={colt.schematicCylinderX}
-            y={colt.schematicCylinderY}
-            width={colt.schematicCylinderW}
-            height={colt.schematicCylinderH}
-            stroke="#f59e0b"
             strokeWidth="2"
+          />
+          <line x1="112" y1="108" x2="350" y2="108" stroke="#64748b" strokeWidth="3" />
+          <line x1="112" y1="108" x2="350" y2="108" stroke="#cbd5e1" strokeDasharray="4,3" />
+          <rect
+            x="199"
+            y="90"
+            width="154"
+            height="35"
+            rx="2"
+            fill="#1e3a8a"
+            fillOpacity="0.25"
+            stroke="#60a5fa"
+            strokeWidth="2"
+          />
+          <circle
+            cx="160"
+            cy="108"
+            r="39"
             fill="#78350f"
             fillOpacity="0.25"
-            rx="4"
-          />
-          <rect
-            x={colt.schematicCylinderX}
-            y={colt.schematicTopBoreY}
-            width={colt.schematicBoreW}
-            height={colt.schematicBoreH}
-            stroke="#fbbf24"
-            strokeWidth="1.5"
-          />
-          <circle
-            cx={colt.schematicBoreMouthX}
-            cy={colt.schematicBoreY}
-            r={colt.schematicBoreMouthR}
-            fill="#94a3b8"
-          />
-          <rect
-            x={colt.schematicCylinderX}
-            y={colt.schematicBottomBoreY}
-            width={colt.schematicBoreW}
-            height={colt.schematicBoreH}
-            stroke="#fbbf24"
-            strokeWidth="1"
-            strokeDasharray="3,3"
-          />
-          <line
-            x1={colt.schematicFlashX}
-            y1={colt.schematicFlashY0}
-            x2={colt.schematicFlashX}
-            y2={colt.schematicFlashY1}
-            stroke="#38bdf8"
-            strokeWidth="3"
-          />
-          <g
-            transform={`translate(${colt.schematicHammerPivotX}, ${colt.schematicHammerPivotY}) rotate(${-cockDeg})`}
-          >
-            <path d={colt.schematicHammerD} stroke="#cbd5e1" strokeWidth="2" fill="#334155" />
-            <line
-              x1={colt.schematicPawlX1}
-              y1={colt.schematicPawlY1}
-              x2={colt.schematicPawlX2}
-              y2={colt.schematicPawlY2}
-              stroke="#f59e0b"
-              strokeWidth="3"
-            />
-            <circle cx={colt.schematicPawlX1} cy={colt.schematicPawlY1} r="2.5" fill="#ffffff" />
-          </g>
-          <circle
-            cx={colt.schematicFlashX}
-            cy={colt.schematicArborY}
-            r={colt.schematicRatchetR}
             stroke="#f59e0b"
-            strokeWidth="1.5"
+            strokeWidth="2"
+          />
+          <g transform={`rotate(${displayRotation} 160 108)`} stroke="#fbbf24">
+            <circle cx="160" cy="82" r="7" />
+            <circle cx="185" cy="100" r="7" />
+            <circle cx="175" cy="129" r="7" />
+            <circle cx="145" cy="129" r="7" />
+            <circle cx="135" cy="100" r="7" />
+          </g>
+          <rect
+            x="151"
+            y={keyY}
+            width="18"
+            height="8"
+            fill={colt.keySeated ? "#34d399" : "#f59e0b"}
+            stroke={colt.keySeated ? "#10b981" : "#d97706"}
+          />
+          <path
+            d="M 78 112 L 68 72 L 87 51 L 102 57 L 93 83"
             fill="#334155"
+            stroke="#cbd5e1"
+            strokeWidth="2"
+            transform={`rotate(${-colt.displayHammerAngleDeg} 78 112)`}
           />
+          <line x1="95" y1="104" x2="142" y2="101" stroke="#f59e0b" strokeWidth="3" />
+          <circle cx="142" cy="101" r="10" fill="#334155" stroke="#f59e0b" />
+          <path d="M 142 101 L 159 108 L 174 108" stroke="#fbbf24" strokeWidth="3" />
+          <path d="M 113 151 L 99 168 L 108 172" stroke="#cbd5e1" strokeWidth="2" />
           <rect
-            x={colt.schematicBoltX}
-            y={colt.schematicBoltY + boltRetractY}
-            width={colt.schematicBoltW}
-            height={colt.schematicBoltH}
-            fill={isFullCock || cockDeg <= 2 ? "#34d399" : "#fbbf24"}
-            stroke={isFullCock || cockDeg <= 2 ? "#10b981" : "#d97706"}
-          />
-          <rect
-            x={trigger.x}
-            y={trigger.y}
-            width={trigger.w}
-            height={trigger.h}
-            fill={isFullCock ? "#f59e0b" : "#64748b"}
+            x="100"
+            y={triggerY}
+            width="7"
+            height={colt.safeToReleaseHammer ? 18 : 9}
+            fill={colt.safeToReleaseHammer ? "#f59e0b" : "#64748b"}
             stroke="#cbd5e1"
           />
-
-          <text x="285" y="60" fill="#93c5fd" fontSize="9" textAnchor="middle">
-            Rifled Barrel (Bore Axis)
+          <text x="276" y="77" fill="#93c5fd" fontSize="9" textAnchor="middle">
+            barrel and arbor
           </text>
-          <text x="168" y="52" fill="#fbbf24" fontSize="9" textAnchor="middle">
-            5-Chamber Cylinder (Δθ={rotDeg.toFixed(0)}°)
+          <text x="160" y="55" fill="#fbbf24" fontSize="9" textAnchor="middle">
+            cylinder wards · display pose
           </text>
-          <text x="50" y="42" fill="#bae6fd" fontSize="9">
-            Pawl &amp; Hammer (US X9430)
+          <text x="36" y="42" fill="#bae6fd" fontSize="9">
+            hammer pin p / key r
+          </text>
+          <text x="104" y="194" fill="#cbd5e1" fontSize="9">
+            d → s → shackle → m: {colt.stage.replaceAll("-", " ")}
+          </text>
+          <text x="204" y="209" fill="#94a3b8" fontSize="8" textAnchor="middle">
+            normalized source-order diagram; no ballistic or stress telemetry
           </text>
         </g>
       );

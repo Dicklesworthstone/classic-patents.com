@@ -85,7 +85,7 @@ describe("US 3,541,541 Douglas Engelbart Mouse manual archival edition", () => {
     }
   });
 
-  test("uses source-cropped, figure-labelled framing for Figures 1 through 7", () => {
+  test("uses complete primary source sheets for Figures 1 through 7", () => {
     const figurePreview = (number: number) => {
       const reference = engelbartMouseArchivalEdition.blocks
         .flatMap((block) =>
@@ -107,41 +107,21 @@ describe("US 3,541,541 Douglas Engelbart Mouse manual archival edition", () => {
       return reference.figurePreviews?.[0];
     };
 
-    expect(figurePreview(1)).toMatchObject({
-      src: "/patents/figures/us-3541541-engelbart-mouse/fig-1-source-crop-v2.png",
-      width: 1550,
-      height: 850,
-    });
-    expect(figurePreview(2)).toMatchObject({
-      src: "/patents/figures/us-3541541-engelbart-mouse/fig-2-source-crop-v4.png",
-      width: 1900,
-      height: 640,
-    });
-    expect(figurePreview(3)).toMatchObject({
-      src: "/patents/figures/us-3541541-engelbart-mouse/fig-3-source-crop-v2.png",
-      width: 2000,
-      height: 1050,
-    });
-    expect(figurePreview(4)).toMatchObject({
-      src: "/patents/figures/us-3541541-engelbart-mouse/fig-4-source-crop-v2.png",
-      width: 1550,
-      height: 650,
-    });
-    expect(figurePreview(5)).toMatchObject({
-      src: "/patents/figures/us-3541541-engelbart-mouse/fig-5-source-crop-v2.png",
-      width: 1550,
-      height: 700,
-    });
-    expect(figurePreview(6)).toMatchObject({
-      src: "/patents/figures/us-3541541-engelbart-mouse/fig-6-source-crop-v2.png",
-      width: 1550,
-      height: 980,
-    });
-    expect(figurePreview(7)).toMatchObject({
-      src: "/patents/figures/us-3541541-engelbart-mouse/fig-7-source-crop-v1.png",
-      width: 1300,
-      height: 1450,
-    });
+    for (const [figure, sourceSheet] of [
+      [1, 1],
+      [2, 1],
+      [3, 1],
+      [4, 2],
+      [5, 2],
+      [6, 2],
+      [7, 3],
+    ] as const) {
+      expect(figurePreview(figure)).toMatchObject({
+        src: `/patents/figures/us-3541541-engelbart-mouse/source-sheet-${sourceSheet}-v1.png`,
+        width: 2320,
+        height: 3408,
+      });
+    }
   });
 
   test("publishes the edition while disclosing the page-five FIG. 5 / disc 100 source erratum", () => {
@@ -170,13 +150,13 @@ describe("US 3,541,541 Douglas Engelbart Mouse manual archival edition", () => {
     if (sourceErratumReference?.kind !== "reference") return;
     expect(sourceErratumReference.label).toContain("disc 100 belongs to the FIG. 6");
     expect(sourceErratumReference.figurePreviews?.map((preview) => preview.src)).toEqual([
-      "/patents/figures/us-3541541-engelbart-mouse/fig-5-source-crop-v2.png",
-      "/patents/figures/us-3541541-engelbart-mouse/fig-6-source-crop-v2.png",
+      "/patents/figures/us-3541541-engelbart-mouse/source-sheet-2-v1.png",
+      "/patents/figures/us-3541541-engelbart-mouse/source-sheet-2-v1.png",
     ]);
     expect(sourceErratumReference.figurePreviews?.[1]?.alt).toContain("disc 100");
   });
 
-  test("records the rejected-crop repair gate without repointing legacy assets", () => {
+  test("keeps legacy crops preserved while full source sheets are active", () => {
     const pendingRepairs = [
       { figure: 1, sheetPage: 1, currentVersion: "v2", targetVersion: "v3" },
       { figure: 3, sheetPage: 1, currentVersion: "v2", targetVersion: "v3" },
@@ -205,7 +185,7 @@ describe("US 3,541,541 Douglas Engelbart Mouse manual archival edition", () => {
       expect(reference?.kind).toBe("reference");
       if (reference?.kind !== "reference") continue;
       expect(reference.figurePreviews?.[0]?.src).toContain(
-        `fig-${repair.figure}-source-crop-${repair.currentVersion}.png`,
+        `source-sheet-${repair.sheetPage}-v1.png`,
       );
       expect(
         existsSync(

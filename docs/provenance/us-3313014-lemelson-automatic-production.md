@@ -38,7 +38,18 @@
 
 - The public source face is `src/data/editions/lemelsonAutomaticProductionEdition.ts`; it is a continuous hand-authored reading, not a scan-page display.
 - The research ledger is `public/patents/transcripts/us-3313014-lemelson-automatic-production-reviewed.txt`. It retains the fifteen page markers solely for comparison against this receipt and the pinned facsimile.
-- Source-faithful figure crops live under `public/patents/figures/us-3313014-lemelson-automatic-production/` and are selected from the six pinned drawing sheets.
+- Active figure previews under `public/patents/figures/us-3313014-lemelson-automatic-production/` are the six complete pinned drawing sheets.
 - The grant prints 21 numbered claims. Every one is represented once in the archival edition and read dynamically by the catalogue record.
 - The Google Patents HTML and the PDF text layer were used only as research aids. Published prose, claim text, page anchors, and figure references were checked against the pinned facsimile; no raw machine draft or text layer is presented as the visitor-facing edition.
 - The source describes the topology and command relationships of an automatic production line. It does not give machine dimensions, payload, motor rating, speed, timing, force, accuracy, or throughput. The interactive kernel therefore presents normalized kinematic/control topology and explicitly refuses those absent performance claims.
+
+## Complete source-sheet acceptance — 2026-09-04
+
+Direct visual review at 300 DPI confirmed all six complete, signed primary drawing sheets: pages 1 (Figs. 1-3), 2 (Figs. 4-6), 3 (Figs. 7-8), 4 (Figs. 9-12), 5 (Fig. 13), and 6 (Figs. 14-15). Active asset SHA-256 values:
+
+- `source-sheet-1-v1.png`: `0dbb36acddde2826b2eb880567ebfddc26b2a929b69d7ebcd372c6e9c40a2270`
+- `source-sheet-2-v1.png`: `34994bbd00ff64370a48d4ca7d6aaf9b28f65500d93bdc97d74dfee4cf0f4145`
+- `source-sheet-3-v1.png`: `7796ad707c2c3b630fcab7ae56108cf72277dc31e40897ceeb58b7c00e922ebe`
+- `source-sheet-4-v1.png`: `8a9244e4a607a18c3d76ebb803e5057bd925ab74ea2fab2e967ec4d037a68080`
+- `source-sheet-5-v1.png`: `d6f01a8a58ef449181a2cf8fd104c7012c1907746e3c543703262d2e851b909a`
+- `source-sheet-6-v1.png`: `d74aa0913de4f1aa8d2a0f5aeb6da071b180a2b9e26f3310b2f90d28a25b0110`

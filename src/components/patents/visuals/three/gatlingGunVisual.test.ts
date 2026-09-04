@@ -8,7 +8,7 @@ import { stepGatlingGun } from "@/physics/catalogKernels";
 import { CATALOG_CLAIM_CONSTRAINTS } from "@/physics/claimConstraints";
 import { ENERGY_CHANNEL_OMISSION_REASONS, energyChannelsFor } from "@/physics/energyChannels";
 import { PATENT_PHYSICS_REGISTRY } from "@/physics/telemetryData";
-import { gatlingGunCameraForViewport } from "./gatlingGunCamera";
+import { GATLING_GUN_CAMERA_PRESETS, gatlingGunCameraForViewport } from "./gatlingGunCamera";
 import { buildGatlingGunModel } from "./gatlingGunModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
@@ -118,6 +118,22 @@ describe("US 36,836 Richard Gatling Revolving Battery Gun visual & ballistics bo
     } finally {
       model.dispose();
     }
+  });
+
+  test("reselects only the overview for a desktop-to-phone resize", () => {
+    const source = readFileSync(join(VISUALS_DIRECTORY, "three", "GatlingGun3D.tsx"), "utf8");
+    expect(gatlingGunCameraForViewport("iso", 1216, 460)).toEqual(GATLING_GUN_CAMERA_PRESETS.iso);
+    expect(gatlingGunCameraForViewport("iso", 286, 380)).not.toEqual(
+      GATLING_GUN_CAMERA_PRESETS.iso,
+    );
+    expect(gatlingGunCameraForViewport("barrels", 286, 380)).toEqual(
+      GATLING_GUN_CAMERA_PRESETS.barrels,
+    );
+    expect(source).toContain('if (activeCamera !== "iso") return;');
+    expect(source).toContain('window.addEventListener("resize", reselectResponsiveOverview)');
+    expect(source).toContain(
+      'window.addEventListener("orientationchange", reselectResponsiveOverview)',
+    );
   });
 
   test("computes genuine Gatling rotary rate of fire and cooling intervals in SI units", () => {
