@@ -16,8 +16,8 @@
 
 | Material | Exact PDF locator | Editorial treatment |
 | --- | --- | --- |
-| Figures 1 and 3; drawing-sheet inventor, title, and patent-number credit | PDF p. 1 | Individually cropped local previews; explicit figure nodes and references. |
-| Figures 2 and 4; second drawing sheet | PDF p. 2 | Individually cropped local previews; explicit figure nodes and references. |
+| Figures 1 and 3; drawing-sheet inventor, title, and patent-number credit | PDF p. 1 | Direct visual review; complete source sheet is the active evidence. |
+| Figures 2 and 4; second drawing sheet | PDF p. 2 | Direct visual review; complete source sheet is the active evidence. |
 | Masthead, application serial, introduction, object, figures, belt, guide, and hand-rail description through the beginning of the rail-plate paragraph | PDF p. 3 | Ordered manual source paragraphs with authored non-lossy companion readings. |
 | End of rail-plate paragraph, alternatives, operation, 25-degree slope, two-way arrangement, all claims, inventor, and witnesses | PDF p. 4 | Ordered manual paragraphs, all three exact typed claims, and execution matter. |
 
@@ -70,7 +70,7 @@ The edition makes all three printed claims explicit typed claim nodes:
    sprocket-wheels.
 3. The combined combed landing, endless hinged platform, and endless hand-rail.
 
-The local figure previews are direct crops of the checked source rasters:
+The older local figure previews are direct crops of the checked source rasters:
 
 - `fig-1-source-crop-v1.png` from PDF p. 1;
 - `fig-2-source-crop-v1.png` from PDF p. 2;
@@ -78,6 +78,20 @@ The local figure previews are direct crops of the checked source rasters:
 - `fig-4-source-crop-v1.png` from PDF p. 2.
 
 They add no synthetic labels or altered linework.
+
+### Complete source-sheet acceptance (2026-09-04)
+
+Direct 300 DPI visual review confirms that PDF page 1 preserves the entire
+first drawing sheet, including Figs. 1 and 3, title furniture, source letters,
+signatures, and witnesses; PDF page 2 does the same for Figs. 2 and 4. The
+active evidence is the full, unmodified render of each source page:
+`source-sheet-1-v1.png` (2320 × 3408; SHA-256
+`e4c403f7b5488eea9b9caa05b60f97e7e7de333cd7716e87e2561baced4b929b`) and
+`source-sheet-2-v1.png` (2320 × 3408; SHA-256
+`44d861a61cb0ee2fe65807af565940742a5f52effb04302eb64d47f0808e8856`). All
+17 active figure-reference occurrences use their complete source sheet. The
+older crops remain preserved comparison artifacts and no historical content
+was reconstructed.
 
 ## Independent-review boundary
 

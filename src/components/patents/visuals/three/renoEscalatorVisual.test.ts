@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { energyChannelsFor } from "@/physics/energyChannels";
 import { stepRenoEscalator } from "@/physics/machineKernels";
 import { PATENT_PHYSICS_REGISTRY } from "@/physics/telemetryData";
-import { RENO_CAMERA_PRESETS } from "./renoEscalatorCamera";
+import { RENO_CAMERA_PRESETS, renoCameraForViewport } from "./renoEscalatorCamera";
 import {
   buildRenoEscalatorModel,
   createRenoEscalatorLayout,
@@ -22,6 +22,30 @@ import {
 } from "./renoEscalatorModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
+
+function projectedObjectBounds(object: THREE.Object3D, camera: THREE.PerspectiveCamera) {
+  object.updateMatrixWorld(true);
+  const bounds = new THREE.Box3().setFromObject(object);
+  const frame = {
+    minX: Number.POSITIVE_INFINITY,
+    maxX: Number.NEGATIVE_INFINITY,
+    minY: Number.POSITIVE_INFINITY,
+    maxY: Number.NEGATIVE_INFINITY,
+  };
+
+  for (const x of [bounds.min.x, bounds.max.x]) {
+    for (const y of [bounds.min.y, bounds.max.y]) {
+      for (const z of [bounds.min.z, bounds.max.z]) {
+        const projected = new THREE.Vector3(x, y, z).project(camera);
+        frame.minX = Math.min(frame.minX, projected.x);
+        frame.maxX = Math.max(frame.maxX, projected.x);
+        frame.minY = Math.min(frame.minY, projected.y);
+        frame.maxY = Math.max(frame.maxY, projected.y);
+      }
+    }
+  }
+  return frame;
+}
 
 describe("US 470,918 Jesse Reno Inclined Elevator visual & mechanics boundary", () => {
   test("uses a procedural, pitch-locked drive rather than an elastic visual surrogate", () => {
@@ -96,12 +120,92 @@ describe("US 470,918 Jesse Reno Inclined Elevator visual & mechanics boundary", 
     expect(threeSource).toContain("Reno Endless Conveyor Dynamics");
     expect(threeSource).toContain("controls.setView");
     expect(threeSource).not.toContain("cameraRef");
+    expect(threeSource).toContain("renoCameraForViewport");
 
     for (const [name, preset] of Object.entries(RENO_CAMERA_PRESETS)) {
       const clearance = new THREE.Vector3(...preset.pos).distanceTo(
         new THREE.Vector3(...preset.target),
       );
       expect(clearance, `${name} camera must remain outside the apparatus`).toBeGreaterThan(6);
+    }
+  });
+
+  test("keeps both terminal stations and the full cleated loop readable in the exact 320px canvas", () => {
+    const model = buildRenoEscalatorModel();
+    try {
+      const desktop = renoCameraForViewport("iso", 1216, 460);
+      const tablet = renoCameraForViewport("iso", 718, 460);
+      expect(desktop).toEqual(RENO_CAMERA_PRESETS.iso);
+      expect(tablet).toEqual(RENO_CAMERA_PRESETS.iso);
+
+      // V26's 320px browser viewport produces a 286 × 380px studio canvas.
+      // The 20° and 35° endpoints cover the incline control, and solid/cutaway
+      // modes cover the two visual states visitors can inspect.
+      const canvasWidth = 286;
+      const canvasHeight = 380;
+      const view = renoCameraForViewport("iso", canvasWidth, canvasHeight);
+      const camera = new THREE.PerspectiveCamera(42, canvasWidth / canvasHeight, 0.1, 1000);
+      camera.position.set(...view.pos);
+      camera.lookAt(...view.target);
+      camera.updateProjectionMatrix();
+      camera.updateMatrixWorld();
+
+      for (const inclineAngleDeg of [20, 35]) {
+        for (const cutawayMode of [true, false]) {
+          updateRenoEscalatorIncline(model.nodes, inclineAngleDeg);
+          updateRenoEscalatorKinematics(model.nodes, model.materials, 0.7, cutawayMode);
+          model.root.updateMatrixWorld(true);
+
+          const apparatus = projectedObjectBounds(model.root, camera);
+          const bottomTerminal = projectedObjectBounds(model.nodes.bottomCombPlate, camera);
+          const topTerminal = projectedObjectBounds(model.nodes.topCombPlate, camera);
+          const deckLoop = projectedObjectBounds(model.nodes.cleatDeckGroup, camera);
+
+          expect(apparatus.minX, `${inclineAngleDeg}° ${cutawayMode} left edge`).toBeGreaterThan(
+            -0.8,
+          );
+          expect(apparatus.maxX, `${inclineAngleDeg}° ${cutawayMode} right edge`).toBeLessThan(
+            0.86,
+          );
+          expect(apparatus.minY, `${inclineAngleDeg}° ${cutawayMode} lower edge`).toBeGreaterThan(
+            -0.72,
+          );
+          expect(apparatus.maxY, `${inclineAngleDeg}° ${cutawayMode} upper edge`).toBeLessThan(
+            0.45,
+          );
+          expect(
+            ((apparatus.maxX - apparatus.minX) * canvasWidth) / 2,
+            `${inclineAngleDeg}° ${cutawayMode} horizontal readability`,
+          ).toBeGreaterThan(215);
+          expect(
+            ((apparatus.maxY - apparatus.minY) * canvasHeight) / 2,
+            `${inclineAngleDeg}° ${cutawayMode} vertical readability`,
+          ).toBeGreaterThan(150);
+
+          for (const [name, terminal] of [
+            ["bottom terminal", bottomTerminal],
+            ["top terminal", topTerminal],
+            ["cleated loop", deckLoop],
+          ] as const) {
+            expect(
+              terminal.minX,
+              `${inclineAngleDeg}° ${cutawayMode} ${name} left`,
+            ).toBeGreaterThan(-0.8);
+            expect(terminal.maxX, `${inclineAngleDeg}° ${cutawayMode} ${name} right`).toBeLessThan(
+              0.86,
+            );
+            expect(
+              terminal.minY,
+              `${inclineAngleDeg}° ${cutawayMode} ${name} lower`,
+            ).toBeGreaterThan(-0.72);
+            expect(terminal.maxY, `${inclineAngleDeg}° ${cutawayMode} ${name} upper`).toBeLessThan(
+              0.45,
+            );
+          }
+        }
+      }
+    } finally {
+      model.dispose();
     }
   });
 

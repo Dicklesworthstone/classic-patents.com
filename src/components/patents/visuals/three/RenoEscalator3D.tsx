@@ -8,7 +8,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
-import { RENO_CAMERA_PRESETS, type RenoCameraPreset } from "./renoEscalatorCamera";
+import { type RenoCameraPreset, renoCameraForViewport } from "./renoEscalatorCamera";
 import {
   buildRenoEscalatorModel,
   type RenoEscalatorModelResult,
@@ -61,9 +61,14 @@ export function RenoEscalator3D() {
 
   const studioRef = useRef<StudioContext | null>(null);
 
+  const cameraViewForContainer = (preset: RenoCameraPreset) => {
+    const container = containerRef.current;
+    return renoCameraForViewport(preset, container?.clientWidth ?? 0, container?.clientHeight ?? 0);
+  };
+
   const applyCameraPreset = (preset: RenoCameraPreset) => {
     setActiveCamera(preset);
-    const cfg = RENO_CAMERA_PRESETS[preset];
+    const cfg = cameraViewForContainer(preset);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -77,7 +82,7 @@ export function RenoEscalator3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = RENO_CAMERA_PRESETS.iso;
+    const iso = renoCameraForViewport("iso", container.clientWidth, container.clientHeight);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,

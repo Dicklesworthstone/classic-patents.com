@@ -34,7 +34,19 @@ describe("renoEscalatorArchivalEdition", () => {
     ).toEqual([1, 2, 3]);
   });
 
-  test("keeps each printed figure, source crop, and figure reference explicit", () => {
+  test("keeps each printed figure and its complete primary source sheet explicit", () => {
+    const sourceSheets = {
+      "/patents/figures/us-470918-reno-escalator/source-sheet-1-v1.png": {
+        sha256: "e4c403f7b5488eea9b9caa05b60f97e7e7de333cd7716e87e2561baced4b929b",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-470918-reno-escalator/source-sheet-2-v1.png": {
+        sha256: "44d861a61cb0ee2fe65807af565940742a5f52effb04302eb64d47f0808e8856",
+        width: 2320,
+        height: 3408,
+      },
+    } as const;
     const figures = renoEscalatorArchivalEdition.blocks
       .filter((block) => block.kind === "figure-sheet")
       .map((block) => block.figureLabel);
@@ -48,6 +60,14 @@ describe("renoEscalatorArchivalEdition", () => {
       const source = reference.figurePreviews?.[0]?.src;
       expect(source).toStartWith("/patents/figures/us-470918-reno-escalator/");
       expect(existsSync(resolve(root, `public${source}`))).toBe(true);
+      expect(source && source in sourceSheets).toBe(true);
+      expect(reference.figurePreviews?.[0]).toMatchObject({ width: 2320, height: 3408 });
+    }
+    for (const [src, expected] of Object.entries(sourceSheets)) {
+      const bytes = readFileSync(resolve(root, `public${src}`));
+      expect(createHash("sha256").update(bytes).digest("hex")).toBe(expected.sha256);
+      expect(bytes.readUInt32BE(16)).toBe(expected.width);
+      expect(bytes.readUInt32BE(20)).toBe(expected.height);
     }
   });
 

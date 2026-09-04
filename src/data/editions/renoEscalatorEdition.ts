@@ -16,31 +16,22 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
+const sourceSheet = (number: 1 | 2 | 3 | 4) => {
+  const sourcePdfPage = number === 1 || number === 3 ? 1 : 2;
+  const figureRange = sourcePdfPage === 1 ? "Figs. 1 and 3" : "Figs. 2 and 4";
+  return {
+    src: `/patents/figures/us-470918-reno-escalator/source-sheet-${sourcePdfPage}-v1.png`,
+    alt: `Complete source drawing sheet containing ${figureRange}, highlighting Fig. ${number}, from US 470,918.`,
+    width: 2320,
+    height: 3408,
+  };
+};
+
 const FIGURES = {
-  1: {
-    src: "/patents/figures/us-470918-reno-escalator/fig-1-source-crop-v1.png",
-    alt: "Figure 1 from US 470,918: lower end of the inclined conveyor and moving hand-rail.",
-    width: 2321,
-    height: 1900,
-  },
-  2: {
-    src: "/patents/figures/us-470918-reno-escalator/fig-2-source-crop-v1.png",
-    alt: "Figure 2 from US 470,918: upper end of the conveyor, sprocket-wheel, belt sections, and comb landing.",
-    width: 2050,
-    height: 2100,
-  },
-  3: {
-    src: "/patents/figures/us-470918-reno-escalator/fig-3-source-crop-v1.png",
-    alt: "Figure 3 from US 470,918: general-outline diagram of the endless conveyor and hand-rail.",
-    width: 1500,
-    height: 1100,
-  },
-  4: {
-    src: "/patents/figures/us-470918-reno-escalator/fig-4-source-crop-v1.png",
-    alt: "Figure 4 from US 470,918: cross-section of the belt, I-beam, and hand-rail support on line a b of Figure 2.",
-    width: 2050,
-    height: 1350,
-  },
+  1: sourceSheet(1),
+  2: sourceSheet(2),
+  3: sourceSheet(3),
+  4: sourceSheet(4),
 } as const;
 
 const figure = (number: 1 | 2 | 3 | 4, label = `Fig. ${number}`): CuratedSpecificationInline => ({
@@ -48,7 +39,7 @@ const figure = (number: 1 | 2 | 3 | 4, label = `Fig. ${number}`): CuratedSpecifi
   text: label,
   href: `#fig-${number}`,
   referenceType: "figure",
-  label: `Open the source-facsimile crop for Figure ${number} of US 470,918`,
+  label: `Open the complete source drawing sheet for Figure ${number} of US 470,918`,
   figurePreviews: [FIGURES[number]],
 });
 
@@ -85,7 +76,7 @@ export const renoEscalatorArchivalEdition: CuratedSpecificationEdition = {
       figureLabel: "DRAWING SHEETS",
       title: "Figures 1–4",
       description: text(
-        "The two source drawing sheets contain four printed figures: the lower and upper ends of the conveyor, a general outline, and a cross-section. Each printed figure reference below opens its corresponding local facsimile crop.",
+        "The two source drawing sheets contain four printed figures: the lower and upper ends of the conveyor, a general outline, and a cross-section. Each printed figure reference below opens its complete primary drawing sheet.",
       ),
     },
     paragraph([{ kind: "emphasis", text: "To all whom it may concern:" }]),
