@@ -206,9 +206,7 @@ describe("US X72 Eli Whitney Cotton Gin visual & kinematics boundary", () => {
     // The single source coordinate is the crank. These exact equality checks
     // are deliberately stricter than a tolerance: a belt that only appears to
     // close at one speed still slips after enough fixed ticks.
-    expect(moving.phases.cylinderRad).toBe(
-      moving.phases.crankRad * moving.outputs.sawToCrankRatio,
-    );
+    expect(moving.phases.cylinderRad).toBe(moving.phases.crankRad * moving.outputs.sawToCrankRatio);
     expect(moving.phases.clearerRad).toBe(
       -moving.phases.crankRad * moving.outputs.brushToCrankRatio,
     );
