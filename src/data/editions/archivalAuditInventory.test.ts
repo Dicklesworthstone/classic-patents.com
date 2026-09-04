@@ -26,9 +26,9 @@ describe("server-only archival audit inventory", () => {
         other: 0,
       },
       readerDeliveryCounts: { edition: 92, transcript: 11, facsimile: 0 },
-      unacceptedFigureOccurrenceCount: 390,
+      unacceptedFigureOccurrenceCount: 384,
       recordsWithAttestedFiguresMissingLocators: 0,
-      recordsMissingFigureAttestationsAndLocators: 10,
+      recordsMissingFigureAttestationsAndLocators: 9,
     });
   }, 30000);
 
