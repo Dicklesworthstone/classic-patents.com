@@ -2667,6 +2667,36 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
       sourcePdfPage: 2,
     }),
   ],
+  "us-608969-parsons-turbine": [
+    parsonsTurbineSourceSheetLocator({
+      occurrenceKey: "edition-block-18-group-0-inline-1",
+      sourcePdfPage: 1,
+    }),
+    parsonsTurbineSourceSheetLocator({
+      occurrenceKey: "edition-block-18-group-0-inline-3",
+      sourcePdfPage: 2,
+    }),
+    parsonsTurbineSourceSheetLocator({
+      occurrenceKey: "edition-block-18-group-0-inline-5",
+      sourcePdfPage: 3,
+    }),
+    parsonsTurbineSourceSheetLocator({
+      occurrenceKey: "edition-block-19-group-0-inline-1",
+      sourcePdfPage: 1,
+    }),
+    parsonsTurbineSourceSheetLocator({
+      occurrenceKey: "edition-block-24-group-0-inline-1",
+      sourcePdfPage: 2,
+    }),
+    parsonsTurbineSourceSheetLocator({
+      occurrenceKey: "edition-block-24-group-0-inline-3",
+      sourcePdfPage: 2,
+    }),
+    parsonsTurbineSourceSheetLocator({
+      occurrenceKey: "edition-block-28-group-0-inline-1",
+      sourcePdfPage: 3,
+    }),
+  ],
   "us-x8277-mccormick-reaper": [
     mccormickReaperSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-1" }),
   ],
