@@ -72,6 +72,7 @@ const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
   "us-942699-baekeland-bakelite",
   "us-971501-haber-ammonia",
   "us-2495429-spencer-microwave",
+  "us-2524035-bardeen-transistor",
   "us-2717437-mestral-velcro",
   "us-3212649-amf-versatran",
   "us-3728480-baer-odyssey",

@@ -1050,6 +1050,55 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
       },
     },
   },
+  "us-3858232-boyle-smith-ccd": {
+    sourcePdfSha256: "769ab5a1dc91d51bfeebea53b082de4d9b712deb41c096cdac41aae4d3142ec2",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 104,
+    assets: {
+      "/patents/figures/us-3858232-boyle-smith-ccd/source-sheet-2-v1.png": {
+        sha256: "3eadfb055efca66b0116ff900775b88e5e493f5de014deadb417af2cfb7e148e",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3858232-boyle-smith-ccd/source-sheet-3-v1.png": {
+        sha256: "e9d21a6993f081c55ba9f17d4afd69ffd76836197ce49484b668ea3a1dfbc7dd",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3858232-boyle-smith-ccd/source-sheet-4-v1.png": {
+        sha256: "95618e2f9ae328298d3a0bc202274a7bac994142e60fb6e817bef91752d8ef44",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3858232-boyle-smith-ccd/source-sheet-5-v1.png": {
+        sha256: "8c67fdddfbaaf962729dee6a64b2961e90c00a7828ef333ebb4cb8c53de61252",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3858232-boyle-smith-ccd/source-sheet-6-v1.png": {
+        sha256: "4f499eb79a992470055dae6279c91e3181b6ad768d5e9493ee0e070774c49695",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3858232-boyle-smith-ccd/source-sheet-7-v1.png": {
+        sha256: "47d30c7190bee3deabe9794a0dbf71b7d60bba733fa3d846f77a9b6da2a6dfa6",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3858232-boyle-smith-ccd/source-sheet-8-v1.png": {
+        sha256: "9d425dbf2e213f644b589592befee0128d5bdb233f08cd80c31e5a78d8153598",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3858232-boyle-smith-ccd/source-sheet-9-v1.png": {
+        sha256: "12ef9c4683041aec68fca877ea42fcaf35fda276f729c1b8c67b2bd90b857c75",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
   "us-3260375-lemelson-adjustable-manipulator": {
     sourcePdfSha256: "e7be38b9f72cba77958ddab0422e147a6947056e4d51dddc7559508723cbdf34",
     reviewer: "Classic Patents editorial agent (SapphireElm)",
