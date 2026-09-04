@@ -13,10 +13,10 @@ describe("server-only archival audit inventory", () => {
     );
     expect(inventory.summary).toMatchObject({
       catalogueRecordCount: 103,
-      acceptedRecordCount: 74,
-      nonacceptedRecordCount: 29,
+      acceptedRecordCount: 73,
+      nonacceptedRecordCount: 30,
       primaryReasonCounts: {
-        figure: 11,
+        figure: 12,
         "facsimile-review": 8,
         ledger: 0,
         "full-specification": 5,

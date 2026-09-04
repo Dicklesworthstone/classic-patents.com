@@ -10,11 +10,11 @@ describe("archival hold inventory and partition contract (3hc.3)", () => {
 
   test("derives the exact catalogue totals and partition counts", () => {
     expect(report.totalPatents).toBe(103);
-    expect(report.acceptedCount).toBe(74);
-    expect(report.heldCount).toBe(29);
+    expect(report.acceptedCount).toBe(73);
+    expect(report.heldCount).toBe(30);
 
-    // Exact 29-state disjoint reason-code partition (after figure acceptance):
-    expect(report.categoryCounts["figure-related"]).toBe(11);
+    // Exact 30-state disjoint reason-code partition (after figure acceptance):
+    expect(report.categoryCounts["figure-related"]).toBe(12);
     expect(report.categoryCounts["facsimile-review-related"]).toBe(8);
     expect(report.categoryCounts["ledger-related"]).toBe(0);
     expect(report.categoryCounts["full-specification-related"]).toBe(5);
@@ -31,12 +31,12 @@ describe("archival hold inventory and partition contract (3hc.3)", () => {
       report.categoryCounts["reconstruction-quarantine"] +
       report.categoryCounts["primary-facsimile-gap"];
 
-    expect(partitionSum).toBe(29);
+    expect(partitionSum).toBe(30);
   });
 
   test("proves every held patent delivers a complete source face in the reader", () => {
     const heldEntries = report.entries.filter((e) => e.category !== "accepted");
-    expect(heldEntries.length).toBe(29);
+    expect(heldEntries.length).toBe(30);
 
     for (const entry of heldEntries) {
       expect(["edition", "transcript", "facsimile"]).toContain(entry.readerDeliveryMode);
@@ -86,8 +86,8 @@ describe("archival hold inventory and partition contract (3hc.3)", () => {
       "# Classic Patents — Internal Archival Hold Inventory & Remediation Map",
     );
     expect(markdown).toContain("Total Catalogue Patents: 103");
-    expect(markdown).toContain("Fully Accepted Editions: 74");
-    expect(markdown).toContain("Under Remediation Review: 29");
+    expect(markdown).toContain("Fully Accepted Editions: 73");
+    expect(markdown).toContain("Under Remediation Review: 30");
     expect(markdown).toContain("classic-patentscom-source-reader-remediation-3hc.4");
     expect(markdown).toContain("classic-patentscom-source-reader-remediation-3hc.5");
     expect(markdown).toContain("classic-patentscom-source-reader-remediation-3hc.6");

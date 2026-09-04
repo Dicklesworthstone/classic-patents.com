@@ -20,6 +20,7 @@ const EXPECTED_ROOT_QA_WITHHOLDS = [
   "us-621195-zeppelin-airship",
   "us-706737-fessenden-wireless",
   "us-x1-hopkins-potash",
+  "us-x72-whitney-cotton-gin",
 ] as const;
 
 const GENERIC_PARALLEL_READING_PATTERNS: readonly RegExp[] = [
