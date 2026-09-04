@@ -44,8 +44,9 @@ carried by the catalogue record. The source's application date is March 4,
 - `public/patents/transcripts/us-608969-parsons-turbine-reviewed.txt` is the
   page-marked, human-reviewed comparison ledger. It is not rendered as the
   public source face.
-- The figure previews are tightly cropped directly from the pinned drawing
-  sheets at `public/patents/figures/us-608969-parsons-turbine/`.
+- The active figure previews are complete, unmodified drawing-sheet renders at
+  `public/patents/figures/us-608969-parsons-turbine/`. Earlier tight crops are
+  retained as legacy research assets and are not active evidence.
 - `public/patents/source-text/us-608969-parsons-turbine.txt` and the prior
   unreviewed transcript are retained legacy research evidence only. They are
   not authority for the public edition and are not a reviewed transcription.
