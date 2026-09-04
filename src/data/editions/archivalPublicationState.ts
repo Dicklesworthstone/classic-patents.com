@@ -269,11 +269,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "facsimile-only",
   ),
 
-  "us-3138743-kilby-integrated-circuit": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-ndg",
-    "Source-approved figures and ledger acceptance are pending.",
-  ),
   "us-2708656-fermi-reactor": auditHold(
     "AUDIT_FULL_SPECIFICATION_PENDING",
     "classic-patentscom-wt9",

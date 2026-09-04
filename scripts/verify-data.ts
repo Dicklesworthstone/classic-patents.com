@@ -38,6 +38,7 @@ const BARE_DRAWING_REFERENCE = /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|d
 const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
   "us-x9430-colt-revolver",
   "us-x8277-mccormick-reaper",
+  "us-x72-whitney-cotton-gin",
   "us-132-davenport-electric-motor",
   "us-1647-morse-telegraph",
   "us-3633-goodyear-rubber",

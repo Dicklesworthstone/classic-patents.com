@@ -30,6 +30,35 @@ export interface ArchivalFigureAcceptanceAttestation {
 export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
   Record<string, ArchivalFigureAcceptanceAttestation>
 > = {
+  "us-3138743-kilby-integrated-circuit": {
+    sourcePdfSha256: "e523c17aaef78f727181d87c427be3edf10f964bed20b90ef07a8099a1c18eef",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 47,
+    assets: {
+      "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-1-v1.png": {
+        sha256: "277a2ad986ce7ada30cd138d5e9fd8e3586a309405bb22872de8222173da522d",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-2-v1.png": {
+        sha256: "452d8aac115c9fabcee2c839dee0d6e2e4ca8bbab825b30ba3d466c74fdf7ab3",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-3-v1.png": {
+        sha256: "7d4e216527526cdbc7e431abea336b285ad0aedb6d5cf247cbc43277dbfb58e3",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-4-v1.png": {
+        sha256: "bac412c1f14de683bd537b19c3fa7f54c38ab1f5b9c02535e3f03697e98ee191",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
   "us-x72-whitney-cotton-gin": {
     sourcePdfSha256: "9b0873182dbd2852a89bbf5bc7101e2c3b7a2d0cc76cee0df5c7acbfc86844ee",
     reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",

@@ -14,8 +14,8 @@ describe("archival hold inventory and partition contract (3hc.3)", () => {
     expect(report.heldCount).toBe(30);
 
     // Exact 30-state disjoint reason-code partition (after figure acceptance):
-    expect(report.categoryCounts["figure-related"]).toBe(12);
-    expect(report.categoryCounts["facsimile-review-related"]).toBe(8);
+    expect(report.categoryCounts["figure-related"]).toBe(11);
+    expect(report.categoryCounts["facsimile-review-related"]).toBe(9);
     expect(report.categoryCounts["ledger-related"]).toBe(0);
     expect(report.categoryCounts["full-specification-related"]).toBe(5);
     expect(report.categoryCounts["claim-parity-related"]).toBe(0);

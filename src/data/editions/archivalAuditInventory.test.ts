@@ -16,8 +16,8 @@ describe("server-only archival audit inventory", () => {
       acceptedRecordCount: 73,
       nonacceptedRecordCount: 30,
       primaryReasonCounts: {
-        figure: 12,
-        "facsimile-review": 8,
+        figure: 11,
+        "facsimile-review": 9,
         ledger: 0,
         "full-specification": 5,
         "claim-parity": 0,
@@ -26,9 +26,9 @@ describe("server-only archival audit inventory", () => {
         other: 0,
       },
       readerDeliveryCounts: { edition: 91, transcript: 12, facsimile: 0 },
-      unacceptedFigureOccurrenceCount: 743,
+      unacceptedFigureOccurrenceCount: 696,
       recordsWithAttestedFiguresMissingLocators: 8,
-      recordsMissingFigureAttestationsAndLocators: 13,
+      recordsMissingFigureAttestationsAndLocators: 12,
     });
   }, 30000);
 

@@ -3485,6 +3485,94 @@ function hollerithTabulatingSourceSheetLocator(
   };
 }
 
+const KILBY_INTEGRATED_CIRCUIT_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const KILBY_INTEGRATED_CIRCUIT_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-3138743-kilby-integrated-circuit.md#complete-source-sheet-acceptance-2026-09-04";
+const KILBY_INTEGRATED_CIRCUIT_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-1-v1.png",
+  2: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-2-v1.png",
+  3: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-3-v1.png",
+  4: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-4-v1.png",
+} as const;
+const KILBY_INTEGRATED_CIRCUIT_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-1-group-0-inline-1", 1],
+  ["edition-block-1-group-0-inline-3", 1],
+  ["edition-block-1-group-0-inline-5", 1],
+  ["edition-block-1-group-0-inline-7", 1],
+  ["edition-block-1-group-0-inline-9", 1],
+  ["edition-block-1-group-0-inline-11", 1],
+  ["edition-block-1-group-0-inline-13", 1],
+  ["edition-block-1-group-0-inline-15", 1],
+  ["edition-block-2-group-0-inline-1", 2],
+  ["edition-block-2-group-0-inline-3", 2],
+  ["edition-block-3-group-0-inline-1", 3],
+  ["edition-block-4-group-0-inline-1", 4],
+  ["edition-block-4-group-0-inline-3", 4],
+  ["edition-block-4-group-0-inline-5", 4],
+  ["edition-block-21-group-0-inline-1", 1],
+  ["edition-block-21-group-0-inline-3", 2],
+  ["edition-block-21-group-0-inline-5", 2],
+  ["edition-block-21-group-0-inline-7", 3],
+  ["edition-block-21-group-0-inline-9", 4],
+  ["edition-block-21-group-0-inline-11", 4],
+  ["edition-block-21-group-0-inline-13", 4],
+  ["edition-block-26-group-0-inline-0", 1],
+  ["edition-block-27-group-0-inline-1", 1],
+  ["edition-block-27-group-0-inline-3", 1],
+  ["edition-block-28-group-0-inline-1", 1],
+  ["edition-block-28-group-0-inline-3", 1],
+  ["edition-block-28-group-0-inline-5", 1],
+  ["edition-block-28-group-0-inline-7", 1],
+  ["edition-block-28-group-0-inline-9", 1],
+  ["edition-block-28-group-0-inline-11", 1],
+  ["edition-block-28-group-0-inline-13", 1],
+  ["edition-block-29-group-0-inline-3", 1],
+  ["edition-block-30-group-0-inline-1", 1],
+  ["edition-block-30-group-0-inline-3", 1],
+  ["edition-block-30-group-0-inline-5", 1],
+  ["edition-block-30-group-0-inline-7", 1],
+  ["edition-block-31-group-0-inline-1", 1],
+  ["edition-block-32-group-0-inline-1", 1],
+  ["edition-block-33-group-0-inline-1", 1],
+  ["edition-block-34-group-0-inline-1", 1],
+  ["edition-block-34-group-0-inline-3", 1],
+  ["edition-block-37-group-0-inline-1", 2],
+  ["edition-block-37-group-0-inline-3", 2],
+  ["edition-block-37-group-0-inline-5", 2],
+  ["edition-block-37-group-0-inline-7", 3],
+  ["edition-block-37-group-0-inline-9", 2],
+  ["edition-block-44-group-0-inline-1", 4],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof KILBY_INTEGRATED_CIRCUIT_SOURCE_SHEET_ASSETS,
+])[];
+
+function kilbyIntegratedCircuitSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof KILBY_INTEGRATED_CIRCUIT_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: KILBY_INTEGRATED_CIRCUIT_SOURCE_SHEET_RASTER.width,
+    height: KILBY_INTEGRATED_CIRCUIT_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: KILBY_INTEGRATED_CIRCUIT_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: KILBY_INTEGRATED_CIRCUIT_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      KILBY_INTEGRATED_CIRCUIT_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: KILBY_INTEGRATED_CIRCUIT_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
 const WHITNEY_COTTON_GIN_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
 const WHITNEY_COTTON_GIN_SOURCE_SHEET_EVIDENCE_REFERENCE =
   "docs/provenance/us-x72-whitney-cotton-gin.md#source-sheet-review-2026-09-03";
@@ -5710,6 +5798,10 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
   "us-395781-hollerith-tabulating": HOLLERITH_TABULATING_SOURCE_SHEET_OCCURRENCES.map(
     ([occurrenceKey, sourcePdfPage]) =>
       hollerithTabulatingSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-3138743-kilby-integrated-circuit": KILBY_INTEGRATED_CIRCUIT_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) =>
+      kilbyIntegratedCircuitSourceSheetLocator(occurrenceKey, sourcePdfPage),
   ),
   "us-x72-whitney-cotton-gin": WHITNEY_COTTON_GIN_SOURCE_SHEET_OCCURRENCES.map(
     ([occurrenceKey, sourcePdfPage]) =>

@@ -509,146 +509,159 @@ type KilbySourcePreviewPlanEntry = {
   page: 1 | 2 | 3 | 4;
   targetSrc: string;
   orientation: "upright";
-  isolated: true;
+  isolated: false;
+  completeSourceSheet: true;
 };
 
 /**
- * Cloud-Luna handoff contract for the source-face previews. The existing
- * page-1/page-2/page-3 PNGs remain grouped research crops and are deliberately
- * not eligible as archival previews. The missing targets stay unbound until
- * an upright, isolated crop is supplied and independently checked.
+ * Each printed Kilby figure is bound to the complete, upright drawing sheet
+ * rendered directly from the pinned facsimile. A source sheet preserves the
+ * patent furniture and neighboring printed figures instead of pretending that
+ * a new isolated crop is itself an archival primary source.
  */
 export const kilbyIntegratedCircuitSourcePreviewPlan: readonly KilbySourcePreviewPlanEntry[] = [
   {
     figure: "Fig. 1",
     page: 1,
-    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v2.png",
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-1-v1.png",
     orientation: "upright",
-    isolated: true,
+    isolated: false,
+    completeSourceSheet: true,
   },
   {
     figure: "Fig. 1a",
     page: 1,
-    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1a-source-crop-v1.png",
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-1-v1.png",
     orientation: "upright",
-    isolated: true,
+    isolated: false,
+    completeSourceSheet: true,
   },
   {
     figure: "Fig. 2",
     page: 1,
-    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-2-source-crop-v2.png",
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-1-v1.png",
     orientation: "upright",
-    isolated: true,
+    isolated: false,
+    completeSourceSheet: true,
   },
   {
     figure: "Fig. 2a",
     page: 1,
-    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-2a-source-crop-v1.png",
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-1-v1.png",
     orientation: "upright",
-    isolated: true,
+    isolated: false,
+    completeSourceSheet: true,
   },
   {
     figure: "Fig. 3",
     page: 1,
-    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-3-source-crop-v2.png",
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-1-v1.png",
     orientation: "upright",
-    isolated: true,
+    isolated: false,
+    completeSourceSheet: true,
   },
   {
     figure: "Fig. 4",
     page: 1,
-    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-4-source-crop-v2.png",
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-1-v1.png",
     orientation: "upright",
-    isolated: true,
+    isolated: false,
+    completeSourceSheet: true,
   },
   {
     figure: "Fig. 5",
     page: 1,
-    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-5-source-crop-v2.png",
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-1-v1.png",
     orientation: "upright",
-    isolated: true,
+    isolated: false,
+    completeSourceSheet: true,
   },
   {
     figure: "Fig. 5a",
     page: 1,
-    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-5a-source-crop-v1.png",
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-1-v1.png",
     orientation: "upright",
-    isolated: true,
+    isolated: false,
+    completeSourceSheet: true,
   },
   {
     figure: "Fig. 6a",
     page: 2,
-    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-6a-source-crop-v1.png",
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-2-v1.png",
     orientation: "upright",
-    isolated: true,
+    isolated: false,
+    completeSourceSheet: true,
   },
   {
     figure: "Fig. 6b",
     page: 2,
-    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-6b-source-crop-v1.png",
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-2-v1.png",
     orientation: "upright",
-    isolated: true,
+    isolated: false,
+    completeSourceSheet: true,
   },
   {
     figure: "Fig. 7",
     page: 3,
-    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-7-source-crop-v1.png",
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-3-v1.png",
     orientation: "upright",
-    isolated: true,
+    isolated: false,
+    completeSourceSheet: true,
   },
   {
     figure: "Fig. 8a",
     page: 4,
-    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-8a-source-crop-v1.png",
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-4-v1.png",
     orientation: "upright",
-    isolated: true,
+    isolated: false,
+    completeSourceSheet: true,
   },
   {
     figure: "Fig. 8b",
     page: 4,
-    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-8b-source-crop-v1.png",
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-4-v1.png",
     orientation: "upright",
-    isolated: true,
+    isolated: false,
+    completeSourceSheet: true,
   },
   {
     figure: "Fig. 8c",
     page: 4,
-    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-8c-source-crop-v1.png",
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-4-v1.png",
     orientation: "upright",
-    isolated: true,
+    isolated: false,
+    completeSourceSheet: true,
   },
 ] as const;
 
-const sourcePreviewForLabel = (label: string): string | undefined => {
-  if (/^FIGURES\b/i.test(label)) return undefined;
-  const normalized = label.replace(/^FIGURE\s+/i, "Fig. ");
-  if (normalized === "Fig. 1") {
-    return "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v2.png";
-  }
-  if (normalized === "Fig. 2") {
-    return "/patents/figures/us-3138743-kilby-integrated-circuit/fig-2-source-crop-v2.png";
-  }
-  return undefined;
+const kilbySourceSheetSrc = (page: 1 | 2 | 3 | 4): string =>
+  `/patents/figures/us-3138743-kilby-integrated-circuit/source-sheet-${page}-v1.png`;
+
+const sourceSheetsForLabel = (label: string): readonly (1 | 2 | 3 | 4)[] => {
+  const compact = label.toLowerCase().replace(/[^0-9a-z]/g, "");
+  if (compact.includes("8")) return [4];
+  if (compact.includes("6") && compact.includes("7")) return [2, 3];
+  if (compact.includes("6")) return [2];
+  if (compact.includes("7")) return [3];
+  return [1];
 };
 
-const sourceReference = (label: string, src?: string): CuratedSpecificationInline => {
-  const previewSrc = src ?? sourcePreviewForLabel(label);
+const sourceReference = (label: string): CuratedSpecificationInline => {
+  const sourcePages = sourceSheetsForLabel(label);
   return {
     kind: "reference",
     text: label,
     href: `#figure-${label.toLowerCase().replace(/[^0-9a-z]+/g, "-")}`,
     referenceType: "figure",
     label: `Primary-facsimile ${label}`,
-    ...(previewSrc
+    ...(sourcePages.length > 0
       ? {
-          figurePreviews: [
-            {
-              src: previewSrc,
-              alt: `Upright isolated primary-facsimile crop of ${label}`,
-              width: previewSrc.endsWith("fig-2-source-crop-v2.png") ? 780 : 760,
-              height: previewSrc.endsWith("fig-2-source-crop-v2.png") ? 620 : 560,
-            },
-          ],
+          figurePreviews: sourcePages.map((page) => ({
+            src: kilbySourceSheetSrc(page),
+            alt: `Complete upright primary-facsimile drawing sheet ${page} for ${label}`,
+            width: 2320,
+            height: 3408,
+          })),
         }
       : {}),
   };
@@ -873,10 +886,7 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
     ),
     sourceParagraph(
       sourceText("Referring particularly to "),
-      sourceReference(
-        "Fig. 1",
-        "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v2.png",
-      ),
+      sourceReference("Fig. 1"),
       sourceText(
         ", there is shown a typical design for a resistor which may be embodied or integrated into a body of single crystal semiconductor material. As noted in ",
       ),
@@ -924,10 +934,7 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
         "The interface between regions of opposite semiconductor conductivity; under reverse bias its depleted charge region stores electric energy and supplies transition capacitance.",
       ),
       sourceText(", as shown in "),
-      sourceReference(
-        "FIGURE 2",
-        "/patents/figures/us-3138743-kilby-integrated-circuit/fig-2-source-crop-v2.png",
-      ),
+      sourceReference("FIGURE 2"),
       sourceText(
         ", wherein a semiconductor wafer 15 of p-type conductivity is shown containing an n-type diffused layer 16. Ohmic contacts 17 are made to opposite faces of the wafer 15. The capacitance of a diffused junction is given by the relation printed in the facsimile, where A is the area of the junction in square cm., ε is the dielectric constant, q is electronic charge, α is the impurity density gradient, and V is the applied voltage.",
       ),

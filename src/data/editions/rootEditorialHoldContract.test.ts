@@ -23,7 +23,6 @@ const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-621195-zeppelin-airship",
   "us-706737-fessenden-wireless",
   "us-x1-hopkins-potash",
-  "us-x72-whitney-cotton-gin",
 ] as const;
 
 const SOURCE_QA_RELEASED_EDITIONS = [
@@ -88,6 +87,7 @@ const SOURCE_QA_RELEASED_EDITIONS = [
   "us-879532-de-forest-audion",
   "us-942699-baekeland-bakelite",
   "us-971501-haber-ammonia",
+  "us-x72-whitney-cotton-gin",
   "us-x8277-mccormick-reaper",
   "us-x9430-colt-revolver",
 ] as const;
