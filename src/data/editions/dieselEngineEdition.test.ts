@@ -259,10 +259,6 @@ describe("US 542,846 manual source edition", () => {
         .map((inline) => inline.text)
         .join("")
         .replace(/\s+/g, " ");
-      // The foreign-patent numeral is intentionally unresolved until cloud
-      // pixel review; the candidate edition must not turn either OCR reading
-      // into comparison evidence.
-      if (blockText.includes("number unresolved pending cloud facsimile pixel review")) continue;
       expect(continuousLedger).toContain(blockText);
     }
 

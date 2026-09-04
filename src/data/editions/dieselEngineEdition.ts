@@ -150,7 +150,7 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
         "UNITED STATES PATENT OFFICE.",
         "RUDOLF DIESEL, OF BERLIN, GERMANY.",
         "METHOD OF AND APPARATUS FOR CONVERTING HEAT INTO WORK.",
-        "Specification forming part of Letters Patent No. 542,846, dated July 16, 1895. Application filed August 26, 1892, serial No. 444,246. (No model.) Patented in Germany February 28, 1892, No. 67,207; in Switzerland April 2, 1892, [number unresolved pending cloud facsimile pixel review]; and in England April 14, 1892, No. 7,241.",
+        "Specification forming part of Letters Patent No. 542,846, dated July 16, 1895. Application filed August 26, 1892, serial No. 444,246. (No model.) Patented in Germany February 28, 1892, No. 67,207; in Switzerland April 2, 1892, No. 55,221; and in England April 14, 1892, No. 7,241.",
       ],
     },
     {
@@ -208,7 +208,7 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
     paragraph([
       {
         kind: "text",
-        text: "Be it known that I, RUDOLF DIESEL, a subject of the King of Bavaria, residing at Berlin, in the Kingdom of Prussia, German Empire, have invented a new and useful Process for Obtaining Motive Power by the Combustion of Fuel of Any Kind, (for which I have obtained Letters Patent in Great Britain, No. 7,241, dated April 14, 1892; in Switzerland, number unresolved pending cloud facsimile pixel review, dated April 2, 1892, and in Germany, No. 67,207, dated February 28, 1892,) of which the following is a specification.",
+        text: "Be it known that I, RUDOLF DIESEL, a subject of the King of Bavaria, residing at Berlin, in the Kingdom of Prussia, German Empire, have invented a new and useful Process for Obtaining Motive Power by the Combustion of Fuel of Any Kind, (for which I have obtained Letters Patent in Great Britain, No. 7,241, dated April 14, 1892; in Switzerland, No. 55,221, dated April 2, 1892, and in Germany, No. 67,207, dated February 28, 1892,) of which the following is a specification.",
       },
     ]),
     paragraph([
