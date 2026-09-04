@@ -46,7 +46,7 @@ struct PatentMuseumView: View {
                 .navigationSplitViewColumnWidth(min: 330, ideal: 390, max: 460)
         } detail: {
             if let selected = selectedPatent {
-                PatentWorkstationView(patent: selected)
+                PatentWorkstationView(patent: selected, hidesNavigationBar: true)
             } else {
                 ContentUnavailableView("Choose a patent", systemImage: "doc.text.magnifyingglass")
                     .foregroundStyle(Lab.secondary)
@@ -66,7 +66,7 @@ struct PatentMuseumView: View {
                 .navigationSplitViewColumnWidth(min: 320, ideal: 390, max: 480)
         } detail: {
             if let selected = selectedPatent {
-                PatentWorkstationView(patent: selected)
+                PatentWorkstationView(patent: selected, hidesNavigationBar: true)
             } else {
                 ContentUnavailableView("Choose a patent", systemImage: "doc.text.magnifyingglass")
                     .foregroundStyle(Lab.secondary)

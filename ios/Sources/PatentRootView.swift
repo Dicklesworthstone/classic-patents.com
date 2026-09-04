@@ -56,7 +56,7 @@ struct PatentRootView: View {
     var body: some View {
         Group {
             if let launchPatent {
-                NavigationStack { PatentWorkstationView(patent: launchPatent) }
+                NavigationStack { PatentWorkstationView(patent: launchPatent, hidesNavigationBar: true) }
             } else if launchRoot == "timeline" {
                 NativePatentTimelineView(library: library)
             } else if launchRoot == "method" {

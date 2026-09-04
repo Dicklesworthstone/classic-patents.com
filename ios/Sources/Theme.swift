@@ -42,7 +42,7 @@ enum Lab {
     static func categorySymbol(_ category: String) -> String {
         switch category {
         case "aviation": "airplane"
-        case "aerospace": "rocket"
+        case "aerospace": "moon.stars.fill"
         case "electricity": "bolt.fill"
         case "telecom": "wave.3.right"
         case "computing": "cpu"

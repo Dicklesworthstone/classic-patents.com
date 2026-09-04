@@ -27,7 +27,7 @@ private enum WorkstationSection: String, CaseIterable, Identifiable {
 
 struct PatentWorkstationView: View {
     let patent: PatentRecord
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    private let hidesNavigationBar: Bool
     @EnvironmentObject private var collection: PatentCollectionStore
     @State private var section: WorkstationSection
     @State private var showsPDF = false
@@ -39,8 +39,9 @@ struct PatentWorkstationView: View {
     private var displayedSection: WorkstationSection { section }
 #endif
 
-    init(patent: PatentRecord) {
+    init(patent: PatentRecord, hidesNavigationBar: Bool = false) {
         self.patent = patent
+        self.hidesNavigationBar = hidesNavigationBar
 #if DEBUG
         if let marker = ProcessInfo.processInfo.arguments.firstIndex(of: "-FrankenPatentsUITestSection"),
            ProcessInfo.processInfo.arguments.indices.contains(marker + 1),
@@ -95,12 +96,12 @@ struct PatentWorkstationView: View {
             }
             .background(MuseumBackground())
         }
-        // Keep the system bar solely for native back-navigation and spacing:
-        // an inline title otherwise ghosts beneath PatentRootView's persistent
-        // masthead on iPhone. A single space preserves the bar geometry.
+        // Pushed workstations keep the system bar for native back-navigation.
+        // Split-view details opt out because they have no back stack and an
+        // inline title otherwise ghosts beneath the persistent masthead.
         .navigationTitle(" ")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar(horizontalSizeClass == .regular ? .hidden : .visible, for: .navigationBar)
+        .toolbar(hidesNavigationBar ? .hidden : .visible, for: .navigationBar)
         .sheet(isPresented: $showsPDF) { PatentPDFReader(patent: patent) }
         .onAppear { collection.recordVisit(patent.id) }
     }

@@ -47,6 +47,22 @@ final class FrankenPatentsUITests: XCTestCase {
         )
     }
 
+    func testRegularWidthTimelineWorkstationKeepsBackNavigation() {
+        let app = launch(root: nil)
+        let timeline = app.buttons["Timeline"]
+        XCTAssertTrue(timeline.waitForExistence(timeout: 12))
+        timeline.tap()
+
+        let openWorkstation = app.buttons["Open complete native patent workstation"]
+        XCTAssertTrue(openWorkstation.waitForExistence(timeout: 12))
+        openWorkstation.tap()
+
+        XCTAssertTrue(
+            app.navigationBars.buttons["Invention timeline"].waitForExistence(timeout: 12),
+            "A workstation pushed from the regular-width timeline lost its native back route"
+        )
+    }
+
     func testAppStoreWrightPlainEnglishWorkstationRenders() {
         let app = launch(
             patentID: "us-821393-wright-flyer",
