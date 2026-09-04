@@ -1,10 +1,10 @@
 /**
  * src/physics/cortKernel.ts
  *
- * SI Computational Metallurgy & Rolling Physics Kernel for Henry Cort's 1784
- * Reverberatory Puddling Furnace & Grooved Rolling Mill (GB 1420).
+ * Source-bounded SI teaching kernel for Henry Cort's 1784 reverberatory
+ * puddling furnace and grooved rolling process (GB 1420).
  *
- * Models:
+ * Evaluates a declared modern scenario for:
  * 1. Arrhenius surface decarburization kinetics & FeO slag reduction
  * 2. Fe-C phase equilibrium & "Coming to Nature" solidus rise
  * 3. Grooved roll bite geometry, contact length, and hydrostatic squeeze pressure

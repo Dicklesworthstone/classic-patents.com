@@ -18,23 +18,20 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
-const crop = (number: number, width: number, height: number) => ({
-  src:
-    number === 4
-      ? "/patents/figures/us-124404-westinghouse-air-brake/fig-4-source-crop-v2.png"
-      : `/patents/figures/us-124404-westinghouse-air-brake/fig-${number}-source-crop.png`,
-  alt: `Source-facsimile crop of Fig. ${number} from US 124,404.`,
-  width,
-  height,
+const sourceSheet = (figureNumber: number) => ({
+  src: "/patents/figures/us-124404-westinghouse-air-brake/source-sheet-1-v1.png",
+  alt: `Complete source drawing sheet containing Figs. 1 through 6, highlighting Fig. ${figureNumber}, from US 124,404.`,
+  width: 2320,
+  height: 3408,
 });
 
 const FIGURES = {
-  "Fig. 1": crop(1, 1540, 900),
-  "Fig. 2": crop(2, 800, 650),
-  "Fig. 3": crop(3, 800, 650),
-  "Fig. 4": crop(4, 430, 520),
-  "Fig. 5": crop(5, 830, 460),
-  "Fig. 6": crop(6, 900, 400),
+  "Fig. 1": sourceSheet(1),
+  "Fig. 2": sourceSheet(2),
+  "Fig. 3": sourceSheet(3),
+  "Fig. 4": sourceSheet(4),
+  "Fig. 5": sourceSheet(5),
+  "Fig. 6": sourceSheet(6),
 } as const;
 
 const figure = (
@@ -45,7 +42,7 @@ const figure = (
   text: sourceText,
   href: "#",
   referenceType: "figure",
-  label: `Open the source-facsimile crop for ${label} in US 124,404`,
+  label: `Open the complete source drawing sheet for ${label} in US 124,404`,
   figurePreviews: [FIGURES[label]],
 });
 
@@ -89,7 +86,7 @@ export const westinghouseAirBrakeArchivalEdition: CuratedSpecificationEdition = 
         figure("Fig. 5"),
         { kind: "text", text: ", and " },
         figure("Fig. 6"),
-        { kind: "text", text: ". Each reference opens a direct crop from the pinned facsimile." },
+        { kind: "text", text: ". Each reference opens the complete pinned drawing sheet." },
       ],
     },
     p("SPECIFICATION."),

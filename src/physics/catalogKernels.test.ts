@@ -323,7 +323,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
 
   test("Whitney cotton gin computes tooth snagging frequency and lint separation rate", () => {
     const res = stepWhitneyCottonGin({ crankRpm: 180, seedGridClearance: 3.2 });
-    expect(res.sawRpm).toBeGreaterThan(180);
+    expect(res.sawRpm).toBe(180);
     expect(res.brushRpm).toBeGreaterThan(res.sawRpm);
     expect(res.outputLbsPerDay).toBeGreaterThan(0);
     expect(res.sawSvgR).toBe(65);
@@ -340,6 +340,10 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.fiberSawCoupling).toBe(0.12);
     expect(res.fiberCarrySpeed).toBe(1.8);
     expect(res.fiberWrapZ).toBe(3.2);
+    expect(res.sawToCrankRatio).toBe(1);
+    expect(res.brushToCrankRatio).toBe(3);
+    expect(res.toothInclinationDeg).toBe(57.5);
+    expect(res.sourceLaborReductionFraction).toBe(49 / 50);
     const saw0 = whitneySchematicRay(
       0,
       res.schematicSawCx,

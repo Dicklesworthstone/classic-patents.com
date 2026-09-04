@@ -17,70 +17,36 @@ const claim = (number: number, value: string) => ({
   inlines: text(value),
 });
 
-const FIGURE_PREVIEWS = {
-  "Fig. 1": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-1-source-crop-v8.png",
-    alt: "US 1,102,653, Fig. 1: longitudinal partial section of the primary rocket, its auxiliary rocket, and tapered exhaust tube.",
-    width: 720,
-    height: 2160,
-  },
-  "Fig. 2": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-2-source-crop-v5.png",
-    alt: "US 1,102,653, Fig. 2: enlarged longitudinal section through the auxiliary-rocket head, camera support, and gyroscope.",
-    width: 1050,
-    height: 920,
-  },
-  "Fig. 3": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-3-source-crop-v8.png",
-    alt: "US 1,102,653, Fig. 3 transverse section with unavoidable adjoining source leaders retained unaltered.",
-    width: 650,
-    height: 640,
-  },
-  "Fig. 4": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-4-source-crop-v7.png",
-    alt: "US 1,102,653, Fig. 4: transverse section of the auxiliary rocket's backward-curved spin-restoration tubes.",
-    width: 620,
-    height: 620,
-  },
-  "Fig. 5": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-5-source-crop-v8.png",
-    alt: "US 1,102,653, Fig. 5: vertical launching framework with ball bearings supporting the rocket before fuse ignition.",
-    width: 740,
-    height: 850,
-  },
+/**
+ * Direct 300-DPI raster of the pinned drawing sheet (PDF page 1). Every
+ * figure citation intentionally opens this complete source sheet: the figures
+ * overlap and share leaders, so one unaltered sheet is more trustworthy than
+ * a set of selectively framed crops.
+ */
+const SOURCE_DRAWING_SHEET = {
+  src: "/patents/figures/us-1102653-goddard-rocket/sheet-1-1.png",
+  alt: "US 1,102,653 source drawing sheet, PDF page 1, containing Figs. 1 through 5, the complete apparatus, transverse sections, launching framework, witnesses, and inventor signature.",
+  width: 2320,
+  height: 3408,
 } as const;
 
 const fig = (
-  value: "Figure 1" | "Figs. 1 through 5" | "Figs. 3 and 4" | keyof typeof FIGURE_PREVIEWS,
+  value:
+    | "Fig. 1"
+    | "Figure 1"
+    | "Figs. 1 through 5"
+    | "Figs. 3 and 4"
+    | "Fig. 2"
+    | "Fig. 3"
+    | "Fig. 5",
 ): CuratedSpecificationInline => {
-  if (value === "Figs. 1 through 5") {
-    return {
-      kind: "reference",
-      text: value,
-      href: "#",
-      referenceType: "figure",
-      label: "Open Figures 1 through 5 on the US 1,102,653 source drawing sheet",
-      figurePreviews: Object.values(FIGURE_PREVIEWS),
-    };
-  }
-  if (value === "Figs. 3 and 4") {
-    return {
-      kind: "reference",
-      text: value,
-      href: "#",
-      referenceType: "figure",
-      label: `Open Figures 3 and 4 on the US 1,102,653 source drawing sheet`,
-      figurePreviews: [FIGURE_PREVIEWS["Fig. 3"], FIGURE_PREVIEWS["Fig. 4"]],
-    };
-  }
-  const figure = value === "Figure 1" ? "Fig. 1" : value;
   return {
     kind: "reference",
     text: value,
     href: "#",
     referenceType: "figure",
-    label: `Open ${value} on the US 1,102,653 source drawing sheet`,
-    figurePreviews: [FIGURE_PREVIEWS[figure as keyof typeof FIGURE_PREVIEWS]],
+    label: `Open ${value} on the complete US 1,102,653 source drawing sheet`,
+    figurePreviews: [SOURCE_DRAWING_SHEET],
   };
 };
 
@@ -114,7 +80,7 @@ export const goddardRocketArchivalEdition: CuratedSpecificationEdition = {
         fig("Figs. 1 through 5"),
         {
           kind: "text",
-          text: ", witnesses C. F. Hixon and C. C. Hartnett, and Robert H. Goddard's signature as assignor to C. F. Wesson.",
+          text: ", witness signatures, and the inventor's assignment signature.",
         },
       ],
     },
@@ -174,7 +140,7 @@ export const goddardRocketArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: " are enlarged transverse sectional views taken along the lines 3-3 and 4-4 respectively, in ",
       },
-      fig("Fig. 2"),
+      fig("Fig. 1"),
       { kind: "text", text: "; and " },
       fig("Fig. 5"),
       {
@@ -288,7 +254,7 @@ export const goddardRocketArchivalEdition: CuratedSpecificationEdition = {
     ]),
     p(
       text(
-        "Within the apparatus head 29 is pivotally mounted a support 33 upon which is mounted any desired form of recording apparatus. In the particular embodiment of my invention shown in the drawings this apparatus is indicated as a camera 34. The head 29 is provided with a series of openings 35 separated by narrow supports 36. The speed of rotation of the head is so great that the passage of the supports 36 in front of the camera does not interfere with the taking of photographs thereby.",
+        "Within the apparatus head 29 is pivotally mounted a support 33 upon which in turn is mounted any desired form of recording apparatus. In the particular embodiment of my invention shown in the drawings this apparatus is indicated as a camera 34. The head 29 is provided with a series of openings 35 separated by narrow supports 36. The speed of rotation of the head is so great that the passage of the supports 36 in front of the camera does not interfere with the taking of photographs thereby.",
       ),
     ),
     p([
@@ -310,7 +276,7 @@ export const goddardRocketArchivalEdition: CuratedSpecificationEdition = {
       ),
       {
         kind: "text",
-        text: " having field coils 39, mounted on a frame 40 also secured to the support 33. The field coils are connected to wires 41 secured within an insulating plug 42 in the support 38. Wires 43 may be introduced through an opening 44 in the head 29 and caused to make contact with the wires 41 in the plug 42, the wires 43 being connected to any suitable source of three-phase current. When the gyroscope has attained the requisite speed of rotation, the wires 43 may be withdrawn and the opening 44 may be closed with the screw 45 shown in ",
+        text: " having field coils 39, mounted on a frame 40 also secured to the support 33. The field coils are connected to wires 41 secured within an insulating plug 42 in the support 33. Wires 43 may be introduced through an opening 44 in the head 29 and caused to make contact with the wires 41 in the plug 42, the wires 43 being connected to any suitable source of three-phase current. When the gyroscope has attained the requisite speed of rotation, the wires 43 may be withdrawn and the opening 44 may be closed with the screw 45 shown in ",
       },
       fig("Fig. 1"),
       { kind: "text", text: "." },

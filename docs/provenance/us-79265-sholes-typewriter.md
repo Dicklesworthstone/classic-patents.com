@@ -23,8 +23,8 @@ layout.
 
 | PDF locator | Source material | Review result |
 | --- | --- | --- |
-| p. 1 | Figs. 1, 2, 3, and 9; inventors and witnesses | Direct visual review; figure source sheet retained at `public/patents/figures/us-79265-sholes-typewriter/figures-1-3.png` |
-| p. 2 | Figs. 4, 5, 6, 7, and 8; inventors and witnesses | Direct visual review; figure source sheet retained at `public/patents/figures/us-79265-sholes-typewriter/figures-4-8.png` |
+| p. 1 | Figs. 1, 2, 3, and 9; inventors and witnesses | Direct 300 DPI visual review; immutable source sheet retained at `public/patents/figures/us-79265-sholes-typewriter/source-sheet-1-v1.png` |
+| p. 2 | Figs. 4, 5, 6, 7, and 8; inventors and witnesses | Direct 300 DPI visual review; immutable source sheet retained at `public/patents/figures/us-79265-sholes-typewriter/source-sheet-2-v1.png` |
 | p. 3 | Patent-office masthead, inventors, title, opening specification, disk, type-bars, keys, cushion, and beginning of platen | Direct visual and text-layer comparison |
 | p. 4 | Platen, primary and secondary carriage frames, paper holding, line-spacing pins, pawl, cords, and weights | Direct visual and text-layer comparison |
 | p. 5 | Key bar, bifurcated lever, ratchet, alternating catches, and carriage advance | Direct visual and text-layer comparison |
@@ -50,26 +50,40 @@ character pitch, a key count, type-bar count, impact speed, force, material for
 an ink ribbon, or a numerical performance model. Unsupported versions of those
 details have been removed from the visitor-facing record.
 
-## Figure-crop preparation
+## Source-sheet acceptance (2026-09-04)
 
-The following unmodified local derivatives select the actual printed figures
-from the two pinned drawing sheets for the published authored edition:
+The active edition previews use the complete source sheet which contains each
+printed figure, not an extracted sub-image. Both immutable PNGs were rendered
+directly from the pinned facsimile at 300 DPI and visually inspected against
+the source page. They have no synthetic overlay, retouching, or reconstructed
+content.
 
-| Source figure | Local crop |
-| --- | --- |
-| Fig. 1 | `public/patents/figures/us-79265-sholes-typewriter-fig-1-tight-source-crop.png` |
-| Fig. 2 | `public/patents/figures/us-79265-sholes-typewriter-fig-2-tight-source-crop.png` |
-| Fig. 3 | `public/patents/figures/us-79265-sholes-typewriter-fig-3-tight-source-crop.png` |
-| Fig. 4 | `public/patents/figures/us-79265-sholes-typewriter-fig-4-tight-source-crop.png` |
-| Fig. 5 | `public/patents/figures/us-79265-sholes-typewriter-fig-5-focus-source-crop.png` |
-| Fig. 6 | `public/patents/figures/us-79265-sholes-typewriter-fig-6-isolated-source-crop.png` |
-| Fig. 7 | `public/patents/figures/us-79265-sholes-typewriter-fig-7-verified-source-crop.png` |
-| Fig. 8 | `public/patents/figures/us-79265-sholes-typewriter-fig-8-verified-source-crop.png` |
-| Fig. 9 | `public/patents/figures/us-79265-sholes-typewriter-fig-9-tight-source-crop.png` |
+| PDF page | Printed figures | Active immutable source sheet | SHA-256 | Raster |
+| --- | --- | --- | --- | --- |
+| 1 | Figs. 1, 2, 3, 9 | `public/patents/figures/us-79265-sholes-typewriter/source-sheet-1-v1.png` | `526827fee7019c7b1c0401d29a2ba655f4ec134b704f329e0d72f28c6f1cc2b8` | 2320 × 3408 px |
+| 2 | Figs. 4, 5, 6, 7, 8 | `public/patents/figures/us-79265-sholes-typewriter/source-sheet-2-v1.png` | `8149998e7a6cfdf935a22ae7be61e0f4e00a35e3823f56654eed92fab774cb60` | 2320 × 3408 px |
 
-No crop is a substitute for the full facsimile, and no crop has a synthetic
-overlay. Earlier invalid draft derivatives are preserved as unused artifacts
-under the no-deletion rule; the table identifies the only published crops.
+The page-one sheet visibly contains the perspective machine (Fig. 1), the
+ratchet detail (Fig. 2), the pawl and pins (Fig. 3), and the spool detail
+(Fig. 9). The page-two sheet visibly contains the type-bar views (Figs. 4–6),
+the longitudinal section (Fig. 7), and the rear elevation (Fig. 8).
+
+The older figure-specific PNGs and earlier whole-sheet derivatives remain on
+disk under the no-deletion rule. They are preservation artifacts, not active
+edition evidence.
+
+### Active edition-reference map
+
+There are 50 active figure-reference occurrences. The source-locator contract
+uses the first preview in each authored reference group as its active asset;
+additional previews in a grouped citation remain the direct source sheets for
+the other figures named in that citation. Every locator uses the whole
+2320 × 3408 px sheet rectangle: `(x: 0, y: 0, width: 2320, height: 3408)`.
+
+| Active source sheet | PDF page | Edition occurrence keys | Count |
+| --- | --- | --- | ---: |
+| `source-sheet-1-v1.png` | 1 | `edition-block-1-group-0-inline-1`, `edition-block-4-group-0-inline-0`, `edition-block-4-group-0-inline-2`, `edition-block-6-group-0-inline-5`, `edition-block-7-group-0-inline-1`, `edition-block-7-group-0-inline-3`, `edition-block-7-group-0-inline-5`, `edition-block-7-group-0-inline-15`, `edition-block-8-group-0-inline-1`, `edition-block-9-group-0-inline-1`, `edition-block-9-group-0-inline-3`, `edition-block-9-group-0-inline-5`, `edition-block-9-group-0-inline-7`, `edition-block-10-group-0-inline-1`, `edition-block-11-group-0-inline-1`, `edition-block-11-group-0-inline-3`, `edition-block-12-group-0-inline-1`, `edition-block-13-group-0-inline-7`, `edition-block-13-group-0-inline-9`, `edition-block-13-group-0-inline-11`, `edition-block-13-group-0-inline-15`, `edition-block-13-group-0-inline-17`, `edition-block-14-group-0-inline-1`, `edition-block-14-group-0-inline-3`, `edition-block-15-group-0-inline-1`, `edition-block-16-group-0-inline-1`, `edition-block-16-group-0-inline-3`, `edition-block-17-group-0-inline-1`, `edition-block-17-group-0-inline-3`, `edition-block-17-group-0-inline-5`, `edition-block-17-group-0-inline-7`, `edition-block-18-group-0-inline-1` | 32 |
+| `source-sheet-2-v1.png` | 2 | `edition-block-1-group-0-inline-3`, `edition-block-1-group-0-inline-5`, `edition-block-4-group-0-inline-4`, `edition-block-4-group-0-inline-6`, `edition-block-6-group-0-inline-1`, `edition-block-6-group-0-inline-3`, `edition-block-7-group-0-inline-7`, `edition-block-7-group-0-inline-9`, `edition-block-7-group-0-inline-13`, `edition-block-12-group-0-inline-3`, `edition-block-13-group-0-inline-1`, `edition-block-13-group-0-inline-3`, `edition-block-17-group-0-inline-9`, `edition-block-17-group-0-inline-11`, `edition-block-17-group-0-inline-13`, `edition-block-17-group-0-inline-15`, `edition-block-17-group-0-inline-17`, `edition-block-20-group-0-inline-0` | 18 |
 
 ## Editorial boundary
 
@@ -82,5 +96,5 @@ ledger is `public/patents/transcripts/us-79265-sholes-typewriter-reviewed.txt`.
 The ledger retains six explicit source-page markers for audit only. The public
 reading surface does not use scan-page breaks, raw OCR, or a text-to-HTML
 formatter. Each source paragraph has one authored, non-lossy companion reading,
-and every printed figure reference is an explicit React reference to a reviewed
-local crop.
+and every printed figure reference is an explicit React reference to the
+reviewed, immutable source sheet that contains it.

@@ -37,24 +37,28 @@ The companion readings explain the same paragraph or claim without changing lega
 - Claims 1–4: PDF page 6.
 - Claims 4–6 and inventor names: PDF page 7.
 
-## Deferred source-crop plan (cloud-only)
+## Complete source-sheet acceptance (2026-09-04)
 
-The existing preview files are preserved as historical working assets and are
-not re-bound by this repair. Publication remains withheld until clean crops
-are reviewed from the pinned facsimile by an independent editor. The exact
-cloud crop plan uses the primary facsimile at
-`https://patents.google.com/patent/US2292387A/en` (drawing-sheet images for
-PDF pages 1–2) and is:
+Reviewer: Classic Patents editorial agent (GPT-5.6); direct 300 DPI
+source-pixel review. The immutable local PDF was rendered with Poppler at 300
+DPI and every PDF page was visually reviewed. Pages 1 and 2 are the only
+drawing sheets; pages 3 through 7 contain the specification and all six
+claims. The active edition now cites complete source sheets instead of making
+an unverified assertion about the exact boundary of a reconstructed isolated
+crop.
 
-| Figure | PDF page | Crop target | Required boundary | Output (after independent review) |
-| --- | ---: | --- | --- | --- |
-| Fig. 1 | 1 | Transmitting-station schematic | Entire printed Fig. 1 box, including labels 20–58 and no adjacent Fig. 2/3 material | `fig-1-source-crop-v1.png` |
-| Fig. 2 | 1 | Receiving-station schematic | Entire printed Fig. 2 box, including antenna 60, selector 61, filters, and rudder mechanism; exclude Fig. 1/3 | `fig-2-source-crop-v1.png` |
-| Fig. 3 | 1 | Simultaneous-release circuit | Entire printed Fig. 3 circuit and its labels 100–106; exclude neighboring drawing borders | `fig-3-source-crop-v1.png` |
-| Fig. 4 | 2 | Perforated record strip | Full strip plan with rows A–H and starting hole 101; retain printed row letters and figure label | `fig-4-source-crop-v1.png` |
-| Fig. 5 | 2 | Pneumatic switching head | Full cross-section through shoe 45, passages 46–58, manifold 48, pump 50, and strip; exclude Fig. 6 | `fig-5-source-crop-v1.png` |
-| Fig. 6 | 2 | Starting-pin section | Full perpendicular section showing pin 100, hole 101, spring 102, solenoid 103, and plunger 104 | `fig-6-source-crop-v1.png` |
-| Fig. 7 | 2 | Torpedo-course plan | Full plan containing mother ship 10/10a/10b, torpedo 11, paths 12–16, enemy ship 17/17a–c, airplane 18, and current arrows 19 | `fig-7-source-crop-v1.png` |
+| Active source asset | PDF page | Figures visible on sheet | SHA-256 | Raster dimensions | Source rectangle |
+| --- | ---: | --- | --- | ---: | --- |
+| `public/patents/figures/us-2292387-lamarr-frequency-hopping/source-sheet-1-v1.png` | 1 | Figs. 1-3 | `9a53787fc9b2315de7d6bec159b9de1a696e08926098bb6649e18ddafd945591` | 2320 x 3408 | x=0, y=0, width=2320, height=3408 |
+| `public/patents/figures/us-2292387-lamarr-frequency-hopping/source-sheet-2-v1.png` | 2 | Figs. 4-7 | `5c9297937ebcc0fb659118588069ac494485d1a4e9fc51bf6c9fe8048d3669c7` | 2320 x 3408 | x=0, y=0, width=2320, height=3408 |
 
-Do not create, process, or point edition references at these output names
-until the cloud source review and independent acceptance are complete.
+All 35 active figure-reference occurrences were verified against these exact
+source sheets. Figs. 1-3 always resolve to PDF page 1; Figs. 4-7 always
+resolve to PDF page 2. The complete-sheet rectangle is deliberately used for
+each occurrence, preserving titles, neighboring figures, signatures, and
+printed sheet context rather than claiming a tighter crop boundary than was
+reviewed.
+
+The pre-existing `fig-*.png` and `fig-*-v2.png` files remain preserved as
+historical working assets. They are no longer active archival citations and
+are not represented as replacement primary-source evidence.

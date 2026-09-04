@@ -14,22 +14,22 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
 });
 const PREVIEWS = {
   1: {
-    src: "/patents/figures/us-2929922-townes-laser/fig-1-source-crop-v1.png",
-    width: 1021,
-    height: 307,
-    alt: "Source crop for Figure 1",
+    src: "/patents/figures/us-2929922-townes-laser/sheet-1-1.png",
+    width: 2320,
+    height: 3408,
+    alt: "Complete source drawing sheet containing Figures 1 through 3",
   },
   2: {
-    src: "/patents/figures/us-2929922-townes-laser/fig-2-source-crop-v1.png",
-    width: 534,
-    height: 477,
-    alt: "Source crop for Figure 2",
+    src: "/patents/figures/us-2929922-townes-laser/sheet-1-1.png",
+    width: 2320,
+    height: 3408,
+    alt: "Complete source drawing sheet containing Figures 1 through 3",
   },
   3: {
-    src: "/patents/figures/us-2929922-townes-laser/fig-3-source-crop-v1.png",
-    width: 487,
-    height: 477,
-    alt: "Source crop for Figure 3",
+    src: "/patents/figures/us-2929922-townes-laser/sheet-1-1.png",
+    width: 2320,
+    height: 3408,
+    alt: "Complete source drawing sheet containing Figures 1 through 3",
   },
 } as const;
 const figure = (number: 1 | 2 | 3): CuratedSpecificationInline => ({
@@ -37,7 +37,7 @@ const figure = (number: 1 | 2 | 3): CuratedSpecificationInline => ({
   text: `Fig. ${number}`,
   href: `#fig-${number}`,
   referenceType: "figure",
-  label: `Figure ${number} source crop`,
+  label: `Figure ${number} on the complete source drawing sheet`,
   figurePreviews: [PREVIEWS[number]],
 });
 const p = (...inlines: CuratedSpecificationInline[]) => ({ kind: "paragraph" as const, inlines });

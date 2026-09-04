@@ -14,6 +14,13 @@ import {
   evaluateArchivalPublicationState,
 } from "./publicationApproval";
 
+const CARRIER_SOURCE_SHEET = {
+  src: "/patents/figures/us-808897-carrier-air-conditioner/source-sheet-1-v1.png",
+  sha256: "3fb82f452c19cdb79c2a204e5b13b3b73c1f2af5fc4f17905b3104deed79e58e",
+  width: 2320,
+  height: 3408,
+} as const;
+
 describe("carrierAirConditionerArchivalEdition", () => {
   test("pins the complete four-sheet source and its five printed claims", () => {
     expect(validateCuratedSpecificationEdition(carrierAirConditionerArchivalEdition)).toEqual({
@@ -30,7 +37,7 @@ describe("carrierAirConditionerArchivalEdition", () => {
     ).toEqual([1, 2, 3, 4, 5]);
   });
 
-  test("makes every source figure reference an explicit local preview", () => {
+  test("binds every source figure reference to its complete pinned drawing sheet", () => {
     const references = carrierAirConditionerArchivalEdition.blocks.flatMap((block) => {
       if (!("inlines" in block)) return [];
       return block.inlines.filter(
@@ -44,19 +51,18 @@ describe("carrierAirConditionerArchivalEdition", () => {
       const [preview] = reference.figurePreviews ?? [];
       expect(preview).toBeDefined();
       expect(existsSync(resolve(process.cwd(), "public", preview?.src.slice(1) ?? ""))).toBe(true);
+      expect(preview).toMatchObject({
+        src: CARRIER_SOURCE_SHEET.src,
+        width: CARRIER_SOURCE_SHEET.width,
+        height: CARRIER_SOURCE_SHEET.height,
+      });
     }
 
-    const figureTwoReferences = references.filter((reference) => reference.text === "Fig. 2");
-    expect(figureTwoReferences.length).toBeGreaterThan(0);
-    for (const reference of figureTwoReferences) {
-      expect(reference.figurePreviews).toContainEqual(
-        expect.objectContaining({
-          src: "/patents/figures/us-808897-carrier-air-conditioner/fig-2-source-crop-v2.png",
-          width: 480,
-          height: 610,
-        }),
-      );
-    }
+    const contents = readFileSync(`${process.cwd()}/public${CARRIER_SOURCE_SHEET.src}`);
+    expect(createHash("sha256").update(contents).digest("hex")).toBe(CARRIER_SOURCE_SHEET.sha256);
+    expect(contents.subarray(1, 4).toString("ascii")).toBe("PNG");
+    expect(contents.readUInt32BE(16)).toBe(CARRIER_SOURCE_SHEET.width);
+    expect(contents.readUInt32BE(20)).toBe(CARRIER_SOURCE_SHEET.height);
   });
 
   test("keeps the archival face and canonical drawings explicitly authored", () => {
@@ -109,7 +115,7 @@ describe("carrierAirConditionerArchivalEdition", () => {
     expect(JSON.stringify(carrierAirConditionerPatent).toLowerCase()).not.toContain("reheat");
   });
 
-  test("pins the printed execution witnesses while keeping figure remediation internal", () => {
+  test("pins the printed execution witnesses and keeps the source sheet visibly complete", () => {
     const transcript = readFileSync(
       resolve(
         process.cwd(),
@@ -126,10 +132,10 @@ describe("carrierAirConditionerArchivalEdition", () => {
       inlines: [{ kind: "text", text: "Witnesses: CHAS. W. PARKER, C. B. HORNBECK." }],
     });
     const decision = evaluateArchivalPublicationState(carrierAirConditionerPatent);
-    expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+    expect(decision.reasonCode).toBe("ACCEPTED");
     expect(decision.figureManifest).toMatchObject({
       requiredFigureCount: 8,
-      acceptedFigureCount: 0,
+      acceptedFigureCount: 8,
     });
     expect(completeArchivalEditionForViewer(carrierAirConditionerPatent, decision)).toBe(
       carrierAirConditionerArchivalEdition,

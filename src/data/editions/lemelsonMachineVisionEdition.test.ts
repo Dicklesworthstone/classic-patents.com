@@ -55,7 +55,7 @@ describe("US 3,081,379 Automatic Measurement Apparatus (Machine Vision) archival
     expect(claim1.keyInnovations.length).toBeGreaterThan(0);
   });
 
-  test("pins ledger, authored source crops, terms, and non-lossy parallel readings", () => {
+  test("pins ledger, direct full source sheets, terms, and non-lossy parallel readings", () => {
     const ledger = readFileSync(LEDGER_PATH, "utf8");
     const literalBlocks = lemelsonMachineVisionArchivalEdition.blocks.flatMap((block) => {
       if (block.kind === "masthead") return [block.lines.join(" ")];
@@ -78,7 +78,8 @@ describe("US 3,081,379 Automatic Measurement Apparatus (Machine Vision) archival
       valid: true,
     });
 
-    // Verify all 10 figure sheet crops exist on disk
+    // Preserve the earlier derivative crops; the active source face below uses
+    // direct full drawing-sheet renders instead.
     for (let i = 1; i <= 10; i++) {
       const cropPath = join(
         ROOT,
@@ -86,6 +87,61 @@ describe("US 3,081,379 Automatic Measurement Apparatus (Machine Vision) archival
       );
       expect(existsSync(cropPath)).toBe(true);
     }
+
+    const sourceSheets: Readonly<Record<number, string>> = {
+      1: "34afc9023facb367dafc1e503464ded850699b9b5d27a47eb57ba8bff84739e0",
+      2: "80b8303a1687e31eae0601b631f6f2d0d7ad7e23a7416db18110c610763fae6a",
+      3: "f6ecef18552c3fdeba5287b665f3ff311626aa240452635b354ee3f79b7c31cb",
+      4: "6ac240b87498947eaec7dd5e5a149d08449f9bf0563224f7b0757539339c8c84",
+      5: "d013f677f1ffcfeef96515205eb5186c68fcd669241991f41945bb3880caa475",
+      6: "62e7477155377eda07f3038eff083928a5773a3051265a32b90ca4502c5d01c4",
+      7: "d012bf96141e941839c9cc50dbd1d82bb5cc32b0100bf6d42ce5c2eb76a68860",
+      8: "9abf00192cd1adc10d2143427cf27becc0982dda2ab1ca49da0f4d0397d7a89b",
+      9: "61f15caa7e9130e1e8e1fb4f47f65fb38fef73641bff72ed4ca5a543ef482edd",
+      10: "7f8d1b5ddd6da3995f90c5ca5c08624ffbb3f607ac2ec1618cc7bbeeb4c16d0b",
+    };
+    for (const [sourcePdfPage, expectedHash] of Object.entries(sourceSheets)) {
+      const sourceSheetPath = join(
+        ROOT,
+        `public/patents/figures/us-3081379-lemelson-machine-vision/source-sheet-${sourcePdfPage}-v1.png`,
+      );
+      const sourceSheet = readFileSync(sourceSheetPath);
+      const sourceSheetHasher = new Bun.CryptoHasher("sha256");
+      sourceSheetHasher.update(sourceSheet);
+      expect(sourceSheetHasher.digest("hex")).toBe(expectedHash);
+      expect(sourceSheet.subarray(1, 4).toString("ascii")).toBe("PNG");
+      expect(sourceSheet.readUInt32BE(16)).toBe(2320);
+      expect(sourceSheet.readUInt32BE(20)).toBe(3408);
+    }
+
+    const figureReferences = lemelsonMachineVisionArchivalEdition.blocks.flatMap((block) => {
+      const inlines =
+        block.kind === "figure-sheet"
+          ? block.description
+          : block.kind === "paragraph" || block.kind === "claim"
+            ? block.inlines
+            : [];
+      return inlines.flatMap((inline) =>
+        inline.kind === "reference" && inline.referenceType === "figure" ? [inline] : [],
+      );
+    });
+    const expectedSourceSheetsByActiveOccurrence = [
+      1, 2, 2, 2, 3, 1, 1, 4, 5, 6, 6, 7, 7, 7, 8, 5, 9, 9, 9, 9, 10, 10, 8, 1, 1, 7, 1, 1, 1, 1, 1,
+      1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 4, 2, 4, 7, 8,
+      2, 9, 2, 3, 3, 3, 1, 1, 1, 1,
+    ];
+    expect(figureReferences).toHaveLength(expectedSourceSheetsByActiveOccurrence.length);
+    expect(
+      figureReferences.map((reference) => {
+        const preview = reference.figurePreviews?.[0];
+        const match = preview && /source-sheet-(\d+)-v1\.png$/.exec(preview.src);
+        if (!match)
+          throw new Error(`Figure reference lacks a direct source sheet: ${reference.text}`);
+        expect(preview.width).toBe(2320);
+        expect(preview.height).toBe(3408);
+        return Number(match[1]);
+      }),
+    ).toEqual(expectedSourceSheetsByActiveOccurrence);
 
     // Verify parallel readings
     const readingIndices = Object.keys(lemelsonMachineVisionParallelReadings).map(Number);

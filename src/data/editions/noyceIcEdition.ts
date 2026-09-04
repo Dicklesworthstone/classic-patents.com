@@ -17,42 +17,44 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
-const crop = (
-  number: number,
-  width: number,
-  height: number,
-  version: string = "v1",
-  alt: string = `Source-facsimile crop of Fig. ${number} from US 2,981,877.`,
-) => ({
-  src: `/patents/figures/us-2981877-noyce-ic/fig-${number}-source-crop-${version}.png`,
-  alt,
-  width,
-  height,
-});
+/**
+ * The first three PDF pages are the printed drawing sheets. Each active
+ * citation opens its unmodified full sheet so a figure is never separated
+ * from adjacent source geometry, labels, sheet designation, or signatures.
+ * Earlier per-figure crops stay on disk as review lineage only.
+ */
+const FIGURE_SOURCE_PDF_PAGE: Record<number, 1 | 2 | 3> = {
+  1: 1,
+  2: 1,
+  3: 2,
+  4: 2,
+  5: 2,
+  6: 3,
+  7: 3,
+};
+
+const SOURCE_SHEET_DIMENSIONS = { width: 2320, height: 3408 } as const;
+
+const sourceSheet = (number: number) => {
+  const sourcePdfPage = FIGURE_SOURCE_PDF_PAGE[number];
+  if (!sourcePdfPage) {
+    throw new Error(`Noyce source sheet is not mapped for Fig. ${number}.`);
+  }
+  return {
+    src: `/patents/figures/us-2981877-noyce-ic/source-sheet-${sourcePdfPage}-v1.png`,
+    alt: `Complete unmodified source drawing sheet (PDF page ${sourcePdfPage}) containing Fig. ${number}, from US 2,981,877.`,
+    ...SOURCE_SHEET_DIMENSIONS,
+  };
+};
 
 const FIGURES = {
-  "Fig. 1": [crop(1, 1500, 1250, "v2")],
-  "Fig. 2": [crop(2, 1340, 660, "v2")],
-  "Fig. 3": [crop(3, 1500, 950, "v3")],
-  "Fig. 4": [crop(4, 1700, 570, "v3")],
-  "Fig. 5": [
-    crop(
-      5,
-      950,
-      650,
-      "v2-left",
-      "Left source panel of Fig. 5 from US 2,981,877, including the printed figure label and input circuit.",
-    ),
-    crop(
-      5,
-      800,
-      460,
-      "v2-right",
-      "Right source panel of Fig. 5 from US 2,981,877, including the transistor, load, supply, and ground symbols.",
-    ),
-  ],
-  "Fig. 6": [crop(6, 1200, 880, "v2")],
-  "Fig. 7": [crop(7, 1100, 800, "v2")],
+  "Fig. 1": [sourceSheet(1)],
+  "Fig. 2": [sourceSheet(2)],
+  "Fig. 3": [sourceSheet(3)],
+  "Fig. 4": [sourceSheet(4)],
+  "Fig. 5": [sourceSheet(5)],
+  "Fig. 6": [sourceSheet(6)],
+  "Fig. 7": [sourceSheet(7)],
 } as const;
 
 const figure = (
@@ -63,7 +65,7 @@ const figure = (
   text: sourceText,
   href: "#",
   referenceType: "figure",
-  label: `Open the source-facsimile crop for ${label} in US 2,981,877`,
+  label: `Open the complete primary drawing sheet for ${label} in US 2,981,877`,
   figurePreviews: FIGURES[label],
 });
 
@@ -116,12 +118,12 @@ export const noyceIcArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 7"),
         {
           kind: "text",
-          text: ". Every preview is cropped directly from the pinned facsimile. ",
+          text: ". Each citation opens the complete, unmodified drawing sheet from the pinned facsimile; ",
         },
         figure("Fig. 5"),
         {
           kind: "text",
-          text: " is presented as two adjacent source panels because its printed caption shares a sheet band with the inventor and attorney signatures; no signature pixels are included.",
+          text: " shares its sheet with Figs. 3 and 4 without hiding surrounding source matter. Earlier per-figure crops remain preserved as review lineage.",
         },
       ],
     },

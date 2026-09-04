@@ -16,7 +16,7 @@
 
 | Material | Exact PDF locator | Editorial treatment |
 | --- | --- | --- |
-| Patent number, grant date, inventor, title, filing date; Figs. 1–6; drawing-sheet witnesses and inventor signature | PDF p. 1 | Six local source crops and a continuous figure-sheet node. |
+| Patent number, grant date, inventor, title, filing date; Figs. 1–6; drawing-sheet witnesses and inventor signature | PDF p. 1 | One immutable full source sheet supplies every active figure citation. |
 | Patent-office masthead, formal notice, purpose, all printed figure descriptions, M/H spray system, start of separator description | PDF p. 2 | Explicit ordered source nodes, terms, and figure-preview references. |
 | Separator construction and operation; pipe coils; result; Claims 1–3 | PDF p. 3 | Explicit continuous source paragraphs and exact typed claim nodes. |
 | End of Claim 4, Claim 5, execution date, inventor, witnesses | PDF p. 4 | Exact typed claims and execution nodes. |
@@ -48,34 +48,26 @@ from the first PDF sheet. They add no reconstructed linework, labels, or
 synthetic annotations. Every printed occurrence of `Fig.` or `Figure` in the
 source edition is an explicit reference node to the appropriate crop.
 
-### Cloud-only recrop handoff (pending)
+### Direct source-sheet acceptance (2026-09-04)
 
-The current previews are preserved as comparison evidence. Before any
-replacement is bound, a GPT-5.6 Luna image worker must inspect PDF page 1 at
-the native 2320 × 3408 source-pixel raster and return an image-space rectangle
-`(left, top, width, height)` for each target below. The rectangle must include
-the complete printed figure, its printed `Fig.` caption, and all source letters
-needed by the matching description, while excluding neighboring figures,
-page borders, and synthetic labels. The worker must also return the crop's
-pixel dimensions and a visual note explaining the boundary. No local render,
-crop, OCR, or image-processing operation is authorized for this handoff;
-rendering the pinned PDF solely to inspect source evidence does not create an
-accepted crop.
+All six printed figures occur together on PDF page 1. Direct 300 DPI visual
+review confirmed that the entire rendered page preserves the patent number,
+date, title, all six captions, every source letter, and the signed drawing
+furniture. The active edition therefore uses the one complete source sheet,
+rather than pretending that six independent cropped regions have separately
+established provenance.
 
-| Figure | Target on PDF page 1 | Required versioned output | Binding rule |
-| --- | --- | --- | --- |
-| 1 | Complete apparatus, part elevation and part vertical section; retain the `m`, `h`, `i`, and `k` source letters where printed | `fig-1-source-crop-v2.png` | Keep `fig-1-source-crop-v1.png` and bind v2 only after independent visual review |
-| 2 | Enlarged horizontal section through the separator; retain the `j`, `b`, `c`, and adjacent sinuous passage lettering | `fig-2-source-crop-v3.png` | Keep v1/v2; do not repoint the edition until v3 exists and is accepted |
-| 3 | Diagram of the separating device; include the complete diagram and its printed source letters, without inferred airflow arrows | `fig-3-source-crop-v2.png` | Keep v1; bind only a cloud-reviewed replacement |
-| 4 | Perspective of one separator plate or element; retain the `i`, `j`, `f`, `g`, `b`, `c`, and `a` letters when present | `fig-4-source-crop-v2.png` | Keep v1; no generated plate geometry may substitute for the facsimile |
-| 5 | Enlarged spray-nozzle section in its first plane; retain the printed `h` lettering | `fig-5-source-crop-v2.png` | Keep v1; bind only after the worker confirms nozzle boundaries |
-| 6 | Enlarged spray-nozzle section in the second plane; retain the printed `h` lettering | `fig-6-source-crop-v2.png` | Keep v1; bind only after the worker confirms the distinct plane |
+| PDF page | Printed figures | Active immutable source sheet | SHA-256 | Raster | Active occurrences |
+| --- | --- | --- | --- | --- | ---: |
+| 1 | Figs. 1–6 | `public/patents/figures/us-808897-carrier-air-conditioner/source-sheet-1-v1.png` | `3fb82f452c19cdb79c2a204e5b13b3b73c1f2af5fc4f17905b3104deed79e58e` | 2320 × 3408 px | 8 |
 
-Until all six native-pixel rectangles and replacement files exist, the figure
-acceptance issue remains an internal archival remediation. Existing edition
-references intentionally continue to point at the preserved previews rather
-than an unverified crop. That internal issue must never remove or downgrade a
-visitor's complete source text.
+The active occurrence keys are `edition-block-4-group-0-inline-1`,
+`edition-block-4-group-0-inline-3`, `edition-block-4-group-0-inline-5`,
+`edition-block-4-group-0-inline-7`, `edition-block-4-group-0-inline-9`,
+`edition-block-4-group-0-inline-11`, `edition-block-6-group-0-inline-1`, and
+`edition-block-6-group-0-inline-3`. Each locator uses the full source rectangle
+`(x: 0, y: 0, width: 2320, height: 3408)` on PDF page 1. The prior individual
+crops remain preserved comparison artifacts under the no-deletion rule.
 
 The five typed claims are source-faithful:
 
@@ -106,6 +98,5 @@ Hornbeck**, not G. B. Hornbeck. The drawing sheet's handwritten witness marks
 are retained as such rather than being normalized to the printed execution
 names.
 
-This supports removing the obsolete facsimile-review hold only. It does not
-accept the existing figure crops, assert a completed figure review, or alter
-the complete visitor-facing source reader.
+This review supports the completed figure attestation and does not alter the
+complete visitor-facing source reader.

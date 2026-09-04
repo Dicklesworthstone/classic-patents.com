@@ -2,12 +2,29 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import type { CuratedSpecificationInline } from "@/types/patent";
 import { hewittMercuryLampPatent } from "../patents/hewitt-mercury-lamp";
 import {
   hewittMercuryLampArchivalEdition,
   hewittMercuryLampParallelReadings,
   manualHewittClaimText,
 } from "./hewittMercuryLampEdition";
+import { evaluateReviewedLedgerTextEvidence } from "./reviewedLedgerPublicationEvidence";
+
+const COMPLETE_SOURCE_SHEETS = {
+  1: {
+    src: "/patents/figures/us-682690-hewitt-mercury-lamp/sheet-01.png",
+    sha256: "5d54d50eee4fccb26abf2dd91ff91845d2313f823f570ec73c53824f00c14087",
+    width: 1160,
+    height: 1704,
+  },
+  2: {
+    src: "/patents/figures/us-682690-hewitt-mercury-lamp/sheet-02.png",
+    sha256: "576ae1326f6d3b075a0157b04fb3c5c51b37564f695249d26f7a98dd65d39aab",
+    width: 1160,
+    height: 1704,
+  },
+} as const;
 
 describe("US 682,690 Peter Cooper Hewitt Electric Lamp Archival Edition Publication Contract", () => {
   const rootDir = process.cwd();
@@ -16,13 +33,8 @@ describe("US 682,690 Peter Cooper Hewitt Electric Lamp Archival Edition Publicat
     rootDir,
     "public/patents/transcripts/us-682690-hewitt-mercury-lamp-reviewed.txt",
   );
-  const fig1Path = join(
-    rootDir,
-    "public/patents/figures/us-682690-hewitt-mercury-lamp/fig-1-source-crop-v1.png",
-  );
-  const fig4Path = join(
-    rootDir,
-    "public/patents/figures/us-682690-hewitt-mercury-lamp/fig-4-source-crop-v1.png",
+  const completeSourceSheetPaths = Object.values(COMPLETE_SOURCE_SHEETS).map(({ src }) =>
+    join(rootDir, "public", src),
   );
 
   test("publishes the verified archival edition in the catalog record", () => {
@@ -38,9 +50,43 @@ describe("US 682,690 Peter Cooper Hewitt Electric Lamp Archival Edition Publicat
     expect(hewittMercuryLampArchivalEdition.sourcePdfSha256).toBe(hash);
   });
 
-  test("verifies figure crops exist on disk for all edition figure references", () => {
-    expect(existsSync(fig1Path)).toBe(true);
-    expect(existsSync(fig4Path)).toBe(true);
+  test("binds each active figure citation to a complete primary-source drawing sheet", () => {
+    const figureReferences = hewittMercuryLampArchivalEdition.blocks.flatMap((block) => {
+      if (block.kind !== "paragraph" && block.kind !== "claim") return [];
+      return block.inlines.filter(
+        (inline): inline is Extract<CuratedSpecificationInline, { kind: "reference" }> =>
+          inline.kind === "reference" && inline.referenceType === "figure",
+      );
+    });
+
+    expect(figureReferences).toHaveLength(3);
+    const [sheetOne, sheetTwo] = Object.values(COMPLETE_SOURCE_SHEETS);
+    expect(figureReferences.map((reference) => reference.figurePreviews?.[0])).toEqual([
+      expect.objectContaining({
+        src: sheetOne.src,
+        width: sheetOne.width,
+        height: sheetOne.height,
+      }),
+      expect.objectContaining({
+        src: sheetOne.src,
+        width: sheetOne.width,
+        height: sheetOne.height,
+      }),
+      expect.objectContaining({
+        src: sheetTwo.src,
+        width: sheetTwo.width,
+        height: sheetTwo.height,
+      }),
+    ]);
+
+    for (const [index, sourceSheet] of Object.values(COMPLETE_SOURCE_SHEETS).entries()) {
+      const path = completeSourceSheetPaths[index];
+      expect(path).toBeDefined();
+      expect(existsSync(path)).toBe(true);
+      expect(createHash("sha256").update(readFileSync(path)).digest("hex")).toBe(
+        sourceSheet.sha256,
+      );
+    }
   });
 
   test("confirms reviewed transcript ledger exists and contains page markers", () => {
@@ -49,6 +95,22 @@ describe("US 682,690 Peter Cooper Hewitt Electric Lamp Archival Edition Publicat
     expect(transcript).toContain("--- REVIEWED TRANSCRIPTION PAGE 1 OF 13 ---");
     expect(transcript).toContain("682,690");
     expect(transcript).toContain("PETER COOPER HEWITT");
+  });
+
+  test("pins the complete edition to literal primary-source ledger text", () => {
+    const evidence = evaluateReviewedLedgerTextEvidence(
+      hewittMercuryLampPatent,
+      readFileSync(transcriptPath, "utf-8"),
+    );
+    expect(evidence).toMatchObject({
+      status: "verified",
+      valid: true,
+      authoredSectionCount: 45,
+      coveredSectionCount: 45,
+      coverageFraction: 1,
+      missingSectionIndexes: [],
+      missingClaimNumbers: [],
+    });
   });
 
   test("exposes all printed claims via dynamic single-source lookup", () => {
@@ -84,13 +146,7 @@ describe("US 682,690 Peter Cooper Hewitt Electric Lamp Archival Edition Publicat
     }
   });
 
-  test("enforces facsimile review pending audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(hewittMercuryLampPatent, {
-      hasCompanionReadings: true,
-    });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
+  test("records a complete-facsimile review without making source reading conditional on it", () => {
+    expect(hewittMercuryLampArchivalEdition.completeFacsimileReviewed).toBe(true);
   });
 });

@@ -5825,19 +5825,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-x72-whitney-cotton-gin": {
     domain: "aerodynamics_mbd",
-    domainTitle: "Rotary Kinematics & Solid-State Fiber Separation",
-    equationName: "Centrifugal Separation & Circular Shear Kinematics",
+    domainTitle: "Direct-Drive Toothed Cylinder & Crossed-Band Clearer",
+    equationName: "Printed Direct Drive plus Declared Clearer Ratio",
     governingEquation:
-      "v_t = \\omega \\cdot r \\quad \\text{and} \\quad \\dot{m} = \\rho \\cdot A \\cdot v",
-    engineMethod: "FrankenSimEngine.stepWhitneyCottonGin",
+      "\\theta_{cylinder}=\\theta_{winch},\\quad \\omega_{clearer}=-3\\,\\omega_{cylinder}\\;\\text{(declared whirl scenario)}",
+    engineMethod:
+      "Source-bounded host kinematics; fs-lbm may shape lint display, but no multibody WASM composition is available.",
     controls: [
       {
         id: "crankRpm",
-        label: "Hand Crank Speed",
-        min: 60,
-        max: 360,
+        label: "Input Shaft Speed",
+        min: 20,
+        max: 180,
         step: 10,
-        defaultValue: 180,
+        defaultValue: 60,
         unit: "RPM",
         provenance: "scenario-reader",
       },
@@ -5849,11 +5850,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const outputLbs = gin.outputLbsPerDay;
       return [
         {
-          label: "Saw Cylinder Speed",
+          label: "Toothed Cylinder Speed",
           value: `${sawRpm} RPM`,
           unit: "omega_saw",
           badgeColor: "amber",
-          progressPct: clampProgress((sawRpm / 1260) * 100),
+          progressPct: clampProgress((sawRpm / 180) * 100),
           provenance: "scenario-modern",
         },
         {
@@ -5861,11 +5862,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: `${brushRpm} RPM`,
           unit: "omega_brush",
           badgeColor: "cyan",
-          progressPct: clampProgress((brushRpm / 4320) * 100),
+          progressPct: clampProgress((brushRpm / 540) * 100),
           provenance: "scenario-modern",
         },
         {
-          label: "Daily Clean Fiber Yield",
+          label: "Scenario Clean Fiber Yield",
           value: `${outputLbs} lbs/day`,
           unit: "m_dot",
           badgeColor: "emerald",
@@ -5885,13 +5886,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: `${gin.laborMultiplier}×`,
           unit: "labor",
           badgeColor: "amber",
-          progressPct: Math.min(100, gin.laborMultiplier),
-          provenance: "scenario-modern",
+          progressPct: gin.sourceLaborReductionFraction * 100,
+          provenance: "source-disclosed",
         },
       ];
     },
     pedagogicalInsight:
-      "Whitney's saw teeth hook fiber through narrow 2.8mm grate slots that block green seeds. The high-speed counter-rotating brush cylinder removes lint continuously via centrifugal airflow.",
+      "Whitney's inclined wire teeth carry cotton through breastwork openings that stop the seeds. A contrary-running, faster four-brush clearer sweeps lint from the teeth; the restored source specifies this topology and a 49/50 water-powered labor reduction, but not an operating speed or throughput.",
   },
   "us-x8277-mccormick-reaper": {
     domain: "mechanical_kinematics",

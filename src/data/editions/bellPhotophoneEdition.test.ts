@@ -9,6 +9,7 @@ import {
   manualPhotophoneClaimText,
 } from "./bellPhotophoneEdition";
 import { completeArchivalEditionForViewer } from "./publicationApproval";
+import { evaluateReviewedLedgerTextEvidence } from "./reviewedLedgerPublicationEvidence";
 
 const PINNED_SHA256 = "924fc983c2b53e84e122b7fb84014b5d37cf2461eae4132ea235211364f25e85";
 const SOURCE_SHEETS = {
@@ -167,7 +168,7 @@ describe("US 235,199 Alexander Graham Bell Photophone Archival Edition Contract"
     }
   });
 
-  test("reviewed transcription ledger matches page boundary markers", () => {
+  test("reviewed transcription is a page-complete literal source ledger, not a drawing summary", () => {
     const ledgerPath = path.join(
       process.cwd(),
       "public",
@@ -181,6 +182,16 @@ describe("US 235,199 Alexander Graham Bell Photophone Archival Edition Contract"
     for (let page = 1; page <= 13; page++) {
       expect(content).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 13 ---`);
     }
+
+    expect(evaluateReviewedLedgerTextEvidence(bellPhotophonePatent, content)).toMatchObject({
+      status: "verified",
+      valid: true,
+      authoredSectionCount: 121,
+      coveredSectionCount: 121,
+      missingSectionIndexes: [],
+      missingClaimNumbers: [],
+      error: null,
+    });
   });
 
   test("every authored source block is present in the reviewed ledger", () => {

@@ -52,7 +52,7 @@ describe("US 4,921,293 Salisbury & Ruoff Multi-Fingered Robotic Hand manual sour
     }
   });
 
-  test("uses an authored local source crop for every printed figure citation", () => {
+  test("uses an authored local source sheet for every printed figure citation", () => {
     const references = salisburyRobotHandArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
         ? block.inlines.filter(
@@ -73,13 +73,11 @@ describe("US 4,921,293 Salisbury & Ruoff Multi-Fingered Robotic Hand manual sour
     expect(
       new Set(references.flatMap((reference) => reference.figurePreviews?.map((p) => p.src))),
     ).toEqual(
-      new Set(
-        Array.from(
-          { length: 7 },
-          (_, index) =>
-            `/patents/figures/us-4921293-salisbury-robot-hand/fig-${index + 1}-source-crop-v1.png`,
-        ),
-      ),
+      new Set([
+        "/patents/figures/us-4921293-salisbury-robot-hand/source-sheet-1-v1.png",
+        "/patents/figures/us-4921293-salisbury-robot-hand/source-sheet-2-v1.png",
+        "/patents/figures/us-4921293-salisbury-robot-hand/source-sheet-3-v1.png",
+      ]),
     );
 
     const unauthoredFigureCitations = salisburyRobotHandArchivalEdition.blocks.flatMap((block) =>

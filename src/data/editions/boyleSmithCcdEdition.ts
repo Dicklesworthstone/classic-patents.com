@@ -10,7 +10,12 @@ const term = (text: string, definition: string): CuratedSpecificationInline => (
   definition,
 });
 
-const ccdFigureDims: Record<string, { width: number; height: number }> = {
+/**
+ * The earlier per-figure previews remain on disk as review lineage.  They are
+ * intentionally not the active archival citations: several printed figures
+ * share a sheet, so an intact PDF-page render is the honest source boundary.
+ */
+const ccdLegacyFigureDims: Record<string, { width: number; height: number }> = {
   "1a": { width: 720, height: 369 },
   "1b": { width: 720, height: 369 },
   "1c": { width: 720, height: 369 },
@@ -35,18 +40,59 @@ const ccdFigureDims: Record<string, { width: number; height: number }> = {
   "16": { width: 720, height: 360 },
 };
 
+export const boyleSmithCcdPreservedLegacyFigureCrops = Object.fromEntries(
+  Object.entries(ccdLegacyFigureDims).map(([id, dimensions]) => [
+    id,
+    {
+      src: `/patents/figures/us-3858232-boyle-smith-ccd-fig-${id}-preview.png`,
+      ...dimensions,
+    },
+  ]),
+);
+
+/**
+ * Direct 300-DPI page renders from the pinned 19-page facsimile.  PDF pages
+ * 2 through 9 are the eight printed drawing sheets; this table was visually
+ * checked against their figure labels and sheet headers on 2026-09-04.
+ */
+const ccdSourceSheetByFigure: Readonly<Record<string, number>> = {
+  "1a": 2,
+  "1b": 2,
+  "1c": 2,
+  "1d": 2,
+  "2": 3,
+  "3": 4,
+  "4": 5,
+  "5": 6,
+  "6": 6,
+  "7a": 5,
+  "7b": 5,
+  "7c": 5,
+  "8": 6,
+  "9a": 7,
+  "9b": 7,
+  "10": 7,
+  "11": 8,
+  "12": 8,
+  "13": 8,
+  "14": 9,
+  "15": 9,
+  "16": 9,
+};
+
+const CCD_SOURCE_SHEET_DIMS = { width: 2320, height: 3408 } as const;
+
 const figure = (id: string, label: string): CuratedSpecificationInline => ({
   kind: "reference",
   text: label,
-  href: `#boyle-smith-ccd-fig-${id}`,
+  href: `#boyle-smith-ccd-source-sheet-${ccdSourceSheetByFigure[id]}`,
   referenceType: "figure",
-  label: `Open the source-faithful crop for ${label} of US 3,858,232`,
+  label: `Open the complete source drawing sheet for ${label} of US 3,858,232`,
   figurePreviews: [
     {
-      src: `/patents/figures/us-3858232-boyle-smith-ccd-fig-${id}-preview.png`,
-      alt: `${label} from US 3,858,232, Information Storage Devices.`,
-      width: ccdFigureDims[id]?.width ?? 720,
-      height: ccdFigureDims[id]?.height ?? 720,
+      src: `/patents/figures/us-3858232-boyle-smith-ccd/source-sheet-${ccdSourceSheetByFigure[id]}-v1.png`,
+      alt: `Complete unmodified source drawing sheet (PDF page ${ccdSourceSheetByFigure[id]}) containing ${label}, from US 3,858,232.`,
+      ...CCD_SOURCE_SHEET_DIMS,
     },
   ],
 });

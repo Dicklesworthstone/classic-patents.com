@@ -201,8 +201,8 @@ describe("executable project coverage manifest", () => {
   });
 
   test("all 3D studios now have an updater or a typed snapshot path", () => {
-    expect(manifest.filter((row) => row.runtime.sharedBus === "updater")).toHaveLength(53);
-    expect(manifest.filter((row) => row.runtime.sharedBus === "snapshot")).toHaveLength(50);
+    expect(manifest.filter((row) => row.runtime.sharedBus === "updater")).toHaveLength(54);
+    expect(manifest.filter((row) => row.runtime.sharedBus === "snapshot")).toHaveLength(49);
     expect(manifest.filter((row) => row.runtime.sharedBus === "missing")).toHaveLength(0);
     for (const patentId of EXTERNAL_RUNTIME_OWNER_PATENT_IDS) {
       expect(visualDispatcherSource).toContain(`case "${patentId}":`);

@@ -19,9 +19,11 @@ const crop = (file: string, width: number, height: number, label: string) => ({
 });
 
 /**
- * Each printed reference below selects its own source crop. The three full
- * drawing sheets remain public facsimiles; they are not stand-ins for a
- * reference-specific preview.
+ * This table preserves the prior reviewed crop associations so an authored
+ * label can never silently lose its source-sheet assignment. The active public
+ * preview below deliberately uses the complete, immutable drawing sheet: the
+ * older detail crops remain preserved on disk as editorial aids, but they are
+ * no longer substituted for the primary source sheet.
  */
 const FIGURE_PREVIEWS: Record<
   string,
@@ -110,8 +112,8 @@ const FIGURE_PREVIEWS: Record<
 
 /** Every reference is selected at its printed occurrence. No prose is parsed. */
 const figure = (label: string, sheet: 1 | 2 | 3): CuratedSpecificationInline => {
-  const previews = FIGURE_PREVIEWS[`${sheet}:${label}`];
-  if (!previews) {
+  const legacyCrops = FIGURE_PREVIEWS[`${sheet}:${label}`];
+  if (!legacyCrops) {
     throw new Error(`US 1,647 has no authored source crop for ${label} on sheet ${sheet}.`);
   }
   return {
@@ -119,8 +121,15 @@ const figure = (label: string, sheet: 1 | 2 | 3): CuratedSpecificationInline => 
     text: label,
     href: "#",
     referenceType: "figure",
-    label: `Open the source-facsimile crop for ${label} in US 1,647`,
-    figurePreviews: previews,
+    label: `Open the complete primary drawing sheet for ${label} in US 1,647`,
+    figurePreviews: [
+      {
+        src: `/patents/figures/us-1647-morse-telegraph/source-sheet-${sheet}-v1.png`,
+        alt: `Complete primary drawing sheet ${sheet} containing ${label} from US 1,647.`,
+        width: 2320,
+        height: 3408,
+      },
+    ],
   };
 };
 

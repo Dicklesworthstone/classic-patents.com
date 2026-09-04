@@ -38,7 +38,6 @@ export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
   "us-313224-mergenthaler-linotype",
   "us-2543181-land-polaroid",
   "us-3138743-kilby-integrated-circuit",
-  "us-3353115-maiman-ruby-laser",
   "us-347140-thomson-welding",
   "us-542846-diesel-engine",
   "us-6120588-eink",

@@ -39,38 +39,33 @@ The pinned 14-page PDF is immutable source evidence. The visitor-facing source f
 
 The patent prints 40 numbered claims. PDF text extraction and any model/OCR draft are research aids only: neither is a served source face or proof of completeness. The legacy US 2,569,347 / Shockley asset is deliberately retained as non-serving evidence of the prior catalogue misidentification and is not evidence for this edition.
 
-## Figure-crop reacceptance packet
+## Complete source-sheet acceptance (2026-09-04)
 
-Independent review on 2026-08-21 accepted only the existing Fig. 11, Fig. 12,
-and Fig. 13 previews. The other fifteen previews remain preservation assets but
-must not be treated as editorially accepted: they include adjacent figures,
-sheet labels, or signature matter. The three existing full-sheet images are
-upright 1392 × 2045 source-facsimile extracts and establish the following
-versioned replacement plan. Coordinates are `left, top, width, height` in those
-full-sheet pixels and intentionally retain each printed figure label while
-excluding sheet furniture and neighboring figures.
+The pinned 14-page PDF was visually inspected page by page at 180 DPI on
+2026-09-04. Pages 1–3 are the only drawing sheets; pages 4–11 are the
+specification (including the printed figure descriptions), pages 12–14 carry
+claims 7–40, signatures, cited references, and the certificate of correction.
+No text recognition or PDF text layer was used as drawing evidence.
 
-| Figure | Source sheet image | Replacement | Planned crop rectangle |
-| --- | --- | --- | --- |
-| Fig. 1 | `figs-1-2-10-12-source-crop-v1.png` | `fig-1-source-crop-v2.png` | `300, 315, 790, 310` |
-| Fig. 1a | same | `fig-1a-source-crop-v2.png` | `245, 605, 900, 315` |
-| Fig. 2 | same | `fig-2-source-crop-v2.png` | `255, 915, 390, 300` |
-| Fig. 10 | same | `fig-10-source-crop-v2.png` | `710, 915, 430, 310` |
-| Fig. 3 | `figs-3-9-source-crop-v1.png` | `fig-3-source-crop-v2.png` | `305, 285, 365, 340` |
-| Fig. 3a | same | `fig-3a-source-crop-v2.png` | `700, 285, 370, 340` |
-| Fig. 4 | same | `fig-4-source-crop-v2.png` | `300, 575, 370, 300` |
-| Fig. 5 | same | `fig-5-source-crop-v2.png` | `700, 575, 370, 300` |
-| Fig. 6 | same | `fig-6-source-crop-v2.png` | `300, 845, 370, 300` |
-| Fig. 7 | same | `fig-7-source-crop-v2.png` | `700, 845, 370, 300` |
-| Fig. 8 | same | `fig-8-source-crop-v2.png` | `280, 1110, 430, 340` |
-| Fig. 9 | same | `fig-9-source-crop-v2.png` | `690, 1110, 440, 340` |
-| Fig. 14 | `figs-13-16-source-crop-v1.png` | `fig-14-source-crop-v2.png` | `320, 575, 610, 310` |
-| Fig. 15 | same | `fig-15-source-crop-v2.png` | `245, 810, 820, 560` |
-| Fig. 16 | same | `fig-16-source-crop-v2.png` | `195, 1255, 860, 455` |
+The three existing complete-sheet PNGs are byte-identical renders of the
+pinned PDF at 180 DPI. The typed edition now binds every one of its 85 active
+figure-reference occurrences to the complete sheet on which that printed
+figure appears. This makes the source page and full source rectangle explicit
+without pretending that a narrow legacy crop is independently accepted.
 
-The rectangles are a generation packet, not acceptance evidence. When the host
-load gate permits image work, create the new files without overwriting the old
-ones, update the edition references and dimensions, and visually compare every
-replacement with its full sheet. Fig. 16 requires particular care at the lower
-right so the surface-distance arrow remains present while the inventor and
-attorney signatures remain absent.
+| Source PDF page | Printed figures | Active complete-sheet asset | SHA-256 | Dimensions | Source rectangle | Active occurrences |
+| --- | --- | --- | --- | --- | --- | ---: |
+| 1 | Figs. 1, 1a, 2, 10, 11, 12 | `figs-1-2-10-12-source-crop-v1.png` | `7744e8caca186a4187d11adf9228d46e39f3c2e6c1ccf32ceac0e4faf5f0def4` | 1392 × 2045 | `0, 0, 1392, 2045` | 36 |
+| 2 | Figs. 3, 3a, 4–9 | `figs-3-9-source-crop-v1.png` | `0bbe47d9d635cbeca1802221de61ed4c0a4b1c47efa4792e91cc2dc204a35262` | 1392 × 2045 | `0, 0, 1392, 2045` | 28 |
+| 3 | Figs. 13–16 | `figs-13-16-source-crop-v1.png` | `090ad87971cf90e34a8c0825748015105c4c93ada06a6723afe24e5a1d5236e9` | 1392 × 2045 | `0, 0, 1392, 2045` | 21 |
+
+The occurrence-to-sheet mapping is authored at every exact inline occurrence
+in `bardeenTransistorEdition.ts`; the source-locator registry records the
+same keys, pages, dimensions, full-sheet rectangles, reviewer, and this
+receipt anchor. Reviewer: Classic Patents editorial agent (GPT-5.6); direct
+180 DPI source-pixel review. The source PDF digest reviewed for this packet is
+`6de62de550a221c5380088e0485c2ae6955334a199b6da15ff3dcd6ca65978de`.
+
+All pre-existing individual `fig-*-source-crop-*.png` assets remain preserved
+on disk. They are not deleted, overwritten, or represented as accepted active
+evidence by this source-sheet packet.

@@ -22,40 +22,40 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
 
 const FIGURES = {
   1: {
-    src: "/patents/figures/us-808897-carrier-air-conditioner/fig-1-source-crop-v1.png",
+    src: "/patents/figures/us-808897-carrier-air-conditioner/source-sheet-1-v1.png",
     alt: "US 808,897 Fig. 1: section and elevation of Carrier's air-treating apparatus.",
-    width: 1900,
-    height: 1320,
+    width: 2320,
+    height: 3408,
   },
   2: {
-    src: "/patents/figures/us-808897-carrier-air-conditioner/fig-2-source-crop-v2.png",
+    src: "/patents/figures/us-808897-carrier-air-conditioner/source-sheet-1-v1.png",
     alt: "US 808,897 Fig. 2: enlarged horizontal section through the separating device.",
-    width: 480,
-    height: 610,
+    width: 2320,
+    height: 3408,
   },
   3: {
-    src: "/patents/figures/us-808897-carrier-air-conditioner/fig-3-source-crop-v1.png",
+    src: "/patents/figures/us-808897-carrier-air-conditioner/source-sheet-1-v1.png",
     alt: "US 808,897 Fig. 3: diagram of the separating device.",
-    width: 980,
-    height: 720,
+    width: 2320,
+    height: 3408,
   },
   4: {
-    src: "/patents/figures/us-808897-carrier-air-conditioner/fig-4-source-crop-v1.png",
+    src: "/patents/figures/us-808897-carrier-air-conditioner/source-sheet-1-v1.png",
     alt: "US 808,897 Fig. 4: perspective of one separator plate or element.",
-    width: 900,
-    height: 1150,
+    width: 2320,
+    height: 3408,
   },
   5: {
-    src: "/patents/figures/us-808897-carrier-air-conditioner/fig-5-source-crop-v1.png",
+    src: "/patents/figures/us-808897-carrier-air-conditioner/source-sheet-1-v1.png",
     alt: "US 808,897 Fig. 5: enlarged section of a spray nozzle.",
-    width: 600,
-    height: 820,
+    width: 2320,
+    height: 3408,
   },
   6: {
-    src: "/patents/figures/us-808897-carrier-air-conditioner/fig-6-source-crop-v1.png",
+    src: "/patents/figures/us-808897-carrier-air-conditioner/source-sheet-1-v1.png",
     alt: "US 808,897 Fig. 6: enlarged section in a different plane of a spray nozzle.",
-    width: 750,
-    height: 820,
+    width: 2320,
+    height: 3408,
   },
 } as const;
 

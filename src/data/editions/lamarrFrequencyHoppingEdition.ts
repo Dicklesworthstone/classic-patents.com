@@ -12,48 +12,51 @@ const claim = (number: number, value: string) => ({
   inlines: text(value),
 });
 
+/**
+ * Direct 300 DPI renders of the two pinned drawing sheets. The original
+ * isolated preview files remain preserved as research evidence, but active
+ * citations deliberately retain the whole historic sheet and its context.
+ */
+const SOURCE_SHEET_1 = {
+  src: "/patents/figures/us-2292387-lamarr-frequency-hopping/source-sheet-1-v1.png",
+  width: 2320,
+  height: 3408,
+} as const;
+
+const SOURCE_SHEET_2 = {
+  src: "/patents/figures/us-2292387-lamarr-frequency-hopping/source-sheet-2-v1.png",
+  width: 2320,
+  height: 3408,
+} as const;
+
 const FIGURE_PREVIEWS = {
   "Fig. 1": {
-    src: "/patents/figures/us-2292387-lamarr-frequency-hopping/fig-1.png",
-    alt: "US 2,292,387 Fig. 1: transmitting station, record strip, tuning contacts, and torpedo steering circuit.",
-    width: 2000,
-    height: 1350,
+    ...SOURCE_SHEET_1,
+    alt: "US 2,292,387 drawing sheet 1, containing Figs. 1-3; Fig. 1 is the transmitting-station apparatus.",
   },
   "Fig. 2": {
-    src: "/patents/figures/us-2292387-lamarr-frequency-hopping/fig-2.png",
-    alt: "US 2,292,387 Fig. 2: receiving station, synchronized record strip, filters, and rudder mechanism.",
-    width: 2000,
-    height: 1400,
+    ...SOURCE_SHEET_1,
+    alt: "US 2,292,387 drawing sheet 1, containing Figs. 1-3; Fig. 2 is the receiving-station apparatus.",
   },
   "Fig. 3": {
-    src: "/patents/figures/us-2292387-lamarr-frequency-hopping/fig-3-v2.png",
-    alt: "US 2,292,387 Fig. 3: starting circuit connecting transmitting station and torpedo record-strip releases.",
-    width: 1150,
-    height: 1100,
+    ...SOURCE_SHEET_1,
+    alt: "US 2,292,387 drawing sheet 1, containing Figs. 1-3; Fig. 3 is the simultaneous record-strip release circuit.",
   },
   "Fig. 4": {
-    src: "/patents/figures/us-2292387-lamarr-frequency-hopping/fig-4.png",
-    alt: "US 2,292,387 Fig. 4: plan of the perforated record strip with rows A through H.",
-    width: 2000,
-    height: 620,
+    ...SOURCE_SHEET_2,
+    alt: "US 2,292,387 drawing sheet 2, containing Figs. 4-7; Fig. 4 is the perforated record strip.",
   },
   "Fig. 5": {
-    src: "/patents/figures/us-2292387-lamarr-frequency-hopping/fig-5.png",
-    alt: "US 2,292,387 Fig. 5: record-responsive pneumatic switching mechanism in longitudinal section.",
-    width: 1850,
-    height: 1500,
+    ...SOURCE_SHEET_2,
+    alt: "US 2,292,387 drawing sheet 2, containing Figs. 4-7; Fig. 5 is the record-responsive pneumatic switching mechanism.",
   },
   "Fig. 6": {
-    src: "/patents/figures/us-2292387-lamarr-frequency-hopping/fig-6-v2.png",
-    alt: "US 2,292,387 Fig. 6: sectional view of the control-head starting pin and record strip.",
-    width: 1000,
-    height: 1100,
+    ...SOURCE_SHEET_2,
+    alt: "US 2,292,387 drawing sheet 2, containing Figs. 4-7; Fig. 6 is the control-head starting-pin section.",
   },
   "Fig. 7": {
-    src: "/patents/figures/us-2292387-lamarr-frequency-hopping/fig-7.png",
-    alt: "US 2,292,387 Fig. 7: mother ship, torpedo paths, enemy ship, aircraft observer, and water-current arrows.",
-    width: 1900,
-    height: 1000,
+    ...SOURCE_SHEET_2,
+    alt: "US 2,292,387 drawing sheet 2, containing Figs. 4-7; Fig. 7 is the torpedo-course plan.",
   },
 } as const;
 
@@ -62,7 +65,7 @@ const fig = (value: keyof typeof FIGURE_PREVIEWS): CuratedSpecificationInline =>
   text: value,
   href: "#",
   referenceType: "figure",
-  label: `Preview ${value} from the US 2,292,387 source drawing`,
+  label: `Preview the complete US 2,292,387 source sheet containing ${value}`,
   figurePreviews: [FIGURE_PREVIEWS[value]],
 });
 

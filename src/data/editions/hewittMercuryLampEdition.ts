@@ -51,25 +51,25 @@ export const hewittMercuryLampParallelReadings: Readonly<Record<number, readonly
     "Preamble and inventor declaration by Peter Cooper Hewitt of New York, assigning his invention to Peter Cooper Hewitt, Trustee, under Application Serial No. 11,605 filed April 5, 1900.",
   ],
   2: [
-    "Fundamental problem of gas discharge lighting: Geissler tubes and vacuum spark discharges previously required dangerous, inefficient high-voltage induction coils (thousands of volts) and carried negligible currents without producing practical illumination.",
+    "This short opening statement defines the subject as electric-lighting methods and apparatus before the specification narrows to particular vapor paths or starting arrangements.",
   ],
   3: [
-    "The cold cathode resistance barrier: discovering that an evacuated mercury vapor tube presents an enormous initial electrical resistance at the cold cathode surface, preventing normal commercial lighting voltages (100–120 V) from starting the discharge.",
+    "Hewitt states the stated design objective: convert electrical energy through a vapor or gas efficiently while retaining simple, durable apparatus.",
   ],
   4: [
-    "High-voltage starting impulse mechanism: applying a brief transient high-voltage inductive kick (via an inductor or transformer) to break down the cold cathode resistance, instantly ionizing the mercury vapor and initiating a continuous cathode emission spot.",
+    "Figure 1 is identified as one complete lamp form; the immediately following figure references identify the modified electrode, operating circuits, and exhaustion apparatus.",
   ],
   5: [
-    "Low-voltage high-current operating regime: once the cathode spot forms and the vapor is ionized, electrical resistance collapses dramatically, allowing the tube to operate continuously from moderate, commercial voltages (50–110 V) with unprecedented luminous efficiency (60–100 lm/W).",
+    "The detailed figure description identifies tube 1, electrodes 2 and 5, chamber 4, the two lead-ins, the lower mercury quantity, and the conductive band near that lower electrode.",
   ],
   6: [
-    "Condensation and vapor density control: providing an enlarged bulbous condensing chamber (8 in Figure 1) at the top of the tube to dissipate heat, condense vaporized mercury back into liquid, and maintain optimal vapor pressure (0.1–1.0 mmHg) inside the tube.",
+    "The specification returns to Figure 1 to explain why chamber 4 provides the radiating area that keeps the vapor path from overheating and extinguishing the lamp.",
   ],
   7: [
-    "Automatic starting circuit and cutout: employing an inductive transformer with a magnetic interrupter that generates the starting surge and automatically disconnects itself the moment steady operating current traverses the lamp.",
+    "The Figure 4 spark-coil arrangement raises the starting potential by interrupting its primary coil; its secondary remains in the lamp path after the discharge conditions permit the main current to pass.",
   ],
   8: [
-    "Formal transition to the enumerated claims establishing exclusive patent rights over the combination of vapor conduction, inductive starting, and automatic cutout mechanisms.",
+    "This is the grant's exact transition from the specification to the numbered claims, not an editorial claim summary.",
   ],
   42: [
     "Formal execution and subscription of the patent specification signed by Peter Cooper Hewitt on March 21, 1900 in the presence of subscribing witnesses Henry Noel Potter and Wm. H. Capel.",
@@ -89,8 +89,8 @@ export const hewittMercuryLampArchivalEdition: CuratedSpecificationEdition = {
         "UNITED STATES PATENT OFFICE.",
         "PETER COOPER HEWITT, OF NEW YORK, N. Y., ASSIGNOR TO PETER COOPER HEWITT, TRUSTEE, OF SAME PLACE.",
         "ELECTRIC LAMP.",
-        "No. 682,690. Specification forming part of Letters Patent No. 682,690, dated September 17, 1901.",
-        "Application filed April 5, 1900. Serial No. 11,605. (No model.) 3 Sheets-Sheet 1, 2, 3.",
+        "SPECIFICATION forming part of Letters Patent No. 682,690, dated September 17, 1901.",
+        "Application filed April 5, 1900. Serial No. 11,605. (No model.)",
       ],
     },
     p(
@@ -100,111 +100,61 @@ export const hewittMercuryLampArchivalEdition: CuratedSpecificationEdition = {
         "Peter Cooper Hewitt (1861–1921), American electrical engineer and inventor of the mercury-vapor lamp, mercury-arc rectifier, and high-frequency radio alternator.",
       ),
       text(
-        ", a citizen of the United States, residing at New York, in the county of New York and State of New York, have invented certain new and useful Improvements in Electric Lamps, of which the following is a specification.",
+        ", a citizen of the United States, and a resident of New York, in the county of New York and State of New York, have invented certain new and useful Improvements in Electric Lamps, of which the following is a specification.",
+      ),
+    ),
+    p(text("My invention relates to methods of and apparatus for electric lighting.")),
+    p(
+      text(
+        "The general purpose of the invention is to produce light by converting electric energy into light through the agency of vapors or gases as efficiently as possible and with simple and durable apparatus.",
       ),
     ),
     p(
-      text(
-        "Prior to my invention many attempts have been made to produce light by the passage of electric currents through a ",
-      ),
-      term(
-        "gas or vapor",
-        "Rarefied mercury vapor in a high-vacuum glass envelope that undergoes electrical breakdown into an intensely glowing plasma positive column.",
-      ),
-      text(
-        " contained within an exhausted envelope—such, for instance, as Geissler tubes and vacuum spark discharges. In all such devices, however, the currents employed have been of very high electromotive force and negligible quantity, yielding little useful light and suffering from extreme electrical inefficiency.",
-      ),
-    ),
-    p(
-      text(
-        "I have discovered that when an exhausted tube containing a vaporizable conducting substance, such as ",
-      ),
-      term(
-        "mercury",
-        "Liquid transition metal (Z=80) whose low ionization potential (10.44 eV) and volatile vapor pressure make it the ideal medium for efficient gas-discharge illumination.",
-      ),
-      text(
-        ", is connected in circuit with a source of electric current of moderate electromotive force (such as 100 to 120 volts), no current will pass through the tube under ordinary conditions because of an enormous initial electrical resistance at the cold ",
-      ),
-      term(
-        "cathode",
-        "Liquid mercury pool electrode where high current density forms a mobile cathode spot (Je ~ 10^6 A/cm²), continuously evaporating mercury and emitting electrons into the discharge.",
-      ),
-      text(" surface."),
-    ),
-    p(
-      text(
-        "To overcome this initial cold cathode resistance and start the lamp, I apply a momentary ",
-      ),
-      term(
-        "higher potential",
-        "High-voltage inductive kick pulse (several thousand volts) produced by an inductor or transformer to overcome the initial cold cathode resistance and ionize the vapor path.",
-      ),
-      text(
-        " of several thousand volts across the terminals of the tube. This high-voltage impulse instantly breaks down the initial resistance, ionizing the vapor and creating a mobile, intensely hot cathode spot on the liquid mercury surface, as illustrated in ",
-      ),
+      text("In the accompanying drawings, "),
+      text("illustrating "),
+      text("my invention, "),
       ref(
         "Figure 1",
         "#figure-1",
-        "Sheet 1, Figure 1 — Side elevation of tubular mercury vapor lamp",
-        "/patents/figures/us-682690-hewitt-mercury-lamp/fig-1-source-crop-v1.png",
+        "Complete source drawing sheet 1 — Figures 1 and 2, including the tubular mercury-vapor lamp",
+        "/patents/figures/us-682690-hewitt-mercury-lamp/sheet-01.png",
       ),
-      text("."),
+      text(" represents one form of a complete lamp."),
     ),
     p(
       text(
-        "The moment this cathode resistance is broken down, the electrical resistance of the vapor column collapses to a fraction of an ohm, and the tube continues to operate smoothly from a source of ",
-      ),
-      term(
-        "moderate potential",
-        "Normal steady-state operating voltage (e.g. 50–110 V DC) under which the established mercury arc conducts large currents with high efficiency.",
-      ),
-      text(
-        " (50 to 110 volts), conducting currents of several amperes and producing an intense, highly efficient luminous discharge with an efficacy exceeding sixty lumens per watt.",
+        "Referring to the figures, 1 represents a glass tube of such dimensions as may be required—say, for example, a tube of three-quarters of an inch in diameter and two or three feet in length and having a wall of such thickness as not to be fragile. The particular dimensions of the tube to be chosen are determined by the electromotive force and the current with which it is to be operated and other considerations which will be hereinafter pointed out. This tube is provided with two electrodes, indicated at 2 and 5, respectively. If the lamp is to be run by continuous current, the electrode 2 is usually the anode and the electrode 5 the cathode. In the drawings I have shown the electrode 2 as being of an inverted-cup shape; but other forms may be employed—such, for instance, as a closed spherical, oval, cylindrical, and other shapes. I have obtained excellent results by using a pure iron for this electrode; but other metals may be substituted. It is suspended within or near the neck of an enlargement or chamber 4, which I usually employ, this chamber serving to increase the heat-radiating capacity of the lamp and to retain impurities. The electrode 2 is suspended by leading-in conductor 7, of platinum or other suitable material, extending through the glass wall, and I usually provide a long seal 10 for protecting more or less of the leading-in conductor within the lamp. The electrode 5 is shown in this instance as being a small quantity of mercury. A leading-in conductor 8 connects with this electrode. Surrounding the lower end of the tube, adjacent to and usually projecting a slight distance, say, one-eighth of an inch above the level of the lower electrode, there is placed a thin band 9 of conducting material—such, for instance, as foil—and this is electrically connected by a conductor 13 with the leading-in wire 7.",
       ),
     ),
     p(
-      text(
-        "To prevent excessive internal vapor pressure and maintain steady luminous output during continuous operation, I provide an enlarged bulbous ",
-      ),
-      term(
-        "condensing chamber",
-        "Enlarged bulbous glass chamber (8 in Fig. 1) that dissipates heat and condenses evaporated mercury back into liquid, returning it to the cathode pool.",
-      ),
-      text(" (8 in "),
+      text("As"),
+      text(" already stated"),
+      text(" in connection with "),
       ref(
-        "Figure 1",
+        "Fig. 1",
         "#figure-1",
-        "Sheet 1, Figure 1 — Side elevation of tubular mercury vapor lamp",
-        "/patents/figures/us-682690-hewitt-mercury-lamp/fig-1-source-crop-v1.png",
+        "Complete source drawing sheet 1 — Figures 1 and 2, including the tubular mercury-vapor lamp",
+        "/patents/figures/us-682690-hewitt-mercury-lamp/sheet-01.png",
       ),
       text(
-        ") at the top of the tube. The evaporated mercury vapor rises, condenses against the cool glass walls of chamber 8, and trickles back down the tubular envelope into the cathode pool 1.",
+        ", the condensing and impurity-containing chamber 4 or its equivalent performs an important function in the operation of the lamp. As the lamp commences to operate heat accumulates, and the increasing temperature appears to soon result in increased resistance on the part of the vapor path. If the heat is not conducted away after the lamp has reached its proper working condition with the same rapidity that it is generated, the lamp may extinguish itself. The chamber 4 is therefore constructed with sufficient radiating surface to get rid of the excess heat and keep the lamp in the proper condition. The chamber 4 need not, however, necessarily surround the electrode 2; but it may be located elsewhere and be of other form, provided it is out of the vapor-path.",
       ),
     ),
     p(
-      text("In "),
+      text(
+        "I have used in some instances in place of the form of apparatus above described for producing the higher potential starting-current a simple spark-coil, as shown in ",
+      ),
       ref(
-        "Figure 4",
+        "Fig. 4",
         "#figure-4",
-        "Sheet 2, Figure 4 — Automatic transformer starting and series cutout circuit",
-        "/patents/figures/us-682690-hewitt-mercury-lamp/fig-4-source-crop-v1.png",
-      ),
-      text(", I have shown an automatic starting system comprising an inductive "),
-      term(
-        "transformer",
-        "Inductive converter coil generating the transient high-voltage starting impulse when primary current is interrupted.",
-      ),
-      text(" and a "),
-      term(
-        "circuit-interrupting device",
-        "Magnetic or mechanical contact breaker that interrupts primary current to induce the starting voltage surge, automatically cut out once current flows through the tube.",
+        "Complete source drawing sheet 2 — Figures 3 and 4, including the automatic starting circuit",
+        "/patents/figures/us-682690-hewitt-mercury-lamp/sheet-02.png",
       ),
       text(
-        ". When the main switch is closed, current energizes the primary coil and magnetic interrupter, inducing a high-potential surge in the secondary coil that breaks down the lamp resistance. The resulting operating current traversing the lamp energizes a series cutout electromagnet, which permanently opens the primary starting circuit while the lamp is running.",
+        ", comprising a core 40, with a primary coil 41, adapted to be connected, by means of a switch 42, between the main conductors 14 and 15, and also provided with a secondary coil 43, one terminal of which is connected with the electrode 5 of the lamp and the remaining terminal with the main conductor 15. A switch 44 is included in the conductor 45, which leads from the electrode 2 to the main conductor 14. The coils 41 and 43 are so proportioned as to produce a higher difference of potential at the terminals of the coil 43 upon breaking the circuit of the coil 41, and the discharge from this coil suffices to produce in the vapor path of the lamp the proper conditions for permitting the current from the main circuit to flow through the lamp by way of the conductor 45 and the coil 43.",
       ),
     ),
-    p(text("Now what I claim is:")),
+    p(text("The invention claimed is:")),
     {
       kind: "heading",
       level: 2,

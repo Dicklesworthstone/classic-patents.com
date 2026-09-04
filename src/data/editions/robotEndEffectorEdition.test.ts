@@ -65,13 +65,32 @@ describe("US 4,765,668 Robot End Effector Archival Edition Contract", () => {
     expect(ledgerText).toContain("left hand threaded portion");
   });
 
-  test("pins source crops, technical term annotations, and parallel readings", () => {
-    for (let figNum = 1; figNum <= 6; figNum++) {
-      const cropPath = resolve(
+  test("pins complete source drawing sheets, technical term annotations, and parallel readings", () => {
+    for (const sourcePdfPage of [2, 3, 4, 5]) {
+      const sourceSheetPath = resolve(
         process.cwd(),
-        `public/patents/figures/us-4765668-robot-end-effector/fig-${figNum}-source-crop-v1.png`,
+        `public/patents/figures/us-4765668-robot-end-effector/source-sheet-${sourcePdfPage}-v1.png`,
       );
-      expect(existsSync(cropPath)).toBe(true);
+      expect(existsSync(sourceSheetPath)).toBe(true);
+    }
+
+    const figureReferences = robotEndEffectorArchivalEdition.blocks.flatMap((candidate) =>
+      candidate.kind === "paragraph"
+        ? candidate.inlines.filter(
+            (inline) => inline.kind === "reference" && inline.referenceType === "figure",
+          )
+        : [],
+    );
+    expect(figureReferences).toHaveLength(29);
+    for (const reference of figureReferences) {
+      if (reference.kind !== "reference") continue;
+      for (const preview of reference.figurePreviews ?? []) {
+        expect(preview.src).toMatch(
+          /^\/patents\/figures\/us-4765668-robot-end-effector\/source-sheet-[2-5]-v1\.png$/,
+        );
+        expect(preview.width).toBe(2320);
+        expect(preview.height).toBe(3408);
+      }
     }
 
     const annotatedTerms = robotEndEffectorArchivalEdition.blocks.flatMap((candidate) =>

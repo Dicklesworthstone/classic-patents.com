@@ -6,6 +6,7 @@ import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValid
 import { farnsworthTvPatent } from "@/data/patents/farnsworth-tv";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import { farnsworthTvArchivalEdition, farnsworthTvParallelReadings } from "./farnsworthTvEdition";
+import { evaluateReviewedLedgerTextEvidence } from "./reviewedLedgerPublicationEvidence";
 
 describe("US 1,773,980 manual source edition", () => {
   test("pins the inspected 13-page facsimile and its full printed claim sequence", () => {
@@ -205,6 +206,15 @@ describe("US 1,773,980 manual source edition", () => {
     if (!asset) throw new Error("Farnsworth reviewed ledger asset is missing.");
     const ledger = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
     expect(validateReviewedTranscription(ledger, 13)).toEqual({ valid: true });
+    expect(evaluateReviewedLedgerTextEvidence(farnsworthTvPatent, ledger)).toMatchObject({
+      status: "verified",
+      valid: true,
+      authoredSectionCount: 65,
+      coveredSectionCount: 65,
+      coverageFraction: 1,
+      missingSectionIndexes: [],
+      missingClaimNumbers: [],
+    });
     for (const block of farnsworthTvArchivalEdition.blocks) {
       if (block.kind === "paragraph" || block.kind === "claim") {
         expect(ledger).toContain(block.inlines.map((inline) => inline.text).join(""));

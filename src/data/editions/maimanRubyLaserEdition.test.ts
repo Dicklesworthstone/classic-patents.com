@@ -14,6 +14,7 @@ import {
   maimanRubyLaserParallelReadings,
   manualMaimanClaimText,
 } from "./maimanRubyLaserEdition";
+import { evaluateReviewedLedgerTextEvidence } from "./reviewedLedgerPublicationEvidence";
 
 const EXPECTED_PDF_SHA256 = "3222cc08d6662719dba7566e07f96f3d1687dda40d6fe213ac9993ceb1ba03e6";
 
@@ -146,6 +147,117 @@ const FIGURE_CROPS = [
   },
 ] as const;
 
+const SOURCE_SHEETS = [
+  {
+    sourcePdfPage: 1,
+    file: "sheet-1-01.png",
+    sha256: "d1a4ce060e2cfa1ef093df3baf853ed837299f16438090893754c5f7216ef898",
+  },
+  {
+    sourcePdfPage: 2,
+    file: "sheet-2-02.png",
+    sha256: "95eceb8df7e723a6f90ee38f32a940a437c626ba31776d525340f03f897c9e7e",
+  },
+  {
+    sourcePdfPage: 3,
+    file: "sheet-3-03.png",
+    sha256: "15f1b618e64fa04356a907364539be06f00057a6baa5c923d75c6e75d2d81117",
+  },
+  {
+    sourcePdfPage: 4,
+    file: "sheet-4-04.png",
+    sha256: "6e29ba1d4bfc34b9e9fb1956e03a9a5c2085e183ebc96f1c4cfd0cc76fbcaf33",
+  },
+  {
+    sourcePdfPage: 5,
+    file: "sheet-5-05.png",
+    sha256: "ae8ede41e4731be156d91c4f7444765250419ccc92ea88abbf63d53779c5a779",
+  },
+] as const;
+
+const SOURCE_PDF_PAGE_BY_FIGURE = {
+  1: 1,
+  2: 1,
+  3: 1,
+  4: 2,
+  5: 2,
+  6: 2,
+  7: 2,
+  8: 3,
+  9: 3,
+  10: 3,
+  11: 3,
+  12: 4,
+  13: 4,
+  14: 4,
+  15: 4,
+  16: 5,
+  17: 5,
+  18: 5,
+} as const;
+
+const ACTIVE_FIGURE_OCCURRENCE_PAGES = {
+  "edition-block-2-group-0-inline-1": 1,
+  "edition-block-2-group-0-inline-3": 1,
+  "edition-block-2-group-0-inline-5": 1,
+  "edition-block-3-group-0-inline-1": 2,
+  "edition-block-3-group-0-inline-3": 2,
+  "edition-block-3-group-0-inline-5": 2,
+  "edition-block-3-group-0-inline-7": 2,
+  "edition-block-4-group-0-inline-1": 3,
+  "edition-block-4-group-0-inline-3": 3,
+  "edition-block-4-group-0-inline-5": 3,
+  "edition-block-4-group-0-inline-7": 3,
+  "edition-block-5-group-0-inline-1": 4,
+  "edition-block-5-group-0-inline-3": 4,
+  "edition-block-5-group-0-inline-5": 4,
+  "edition-block-5-group-0-inline-7": 4,
+  "edition-block-6-group-0-inline-1": 5,
+  "edition-block-6-group-0-inline-3": 5,
+  "edition-block-6-group-0-inline-5": 5,
+  "edition-block-17-group-0-inline-1": 1,
+  "edition-block-17-group-0-inline-3": 1,
+  "edition-block-17-group-0-inline-5": 1,
+  "edition-block-17-group-0-inline-7": 2,
+  "edition-block-17-group-0-inline-9": 2,
+  "edition-block-17-group-0-inline-11": 2,
+  "edition-block-17-group-0-inline-13": 2,
+  "edition-block-17-group-0-inline-15": 2,
+  "edition-block-17-group-0-inline-17": 3,
+  "edition-block-17-group-0-inline-19": 3,
+  "edition-block-17-group-0-inline-21": 3,
+  "edition-block-17-group-0-inline-23": 3,
+  "edition-block-17-group-0-inline-25": 4,
+  "edition-block-17-group-0-inline-27": 4,
+  "edition-block-17-group-0-inline-29": 4,
+  "edition-block-17-group-0-inline-31": 4,
+  "edition-block-17-group-0-inline-33": 5,
+  "edition-block-17-group-0-inline-35": 5,
+  "edition-block-17-group-0-inline-37": 5,
+  "edition-block-20-group-0-inline-1": 1,
+  "edition-block-22-group-0-inline-1": 1,
+  "edition-block-23-group-0-inline-0": 1,
+  "edition-block-24-group-0-inline-1": 2,
+  "edition-block-25-group-0-inline-1": 2,
+  "edition-block-26-group-0-inline-0": 2,
+  "edition-block-26-group-0-inline-2": 2,
+  "edition-block-27-group-0-inline-0": 3,
+  "edition-block-28-group-0-inline-0": 3,
+  "edition-block-29-group-0-inline-0": 3,
+  "edition-block-29-group-0-inline-2": 3,
+  "edition-block-30-group-0-inline-0": 4,
+  "edition-block-31-group-0-inline-0": 4,
+  "edition-block-32-group-0-inline-0": 4,
+  "edition-block-32-group-0-inline-2": 4,
+  "edition-block-32-group-0-inline-4": 4,
+  "edition-block-32-group-0-inline-6": 4,
+  "edition-block-33-group-0-inline-0": 5,
+  "edition-block-33-group-0-inline-2": 5,
+  "edition-block-33-group-0-inline-4": 5,
+  "edition-block-33-group-0-inline-6": 5,
+  "edition-block-34-group-0-inline-1": 5,
+} as const;
+
 function readPngDimensions(bytes: Buffer): { width: number; height: number } {
   return {
     width: bytes.readUInt32BE(16),
@@ -165,7 +277,7 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition Contract",
     expect(maimanRubyLaserArchivalEdition.sourcePdfSha256).toBe(EXPECTED_PDF_SHA256);
   });
 
-  test("verifies all 18 figure crops on disk with exact dimensions and digests", () => {
+  test("retains all 18 legacy figure crops on disk with exact dimensions and digests", () => {
     const figDir = join(process.cwd(), "public/patents/figures/us-3353115-maiman-ruby-laser");
     for (const crop of FIGURE_CROPS) {
       const cropPath = join(figDir, crop.file);
@@ -179,6 +291,75 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition Contract",
     }
   });
 
+  test("binds every active figure occurrence to its complete primary drawing sheet", () => {
+    const occurrences: {
+      occurrenceKey: string;
+      figureNumber: number;
+      referenceText: string;
+      preview: { src: string; alt: string; width: number; height: number } | undefined;
+    }[] = [];
+
+    maimanRubyLaserArchivalEdition.blocks.forEach((block, blockIndex) => {
+      const inlineGroups =
+        block.kind === "figure-sheet"
+          ? [block.description]
+          : block.kind === "paragraph" || block.kind === "claim"
+            ? [block.inlines]
+            : [];
+      inlineGroups.forEach((inlines, groupIndex) => {
+        inlines.forEach((inline, inlineIndex) => {
+          if (inline.kind !== "reference" || inline.referenceType !== "figure") return;
+          const figureNumber = Number(inline.href?.match(/^#figure-(\d+)$/)?.[1]);
+          occurrences.push({
+            occurrenceKey: `edition-block-${blockIndex}-group-${groupIndex}-inline-${inlineIndex}`,
+            figureNumber,
+            referenceText: inline.text,
+            preview: inline.figurePreviews?.[0],
+          });
+        });
+      });
+    });
+
+    expect(occurrences).toHaveLength(59);
+    expect(
+      Object.fromEntries(
+        occurrences.map(({ occurrenceKey, figureNumber }) => [
+          occurrenceKey,
+          figureNumber
+            ? SOURCE_PDF_PAGE_BY_FIGURE[figureNumber as keyof typeof SOURCE_PDF_PAGE_BY_FIGURE]
+            : undefined,
+        ]),
+      ),
+    ).toEqual(ACTIVE_FIGURE_OCCURRENCE_PAGES);
+
+    for (const occurrence of occurrences) {
+      const sourcePdfPage =
+        SOURCE_PDF_PAGE_BY_FIGURE[
+          occurrence.figureNumber as keyof typeof SOURCE_PDF_PAGE_BY_FIGURE
+        ];
+      const sourceSheet = SOURCE_SHEETS.find((sheet) => sheet.sourcePdfPage === sourcePdfPage);
+      expect(sourceSheet).toBeDefined();
+      expect(occurrence.preview).toEqual({
+        src: `/patents/figures/us-3353115-maiman-ruby-laser/${sourceSheet?.file}`,
+        alt: `${occurrence.referenceText}, complete primary drawing sheet ${sourcePdfPage} from US 3,353,115`,
+        width: 2320,
+        height: 3408,
+      });
+    }
+
+    for (const sourceSheet of SOURCE_SHEETS) {
+      const sourceSheetPath = join(
+        process.cwd(),
+        "public/patents/figures/us-3353115-maiman-ruby-laser",
+        sourceSheet.file,
+      );
+      expect(existsSync(sourceSheetPath)).toBe(true);
+      const bytes = readFileSync(sourceSheetPath);
+      expect(createHash("sha256").update(bytes).digest("hex")).toBe(sourceSheet.sha256);
+      expect(readPngDimensions(bytes)).toEqual({ width: 2320, height: 3408 });
+    }
+  });
+
   test("passes full structural validation for the curated specification edition", () => {
     expect(validateCuratedSpecificationEdition(maimanRubyLaserArchivalEdition)).toEqual({
       valid: true,
@@ -186,7 +367,7 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition Contract",
     });
   });
 
-  test("verifies reviewed transcript ledger with 10-page markers and editorial integrity", () => {
+  test("verifies a page-complete, literal source ledger against every authored section", () => {
     const ledgerPath = join(
       process.cwd(),
       "public/patents/transcripts/us-3353115-maiman-ruby-laser-reviewed.txt",
@@ -197,6 +378,16 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition Contract",
     expect(validateReviewedTranscription(ledgerText, 10)).toEqual({ valid: true });
     expect(validateReviewedTranscriptionEditorialIntegrity(ledgerText, 10)).toEqual({
       valid: true,
+    });
+    expect(evaluateReviewedLedgerTextEvidence(maimanRubyLaserPatent, ledgerText)).toMatchObject({
+      status: "verified",
+      valid: true,
+      authoredSectionCount: 44,
+      coveredSectionCount: 44,
+      coverageFraction: 1,
+      missingSectionIndexes: [],
+      missingClaimNumbers: [],
+      error: null,
     });
   });
 
@@ -252,13 +443,16 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition Contract",
     }
   });
 
-  test("enforces figure acceptance pending audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(maimanRubyLaserPatent, {
-      hasCompanionReadings: true,
+  test("accepts Maiman ruby laser edition after ledger and figure completion", () => {
+    const { evaluateArchivalPublicationState } = require("./publicationApproval");
+    const decision = evaluateArchivalPublicationState(maimanRubyLaserPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.state.kind).toBe("accepted");
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.state.evidence.ledgerContent).toMatchObject({
+      status: "verified",
+      valid: true,
+      coverageFraction: 1,
     });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
   });
 });

@@ -7,7 +7,13 @@ import {
 } from "@/physics/cortKernel";
 import { ENERGY_CHANNEL_OMISSION_REASONS, energyChannelsFor } from "@/physics/energyChannels";
 import { cortPuddlingRollingViewForViewport } from "./cortPuddlingRollingCamera";
-import { buildCortPuddlingRollingModel } from "./cortPuddlingRollingModel";
+import {
+  buildCortPuddlingRollingModel,
+  CORT_ROLL_DRIVE_GEAR_PITCH_RADIUS_M,
+  CORT_ROLL_DRIVE_GEAR_ROOT_RADIUS_M,
+  CORT_ROLL_DRIVE_GEAR_TEETH,
+  CORT_ROLL_DRIVE_GEAR_TOOTH_DEPTH_M,
+} from "./cortPuddlingRollingModel";
 
 describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
   test("builds complete procedural 3D model hierarchy", () => {
@@ -19,6 +25,8 @@ describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
     expect(model.puddleBallMesh).toBeDefined();
     expect(model.topRollGroup).toBeDefined();
     expect(model.bottomRollGroup).toBeDefined();
+    expect(model.topRollDriveGear).toBeDefined();
+    expect(model.bottomRollDriveGear).toBeDefined();
     expect(model.billetMesh).toBeDefined();
     model.dispose();
   });
@@ -87,6 +95,26 @@ describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
     expect(named["left-roll-bearing-stand"]).toHaveLength(1);
     expect(named["right-roll-bearing-stand"]).toHaveLength(1);
     expect(named["rolling-mill-bedplate"]).toHaveLength(1);
+    expect(named["top-roll-drive-shaft-extension"]).toHaveLength(1);
+    expect(named["bottom-roll-drive-shaft-extension"]).toHaveLength(1);
+    expect(named["attached-off-scene-lineshaft-input-coupling"]).toHaveLength(1);
+    expect(named["normalized-off-scene-line-shaft"]).toHaveLength(1);
+
+    expect(CORT_ROLL_DRIVE_GEAR_PITCH_RADIUS_M * 2).toBeCloseTo(CORT_ROLL_CENTER_SEPARATION_M, 12);
+    const driveGearAddendumRadius =
+      CORT_ROLL_DRIVE_GEAR_PITCH_RADIUS_M + CORT_ROLL_DRIVE_GEAR_TOOTH_DEPTH_M / 2;
+    expect(CORT_ROLL_DRIVE_GEAR_ROOT_RADIUS_M + driveGearAddendumRadius).toBeCloseTo(
+      CORT_ROLL_CENTER_SEPARATION_M,
+      12,
+    );
+    expect(model.topRollDriveGear.children).toHaveLength(CORT_ROLL_DRIVE_GEAR_TEETH + 1);
+    expect(model.bottomRollDriveGear.children).toHaveLength(CORT_ROLL_DRIVE_GEAR_TEETH + 1);
+    expect(model.root.getObjectsByProperty("name", "normalized-roll-drive-root-disc")).toHaveLength(
+      2,
+    );
+    expect(model.root.getObjectsByProperty("name", "normalized-roll-drive-tooth")).toHaveLength(
+      CORT_ROLL_DRIVE_GEAR_TEETH * 2,
+    );
 
     const firstPassGap =
       model.topRollGroup.position.y -
@@ -173,11 +201,16 @@ describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
     expect(cortPuddlingRollingViewForViewport("hearth", 375)).toEqual(
       cortPuddlingRollingViewForViewport("hearth", 1200),
     );
+    expect(cortPuddlingRollingViewForViewport("drive", 375)).toEqual({
+      pos: [5.0, 1.8, 2.4],
+      target: [3.0, 1.05, 0],
+    });
 
     const threeSource = await Bun.file(
       new URL("./CortPuddlingRolling3D.tsx", import.meta.url),
     ).text();
     expect(threeSource).toContain("cortPuddlingRollingViewForViewport");
+    expect(threeSource).toContain('aria-label="Cort process camera view"');
     expect(threeSource).toContain('window.addEventListener("resize", restoreResponsiveView)');
   });
 

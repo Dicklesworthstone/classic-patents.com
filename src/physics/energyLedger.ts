@@ -742,11 +742,8 @@ export function computePortHamiltonianEnergy(
 
     case "us-x1-hopkins-potash":
     case "us-1-hopkins-potash": {
-      const kilnTempC = params.roastTempC ?? params.kilnTempC ?? 750.0;
-      const ashMassKg = params.ashBatchKg ?? params.ashMassKg ?? 200.0;
-      thermal = ashMassKg * 840.0 * (kilnTempC - 20.0); // Leached wood ash furnace thermal capacity
-      powerIn = 8500.0; // Hardwood combustion heat input
-      dissipated = 8200.0; // Radiative furnace flue gas dissipation
+      // The one-sheet letters patent supplies no quantitative thermal inputs,
+      // so an energy ledger would be invented rather than source-derived.
       break;
     }
 
@@ -758,12 +755,8 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-x72-whitney-cotton-gin": {
-      const crankRpm = params.crankRpm ?? 60.0;
-      const omega = (crankRpm * 2 * Math.PI) / 60.0;
-      kinetic = 0.5 * 2.5 * omega ** 2 + 0.5 * 1.2 * (omega * 3.0) ** 2; // Saw disk & brush cylinder inertia
-      potential = 15.0;
-      powerIn = 120.0; // Hand crank input power (120 W human effort)
-      dissipated = 115.0; // Cotton fiber tearing & gridded wire friction
+      // The source supplies neither inertia nor torque/load data. An energy
+      // ledger would fabricate the very quantities it purports to audit.
       break;
     }
 

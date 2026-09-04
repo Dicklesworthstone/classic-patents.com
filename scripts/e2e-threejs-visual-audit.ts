@@ -1735,13 +1735,30 @@ async function auditPatent(
         movingEnd.frankenSimBoundary ===
           "fs-mbd::revolute+fs-solid::contact+fs-conduction::transient-browser-composition-unavailable";
 
-      await surface.getByRole("button", { name: "Groove Passes" }).click();
+      const mobileCameraSelect = surface.getByLabel("Cort process camera view");
+      if (viewport === "phone" || viewport === "phone375") {
+        await mobileCameraSelect.selectOption("grooves", { force: true });
+      } else {
+        await surface.getByRole("button", { name: "Groove Passes" }).click();
+      }
       await page.waitForTimeout(100);
       const groovePassScreenshotPath = path.join(
         SCREENSHOT_DIRECTORY,
         `${patentId}.${viewport}.physical-groove-passes.png`,
       );
       await dispatcher.screenshot({ path: groovePassScreenshotPath });
+
+      if (viewport === "phone" || viewport === "phone375") {
+        await mobileCameraSelect.selectOption("drive", { force: true });
+      } else {
+        await surface.getByRole("button", { name: "Roll Drive" }).click();
+      }
+      await page.waitForTimeout(100);
+      const rollDriveScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.physical-roll-drive.png`,
+      );
+      await dispatcher.screenshot({ path: rollDriveScreenshotPath });
 
       await surface.getByRole("button", { name: "Pause Process Motion" }).click();
       await page.waitForFunction(
@@ -1831,12 +1848,391 @@ async function auditPatent(
         singleOwnerLifecycle,
         resumed,
         groovePassScreenshotPath,
+        rollDriveScreenshotPath,
         twoDimensionalScreenshotPath,
       };
       mechanismInteractionValid =
         counterRotationClosed &&
         noSlipBilletTravelClosed &&
         nipGeometryClosed &&
+        sourceBoundaryHonest &&
+        pauseHeld &&
+        pausedCrossFaceParity &&
+        singleOwnerLifecycle &&
+        resumed;
+    }
+
+    if (patentId === "us-x1-hopkins-potash") {
+      const readHopkinsOwner = async () =>
+        page.evaluate((id) => {
+          const node = document.querySelector(
+            `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+          );
+          const attributes = Object.fromEntries(
+            [...(node?.attributes ?? [])].map((attribute) => [attribute.name, attribute.value]),
+          );
+          return {
+            attributes,
+            running: attributes["data-hopkins-running"],
+            timeSec: Number(attributes["data-hopkins-time-sec"]),
+            processCycle: Number(attributes["data-hopkins-process-cycle"]),
+            flamePhaseRad: Number(attributes["data-hopkins-flame-phase-rad"]),
+            boilPhaseRad: Number(attributes["data-hopkins-boil-phase-rad"]),
+            provenance: attributes["data-runtime-provenance"],
+            ownerMount: attributes["data-runtime-owner-mount"],
+            kernelSource: attributes["data-hopkins-kernel-source"],
+            frankenSimBoundary: attributes["data-hopkins-frankensim-boundary"],
+          };
+        }, patentId);
+      const readHopkinsFace = async (face: "two" | "three") =>
+        dispatcher.locator(`[data-hopkins-face="${face}"]`).evaluate((node) => ({
+          running: node.getAttribute("data-hopkins-running"),
+          processCycle: Number(node.getAttribute("data-hopkins-process-cycle")),
+          flamePhaseRad: Number(node.getAttribute("data-hopkins-flame-phase-rad")),
+          boilPhaseRad: Number(node.getAttribute("data-hopkins-boil-phase-rad")),
+          provenance: node.getAttribute("data-hopkins-runtime-provenance"),
+          kernelSource: node.getAttribute("data-hopkins-kernel-source"),
+          frankenSimBoundary: node.getAttribute("data-hopkins-frankensim-boundary"),
+        }));
+
+      await page.waitForFunction(
+        (id) => {
+          const owner = document.querySelector(
+            `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+          );
+          return Number.isFinite(Number(owner?.getAttribute("data-hopkins-time-sec")));
+        },
+        patentId,
+        { timeout: 3_000 },
+      );
+      const movingStart = await readHopkinsOwner();
+      await page.waitForFunction(
+        ({ id, startTime }) => {
+          const owner = document.querySelector(
+            `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+          );
+          return Number(owner?.getAttribute("data-hopkins-time-sec")) > startTime + 1 / 30;
+        },
+        { id: patentId, startTime: movingStart.timeSec },
+        { timeout: 5_000 },
+      );
+      const movingEnd = await readHopkinsOwner();
+      const processCycleDelta = (movingEnd.processCycle - movingStart.processCycle + 1) % 1;
+      const sharedTapeAdvanced =
+        processCycleDelta > 1e-6 &&
+        movingEnd.flamePhaseRad > movingStart.flamePhaseRad &&
+        movingEnd.boilPhaseRad > movingStart.boilPhaseRad;
+      const sourceBoundaryHonest =
+        movingEnd.provenance === "TS_FALLBACK" &&
+        movingEnd.kernelSource === "source-bounded-ts" &&
+        movingEnd.frankenSimBoundary ===
+          "fs-conduction::transient+reactive-transport-browser-composition-unavailable";
+
+      const mobileCameraSelect = surface.getByLabel("Hopkins process camera view");
+      if (viewport === "phone" || viewport === "phone375") {
+        await mobileCameraSelect.selectOption("settling", { force: true });
+      } else {
+        await surface.getByRole("button", { name: "3 Settle Ley" }).click();
+      }
+      await page.waitForTimeout(100);
+      const settlingScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.physical-five-operation-settling.png`,
+      );
+      await dispatcher.screenshot({ path: settlingScreenshotPath });
+
+      await surface.getByRole("button", { name: "Pause Process Reader" }).click();
+      await page.waitForFunction(
+        (id) =>
+          document
+            .querySelector(`[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`)
+            ?.getAttribute("data-hopkins-running") === "false",
+        patentId,
+        { timeout: 3_000 },
+      );
+      const pausedStart = await readHopkinsOwner();
+      const pausedThreeFace = await readHopkinsFace("three");
+      await page.waitForTimeout(200);
+      const pausedEnd = await readHopkinsOwner();
+      const pauseHeld =
+        Math.abs(pausedEnd.timeSec - pausedStart.timeSec) < 1e-12 &&
+        Math.abs(pausedEnd.processCycle - pausedStart.processCycle) < 1e-12 &&
+        Math.abs(pausedEnd.flamePhaseRad - pausedStart.flamePhaseRad) < 1e-12 &&
+        Math.abs(pausedEnd.boilPhaseRad - pausedStart.boilPhaseRad) < 1e-12;
+
+      await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
+      await dispatcher.locator('[data-hopkins-face="two"]').waitFor({
+        state: "visible",
+        timeout: 20_000,
+      });
+      const pausedTwoFace = await readHopkinsFace("two");
+      const ownerAfterFaceSwitch = await readHopkinsOwner();
+      const processTopologyComplete =
+        (viewport === "phone" || viewport === "phone375"
+          ? await dispatcher.locator("[data-hopkins-mobile-operation]").count()
+          : await dispatcher.locator('svg [id^="operation-"]').count()) === 5;
+      const faceTolerance = 1e-9;
+      const pausedCrossFaceParity =
+        pausedThreeFace.running === "false" &&
+        pausedTwoFace.running === "false" &&
+        Math.abs(pausedTwoFace.processCycle - pausedThreeFace.processCycle) < faceTolerance &&
+        Math.abs(pausedTwoFace.flamePhaseRad - pausedThreeFace.flamePhaseRad) < faceTolerance &&
+        Math.abs(pausedTwoFace.boilPhaseRad - pausedThreeFace.boilPhaseRad) < faceTolerance &&
+        pausedTwoFace.provenance === "TS_FALLBACK" &&
+        pausedTwoFace.kernelSource === "source-bounded-ts";
+      const singleOwnerLifecycle = ownerAfterFaceSwitch.ownerMount === movingEnd.ownerMount;
+      const twoDimensionalScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.shared-tape-five-operation-two-dimensional.png`,
+      );
+      await dispatcher.screenshot({ path: twoDimensionalScreenshotPath });
+
+      await surface.getByRole("button", { name: "Play Simulation" }).click();
+      const resumed = await page
+        .waitForFunction(
+          ({ id, heldTime }) => {
+            const owner = document.querySelector(
+              `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+            );
+            return (
+              owner?.getAttribute("data-hopkins-running") === "true" &&
+              Number(owner?.getAttribute("data-hopkins-time-sec")) > heldTime
+            );
+          },
+          { id: patentId, heldTime: pausedEnd.timeSec },
+          { timeout: 3_000 },
+        )
+        .then(() => true)
+        .catch(() => false);
+      await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
+      await dispatcher.locator('[data-hopkins-face="three"]').waitFor({
+        state: "visible",
+        timeout: 20_000,
+      });
+
+      mechanismInteraction = {
+        available: true,
+        kind: "source-bounded-five-operation-shared-tape-pause-and-cross-face-parity",
+        movingStart,
+        movingEnd,
+        processCycleDelta,
+        sharedTapeAdvanced,
+        sourceBoundaryHonest,
+        pausedStart,
+        pausedEnd,
+        pauseHeld,
+        pausedThreeFace,
+        pausedTwoFace,
+        pausedCrossFaceParity,
+        processTopologyComplete,
+        singleOwnerLifecycle,
+        resumed,
+        settlingScreenshotPath,
+        twoDimensionalScreenshotPath,
+      };
+      mechanismInteractionValid =
+        sharedTapeAdvanced &&
+        sourceBoundaryHonest &&
+        pauseHeld &&
+        pausedCrossFaceParity &&
+        processTopologyComplete &&
+        singleOwnerLifecycle &&
+        resumed;
+    }
+
+    if (patentId === "us-x72-whitney-cotton-gin") {
+      const readWhitneyOwner = async () => {
+        const snapshot = await runtimeOwnerSnapshot(page, patentId);
+        return {
+          raw: snapshot,
+          running: snapshot?.["data-whitney-running"],
+          timeSec: Number(snapshot?.["data-whitney-time-sec"]),
+          crankRad: Number(snapshot?.["data-whitney-crank-phase-rad"]),
+          cylinderRad: Number(snapshot?.["data-whitney-cylinder-phase-rad"]),
+          clearerRad: Number(snapshot?.["data-whitney-clearer-phase-rad"]),
+          lintCycle: Number(snapshot?.["data-whitney-lint-cycle"]),
+          provenance: snapshot?.["data-runtime-provenance"],
+          ownerMount: snapshot?.["data-runtime-owner-mount"],
+          kernelSource: snapshot?.["data-whitney-kernel-source"],
+          frankenSimBoundary: snapshot?.["data-whitney-frankensim-boundary"],
+        };
+      };
+      const readWhitneyFace = (face: "two" | "three") =>
+        dispatcher.locator(`[data-whitney-face="${face}"]`).evaluate((node) => ({
+          running: node.getAttribute("data-whitney-running"),
+          crankRad: Number(node.getAttribute("data-whitney-crank-phase-rad")),
+          cylinderRad: Number(node.getAttribute("data-whitney-cylinder-phase-rad")),
+          clearerRad: Number(node.getAttribute("data-whitney-clearer-phase-rad")),
+          provenance: node.getAttribute("data-whitney-runtime-provenance"),
+          kernelSource: node.getAttribute("data-whitney-kernel-source"),
+          frankenSimBoundary: node.getAttribute("data-whitney-frankensim-boundary"),
+        }));
+
+      await page.waitForFunction(
+        (id) => {
+          const owner = document.querySelector(
+            `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+          );
+          const time = owner?.getAttribute("data-whitney-time-sec");
+          return time !== null && time !== "" && Number.isFinite(Number(time));
+        },
+        patentId,
+        { timeout: 3_000 },
+      );
+      const movingStart = await readWhitneyOwner();
+      await page.waitForFunction(
+        ({ id, startTime }) => {
+          const owner = document.querySelector(
+            `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+          );
+          return Number(owner?.getAttribute("data-whitney-time-sec")) > startTime + 1 / 30;
+        },
+        { id: patentId, startTime: movingStart.timeSec },
+        { timeout: 5_000 },
+      );
+      const movingEnd = await readWhitneyOwner();
+      const deltas = {
+        crankRad: movingEnd.crankRad - movingStart.crankRad,
+        cylinderRad: movingEnd.cylinderRad - movingStart.cylinderRad,
+        clearerRad: movingEnd.clearerRad - movingStart.clearerRad,
+      };
+      const constraintTolerance = 1e-9;
+      const directDriveClosed =
+        deltas.crankRad > 1e-5 &&
+        Math.abs(deltas.crankRad - deltas.cylinderRad) < constraintTolerance;
+      const crossedBandClosed =
+        deltas.clearerRad < -1e-5 &&
+        Math.abs(deltas.clearerRad + 3 * deltas.cylinderRad) < constraintTolerance;
+      const sourceBoundaryHonest =
+        movingEnd.provenance === "TS_FALLBACK" &&
+        movingEnd.kernelSource === "source-bounded-ts+fs-lbm-lint-field" &&
+        movingEnd.frankenSimBoundary ===
+          "fs-mbd::revolute+belt-contact-browser-composition-unavailable";
+
+      if (viewport === "phone" || viewport === "phone375") {
+        await surface.getByLabel("Whitney mechanism camera view").selectOption("grate_teeth");
+      } else {
+        await surface.getByRole("button", { name: "Breastwork & Teeth" }).click();
+      }
+      await page.waitForTimeout(100);
+      const wireTeethScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.physical-wire-teeth-and-breastwork.png`,
+      );
+      await dispatcher.screenshot({ path: wireTeethScreenshotPath });
+
+      if (viewport === "phone" || viewport === "phone375") {
+        await surface.getByLabel("Whitney mechanism camera view").selectOption("direct_winch");
+      } else {
+        await surface.getByRole("button", { name: "Direct Winch" }).click();
+      }
+      await page.waitForTimeout(100);
+      const directWinchScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.physical-direct-winch.png`,
+      );
+      await dispatcher.screenshot({ path: directWinchScreenshotPath });
+
+      if (viewport === "phone" || viewport === "phone375") {
+        await surface.getByLabel("Whitney mechanism camera view").selectOption("whirl_drive");
+      } else {
+        await surface.getByRole("button", { name: "Whirls & Band" }).click();
+      }
+      await page.waitForTimeout(100);
+      const crossedBandScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.physical-crossed-whirls-and-band.png`,
+      );
+      await dispatcher.screenshot({ path: crossedBandScreenshotPath });
+
+      await surface.getByRole("button", { name: "Pause Simulation" }).click();
+      await page.waitForFunction(
+        (id) =>
+          document
+            .querySelector(`[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`)
+            ?.getAttribute("data-whitney-running") === "false",
+        patentId,
+        { timeout: 3_000 },
+      );
+      const pausedStart = await readWhitneyOwner();
+      const pausedThreeFace = await readWhitneyFace("three");
+      await page.waitForTimeout(200);
+      const pausedEnd = await readWhitneyOwner();
+      const pauseHeld =
+        Math.abs(pausedEnd.timeSec - pausedStart.timeSec) < 1e-12 &&
+        Math.abs(pausedEnd.crankRad - pausedStart.crankRad) < 1e-12 &&
+        Math.abs(pausedEnd.cylinderRad - pausedStart.cylinderRad) < 1e-12 &&
+        Math.abs(pausedEnd.clearerRad - pausedStart.clearerRad) < 1e-12;
+
+      await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
+      await dispatcher.locator('[data-whitney-face="two"]').waitFor({
+        state: "visible",
+        timeout: 20_000,
+      });
+      const pausedTwoFace = await readWhitneyFace("two");
+      const ownerAfterFaceSwitch = await readWhitneyOwner();
+      const pausedCrossFaceParity =
+        pausedThreeFace.running === "false" &&
+        pausedTwoFace.running === "false" &&
+        Math.abs(pausedTwoFace.crankRad - pausedThreeFace.crankRad) < constraintTolerance &&
+        Math.abs(pausedTwoFace.cylinderRad - pausedThreeFace.cylinderRad) < constraintTolerance &&
+        Math.abs(pausedTwoFace.clearerRad - pausedThreeFace.clearerRad) < constraintTolerance &&
+        pausedTwoFace.kernelSource === "source-bounded-ts+fs-lbm-lint-field";
+      const singleOwnerLifecycle = ownerAfterFaceSwitch.ownerMount === movingEnd.ownerMount;
+      const twoDimensionalScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.shared-direct-drive-two-dimensional.png`,
+      );
+      await dispatcher.screenshot({ path: twoDimensionalScreenshotPath });
+
+      await surface.getByRole("button", { name: "Play Simulation" }).click();
+      const resumed = await page
+        .waitForFunction(
+          ({ id, heldTime }) => {
+            const owner = document.querySelector(
+              `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+            );
+            return (
+              owner?.getAttribute("data-whitney-running") === "true" &&
+              Number(owner?.getAttribute("data-whitney-time-sec")) > heldTime
+            );
+          },
+          { id: patentId, heldTime: pausedEnd.timeSec },
+          { timeout: 3_000 },
+        )
+        .then(() => true)
+        .catch(() => false);
+      await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
+      await dispatcher.locator('[data-whitney-face="three"]').waitFor({
+        state: "visible",
+        timeout: 20_000,
+      });
+
+      mechanismInteraction = {
+        available: true,
+        kind: "direct-winch-cylinder-crossed-band-pause-and-cross-face-parity",
+        movingStart,
+        movingEnd,
+        deltas,
+        directDriveClosed,
+        crossedBandClosed,
+        sourceBoundaryHonest,
+        pausedStart,
+        pausedEnd,
+        pauseHeld,
+        pausedThreeFace,
+        pausedTwoFace,
+        pausedCrossFaceParity,
+        singleOwnerLifecycle,
+        resumed,
+        wireTeethScreenshotPath,
+        directWinchScreenshotPath,
+        crossedBandScreenshotPath,
+        twoDimensionalScreenshotPath,
+      };
+      mechanismInteractionValid =
+        directDriveClosed &&
+        crossedBandClosed &&
         sourceBoundaryHonest &&
         pauseHeld &&
         pausedCrossFaceParity &&
@@ -4315,28 +4711,47 @@ async function main() {
     `Performance distributions: ${PERFORMANCE_SAMPLE_COUNT > 0 ? `${PERFORMANCE_SAMPLE_COUNT} context-cold + ${PERFORMANCE_SAMPLE_COUNT} context-warm sample(s)` : "disabled"}`,
   );
 
-  const browser = await chromium.launch({ headless: true });
   for (const viewportName of viewportNames) {
-    const context = await browser.newContext(contextOptions(viewportName));
-    for (const patent of patents) {
-      const page = await context.newPage();
-      const tracePath = TRACE_ENABLED
-        ? path.join(TRACE_DIRECTORY, `${patent.id}.${viewportName}.zip`)
-        : null;
+    // A complete catalogue pass renders hundreds of distinct WebGL scenes.
+    // Contexts and pages already close per route, but Chromium's GPU process
+    // retains driver-side allocations beyond those closures on macOS. Retire
+    // the browser at the viewport boundary so the 320 px pass cannot inherit
+    // several hours of prior GPU state and die without an application error.
+    const browser = await chromium.launch({ headless: true });
+    try {
+      const context = await browser.newContext(contextOptions(viewportName));
       try {
-        if (tracePath) {
-          await context.tracing.start({ screenshots: true, snapshots: true, sources: false });
+        for (const patent of patents) {
+          const page = await context.newPage();
+          const tracePath = TRACE_ENABLED
+            ? path.join(TRACE_DIRECTORY, `${patent.id}.${viewportName}.zip`)
+            : null;
+          try {
+            if (tracePath) {
+              await context.tracing.start({ screenshots: true, snapshots: true, sources: false });
+            }
+            await auditPatent(page, patent.id, viewportName, tracePath);
+          } finally {
+            if (tracePath) await context.tracing.stop({ path: tracePath }).catch(() => undefined);
+            await page.close().catch(() => undefined);
+          }
         }
-        await auditPatent(page, patent.id, viewportName, tracePath);
       } finally {
-        if (tracePath) await context.tracing.stop({ path: tracePath }).catch(() => undefined);
-        await page.close().catch(() => undefined);
+        await context.close().catch(() => undefined);
       }
+    } finally {
+      await browser.close().catch(() => undefined);
     }
-    await context.close();
   }
-  await collectPerformanceDistributions(browser);
-  await browser.close();
+
+  if (PERFORMANCE_SAMPLE_COUNT > 0) {
+    const performanceBrowser = await chromium.launch({ headless: true });
+    try {
+      await collectPerformanceDistributions(performanceBrowser);
+    } finally {
+      await performanceBrowser.close().catch(() => undefined);
+    }
+  }
 
   const performanceSummaries = summarizeThreePerformanceSamples(performanceSamples);
   if (PERFORMANCE_SAMPLE_COUNT > 0) {

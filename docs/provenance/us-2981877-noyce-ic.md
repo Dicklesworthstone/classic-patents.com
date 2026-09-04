@@ -38,7 +38,7 @@ comparison.
 | PDF p. 7 | Completion of the parallel-strip example, broad-aspect non-limitation, and claims 1–7 were checked. |
 | PDF p. 8 | Claims 7–10 and the four United States references cited in the patent file were checked. |
 
-## Figure-preview source crop map
+## Historical figure-preview crop map (preserved, unbound)
 
 The retained pre-rejection previews below were rendered directly from the
 pinned PDF at 300 dpi and cropped without rotation, retouching, masking, or
@@ -65,7 +65,7 @@ signature. The two panels retain only the actual source pixels for the labeled
 left circuit and its right-side continuation; no pixels were erased,
 reconstructed, or supplied by a different figure.
 
-## 2026-08-21 independent rejection, recrop plan, and publication hold
+## 2026-08-21 independent rejection and recrop plan (historical)
 
 Independent review rejected the visitor-reachable Fig. 3 v3 preview because
 its lower edge reaches into the Fig. 4 drawing band. The two Fig. 5 v2 panels
@@ -87,16 +87,45 @@ signature/attorney neighbor band.
 | Fig. 5, left source panel | `fig-5-source-crop-v3-left.png` | `(360, 2130, 860, 680)` | `860 x 680` | Cloud crop required; not created or bound |
 | Fig. 5, right source panel | `fig-5-source-crop-v3-right.png` | `(1250, 2130, 780, 680)` | `780 x 680` | Cloud crop required; not created or bound |
 
-No replacement path is referenced by the archival edition or canonical
-drawings until the corresponding cloud source image exists and an independent
-review confirms that the complete labels and callouts are present and that
-Fig. 4 and signature-neighbor pixels are absent. This plan therefore does not
-lift the hold.
+That limited recrop plan was not adopted. It remains preserved to document why
+the old partial previews are no longer active; none of its planned paths is
+referenced by the archival edition or canonical drawings.
 
-The canonical Noyce record, reviewed ledger, archival edition, and all figure
-previews remain **visitor-withheld** pending the independent crop review and
-root acceptance. The hold is enforced by the root editorial publication
-contract, not by the edition's local validation alone.
+## Complete source-sheet acceptance (2026-09-04)
+
+Direct visual review of the three complete 300-DPI drawing-sheet rasters was
+performed against the pinned eight-page PDF. The active edition now points all
+55 literal figure-reference occurrences to the complete sheet containing the
+printed figure, rather than attempting to infer a safe partial-crop boundary.
+The source sheets retain their surrounding drawing geometry, labels, title
+matter, inventor signature, and attorney signature exactly as printed. The
+older per-figure files above remain untouched as review lineage and are not
+active archival citations.
+
+- Reviewer: Classic Patents editorial agent (GPT-5.6); direct 300-DPI
+  source-pixel review.
+- Review date: 2026-09-04.
+- Acceptance basis: independent figure review of the complete source sheets.
+- Evidence scope: Figs. 1–7, all 55 active edition figure-reference
+  occurrences, and the PDF-page/asset pair for each occurrence.
+
+| Pinned PDF page | Printed figures checked | Active complete source sheet | SHA-256 | Raster dimensions |
+| --- | --- | --- | --- | --- |
+| 1 | Figs. 1 and 2 | `source-sheet-1-v1.png` | `5c712d83a261ef7cb40ce16f63a557d79f149a7bedc029bd8092730cb8846aef` | 2320 × 3408 |
+| 2 | Figs. 3, 4, and 5 | `source-sheet-2-v1.png` | `c859f8f64fb58cd725beb5914d25793a96242d8026ebb6dc4d2d007cde23e1b6` | 2320 × 3408 |
+| 3 | Figs. 6 and 7 | `source-sheet-3-v1.png` | `3d9e2032361d8433675827cd79f6f6440efed65c6e5b1470f0b83bfade4fc99c` | 2320 × 3408 |
+
+The active paths are
+`public/patents/figures/us-2981877-noyce-ic/source-sheet-{1,2,3}-v1.png`.
+Each locator uses the full source rectangle `(0, 0, 2320, 3408)` of its
+respective source raster. The following occurrence receipt uses compact
+`b<edition-block-index>i<inline-index>` notation; every entry is group 0.
+
+| Source PDF page | Active occurrence keys |
+| --- | --- |
+| 1 | `b1i1`, `b1i3`, `b4i1`, `b4i3`, `b4i5`, `b5i0`, `b5i2`, `b9i1`, `b9i3`, `b10i1`, `b10i3`, `b16i1`, `b16i3` |
+| 2 | `b1i5`, `b1i7`, `b1i9`, `b1i15`, `b4i7`, `b4i9`, `b4i11`, `b4i13`, `b4i15`, `b4i17`, `b18i1`, `b18i3`, `b19i1`, `b19i3`, `b24i1`, `b24i3`, `b24i5`, `b24i7`, `b24i9`, `b24i11`, `b24i13`, `b25i1`, `b25i3`, `b25i5`, `b25i7`, `b25i9`, `b25i11`, `b26i3`, `b26i5`, `b26i7`, `b26i9`, `b27i1`, `b27i3`, `b27i5`, `b27i7` |
+| 3 | `b1i11`, `b1i13`, `b4i19`, `b4i21`, `b4i23`, `b28i0`, `b28i2` |
 
 ## Editorial boundaries
 
@@ -104,9 +133,10 @@ contract, not by the edition's local validation alone.
   Its specification, claim nodes, figure references, and term definitions are
   typed authored content. It does not serve OCR, Markdown, HTML, or a PDF text
   layer.
-- Every reference to Figs. 1–7 uses a local crop under
-  `public/patents/figures/us-2981877-noyce-ic/` derived from the pinned drawing
-  sheets. The original PDFs remain intact.
+- Every reference to Figs. 1–7 uses the complete local source sheet under
+  `public/patents/figures/us-2981877-noyce-ic/`, rendered directly from the
+  pinned drawing sheets. The original PDFs and prior figure-crop assets remain
+  intact.
 - The old `source-pdf-text-layer` asset is retained as private comparison
   evidence only. It is not a reviewed transcription and does not supply the
   public archival face.

@@ -4,7 +4,6 @@ import { join } from "node:path";
 
 const SNAPSHOT_CONTRACTS = [
   ["DavenportMotorSim.tsx", "rotorAngleRef", "setRotorAngleDeg"],
-  ["HopkinsPotashSim.tsx", "cycleProgressRef", "setCycleProgress"],
   ["McCormickReaperSim.tsx", "phaseRef", "setPhase"],
   ["PasteurFermentationSim.tsx", "timerSecondsRef", "setTimerSeconds"],
   ["RenoEscalatorSim.tsx", "treadOffsetRef", "setTreadOffset"],
@@ -12,7 +11,6 @@ const SNAPSHOT_CONTRACTS = [
   ["TeslaMotorSim.tsx", "angleRef", "setAngle"],
   ["GatlingGunSim.tsx", "clusterAngleRef", "setClusterAngleDeg"],
   ["EricssonPropellerSim.tsx", "angleRef", "setAngleDeg"],
-  ["WhitneyCottonGinSim.tsx", "angleRef", "setAngle"],
   ["MaximMachineGunSim.tsx", "cyclePhaseRef", "setCyclePhase"],
   ["ParsonsTurbineSim.tsx", "flowPhaseRef", "setFlowPhase"],
   ["WattSeparateCondenserSim.tsx", "animTimeRef", "setAnimTime"],
@@ -67,6 +65,22 @@ describe("2D rAF presentation ownership", () => {
 
     expect(source).toContain('useFrankenSimPhysics("gb-1306-watt-rotary-engine"');
     expect(source).toContain("getWattRotaryTapeFrame()?.telemetry");
+    expect(source).not.toContain("requestAnimationFrame");
+  });
+
+  test("keeps Hopkins Potash on the route-level owner without a private rAF loop", () => {
+    const source = sourceFor("HopkinsPotashSim.tsx");
+
+    expect(source).toContain('useFrankenSimPhysics("us-x1-hopkins-potash"');
+    expect(source).toContain("getHopkinsTapeFrame()");
+    expect(source).not.toContain("requestAnimationFrame");
+  });
+
+  test("keeps Whitney Cotton Gin on the route-level owner without a private rAF loop", () => {
+    const source = sourceFor("WhitneyCottonGinSim.tsx");
+
+    expect(source).toContain('useFrankenSimPhysics("us-x72-whitney-cotton-gin"');
+    expect(source).toContain("getWhitneyTapeFrame()");
     expect(source).not.toContain("requestAnimationFrame");
   });
 

@@ -34,6 +34,14 @@ import {
   readFarnsworthTvControls,
 } from "@/physics/farnsworthTvKernel";
 import {
+  createHopkinsTransportUpdater,
+  getHopkinsTapeFrame,
+  HOPKINS_FRANKENSIM_BOUNDARY,
+  HOPKINS_KERNEL_SOURCE,
+  HOPKINS_SOURCE_BOUNDARY,
+  readHopkinsRuntimeControls,
+} from "@/physics/hopkinsPotashKernel";
+import {
   createKamenInjectionTransportUpdater,
   getKamenInjectionTapeFrame,
   readKamenInjectionControls,
@@ -62,6 +70,14 @@ import {
   WATT_ROTARY_KERNEL_SOURCE,
   WATT_ROTARY_SOURCE_BOUNDARY,
 } from "@/physics/wattRotaryKernel";
+import {
+  createWhitneyTransportUpdater,
+  getWhitneyTapeFrame,
+  readWhitneyRuntimeControls,
+  WHITNEY_FRANKENSIM_BOUNDARY,
+  WHITNEY_KERNEL_SOURCE,
+  WHITNEY_SOURCE_BOUNDARY,
+} from "@/physics/whitneyCottonGinKernel";
 import { useLiveSimParams } from "./three/useLiveSimParams";
 
 let nextRuntimeOwnerMount = 0;
@@ -204,6 +220,85 @@ export function CortPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
       data-cort-roll-nip-gap-mm={tape?.outputs.rollNipGapMm ?? ""}
       data-cort-billet-height-mm={tape?.outputs.billetEntryHeightMm ?? ""}
       data-cort-nip-interference-mm={tape?.outputs.nipInterferenceMm ?? ""}
+    />
+  );
+}
+
+/** Stable owner for Hopkins's source-bounded five-operation process reader. */
+export function HopkinsPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
+  const mount = useRuntimeOwnerMount();
+  const { effectiveParams } = usePatentPhysics(patentId);
+  const liveParams = useLiveSimParams(effectiveParams);
+  const { frame } = useFrankenSimPhysics(patentId, {
+    domain: "thermodynamics_transport",
+    refusal: { isRefused: true, reason: HOPKINS_SOURCE_BOUNDARY },
+  });
+
+  useEffect(() => {
+    return globalTransportBus.registerUpdater(
+      patentId,
+      createHopkinsTransportUpdater(() => readHopkinsRuntimeControls(liveParams.current)),
+      "TS_FALLBACK",
+    );
+  }, [patentId, liveParams]);
+
+  const tape = getHopkinsTapeFrame();
+  return (
+    <span
+      hidden
+      data-testid="patent-physics-runtime-owner"
+      data-patent-id={patentId}
+      data-runtime-tick={frame.tick}
+      data-runtime-owner-mount={mount}
+      data-runtime-digest={frame.digest}
+      data-runtime-provenance={frame.provenance}
+      data-hopkins-kernel-source={HOPKINS_KERNEL_SOURCE}
+      data-hopkins-frankensim-boundary={HOPKINS_FRANKENSIM_BOUNDARY}
+      data-hopkins-running={tape?.controls.isRunning ?? ""}
+      data-hopkins-time-sec={tape?.timeSec ?? ""}
+      data-hopkins-process-cycle={tape?.phases.processCycle01 ?? ""}
+      data-hopkins-flame-phase-rad={tape?.phases.flamePhaseRad ?? ""}
+      data-hopkins-boil-phase-rad={tape?.phases.boilPhaseRad ?? ""}
+    />
+  );
+}
+
+/** Stable owner for Whitney's direct winch/cylinder and crossed-band clearer coordinates. */
+export function WhitneyPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
+  const mount = useRuntimeOwnerMount();
+  const { effectiveParams } = usePatentPhysics(patentId);
+  const liveParams = useLiveSimParams(effectiveParams);
+  const { frame } = useFrankenSimPhysics(patentId, {
+    domain: "solid_mechanics",
+    refusal: { isRefused: true, reason: WHITNEY_SOURCE_BOUNDARY },
+  });
+
+  useEffect(() => {
+    return globalTransportBus.registerUpdater(
+      patentId,
+      createWhitneyTransportUpdater(() => readWhitneyRuntimeControls(liveParams.current)),
+      "TS_FALLBACK",
+    );
+  }, [patentId, liveParams]);
+
+  const tape = getWhitneyTapeFrame();
+  return (
+    <span
+      hidden
+      data-testid="patent-physics-runtime-owner"
+      data-patent-id={patentId}
+      data-runtime-tick={frame.tick}
+      data-runtime-owner-mount={mount}
+      data-runtime-digest={frame.digest}
+      data-runtime-provenance={frame.provenance}
+      data-whitney-kernel-source={WHITNEY_KERNEL_SOURCE}
+      data-whitney-frankensim-boundary={WHITNEY_FRANKENSIM_BOUNDARY}
+      data-whitney-running={tape?.controls.isRunning ?? ""}
+      data-whitney-time-sec={tape?.timeSec ?? ""}
+      data-whitney-crank-phase-rad={tape?.phases.crankRad ?? ""}
+      data-whitney-cylinder-phase-rad={tape?.phases.cylinderRad ?? ""}
+      data-whitney-clearer-phase-rad={tape?.phases.clearerRad ?? ""}
+      data-whitney-lint-cycle={tape?.phases.lintCycle01 ?? ""}
     />
   );
 }

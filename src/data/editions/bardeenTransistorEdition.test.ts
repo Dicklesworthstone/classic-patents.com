@@ -114,7 +114,7 @@ describe("US 2,524,035 manual source edition", () => {
       );
   });
 
-  test("maps every printed figure to its own locally derived source crop", () => {
+  test("binds every figure occurrence to its complete direct source sheet", () => {
     const figureReferences = (inlines: readonly CuratedSpecificationInline[]) =>
       inlines.filter(
         (inline): inline is FigureReference =>
@@ -125,31 +125,51 @@ describe("US 2,524,035 manual source edition", () => {
       if ("inlines" in block) return figureReferences(block.inlines);
       return [];
     });
+    const sourceSheetByFigure = {
+      "Fig. 1": "/patents/figures/us-2524035-bardeen-transistor/figs-1-2-10-12-source-crop-v1.png",
+      "Fig. 1a": "/patents/figures/us-2524035-bardeen-transistor/figs-1-2-10-12-source-crop-v1.png",
+      "Fig. 2": "/patents/figures/us-2524035-bardeen-transistor/figs-1-2-10-12-source-crop-v1.png",
+      "Fig. 3": "/patents/figures/us-2524035-bardeen-transistor/figs-3-9-source-crop-v1.png",
+      "Fig. 3a": "/patents/figures/us-2524035-bardeen-transistor/figs-3-9-source-crop-v1.png",
+      "Fig. 4": "/patents/figures/us-2524035-bardeen-transistor/figs-3-9-source-crop-v1.png",
+      "Fig. 5": "/patents/figures/us-2524035-bardeen-transistor/figs-3-9-source-crop-v1.png",
+      "Fig. 6": "/patents/figures/us-2524035-bardeen-transistor/figs-3-9-source-crop-v1.png",
+      "Fig. 7": "/patents/figures/us-2524035-bardeen-transistor/figs-3-9-source-crop-v1.png",
+      "Fig. 8": "/patents/figures/us-2524035-bardeen-transistor/figs-3-9-source-crop-v1.png",
+      "Fig. 9": "/patents/figures/us-2524035-bardeen-transistor/figs-3-9-source-crop-v1.png",
+      "Fig. 10": "/patents/figures/us-2524035-bardeen-transistor/figs-1-2-10-12-source-crop-v1.png",
+      "Fig. 11": "/patents/figures/us-2524035-bardeen-transistor/figs-1-2-10-12-source-crop-v1.png",
+      "Fig. 12": "/patents/figures/us-2524035-bardeen-transistor/figs-1-2-10-12-source-crop-v1.png",
+      "Fig. 13": "/patents/figures/us-2524035-bardeen-transistor/figs-13-16-source-crop-v1.png",
+      "Fig. 14": "/patents/figures/us-2524035-bardeen-transistor/figs-13-16-source-crop-v1.png",
+      "Fig. 15": "/patents/figures/us-2524035-bardeen-transistor/figs-13-16-source-crop-v1.png",
+      "Fig. 16": "/patents/figures/us-2524035-bardeen-transistor/figs-13-16-source-crop-v1.png",
+    } as const;
+    expect(references).toHaveLength(85);
     const sources = new Set<string>();
-    for (const reference of references)
+    for (const reference of references) {
+      const figureLabel = /for (Fig\. \d+(?:a)?) in US/.exec(reference.label)?.[1];
+      expect(figureLabel).toBeDefined();
+      if (!figureLabel) continue;
       for (const preview of reference.figurePreviews ?? []) {
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+        expect(preview.src).toBe(
+          sourceSheetByFigure[figureLabel as keyof typeof sourceSheetByFigure],
+        );
+        expect(preview).toEqual(
+          expect.objectContaining({
+            width: 1392,
+            height: 2045,
+            alt: expect.stringContaining("Complete 180 DPI source-facsimile drawing sheet"),
+          }),
+        );
         sources.add(preview.src);
       }
+    }
     expect([...sources].sort()).toEqual([
-      "/patents/figures/us-2524035-bardeen-transistor/fig-1-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-10-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-11-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-12-source-crop-v2.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-13-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-14-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-15-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-16-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-1a-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-2-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-3-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-3a-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-4-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-5-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-6-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-7-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-8-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-9-source-crop-v1.png",
+      "/patents/figures/us-2524035-bardeen-transistor/figs-1-2-10-12-source-crop-v1.png",
+      "/patents/figures/us-2524035-bardeen-transistor/figs-13-16-source-crop-v1.png",
+      "/patents/figures/us-2524035-bardeen-transistor/figs-3-9-source-crop-v1.png",
     ]);
   });
 
@@ -811,13 +831,11 @@ describe("US 2,524,035 manual source edition", () => {
     ]);
   });
 
-  test("enforces figure acceptance pending audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(bardeenTransistorPatent, {
-      hasCompanionReadings: true,
-    });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+  test("accepts the source edition after all direct figure-sheet evidence is pinned", () => {
+    const { evaluateArchivalPublicationState } = require("./publicationApproval");
+    const decision = evaluateArchivalPublicationState(bardeenTransistorPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.state.kind).toBe("accepted");
+    expect(decision.reasonCode).toBe("ACCEPTED");
   });
 });

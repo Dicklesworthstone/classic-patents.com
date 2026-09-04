@@ -5,6 +5,22 @@ import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValid
 import { sholesTypewriterArchivalEdition } from "@/data/editions/sholesTypewriterEdition";
 import { sholesTypewriterPatent } from "@/data/patents/sholes-typewriter";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
+import type { CuratedSpecificationInline } from "@/types/patent";
+
+const SHOLES_SOURCE_SHEETS = [
+  {
+    path: "/patents/figures/us-79265-sholes-typewriter/source-sheet-1-v1.png",
+    sha256: "526827fee7019c7b1c0401d29a2ba655f4ec134b704f329e0d72f28c6f1cc2b8",
+    width: 2320,
+    height: 3408,
+  },
+  {
+    path: "/patents/figures/us-79265-sholes-typewriter/source-sheet-2-v1.png",
+    sha256: "8149998e7a6cfdf935a22ae7be61e0f4e00a35e3823f56654eed92fab774cb60",
+    width: 2320,
+    height: 3408,
+  },
+] as const;
 
 describe("US 79,265 manual source edition", () => {
   test("pins the reviewed six-page facsimile and publishes an explicit manual edition", () => {
@@ -58,6 +74,37 @@ describe("US 79,265 manual source edition", () => {
     }
   });
 
+  test("binds every active figure citation to the immutable full source sheet that contains it", () => {
+    const figureReferences = sholesTypewriterArchivalEdition.blocks.flatMap((block) => {
+      const inlines =
+        block.kind === "figure-sheet" ? block.description : "inlines" in block ? block.inlines : [];
+      return inlines.filter(
+        (
+          inline,
+        ): inline is CuratedSpecificationInline & {
+          kind: "reference";
+          referenceType: "figure";
+          figurePreviews?: readonly { src: string }[];
+        } => inline.kind === "reference" && inline.referenceType === "figure",
+      );
+    });
+
+    expect(figureReferences).toHaveLength(50);
+    const previews = figureReferences.flatMap((reference) => reference.figurePreviews ?? []);
+    expect(previews).toHaveLength(83);
+    expect([...new Set(previews.map((preview) => preview.src))].sort()).toEqual(
+      SHOLES_SOURCE_SHEETS.map((sheet) => sheet.path).sort(),
+    );
+
+    for (const sheet of SHOLES_SOURCE_SHEETS) {
+      const contents = readFileSync(`${process.cwd()}/public${sheet.path}`);
+      expect(createHash("sha256").update(contents).digest("hex")).toBe(sheet.sha256);
+      expect(contents.subarray(1, 4).toString("ascii")).toBe("PNG");
+      expect(contents.readUInt32BE(16)).toBe(sheet.width);
+      expect(contents.readUInt32BE(20)).toBe(sheet.height);
+    }
+  });
+
   test("keeps later-machine folklore and fabricated telemetry out of the published source face", () => {
     const visibleCopy = JSON.stringify({
       summary: sholesTypewriterPatent.summary,
@@ -73,10 +120,10 @@ describe("US 79,265 manual source edition", () => {
     expect(sholesTypewriterPatent.historicalContext.patentWars).toEqual([]);
     const sourceFace = JSON.stringify(sholesTypewriterArchivalEdition.blocks);
     expect(sourceFace).toContain('"kind":"reference"');
-    expect(sourceFace).toContain("fig-6-isolated-source-crop-v2.png");
-    expect(sourceFace).toContain("fig-7-verified-source-crop.png");
-    expect(sourceFace).toContain("fig-8-verified-source-crop.png");
-    expect(sourceFace).toContain("fig-9-tight-source-crop-v2.png");
+    expect(sourceFace).toContain("source-sheet-1-v1.png");
+    expect(sourceFace).toContain("source-sheet-2-v1.png");
+    expect(sourceFace).not.toContain("tight-source-crop");
+    expect(sourceFace).not.toContain("verified-source-crop");
     expect(sourceFace).not.toContain("SOURCE PDF PAGE");
     expect(sourceFace).not.toContain("QWERTY");
   });

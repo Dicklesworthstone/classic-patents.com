@@ -526,6 +526,58 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
               <circle cx="415" cy="42" r="8" fill="#1c1917" stroke="#292524" strokeWidth="1.5" />
             </g>
 
+            {/* Normalized equal-gear constraint and attached input coupling */}
+            <line x1="660" y1="172" x2="805" y2="172" stroke="#78716c" strokeWidth="12" />
+            <line x1="660" y1="277" x2="885" y2="277" stroke="#78716c" strokeWidth="12" />
+            <g transform={`rotate(${(phases.topRollRad * 180) / Math.PI} 805 172)`}>
+              <circle
+                cx="805"
+                cy="172"
+                r="48"
+                fill="#3f2d18"
+                stroke="#b7792f"
+                strokeWidth="8"
+                strokeDasharray="8 5"
+              />
+              <line x1="805" y1="137" x2="805" y2="207" stroke="#d6a35b" strokeWidth="4" />
+              <line x1="770" y1="172" x2="840" y2="172" stroke="#d6a35b" strokeWidth="4" />
+            </g>
+            <g transform={`rotate(${(phases.bottomRollRad * 180) / Math.PI} 805 277)`}>
+              <circle
+                cx="805"
+                cy="277"
+                r="48"
+                fill="#3f2d18"
+                stroke="#b7792f"
+                strokeWidth="8"
+                strokeDasharray="8 5"
+              />
+              <line x1="805" y1="242" x2="805" y2="312" stroke="#d6a35b" strokeWidth="4" />
+              <line x1="770" y1="277" x2="840" y2="277" stroke="#d6a35b" strokeWidth="4" />
+            </g>
+            <circle cx="885" cy="277" r="12" fill="#b7792f" stroke="#1c1917" strokeWidth="3" />
+            <line x1="897" y1="277" x2="996" y2="277" stroke="#78716c" strokeWidth="12" />
+            <text
+              x="990"
+              y="261"
+              fontFamily="monospace"
+              fontSize="8"
+              fill="#a8a29e"
+              textAnchor="end"
+            >
+              Off-scene line shaft →
+            </text>
+            <text
+              x="805"
+              y="345"
+              fontFamily="monospace"
+              fontSize="9"
+              fill="#d6a35b"
+              textAnchor="middle"
+            >
+              Normalized 1:1 external-gear constraint
+            </text>
+
             {/* Red-Hot Wrought Iron Billet inside Groove 1 */}
             <rect
               x="235"
@@ -552,6 +604,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
               stroke="#60a5fa"
               strokeWidth="3"
               strokeDasharray="4,3"
+              strokeDashoffset={phases.topRollRad * 4}
             />
             <path
               d="M 450 335 A 25 25 0 0 0 480 310"
@@ -559,6 +612,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
               stroke="#60a5fa"
               strokeWidth="3"
               strokeDasharray="4,3"
+              strokeDashoffset={phases.bottomRollRad * 4}
             />
 
             {/* Annotations */}

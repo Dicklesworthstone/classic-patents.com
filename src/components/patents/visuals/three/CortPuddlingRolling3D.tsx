@@ -42,6 +42,7 @@ const CAMERA_PRESET_OPTIONS: readonly { readonly id: CameraPreset; readonly labe
   { id: "hearth", label: "Molten Hearth" },
   { id: "mill", label: "Rolling Mill" },
   { id: "grooves", label: "Groove Passes" },
+  { id: "drive", label: "Roll Drive" },
 ];
 
 export function CortPuddlingRolling3D() {
@@ -206,10 +207,27 @@ export function CortPuddlingRolling3D() {
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
+        {/* The compact camera control remains reachable even when the phone HUD is hidden. */}
+        <label className="absolute top-14 left-3 z-10 sm:hidden">
+          <span className="sr-only">Cort process camera view</span>
+          <select
+            aria-label="Cort process camera view"
+            value={activePreset}
+            onChange={(event) => applyCameraPreset(event.target.value as CameraPreset)}
+            className="min-h-10 max-w-[10.5rem] rounded-lg border border-parchment-300 bg-white/90 px-2 text-xs font-semibold text-ink-800 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/90 dark:text-parchment-200"
+          >
+            {CAMERA_PRESET_OPTIONS.map(({ id, label }) => (
+              <option key={id} value={id}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+
         {/* Camera Views Bar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+          <div className="absolute top-4 left-4 z-10 hidden max-w-[calc(100%-28rem)] flex-nowrap gap-1.5 overflow-x-auto rounded-xl border border-parchment-300 bg-white/85 p-1.5 text-xs shadow-sm backdrop-blur-md transition-opacity duration-200 scrollbar-none dark:border-ink-700 dark:bg-ink-900/85 sm:flex">
+            <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3.5 h-3.5" /> View:
             </span>
             {CAMERA_PRESET_OPTIONS.map(({ id, label }) => (

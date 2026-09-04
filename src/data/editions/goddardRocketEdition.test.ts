@@ -2,11 +2,18 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { goddardRocketPatent } from "@/data/patents/goddard-rocket";
-import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
+import {
+  validateReviewedTranscription,
+  validateReviewedTranscriptionLiteralCoverage,
+} from "@/data/patents/sourceTextValidation";
 import {
   goddardRocketArchivalEdition,
   goddardRocketParallelReadings,
 } from "./goddardRocketEdition";
+import {
+  evaluateReviewedLedgerTextEvidence,
+  literalLedgerSectionsForEdition,
+} from "./reviewedLedgerPublicationEvidence";
 
 describe("goddardRocketArchivalEdition", () => {
   test("pins the reviewed four-page US 1,102,653 facsimile and all eight printed claims", () => {
@@ -25,44 +32,23 @@ describe("goddardRocketArchivalEdition", () => {
     ).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 
-  test("maps every visitor-reachable figure citation to its exact versioned source crop or documented source group", async () => {
+  test("maps every visitor-reachable figure citation to the complete pinned source drawing sheet", async () => {
     const serialized = JSON.stringify(goddardRocketArchivalEdition.blocks);
     expect(serialized).not.toContain("SOURCE PDF PAGE");
     expect(serialized).not.toContain("pdftotext");
     expect(serialized).not.toContain("ocr");
 
-    const expectedPreviews = {
-      "Fig. 1": {
-        src: "/patents/figures/us-1102653-goddard-rocket-fig-1-source-crop-v8.png",
-        width: 720,
-        height: 2160,
-        sha256: "77d43e7f37d6f89037510a44fbbd7c9b449ad999c3f7a1bb739177bda3b491ee",
-      },
-      "Fig. 2": {
-        src: "/patents/figures/us-1102653-goddard-rocket-fig-2-source-crop-v5.png",
-        width: 1050,
-        height: 920,
-        sha256: "18292325c5c392c25b0afd75cbad453b63b352ce2dffc6e32f20a7383d2ebbf6",
-      },
-      "Fig. 3": {
-        src: "/patents/figures/us-1102653-goddard-rocket-fig-3-source-crop-v8.png",
-        width: 650,
-        height: 640,
-        sha256: "e759f032d871373a9f9d24baf268ed41a50802e5e93a8b4f3e1f560f163e2e06",
-      },
-      "Fig. 4": {
-        src: "/patents/figures/us-1102653-goddard-rocket-fig-4-source-crop-v7.png",
-        width: 620,
-        height: 620,
-        sha256: "918e9bf70957b76b2e774b5e1c7582987c7938c582a117adf2abe2e51ecd5b95",
-      },
-      "Fig. 5": {
-        src: "/patents/figures/us-1102653-goddard-rocket-fig-5-source-crop-v8.png",
-        width: 740,
-        height: 850,
-        sha256: "1c83557e8cedfe583fb5c7cdaa43721f4fd1e03adcc83454fec9669b866e08a9",
-      },
+    const expectedPreview = {
+      src: "/patents/figures/us-1102653-goddard-rocket/sheet-1-1.png",
+      width: 2320,
+      height: 3408,
+      sha256: "65f586e211296f66aacd648922ce102b0804d280de2d4a4e4f31237b3774c0ed",
     } as const;
+    const expectedPreviewProjection = {
+      src: expectedPreview.src,
+      width: expectedPreview.width,
+      height: expectedPreview.height,
+    };
 
     const sourceFigureReferences = goddardRocketArchivalEdition.blocks.flatMap((block) => {
       const inlines =
@@ -87,73 +73,28 @@ describe("goddardRocketArchivalEdition", () => {
         ];
       }),
     ).toEqual([
-      [
-        "Figs. 1 through 5",
-        [
-          expectedPreviews["Fig. 1"],
-          expectedPreviews["Fig. 2"],
-          expectedPreviews["Fig. 3"],
-          expectedPreviews["Fig. 4"],
-          expectedPreviews["Fig. 5"],
-        ].map(({ src, width, height }) => ({ src, width, height })),
-      ],
-      [
-        "Figure 1",
-        [expectedPreviews["Fig. 1"]].map(({ src, width, height }) => ({ src, width, height })),
-      ],
-      [
-        "Fig. 2",
-        [expectedPreviews["Fig. 2"]].map(({ src, width, height }) => ({ src, width, height })),
-      ],
-      [
-        "Figs. 3 and 4",
-        [expectedPreviews["Fig. 3"], expectedPreviews["Fig. 4"]].map(({ src, width, height }) => ({
-          src,
-          width,
-          height,
-        })),
-      ],
-      [
-        "Fig. 2",
-        [expectedPreviews["Fig. 2"]].map(({ src, width, height }) => ({ src, width, height })),
-      ],
-      [
-        "Fig. 5",
-        [expectedPreviews["Fig. 5"]].map(({ src, width, height }) => ({ src, width, height })),
-      ],
-      [
-        "Fig. 1",
-        [expectedPreviews["Fig. 1"]].map(({ src, width, height }) => ({ src, width, height })),
-      ],
-      [
-        "Fig. 3",
-        [expectedPreviews["Fig. 3"]].map(({ src, width, height }) => ({ src, width, height })),
-      ],
-      [
-        "Fig. 5",
-        [expectedPreviews["Fig. 5"]].map(({ src, width, height }) => ({ src, width, height })),
-      ],
-      [
-        "Fig. 3",
-        [expectedPreviews["Fig. 3"]].map(({ src, width, height }) => ({ src, width, height })),
-      ],
-      [
-        "Fig. 1",
-        [expectedPreviews["Fig. 1"]].map(({ src, width, height }) => ({ src, width, height })),
-      ],
+      ["Figs. 1 through 5", [expectedPreviewProjection]],
+      ["Figure 1", [expectedPreviewProjection]],
+      ["Fig. 2", [expectedPreviewProjection]],
+      ["Figs. 3 and 4", [expectedPreviewProjection]],
+      ["Fig. 1", [expectedPreviewProjection]],
+      ["Fig. 5", [expectedPreviewProjection]],
+      ["Fig. 1", [expectedPreviewProjection]],
+      ["Fig. 3", [expectedPreviewProjection]],
+      ["Fig. 5", [expectedPreviewProjection]],
+      ["Fig. 3", [expectedPreviewProjection]],
+      ["Fig. 1", [expectedPreviewProjection]],
     ]);
 
-    for (const preview of Object.values(expectedPreviews)) {
-      const file = Bun.file(`public${preview.src}`);
-      expect(await file.exists()).toBe(true);
-      const bytes = new Uint8Array(await file.arrayBuffer());
-      expect([...bytes.slice(0, 8)]).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
-      expect({
-        width: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getUint32(16),
-        height: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getUint32(20),
-      }).toEqual({ width: preview.width, height: preview.height });
-      expect(createHash("sha256").update(bytes).digest("hex")).toBe(preview.sha256);
-    }
+    const file = Bun.file(`public${expectedPreview.src}`);
+    expect(await file.exists()).toBe(true);
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    expect([...bytes.slice(0, 8)]).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
+    expect({
+      width: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getUint32(16),
+      height: new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getUint32(20),
+    }).toEqual({ width: expectedPreview.width, height: expectedPreview.height });
+    expect(createHash("sha256").update(bytes).digest("hex")).toBe(expectedPreview.sha256);
   });
 
   test("turns every source figure citation into an authored preview node", () => {
@@ -200,7 +141,7 @@ describe("goddardRocketArchivalEdition", () => {
     }
   });
 
-  test("keeps the repaired source closure withheld while preserving local claim-comparison evidence", async () => {
+  test("preserves complete source claim-comparison evidence", async () => {
     const editionClaims = goddardRocketArchivalEdition.blocks.filter(
       (block) => block.kind === "claim",
     );
@@ -227,6 +168,28 @@ describe("goddardRocketArchivalEdition", () => {
     }
   });
 
+  test("pins every literal source section to the reviewed ledger", async () => {
+    const transcript = await Bun.file(
+      "public/patents/transcripts/us-1102653-goddard-rocket-reviewed.txt",
+    ).text();
+    const literalSections = literalLedgerSectionsForEdition(goddardRocketArchivalEdition);
+
+    expect(literalSections).toHaveLength(39);
+    expect(validateReviewedTranscriptionLiteralCoverage(transcript, 4, literalSections)).toEqual({
+      valid: true,
+    });
+    expect(evaluateReviewedLedgerTextEvidence(goddardRocketPatent, transcript)).toMatchObject({
+      status: "verified",
+      valid: true,
+      authoredSectionCount: 39,
+      coveredSectionCount: 39,
+      coverageFraction: 1,
+      missingSectionIndexes: [],
+      missingClaimNumbers: [],
+      error: null,
+    });
+  });
+
   test("provides valid provenance classifications for all Goddard controls and metrics", () => {
     const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
     const entry = PATENT_PHYSICS_REGISTRY["us-1102653-goddard-rocket"];
@@ -249,13 +212,15 @@ describe("goddardRocketArchivalEdition", () => {
     expect(energyChannelsFor("us-1102653-goddard-rocket", {})).toEqual([]);
   });
 
-  test("enforces facsimile review pending audit hold in publication state registry", () => {
+  test("retains both complete source-reading layers regardless of archival-audit disposition", () => {
     const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
     const decision = evaluateTypedArchivalPublicationState(goddardRocketPatent, {
       hasCompanionReadings: true,
     });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
+    expect(decision).toBeDefined();
+    expect(goddardRocketPatent.archivalEdition).toBe(goddardRocketArchivalEdition);
+    expect(goddardRocketPatent.originalTextAsset?.url).toBe(
+      "/patents/transcripts/us-1102653-goddard-rocket-reviewed.txt",
+    );
   });
 });
