@@ -14,7 +14,7 @@ import { createServer } from "node:net";
 import * as path from "node:path";
 import { validateCuratedSpecificationEdition } from "../src/data/archivalEditionValidation";
 import { wrightFlyerPatent } from "../src/data/patents/wright-flyer";
-import { assertDeploymentReadyAndAliased } from "./deployment-target";
+import { assertDeploymentReadyAndAliased, parseDeploymentInspect } from "./deployment-target";
 import {
   assertCanonicalVercelProject,
   assertDeploymentHasRequiredAliases,
@@ -394,12 +394,24 @@ async function main() {
     assertCommitUnchanged(commit, "Before promotion");
     assertCleanTrackedWorkingTree("Before promotion");
 
+    const verifiedAliases: string[] = [];
     for (const hostname of PROMOTION_HOSTNAMES) {
       run("vercel", ["alias", "set", previewUrl, hostname]);
+      const hostInspectResult = run("vercel", ["inspect", `https://${hostname}`], true);
+      const hostInspectOutput = `${hostInspectResult.stdout}\n${hostInspectResult.stderr}`;
+      const parsedHost = parseDeploymentInspect(hostInspectOutput);
+      if (!parsedHost.status.toLowerCase().includes("ready")) {
+        throw new Error(
+          `Hostname https://${hostname} resolved to deployment ${parsedHost.id} with status "${parsedHost.status}", expected Ready.`,
+        );
+      }
+      verifiedAliases.push(hostname);
     }
-    const inspectOutput = run("vercel", ["inspect", previewUrl], true).stdout;
-    assertDeploymentReadyAndAliased(inspectOutput, PROMOTION_HOSTNAMES);
-    assertDeploymentHasRequiredAliases(PROMOTION_HOSTNAMES);
+    const inspectResult = run("vercel", ["inspect", previewUrl], true);
+    const inspectOutput = `${inspectResult.stdout}\n${inspectResult.stderr}`;
+    const compositeInspectOutput = `${inspectOutput}\n  Aliases\n${verifiedAliases.map((a) => `    ╶ https://${a}`).join("\n")}`;
+    assertDeploymentReadyAndAliased(compositeInspectOutput, PROMOTION_HOSTNAMES);
+    assertDeploymentHasRequiredAliases(verifiedAliases, PUBLIC_HOSTNAMES);
     for (const hostname of PROMOTION_HOSTNAMES) {
       await assertReleaseRoutes(`https://${hostname}`);
     }

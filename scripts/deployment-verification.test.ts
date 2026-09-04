@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-import * as fs from "node:fs";
 import { LEGACY_PATENT_REDIRECTS } from "../src/data/patents";
 import {
   assertCanonicalVercelProject,
