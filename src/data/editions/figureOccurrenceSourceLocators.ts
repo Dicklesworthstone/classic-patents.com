@@ -5380,10 +5380,10 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
     ([occurrenceKey, sourcePdfPage]) =>
       bellTelephoneSourceSheetLocator(occurrenceKey, sourcePdfPage),
   ),
-  "us-2988237-devol-programmed-transfer":
-    DEVOL_PROGRAMMED_TRANSFER_SOURCE_SHEET_OCCURRENCES.map(([occurrenceKey, sourcePdfPage]) =>
+  "us-2988237-devol-programmed-transfer": DEVOL_PROGRAMMED_TRANSFER_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) =>
       devolProgrammedTransferSourceSheetLocator(occurrenceKey, sourcePdfPage),
-    ),
+  ),
   "us-6594844-roomba": [
     roombaSourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-1" }),
     roombaSourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-3" }),
