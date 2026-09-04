@@ -16,6 +16,10 @@ import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
+  type GliddenBarbedWireCameraPreset as CameraPreset,
+  gliddenBarbedWireCameraForViewport,
+} from "./gliddenBarbedWireCamera";
+import {
   buildGliddenBarbedWireModel,
   updateGliddenBarbedWireKinematics,
 } from "./gliddenBarbedWireModel";
@@ -25,20 +29,6 @@ import { createStandardStudioOverlayActions } from "./studioOverlayActions";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset = "iso" | "barb_lock" | "twisting_helix" | "takeup_drum" | "feed_spools" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [9.5, 6.5, 10.5], target: [0, 0, 0] },
-  barb_lock: { pos: [0, 1.2, 3.2], target: [0, 0.4, 0] },
-  twisting_helix: { pos: [-2.5, 1.8, 3.5], target: [-1.0, 0, 0] },
-  takeup_drum: { pos: [3.5, 2.0, 4.0], target: [2.2, 0, 0] },
-  feed_spools: { pos: [-4.8, 2.0, 3.2], target: [-3.8, 0, -1.2] },
-  top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
-};
 
 const IDLE_CONTINUUM: ContinuumState = {
   tensileStressMpa: 0,
@@ -154,7 +144,10 @@ export const GliddenBarbedWire3D = memo(() => {
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = gliddenBarbedWireCameraForViewport(
+      preset,
+      containerRef.current?.clientWidth ?? 1000,
+    );
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -168,7 +161,7 @@ export const GliddenBarbedWire3D = memo(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = gliddenBarbedWireCameraForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -215,6 +208,17 @@ export const GliddenBarbedWire3D = memo(() => {
       studioRef.current = null;
     };
   }, [live]);
+
+  useEffect(() => {
+    const restoreResponsiveView = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const view = gliddenBarbedWireCameraForViewport(activeCamera, container.clientWidth);
+      studioRef.current?.controls.setView(view.pos, view.target);
+    };
+    window.addEventListener("resize", restoreResponsiveView);
+    return () => window.removeEventListener("resize", restoreResponsiveView);
+  }, [activeCamera]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

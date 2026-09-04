@@ -1,13 +1,42 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import { stepGliddenBarbedWire } from "@/physics/catalogKernels";
+import {
+  GLIDDEN_BARBED_WIRE_CAMERA_PRESETS,
+  GLIDDEN_COMPACT_ISOMETRIC_SAFE_ZONE,
+  gliddenBarbedWireCameraForViewport,
+} from "./gliddenBarbedWireCamera";
 import {
   buildGliddenBarbedWireModel,
   updateGliddenBarbedWireKinematics,
 } from "./gliddenBarbedWireModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
+const COMPACT_AUDIT_VIEWPORT = { width: 286, height: 380 };
+
+function projectedObjectBounds(root: THREE.Object3D, camera: THREE.PerspectiveCamera) {
+  const bounds = {
+    minX: Number.POSITIVE_INFINITY,
+    maxX: Number.NEGATIVE_INFINITY,
+    minY: Number.POSITIVE_INFINITY,
+    maxY: Number.NEGATIVE_INFINITY,
+  };
+  const point = new THREE.Vector3();
+  root.traverse((node) => {
+    const positions = (node as THREE.Mesh).geometry?.getAttribute("position");
+    if (!positions) return;
+    for (let index = 0; index < positions.count; index += 1) {
+      point.fromBufferAttribute(positions, index).applyMatrix4(node.matrixWorld).project(camera);
+      bounds.minX = Math.min(bounds.minX, point.x);
+      bounds.maxX = Math.max(bounds.maxX, point.x);
+      bounds.minY = Math.min(bounds.minY, point.y);
+      bounds.maxY = Math.max(bounds.maxY, point.y);
+    }
+  });
+  return bounds;
+}
 
 describe("US 157,124 Joseph Glidden Twisted Wire Barbed Fence visual & kinematics boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
@@ -86,6 +115,91 @@ describe("US 157,124 Joseph Glidden Twisted Wire Barbed Fence visual & kinematic
     expect(threeSource).toContain("Glidden Barbed Wire Machine 3D");
     expect(threeSource).toContain("controls.setView");
     expect(threeSource).not.toContain("cameraRef");
+  });
+
+  test("keeps both source-described working ends inside the compact overview through animation", () => {
+    const { width, height } = COMPACT_AUDIT_VIEWPORT;
+    const compactIso = gliddenBarbedWireCameraForViewport("iso", width);
+
+    expect(compactIso).toEqual({ pos: [15.675, 10.725, 17.325], target: [0, 0, 0] });
+    expect(gliddenBarbedWireCameraForViewport("iso", 718)).toEqual(
+      GLIDDEN_BARBED_WIRE_CAMERA_PRESETS.iso,
+    );
+    for (const preset of [
+      "barb_lock",
+      "twisting_helix",
+      "takeup_drum",
+      "feed_spools",
+      "top",
+    ] as const) {
+      expect(gliddenBarbedWireCameraForViewport(preset, width)).toEqual(
+        GLIDDEN_BARBED_WIRE_CAMERA_PRESETS[preset],
+      );
+    }
+
+    const auditedStates = [
+      { name: "default", twistsPerFoot: 5, isLocked: true },
+      { name: "primary-control-max", twistsPerFoot: 10, isLocked: true },
+      { name: "claim-inverted", twistsPerFoot: 10, isLocked: false },
+    ] as const;
+
+    for (const state of auditedStates) {
+      const model = buildGliddenBarbedWireModel();
+      try {
+        const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 1000);
+        camera.position.set(...compactIso.pos);
+        camera.lookAt(...compactIso.target);
+        camera.updateProjectionMatrix();
+        camera.updateMatrixWorld();
+
+        const envelope = {
+          minX: Number.POSITIVE_INFINITY,
+          maxX: Number.NEGATIVE_INFINITY,
+          minY: Number.POSITIVE_INFINITY,
+          maxY: Number.NEGATIVE_INFINITY,
+        };
+        const machineRpm = state.twistsPerFoot * 24;
+        const flyerOmegaRadPerS = Number(((machineRpm * 2 * Math.PI) / 60).toFixed(3));
+        const reelOmegaRadPerS = Number((flyerOmegaRadPerS * 0.2).toFixed(3));
+
+        // Four seconds at the studio's 60 Hz cadence covers the rotating flyer
+        // and reel at every state the viewport audit persists.
+        for (let frame = 0; frame <= 240; frame += 1) {
+          updateGliddenBarbedWireKinematics(
+            model.nodes,
+            model.materials,
+            1 / 60,
+            frame / 60,
+            flyerOmegaRadPerS,
+            reelOmegaRadPerS,
+            state.isLocked,
+            false,
+          );
+          model.rootGroup.updateMatrixWorld(true);
+          const projection = projectedObjectBounds(model.rootGroup, camera);
+          envelope.minX = Math.min(envelope.minX, projection.minX);
+          envelope.maxX = Math.max(envelope.maxX, projection.maxX);
+          envelope.minY = Math.min(envelope.minY, projection.minY);
+          envelope.maxY = Math.max(envelope.maxY, projection.maxY);
+        }
+
+        expect(
+          envelope.minX,
+          `${state.name} feed support inside compact left edge`,
+        ).toBeGreaterThan(GLIDDEN_COMPACT_ISOMETRIC_SAFE_ZONE.minX);
+        expect(envelope.maxX, `${state.name} take-up reel inside compact right edge`).toBeLessThan(
+          GLIDDEN_COMPACT_ISOMETRIC_SAFE_ZONE.maxX,
+        );
+        expect(envelope.minY, `${state.name} bench legs above compact floor`).toBeGreaterThan(
+          GLIDDEN_COMPACT_ISOMETRIC_SAFE_ZONE.minY,
+        );
+        expect(envelope.maxY, `${state.name} flyer clear of compact toolbar`).toBeLessThan(
+          GLIDDEN_COMPACT_ISOMETRIC_SAFE_ZONE.maxY,
+        );
+      } finally {
+        model.dispose();
+      }
+    }
   });
 
   test("computes genuine catenary sag, barb slip threshold, and locked state in SI units", () => {

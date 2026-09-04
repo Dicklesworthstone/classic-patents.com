@@ -11,6 +11,11 @@ import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
+  type RillieuxEvaporatorCameraPreset as CameraPreset,
+  RILLIEUX_EVAPORATOR_CAMERA_PRESETS,
+  rillieuxEvaporatorCameraForViewport,
+} from "./rillieuxEvaporatorCamera";
+import {
   createRillieuxEvaporatorModel,
   type RillieuxEvaporatorModelNodes,
 } from "./rillieuxEvaporatorModel";
@@ -24,39 +29,6 @@ import { usePatentAudio } from "./usePatentAudio";
 interface Rillieux3DProps {
   className?: string;
 }
-
-type CameraPreset = "overview" | "pan1" | "pan2" | "pan3" | "condenser";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { label: string; pos: [number, number, number]; target: [number, number, number] }
-> = {
-  overview: {
-    label: "3-Effect Cascade Overview",
-    pos: [0, 8.0, 14.0],
-    target: [0, 2.0, 0],
-  },
-  pan1: {
-    label: "Effect 1 (Live Steam)",
-    pos: [-4.2, 5.0, 6.0],
-    target: [-4.2, 2.2, 0],
-  },
-  pan2: {
-    label: "Effect 2 (Intermediate Vapor)",
-    pos: [0, 5.0, 6.0],
-    target: [0, 2.2, 0],
-  },
-  pan3: {
-    label: "Effect 3 (Final Concentrate)",
-    pos: [4.2, 5.0, 6.0],
-    target: [4.2, 2.2, 0],
-  },
-  condenser: {
-    label: "Barometric Condenser",
-    pos: [7.5, 4.0, 5.5],
-    target: [6.5, 2.0, 0],
-  },
-};
 
 export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = "" }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -94,7 +66,10 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
-    const target = CAMERA_PRESETS[preset];
+    const target = rillieuxEvaporatorCameraForViewport(
+      preset,
+      containerRef.current?.clientWidth ?? 1000,
+    );
     studioRef.current?.controls.setView(target.pos, target.target);
   };
 
@@ -123,8 +98,8 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
 
     const studio = createThreeStudioScene({
       container,
-      cameraPos: CAMERA_PRESETS.overview.pos,
-      targetPos: CAMERA_PRESETS.overview.target,
+      cameraPos: rillieuxEvaporatorCameraForViewport("overview", container.clientWidth).pos,
+      targetPos: rillieuxEvaporatorCameraForViewport("overview", container.clientWidth).target,
     });
     studioRef.current = studio;
 
@@ -170,6 +145,17 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
     };
   }, [live]);
 
+  useEffect(() => {
+    const restoreResponsiveView = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const view = rillieuxEvaporatorCameraForViewport(cameraPreset, container.clientWidth);
+      studioRef.current?.controls.setView(view.pos, view.target);
+    };
+    window.addEventListener("resize", restoreResponsiveView);
+    return () => window.removeEventListener("resize", restoreResponsiveView);
+  }, [cameraPreset]);
+
   return (
     <div
       className={`flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent ${className}`}
@@ -184,7 +170,7 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
             </span>
-            {(Object.keys(CAMERA_PRESETS) as CameraPreset[]).map((key) => (
+            {(Object.keys(RILLIEUX_EVAPORATOR_CAMERA_PRESETS) as CameraPreset[]).map((key) => (
               <button
                 key={key}
                 type="button"
@@ -195,7 +181,7 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
                     : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
                 }`}
               >
-                {CAMERA_PRESETS[key].label}
+                {RILLIEUX_EVAPORATOR_CAMERA_PRESETS[key].label}
               </button>
             ))}
           </div>

@@ -16,6 +16,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import { type GatlingGunCameraPreset, gatlingGunCameraForViewport } from "./gatlingGunCamera";
 import { buildGatlingGunModel } from "./gatlingGunModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { StudioOverlayActionToolbar } from "./StudioOverlayActionToolbar";
@@ -24,19 +25,7 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "barrels" | "breech_cam" | "hopper" | "crank" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [9.0, 5.0, 10.0], target: [0, 0, 0] },
-  barrels: { pos: [4.5, 1.2, 3.8], target: [2.4, 0.4, 0] },
-  breech_cam: { pos: [-2.0, 1.8, 3.2], target: [-0.8, 0.4, 0] },
-  hopper: { pos: [-0.8, 3.8, 2.2], target: [-0.6, 1.4, 0] },
-  crank: { pos: [-3.6, 1.2, 2.8], target: [-2.4, 0.4, 0.85] },
-  top: { pos: [0, 11.0, 0.1], target: [0, 0, 0] },
-};
+type CameraPreset = GatlingGunCameraPreset;
 
 const IDLE_MACHINE: MachineState = {
   poseXMeters: 0,
@@ -125,18 +114,28 @@ export function GatlingGun3D() {
 
   const studioRef = useRef<StudioContext | null>(null);
 
+  const cameraViewForContainer = (preset: CameraPreset) => {
+    const container = containerRef.current;
+    return gatlingGunCameraForViewport(
+      preset,
+      container?.clientWidth ?? 0,
+      container?.clientHeight ?? 0,
+    );
+  };
+
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = cameraViewForContainer(preset);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = gatlingGunCameraForViewport("iso", container.clientWidth, container.clientHeight);
     const studio = createThreeStudioScene({
-      container: containerRef.current,
+      container,
       cameraPos: iso.pos,
       targetPos: iso.target,
       fov: 38,

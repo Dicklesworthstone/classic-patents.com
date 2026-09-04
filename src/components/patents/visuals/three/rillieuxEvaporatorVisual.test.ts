@@ -1,8 +1,41 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import { stepRillieuxEvaporator } from "@/physics/rillieuxEvaporatorKernel";
+import {
+  RILLIEUX_COMPACT_OVERVIEW_SAFE_ZONE,
+  RILLIEUX_EVAPORATOR_CAMERA_PRESETS,
+  rillieuxEvaporatorCameraForViewport,
+} from "./rillieuxEvaporatorCamera";
 import { createRillieuxEvaporatorModel } from "./rillieuxEvaporatorModel";
+
+const COMPACT_AUDIT_VIEWPORT = { width: 286, height: 380 };
+
+function projectedObjectBounds(root: THREE.Object3D, camera: THREE.PerspectiveCamera) {
+  const bounds = {
+    minX: Number.POSITIVE_INFINITY,
+    maxX: Number.NEGATIVE_INFINITY,
+    minY: Number.POSITIVE_INFINITY,
+    maxY: Number.NEGATIVE_INFINITY,
+  };
+  const point = new THREE.Vector3();
+  root.traverse((node) => {
+    const positions = (node as THREE.Mesh).geometry?.getAttribute("position");
+    if (!positions) return;
+    for (let index = 0; index < positions.count; index += 1) {
+      point.fromBufferAttribute(positions, index).applyMatrix4(node.matrixWorld).project(camera);
+      bounds.minX = Math.min(bounds.minX, point.x);
+      bounds.maxX = Math.max(bounds.maxX, point.x);
+      bounds.minY = Math.min(bounds.minY, point.y);
+      bounds.maxY = Math.max(bounds.maxY, point.y);
+    }
+  });
+  return {
+    ...bounds,
+    widthPx: ((bounds.maxX - bounds.minX) * COMPACT_AUDIT_VIEWPORT.width) / 2,
+  };
+}
 
 describe("Norbert Rillieux Multiple-Effect Evaporator 3D Visual & Thermodynamics Test Suite", () => {
   test("2D and 3D share the catalog physics bus for US 3,237", () => {
@@ -44,6 +77,73 @@ describe("Norbert Rillieux Multiple-Effect Evaporator 3D Visual & Thermodynamics
     );
   });
 
+  test("keeps all three effects and both vapor-reuse links legible in the compact overview", () => {
+    const { width, height } = COMPACT_AUDIT_VIEWPORT;
+    const compactOverview = rillieuxEvaporatorCameraForViewport("overview", width);
+    expect(compactOverview).toEqual({
+      label: "3-Effect Cascade Overview",
+      pos: [0, 15.2, 30.8],
+      target: [0, 2, 0],
+    });
+    expect(rillieuxEvaporatorCameraForViewport("overview", 718)).toEqual(
+      RILLIEUX_EVAPORATOR_CAMERA_PRESETS.overview,
+    );
+    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 1000);
+    camera.position.set(...compactOverview.pos);
+    camera.lookAt(...compactOverview.target);
+    camera.updateProjectionMatrix();
+    camera.updateMatrixWorld();
+
+    const model = createRillieuxEvaporatorModel();
+    try {
+      for (const [interaction, offsetSec] of [
+        ["primary-control", 0],
+        ["claim-inverted", 4],
+      ] as const) {
+        const envelope = {
+          minX: Number.POSITIVE_INFINITY,
+          maxX: Number.NEGATIVE_INFINITY,
+          minY: Number.POSITIVE_INFINITY,
+          maxY: Number.NEGATIVE_INFINITY,
+        };
+        for (const elapsedSec of [0, 2, 4]) {
+          model.update(
+            stepRillieuxEvaporator({
+              juiceFeedRateKgPerH: 1000,
+              initialBrixDeg: 14,
+              targetBrixDeg: 65,
+              numberOfEffects: 3,
+            }),
+            offsetSec + elapsedSec,
+          );
+          model.group.updateMatrixWorld(true);
+          const projected = projectedObjectBounds(model.group, camera);
+          envelope.minX = Math.min(envelope.minX, projected.minX);
+          envelope.maxX = Math.max(envelope.maxX, projected.maxX);
+          envelope.minY = Math.min(envelope.minY, projected.minY);
+          envelope.maxY = Math.max(envelope.maxY, projected.maxY);
+        }
+        expect(envelope.minX, interaction).toBeGreaterThan(
+          RILLIEUX_COMPACT_OVERVIEW_SAFE_ZONE.minX,
+        );
+        expect(envelope.maxX, interaction).toBeLessThan(RILLIEUX_COMPACT_OVERVIEW_SAFE_ZONE.maxX);
+        expect(envelope.minY, interaction).toBeGreaterThan(
+          RILLIEUX_COMPACT_OVERVIEW_SAFE_ZONE.minY,
+        );
+        expect(envelope.maxY, interaction).toBeLessThan(RILLIEUX_COMPACT_OVERVIEW_SAFE_ZONE.maxY);
+        expect(
+          Math.min(...model.vessels.map((vessel) => projectedObjectBounds(vessel, camera).widthPx)),
+        ).toBeGreaterThan(RILLIEUX_COMPACT_OVERVIEW_SAFE_ZONE.minimumEffectWidthPx);
+        expect(
+          Math.min(
+            ...model.vaporTrunks.map((trunk) => projectedObjectBounds(trunk, camera).widthPx),
+          ),
+        ).toBeGreaterThan(RILLIEUX_COMPACT_OVERVIEW_SAFE_ZONE.minimumVaporLinkWidthPx);
+      }
+    } finally {
+      model.dispose();
+    }
+  });
   test("creates valid Three.js model hierarchy with 3 vessels, tube bundles, and condenser", () => {
     const model = createRillieuxEvaporatorModel();
     expect(model.group).toBeDefined();
