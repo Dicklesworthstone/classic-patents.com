@@ -3203,6 +3203,10 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
       carlsonElectrophotographySourceSheetLocator,
     ),
   "us-48475-yale-lock": YALE_LOCK_SOURCE_SHEET_OCCURRENCE_KEYS.map(yaleLockSourceSheetLocator),
+  "us-235199-bell-photophone": BELL_PHOTOPHONE_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) =>
+      bellPhotophoneSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
   "us-6594844-roomba": [
     roombaSourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-1" }),
     roombaSourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-3" }),

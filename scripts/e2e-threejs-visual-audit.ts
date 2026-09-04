@@ -1714,8 +1714,7 @@ async function auditPatent(
         topRollRad: movingEnd.topRollRad - movingStart.topRollRad,
         bottomRollRad: movingEnd.bottomRollRad - movingStart.bottomRollRad,
         rabbleRad: movingEnd.rabbleRad - movingStart.rabbleRad,
-        billetTravelM:
-          (movingEnd.billetTravelM - movingStart.billetTravelM + 1.2) % 1.2,
+        billetTravelM: (movingEnd.billetTravelM - movingStart.billetTravelM + 1.2) % 1.2,
       };
       const phaseTolerance = 1e-8;
       const counterRotationClosed =
@@ -1725,8 +1724,7 @@ async function auditPatent(
       const noSlipBilletTravelClosed =
         deltas.billetTravelM > 1e-5 &&
         Math.abs(
-          deltas.billetTravelM -
-            deltas.bottomRollRad * (movingEnd.workingRollRadiusMm / 1000),
+          deltas.billetTravelM - deltas.bottomRollRad * (movingEnd.workingRollRadiusMm / 1000),
         ) < phaseTolerance;
       const nipGeometryClosed =
         Math.abs(movingEnd.nipGapMm - movingEnd.billetHeightMm) < phaseTolerance &&
