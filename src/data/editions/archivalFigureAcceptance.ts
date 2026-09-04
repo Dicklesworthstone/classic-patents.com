@@ -244,7 +244,7 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
     reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
     reviewedAt: "2026-09-04",
     acceptanceBasis: "independent-figure-review",
-    acceptedOccurrenceCount: 23,
+    acceptedOccurrenceCount: 22,
     assets: {
       "/patents/figures/us-124404-westinghouse-air-brake/source-sheet-1-v1.png": {
         sha256: "7417d1ebd75e021b68f610b49d6f7af4e4ca0cf118dade6e6ca292892bb59c90",

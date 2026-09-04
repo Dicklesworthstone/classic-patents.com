@@ -63,7 +63,7 @@ furniture. The active edition uses the complete, unmodified page render:
 `public/patents/figures/us-124404-westinghouse-air-brake/source-sheet-1-v1.png`
 (2320 × 3408 pixels; SHA-256
 `7417d1ebd75e021b68f610b49d6f7af4e4ca0cf118dade6e6ca292892bb59c90`).
-All 23 active figure-reference occurrences use its full `(0, 0, 2320, 3408)`
+All 22 active figure-reference occurrences use its full `(0, 0, 2320, 3408)`
 source rectangle on PDF page 1. The older isolated crops remain preserved
 comparison artifacts; no historical content was reconstructed.
 

@@ -49,6 +49,7 @@ const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
   "us-79265-sholes-typewriter",
   "us-105338-hyatt-celluloid",
   "us-120057-gramme-dynamo",
+  "us-124404-westinghouse-air-brake",
   "us-1219881-sundback-zipper",
   "us-135245-pasteur-fermentation",
   "us-157124-glidden-barbed-wire",
