@@ -556,6 +556,17 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
               <line x1="770" y1="277" x2="840" y2="277" stroke="#d6a35b" strokeWidth="4" />
             </g>
             <circle cx="885" cy="277" r="12" fill="#b7792f" stroke="#1c1917" strokeWidth="3" />
+            <line x1="897" y1="277" x2="996" y2="277" stroke="#78716c" strokeWidth="12" />
+            <text
+              x="990"
+              y="261"
+              fontFamily="monospace"
+              fontSize="8"
+              fill="#a8a29e"
+              textAnchor="end"
+            >
+              Off-scene line shaft →
+            </text>
             <text
               x="805"
               y="345"

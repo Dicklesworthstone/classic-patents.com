@@ -98,6 +98,7 @@ describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
     expect(named["top-roll-drive-shaft-extension"]).toHaveLength(1);
     expect(named["bottom-roll-drive-shaft-extension"]).toHaveLength(1);
     expect(named["attached-off-scene-lineshaft-input-coupling"]).toHaveLength(1);
+    expect(named["normalized-off-scene-line-shaft"]).toHaveLength(1);
 
     expect(CORT_ROLL_DRIVE_GEAR_PITCH_RADIUS_M * 2).toBeCloseTo(CORT_ROLL_CENTER_SEPARATION_M, 12);
     const driveGearAddendumRadius =

@@ -420,6 +420,16 @@ export function buildCortPuddlingRollingModel(): CortModel {
   inputCoupling.position.x = 1.31;
   bottomRollGroup.add(inputCoupling);
 
+  // Continue the input shaft through the camera boundary. The visible end is
+  // therefore not a free-floating power source; it is explicitly connected
+  // to an out-of-scene prime mover without inventing one for this abridgment.
+  const offSceneLineShaftGeometry = new THREE.CylinderGeometry(0.07, 0.07, 2.0, 16);
+  offSceneLineShaftGeometry.rotateZ(Math.PI / 2);
+  const offSceneLineShaft = new THREE.Mesh(offSceneLineShaftGeometry, ironMetalMaterial);
+  offSceneLineShaft.name = "normalized-off-scene-line-shaft";
+  offSceneLineShaft.position.x = 2.22;
+  bottomRollGroup.add(offSceneLineShaft);
+
   // Hot Wrought Iron Billet Passing Through Pass 1
   const billetGeo = new THREE.BoxGeometry(0.12, CORT_ACTIVE_BILLET_HEIGHT_M, 1.2);
   const billetMesh = new THREE.Mesh(billetGeo, hotBilletMaterial);
