@@ -76,7 +76,7 @@ describe("executable project coverage manifest", () => {
     expect(manifest).toHaveLength(103);
     expect(new Set(manifest.map((row) => row.patentId)).size).toBe(103);
     expect(manifest.every((row) => row.source.pinnedFacsimile)).toBe(true);
-    expect(manifest.filter((row) => row.source.reviewedLedger)).toHaveLength(100);
+    expect(manifest.filter((row) => row.source.reviewedLedger)).toHaveLength(99);
     expect(manifest.filter((row) => row.source.archivalEdition === "published")).toHaveLength(
       summary.publishedEditions,
     );
@@ -103,8 +103,8 @@ describe("executable project coverage manifest", () => {
     expect(manifest.filter((row) => row.runtime.wasmSurface === "interpretive-wasm")).toHaveLength(
       0,
     );
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(39);
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(61);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(38);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(62);
 
     for (const patentId of [
       "us-x9430-colt-revolver",
@@ -126,6 +126,7 @@ describe("executable project coverage manifest", () => {
       "us-124404-westinghouse-air-brake",
       "us-542846-diesel-engine",
       "us-586193-marconi-radio",
+      "us-2495429-spencer-microwave",
       "us-3671542-kwolek-kevlar",
     ]) {
       expect(wasmSurfaceForPatent(patentId)).toBeUndefined();

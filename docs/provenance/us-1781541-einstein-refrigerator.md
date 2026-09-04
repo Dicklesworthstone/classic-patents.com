@@ -56,7 +56,7 @@ The existing raw PDF text layer and OCR research files remain comparison
 evidence only. They were not copied into the public reader as a source of
 truth.
 
-## Claims and source crop
+## Claims and source drawing
 
 All five printed claims are explicit typed claim nodes and their exact text is
 reused by the canonical record:
@@ -68,15 +68,34 @@ reused by the canonical record:
 4. The material-specific apparatus with the vent limitation.
 5. The corresponding refrigeration method.
 
-The locally served preview
+The legacy local preview
 `public/patents/figures/us-1781541-einstein-refrigerator/fig-1-source-crop-v1.png`
-is cropped directly from PDF p. 1. It adds no linework, labels, or synthetic
-annotations.
+is preserved as historical review material. It is no longer the active
+archival preview because it has no independently recorded source-pixel
+rectangle.
+
+## Source-sheet acceptance (2026-09-03)
+
+Both authored source-drawing references now use
+`public/patents/figures/us-1781541-einstein-refrigerator/source-sheet-1-v1.png`.
+It is an unmodified, upright 300-DPI render of PDF p. 1, made with
+`pdftoppm -f 1 -l 1 -r 300 -png`. Its source raster is `2320 × 3408` pixels
+and its SHA-256 is
+`8ad5c0284168c3bc123b82b79693f49e1774dcb16c93b8b90c708bf0e2483a05`.
+The active image retains the complete printed apparatus, patent number, date,
+inventor/attorney signatures, and surrounding source context. It is not a
+mask, composite, reconstruction, or isolated-region inference.
+
+The two active occurrences are the "accompanying drawing" reference in
+edition block 2 and the "drawing" reference in edition block 3. Each records
+the complete page-one source rectangle (`x=0`, `y=0`, `width=2320`,
+`height=3408`) in `figureOccurrenceSourceLocators.ts`. This archival evidence
+improves only the internal review record; it does not control access to the
+complete patent-text reader.
 
 ## Independent-review boundary
 
-The first author performed a full visual pass across all four PDF pages and
-compared every source block, claim, figure reference, and printed name against
-the facsimile. A second, independent orchestrator review is still required
-before this Bead can be accepted or closed. A passing data test establishes
-structural consistency, not archival acceptance on its own.
+The current direct source-pixel review includes a visual pass of the complete
+first-page drawing sheet and exact page-one raster evidence for every active
+figure occurrence. A passing data test establishes structural consistency; the
+facsimile, reviewed ledger, and editorial edition remain distinct artifacts.

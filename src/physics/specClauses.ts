@@ -60,6 +60,7 @@ import {
   readSikorskyControls,
   stepSikorskyHelicopterSi,
 } from "./sikorskyHelicopterKernel";
+import { stepSpencerMicrowaveSource } from "./spencerMicrowaveKernel";
 import { stepStackhouseSourceTopology } from "./stackhouseSourceKernel";
 import { readSundbackZipperControls, stepSundbackZipperSi } from "./sundbackZipperKernel";
 import { stepTeslaMotorFig9, teslaMotorPhaseHz } from "./teslaKernel";
@@ -1203,8 +1204,9 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === SPENCER_MICROWAVE_ID) {
-    const power = params.rfPowerSetting ?? 1;
-    const isRadiating = power > 0;
+    const source = stepSpencerMicrowaveSource(params);
+    const isRadiating = source.energyPathActive;
+    const referenceFrequencyGhz = source.vacuumFrequencyAtTenCentimetersHz / 1e9;
 
     return [
       {
@@ -1212,8 +1214,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         phrase: "microwave region",
         active: isRadiating,
         tone: "live",
-        caption:
-          "Wavelength λ ≈ 10 cm (f ≈ 2.45 GHz): Penetrates dielectric food volume, exciting dipolar water molecules.",
+        caption: `The source says wavelengths of the order of 10 cm or less. At exactly 10 cm, c = λf gives ${referenceFrequencyGhz.toFixed(3)} GHz in vacuum; this is a derived reference, not a fixed tube setting.`,
       },
       {
         id: "push-pull",
@@ -1221,7 +1222,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: isRadiating,
         tone: "held",
         caption:
-          "Dual magnetrons alternate on opposite AC cycles to continuously energize the common waveguide.",
+          "The source-connected devices 10 and 11 alternately deliver hyper-frequency energy to common wave guide 23; output magnitude and tube operating point remain refused.",
       },
       {
         id: "wave-guide",
@@ -1229,7 +1230,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: isRadiating,
         tone: "held",
         caption:
-          "Hollow conductive duct channels microwave power from cavity resonators directly into food treatment zone.",
+          "Coaxial lines 24/25 and loops 26/27 connect both oscillators to hollow guide 23, whose outlet meets conveyor 28 at the treatment region.",
       },
       {
         id: "cavity-resonator",
@@ -1237,7 +1238,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: isRadiating,
         tone: "live",
         caption:
-          "Radial anode vanes form resonant microwave cavities whose geometry dictates operating wavelength.",
+          "Adjacent radial anode vanes 13 and envelope 12 form resonators whose geometry sets natural frequency. The grant does not print the dimensions needed to solve that frequency.",
       },
     ];
   }

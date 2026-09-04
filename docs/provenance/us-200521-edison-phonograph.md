@@ -58,20 +58,43 @@ record and connected diaphragm; and Claim 4 the helically grooved, advancing
 cylinder arrangement. The edition test verifies both the claim sequence and
 textual equality with the canonical record.
 
-Each cited source figure has a local crop derived from the pinned first drawing
-sheet. The crop is a reader aid, never a substitute for the facsimile:
+Each cited source figure has a local source preview derived from the pinned
+first drawing sheet. The preview is a reader aid, never a substitute for the
+facsimile:
 
-| Source figure | Local selected crop |
+| Source figure | Active local source sheet |
 | --- | --- |
-| Fig. 1 | `public/patents/figures/us-200521-edison-phonograph-fig-1-source-crop.png` |
-| Fig. 2 | `public/patents/figures/us-200521-edison-phonograph-fig-2-tight-source-crop.png` |
-| Fig. 3 | `public/patents/figures/us-200521-edison-phonograph-fig-3-complete-source-crop-v2.png` (includes the complete printed Fig. 3 mechanism and label) |
-| Fig. 4 | `public/patents/figures/us-200521-edison-phonograph-fig-4-source-crop.png` |
+| Fig. 1 | `public/patents/figures/us-200521-edison-phonograph/drawing-sheet-source-v1.png` |
+| Fig. 2 | `public/patents/figures/us-200521-edison-phonograph/drawing-sheet-source-v1.png` |
+| Fig. 3 | `public/patents/figures/us-200521-edison-phonograph/drawing-sheet-source-v1.png` |
+| Fig. 4 | `public/patents/figures/us-200521-edison-phonograph/drawing-sheet-source-v1.png` |
 
-No labels, linework, or reconstructed annotations are added to these image
-derivatives. The edition test requires a local crop for every cited figure and
-checks that every published masthead, source paragraph, and claim is contained
-in the reviewed ledger.
+No labels, linework, or reconstructed annotations are added to the active
+source-sheet derivative. The edition test requires a local source preview for
+every cited figure and checks that every published masthead, source paragraph,
+and claim is contained in the reviewed ledger.
+
+## Source-sheet acceptance (2026-09-03)
+
+The historical page-1 layout interleaves Figs. 1 through 4. The legacy
+per-figure crops remain preserved under `public/patents/figures/` as research
+derivatives, but several include neighbouring figure material and therefore do
+not serve as evidence for isolated-figure boundaries.
+
+The active asset is the complete first source sheet:
+
+- Path: `public/patents/figures/us-200521-edison-phonograph/drawing-sheet-source-v1.png`
+- Source locator: pinned PDF page 1, full raster rectangle `(x=0, y=0, width=2320, height=3408)`
+- Raster dimensions: `2320 x 3408` pixels (upright, 300 DPI rendering)
+- SHA-256: `6f4ffdaea7781497dad758b3bcf20d3467e13cc1384c85c17be9a03ae32c51b8`
+
+A separately rendered 300-DPI page-1 comparison yielded zero differing pixels
+(ImageMagick absolute error metric `AE=0`). The full sheet visibly retains the
+four printed figure labels, each complete depicted mechanism, the patent
+identity, and the execution furniture. All eight active Fig. 1 through Fig. 4
+citations use that same page-1 source-sheet asset and explicit full-raster
+locator. This internal evidence repair does not alter or gate the complete
+patent-text reader.
 
 ## Secondary check and limits
 

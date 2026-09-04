@@ -67,6 +67,14 @@ describe("Kamen transporter generic FrankenSim browser boundary", () => {
       decodeKamenTransporterWasmStep(JSON.stringify({ ok: { ...parsed, minimum_gap_m: -0.01 } })),
     ).toBeNull();
     expect(
+      decodeKamenTransporterWasmStep(JSON.stringify({ ok: { ...parsed, minimum_gap_m: 0.02 } })),
+    ).toBeNull();
+    expect(
+      decodeKamenTransporterWasmStep(
+        JSON.stringify({ ok: { ...parsed, contact_mask: [false, true, false] } }),
+      ),
+    ).toBeNull();
+    expect(
       decodeKamenTransporterWasmStep(
         JSON.stringify({
           ok: {
@@ -74,6 +82,17 @@ describe("Kamen transporter generic FrankenSim browser boundary", () => {
             stair_active: true,
             signed_riser_clearances_m: [-0.01, 0.2, 0.3],
             minimum_riser_clearance_m: -0.01,
+          },
+        }),
+      ),
+    ).toBeNull();
+    expect(
+      decodeKamenTransporterWasmStep(
+        JSON.stringify({
+          ok: {
+            ...parsed,
+            riser_contact_mask: [true, false, false],
+            riser_contact_count: 1,
           },
         }),
       ),

@@ -6,55 +6,22 @@ import type {
 
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 
+const sourceSheetPreview = (sheet: 1 | 2 | 3, figure: string, description: string) => ({
+  src: `/patents/figures/us-361931-daimler-engine/source-sheet-${sheet}-v1.png`,
+  alt: `Complete unmodified source drawing sheet ${sheet} of 3 from US 361,931, including ${figure}: ${description}`,
+  width: 2320,
+  height: 3408,
+});
+
 const FIGURES = {
-  1: {
-    src: "/patents/figures/us-361931-daimler-engine/fig-1-source-crop-v1.png",
-    alt: "Fig. 1 from the US 361,931 source facsimile: longitudinal section of the vessel installation.",
-    width: 1280,
-    height: 1570,
-  },
-  2: {
-    src: "/patents/figures/us-361931-daimler-engine/fig-2-source-crop-v2.png",
-    alt: "Fig. 2 from the US 361,931 source facsimile: cross-section of the vessel installation.",
-    width: 1050,
-    height: 700,
-  },
-  3: {
-    src: "/patents/figures/us-361931-daimler-engine/fig-3-source-crop-v1.png",
-    alt: "Fig. 3 from the US 361,931 source facsimile: plan of the vessel installation.",
-    width: 1280,
-    height: 1650,
-  },
-  4: {
-    src: "/patents/figures/us-361931-daimler-engine/fig-4-source-crop-v1.png",
-    alt: "Fig. 4 from the US 361,931 source facsimile: thrust-bearing detail.",
-    width: 420,
-    height: 420,
-  },
-  "4a": {
-    src: "/patents/figures/us-361931-daimler-engine/fig-4a-source-crop-v1.png",
-    alt: "Fig. 4a from the US 361,931 source facsimile: sliding-pin detail of the thrust-bearing.",
-    width: 350,
-    height: 160,
-  },
-  "4b": {
-    src: "/patents/figures/us-361931-daimler-engine/fig-4b-source-crop-v1.png",
-    alt: "Fig. 4b from the US 361,931 source facsimile: crank-handle detail of the thrust-bearing.",
-    width: 240,
-    height: 360,
-  },
-  5: {
-    src: "/patents/figures/us-361931-daimler-engine/fig-5-source-crop-v2.png",
-    alt: "Fig. 5 from the US 361,931 source facsimile: high-pressure gas-holder section.",
-    width: 820,
-    height: 290,
-  },
-  6: {
-    src: "/patents/figures/us-361931-daimler-engine/fig-6-source-crop-v1.png",
-    alt: "Fig. 6 from the US 361,931 source facsimile: transverse section of the Fig. 5 gas-holder arrangement.",
-    width: 800,
-    height: 450,
-  },
+  1: sourceSheetPreview(1, "Fig. 1", "longitudinal section of the vessel installation"),
+  2: sourceSheetPreview(2, "Fig. 2", "cross-section of the vessel installation"),
+  3: sourceSheetPreview(3, "Fig. 3", "plan of the vessel installation"),
+  4: sourceSheetPreview(2, "Fig. 4", "thrust-bearing detail"),
+  "4a": sourceSheetPreview(2, "Fig. 4a", "sliding-pin detail of the thrust-bearing"),
+  "4b": sourceSheetPreview(2, "Fig. 4b", "crank-handle detail of the thrust-bearing"),
+  5: sourceSheetPreview(2, "Fig. 5", "high-pressure gas-holder section"),
+  6: sourceSheetPreview(2, "Fig. 6", "transverse section of the Fig. 5 gas-holder arrangement"),
 } as const;
 
 const figure = (

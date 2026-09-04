@@ -63,6 +63,22 @@ describe("reviewed-ledger literal comparison", () => {
     );
   });
 
+  it("bridges a page-number-first patent header at a source-page split", () => {
+    const ledger = [
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---",
+      "Having thus described my invention, what",
+      "--- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---",
+      "2                         233,692",
+      "I claim as new, and desire to secure by Letters Patent, is—",
+    ].join("\n");
+
+    expect(normalizeReviewedLedgerText(ledger)).toBe(
+      normalizeReviewedLedgerText(
+        "Having thus described my invention, what I claim as new, and desire to secure by Letters Patent, is—",
+      ),
+    );
+  });
+
   it("preserves a patent-number citation when it occurs in source prose", () => {
     const ledger = [
       "--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---",

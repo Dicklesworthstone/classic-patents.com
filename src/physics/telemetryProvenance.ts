@@ -23,6 +23,14 @@ export const PROVENANCE_LABELS: Record<MetricProvenanceClassification, Formatted
     description:
       "Explicitly documented or directly claimed in the primary historical patent specification.",
   },
+  "source-derived": {
+    key: "source-derived",
+    shortLabel: "Source-Derived",
+    badgeClass:
+      "bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 border-cyan-300 dark:border-cyan-800",
+    description:
+      "Computed from a source-disclosed value using a stated exact physical or mathematical relation.",
+  },
   "scenario-modern": {
     key: "scenario-modern",
     shortLabel: "Modern Model",

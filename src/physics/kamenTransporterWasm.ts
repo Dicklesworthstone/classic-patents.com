@@ -136,15 +136,25 @@ export function decodeKamenTransporterWasmStep(raw: string): KamenTransporterWas
       result.contact_mask.length !== 3 ||
       !result.contact_mask.every((candidate) => typeof candidate === "boolean") ||
       result.contact_count !== result.contact_mask.filter(Boolean).length ||
+      !Number.isInteger(result.contact_count) ||
       result.contact_count < 1 ||
+      result.contact_count > 3 ||
       result.minimum_gap_m < -1e-8 ||
+      !closeEnough(result.minimum_gap_m, Math.min(...result.signed_vertical_gaps_m)) ||
+      result.contact_mask.some(
+        (touching, index) =>
+          touching !== Math.abs(result.signed_vertical_gaps_m?.[index] ?? 1) <= 1e-8,
+      ) ||
       !Array.isArray(result.signed_riser_clearances_m) ||
       result.signed_riser_clearances_m.length !== 3 ||
       !result.signed_riser_clearances_m.every(nullableFiniteNumber) ||
       !Array.isArray(result.riser_contact_mask) ||
       result.riser_contact_mask.length !== 3 ||
       !result.riser_contact_mask.every((candidate) => typeof candidate === "boolean") ||
-      result.riser_contact_count !== result.riser_contact_mask.filter(Boolean).length
+      result.riser_contact_count !== result.riser_contact_mask.filter(Boolean).length ||
+      !Number.isInteger(result.riser_contact_count) ||
+      result.riser_contact_count < 0 ||
+      result.riser_contact_count > 3
     ) {
       return null;
     }
@@ -164,16 +174,28 @@ export function decodeKamenTransporterWasmStep(raw: string): KamenTransporterWas
     ) {
       return null;
     }
+    const signedRiserClearances = result.signed_riser_clearances_m;
+    if (!signedRiserClearances) {
+      return null;
+    }
     if (result.stair_active) {
+      const riserClearances = signedRiserClearances.filter(
+        (clearance): clearance is number => clearance !== null,
+      );
       if (
-        result.signed_riser_clearances_m.some((clearance) => clearance === null) ||
+        riserClearances.length !== 3 ||
+        riserClearances.some((clearance) => clearance < -1e-8) ||
         result.minimum_riser_clearance_m === null ||
-        result.minimum_riser_clearance_m < -1e-8
+        result.minimum_riser_clearance_m < -1e-8 ||
+        !closeEnough(result.minimum_riser_clearance_m, Math.min(...riserClearances)) ||
+        result.riser_contact_mask.some(
+          (touching, index) => touching !== Math.abs(signedRiserClearances[index] ?? 1) <= 1e-8,
+        )
       ) {
         return null;
       }
     } else if (
-      result.signed_riser_clearances_m.some((clearance) => clearance !== null) ||
+      signedRiserClearances.some((clearance) => clearance !== null) ||
       result.minimum_riser_clearance_m !== null ||
       result.riser_contact_count !== 0
     ) {

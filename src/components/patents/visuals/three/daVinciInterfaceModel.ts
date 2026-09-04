@@ -4,7 +4,13 @@ import type { DaVinciInterfaceTopologyState } from "@/physics/daVinciInterfaceTo
 export interface DaVinciInterfaceModel {
   root: THREE.Group;
   setTopologyState: (state: DaVinciInterfaceTopologyState) => void;
+  connectivityReceipt: () => readonly DaVinciInterfaceConnectivityGap[];
   dispose: () => void;
+}
+
+export interface DaVinciInterfaceConnectivityGap {
+  interface: string;
+  gapSceneUnits: number;
 }
 
 /**
@@ -89,6 +95,25 @@ export function buildDaVinciInterfaceModel(): DaVinciInterfaceModel {
   base.position.y = -0.95;
   root.add(base);
 
+  // These are normalized diagram supports, not patented machine geometry.
+  // They give every solid node a real load path to the plinth instead of
+  // leaving the processor and holder hovering in the 3D scene.
+  const processorSupport = new THREE.Mesh(
+    trackGeometry(new THREE.BoxGeometry(0.62, 0.36, 0.56)),
+    holderMaterial,
+  );
+  processorSupport.name = "Processor support seated on topology plinth";
+  processorSupport.position.set(-2.25, -0.69, 0);
+  root.add(processorSupport);
+
+  const holderSupport = new THREE.Mesh(
+    trackGeometry(new THREE.BoxGeometry(0.72, 0.24, 0.68)),
+    holderMaterial,
+  );
+  holderSupport.name = "Holder support seated on topology plinth";
+  holderSupport.position.set(-0.35, -0.75, 0);
+  root.add(holderSupport);
+
   const processor = new THREE.Group();
   processor.name = "Processor receiving tool-interface data";
   processor.position.set(-2.25, 0, 0);
@@ -98,6 +123,7 @@ export function buildDaVinciInterfaceModel(): DaVinciInterfaceModel {
     processorMaterial,
   );
   processor.add(processorBody);
+  const processorPins: THREE.Mesh[] = [];
   for (const z of [-0.36, -0.12, 0.12, 0.36]) {
     const pin = new THREE.Mesh(
       trackGeometry(new THREE.BoxGeometry(0.18, 0.11, 0.06)),
@@ -105,6 +131,7 @@ export function buildDaVinciInterfaceModel(): DaVinciInterfaceModel {
     );
     pin.position.set(0.64, 0, z);
     processor.add(pin);
+    processorPins.push(pin);
   }
 
   const holder = new THREE.Group();
@@ -141,7 +168,7 @@ export function buildDaVinciInterfaceModel(): DaVinciInterfaceModel {
   tool.add(distal);
   const endEffector = new THREE.Group();
   endEffector.name = "Distal end effector (qualitative)";
-  endEffector.position.x = 1.62;
+  endEffector.position.x = 1.61;
   tool.add(endEffector);
   for (const sign of [-1, 1]) {
     const jaw = new THREE.Mesh(trackGeometry(new THREE.ConeGeometry(0.1, 0.38, 4)), toolMaterial);
@@ -155,7 +182,7 @@ export function buildDaVinciInterfaceModel(): DaVinciInterfaceModel {
     memoryMaterial,
   );
   memory.name = "Tool-mounted compatibility and calibration memory";
-  memory.position.set(-0.12, 0.34, 0.33);
+  memory.position.set(-0.12, 0.34, 0.31);
   tool.add(memory);
 
   const offsetRecord = new THREE.Mesh(
@@ -163,27 +190,32 @@ export function buildDaVinciInterfaceModel(): DaVinciInterfaceModel {
     calibrationMaterial,
   );
   offsetRecord.name = "Measured calibration offset record";
-  offsetRecord.position.set(0.28, 0.34, 0.33);
+  offsetRecord.position.set(0.28, 0.34, 0.3);
   tool.add(offsetRecord);
 
   const engagementPins = new THREE.Group();
   engagementPins.name = "Engagement structures and signals";
+  const engagementPinMeshes: THREE.Mesh[] = [];
   for (const y of [-0.24, 0.24]) {
     const pin = new THREE.Mesh(
       trackGeometry(new THREE.CylinderGeometry(0.065, 0.065, 0.3, 12)),
       engagementMaterial,
     );
     pin.rotation.z = Math.PI / 2;
-    pin.position.set(-0.72, y, 0);
+    // The left endpoint seats exactly in the holder's interface well while
+    // the right endpoint overlaps the tool body. Signal state may recolor
+    // these structures, but must never make the physical bridge disappear.
+    pin.position.set(-0.71, y, 0);
     engagementPins.add(pin);
+    engagementPinMeshes.push(pin);
   }
   tool.add(engagementPins);
 
   const pathPoints = [
-    new THREE.Vector3(-1.65, 0.28, 0),
-    new THREE.Vector3(-0.95, 0.8, 0),
-    new THREE.Vector3(0.62, 0.8, 0),
-    new THREE.Vector3(1.12, 0.4, 0),
+    new THREE.Vector3(-1.52, 0, 0.36),
+    new THREE.Vector3(-0.94, 0.8, 0.32),
+    new THREE.Vector3(0.62, 0.8, 0.31),
+    new THREE.Vector3(1.13, 0.34, 0.31),
   ];
   const dataPath = new THREE.Line(
     trackGeometry(new THREE.BufferGeometry().setFromPoints(pathPoints)),
@@ -203,7 +235,7 @@ export function buildDaVinciInterfaceModel(): DaVinciInterfaceModel {
     ),
   );
   arrow.rotation.z = -Math.PI / 2;
-  arrow.position.set(-1.75, 0.28, 0);
+  arrow.position.set(-1.77, 0.18, 0.36);
   root.add(arrow);
 
   const statusRing = new THREE.Mesh(
@@ -227,7 +259,10 @@ export function buildDaVinciInterfaceModel(): DaVinciInterfaceModel {
 
     engagementMaterial.color.setHex(state.engagementSignalPresent ? 0x10b981 : 0xf97316);
     engagementMaterial.emissive.setHex(state.engagementSignalPresent ? 0x047857 : 0x9a3412);
-    engagementPins.visible = state.engagementSignalPresent;
+    // A missing report means "engagement unconfirmed", not "the physical
+    // connector vanished". Keep the bridge present and use material state to
+    // communicate the absent signal.
+    engagementPins.visible = true;
 
     dataPath.material = state.processorCanConfigureTool ? busMaterial : inactiveBusMaterial;
     statusRing.material = state.processorCanConfigureTool
@@ -244,9 +279,91 @@ export function buildDaVinciInterfaceModel(): DaVinciInterfaceModel {
     status: "ready",
   });
 
+  const worldBounds = (object: THREE.Object3D) => new THREE.Box3().setFromObject(object);
+  const surfaceGap = (a: THREE.Object3D, b: THREE.Object3D) => {
+    const aBounds = worldBounds(a);
+    const bBounds = worldBounds(b);
+    const dx = Math.max(0, aBounds.min.x - bBounds.max.x, bBounds.min.x - aBounds.max.x);
+    const dy = Math.max(0, aBounds.min.y - bBounds.max.y, bBounds.min.y - aBounds.max.y);
+    const dz = Math.max(0, aBounds.min.z - bBounds.max.z, bBounds.min.z - aBounds.max.z);
+    return Math.hypot(dx, dy, dz);
+  };
+  const pointGap = (object: THREE.Object3D, point: THREE.Vector3) =>
+    worldBounds(object).distanceToPoint(point);
+  const connectivityReceipt = (): readonly DaVinciInterfaceConnectivityGap[] => {
+    root.updateMatrixWorld(true);
+    const dataPositions = dataPath.geometry.attributes.position as THREE.BufferAttribute;
+    const dataStart = dataPath.localToWorld(
+      new THREE.Vector3().fromBufferAttribute(dataPositions, 0),
+    );
+    const dataEnd = dataPath.localToWorld(
+      new THREE.Vector3().fromBufferAttribute(dataPositions, dataPositions.count - 1),
+    );
+    return [
+      {
+        interface: "plinth -> processor support",
+        gapSceneUnits: surfaceGap(base, processorSupport),
+      },
+      {
+        interface: "processor support -> processor",
+        gapSceneUnits: surfaceGap(processorSupport, processorBody),
+      },
+      {
+        interface: "plinth -> holder support",
+        gapSceneUnits: surfaceGap(base, holderSupport),
+      },
+      {
+        interface: "holder support -> holder",
+        gapSceneUnits: surfaceGap(holderSupport, holderBody),
+      },
+      ...engagementPinMeshes.flatMap((pin, index) => [
+        {
+          interface: `holder well -> engagement structure ${index + 1}`,
+          gapSceneUnits: surfaceGap(interfaceWell, pin),
+        },
+        {
+          interface: `engagement structure ${index + 1} -> tool body`,
+          gapSceneUnits: surfaceGap(pin, toolBody),
+        },
+      ]),
+      {
+        interface: "tool body -> distal shaft",
+        gapSceneUnits: surfaceGap(toolBody, distal),
+      },
+      {
+        interface: "distal shaft -> left jaw",
+        gapSceneUnits: surfaceGap(distal, endEffector.children[0] as THREE.Object3D),
+      },
+      {
+        interface: "distal shaft -> right jaw",
+        gapSceneUnits: surfaceGap(distal, endEffector.children[1] as THREE.Object3D),
+      },
+      {
+        interface: "tool body -> compatibility memory",
+        gapSceneUnits: surfaceGap(toolBody, memory),
+      },
+      {
+        interface: "tool body -> calibration record",
+        gapSceneUnits: offsetRecord.visible ? surfaceGap(toolBody, offsetRecord) : 0,
+      },
+      {
+        interface: "processor connector -> data path",
+        gapSceneUnits: pointGap(
+          processorPins[processorPins.length - 1] as THREE.Object3D,
+          dataStart,
+        ),
+      },
+      {
+        interface: "data path -> tool memory",
+        gapSceneUnits: pointGap(memory, dataEnd),
+      },
+    ];
+  };
+
   return {
     root,
     setTopologyState,
+    connectivityReceipt,
     dispose: () => {
       for (const geometry of geometries) geometry.dispose();
       for (const material of materials) material.dispose();

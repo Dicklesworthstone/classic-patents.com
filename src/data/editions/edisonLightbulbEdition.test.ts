@@ -3,6 +3,12 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS } from "@/data/editions/archivalFigureAcceptance";
+import { FIGURE_OCCURRENCE_SOURCE_LOCATORS } from "@/data/editions/figureOccurrenceSourceLocators";
+import {
+  completeArchivalEditionForViewer,
+  evaluateArchivalPublicationState,
+} from "@/data/editions/publicationApproval";
 import { edisonBulbPatent } from "@/data/patents/edison-lightbulb";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import {
@@ -66,7 +72,7 @@ describe("US 223,898 manual source edition", () => {
     );
   });
 
-  test("pairs every source paragraph with a non-lossy reading and every figure with a local crop", () => {
+  test("pairs every source paragraph with a non-lossy reading and every figure with a complete local sheet", () => {
     const paragraphIndexes = edisonLightbulbArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
     );
@@ -77,6 +83,12 @@ describe("US 223,898 manual source edition", () => {
     ).toEqual(paragraphIndexes);
 
     const figureReferences = edisonLightbulbArchivalEdition.blocks.flatMap((block) => {
+      if (block.kind === "figure-sheet") {
+        return block.description.filter(
+          (inline): inline is Extract<(typeof block.description)[number], { kind: "reference" }> =>
+            inline.kind === "reference" && inline.referenceType === "figure",
+        );
+      }
       if (!("inlines" in block)) return [];
       return block.inlines.filter(
         (inline): inline is Extract<(typeof block.inlines)[number], { kind: "reference" }> =>
@@ -90,18 +102,82 @@ describe("US 223,898 manual source edition", () => {
         ),
       ).toBe(true);
     }
-    const figureOnePreview = figureReferences
-      .flatMap((reference) => reference.figurePreviews ?? [])
-      .find((preview) => preview.alt.includes("Fig. 1"));
-    expect(figureOnePreview).toMatchObject({
-      src: "/patents/figures/us-223898-edison-lightbulb/fig-1-source-crop-v4.png",
-      width: 600,
-      height: 900,
-    });
+    expect(figureReferences).toHaveLength(6);
     for (const reference of figureReferences) {
       for (const preview of reference.figurePreviews ?? []) {
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+        expect(preview).toMatchObject({
+          src: "/patents/figures/us-223898-edison-lightbulb/source-sheet-1-v1.png",
+          width: 2320,
+          height: 3408,
+        });
+        expect(preview.alt).toContain("Complete upright source drawing sheet 1 of 1");
       }
+    }
+    const sourceSheet = resolve(
+      process.cwd(),
+      "public/patents/figures/us-223898-edison-lightbulb/source-sheet-1-v1.png",
+    );
+    const sourceSheetBytes = readFileSync(sourceSheet);
+    expect(createHash("sha256").update(sourceSheetBytes).digest("hex")).toBe(
+      "6a6bb2965a4b3b68d964cf7ebe6885e2037876e80661bdd7d99b7f0398e0053c",
+    );
+    expect({
+      width: sourceSheetBytes.readUInt32BE(16),
+      height: sourceSheetBytes.readUInt32BE(20),
+    }).toEqual({ width: 2320, height: 3408 });
+    for (const legacyCrop of [
+      "fig-1-source-crop-v4.png",
+      "fig-2-source-crop-v6.png",
+      "fig-3-source-crop-v3.png",
+    ]) {
+      expect(
+        existsSync(
+          resolve(process.cwd(), "public/patents/figures/us-223898-edison-lightbulb", legacyCrop),
+        ),
+      ).toBe(true);
+    }
+  });
+
+  test("accepts all six source citations internally without gating the source edition", () => {
+    const patentId = edisonBulbPatent.id;
+    const decision = evaluateArchivalPublicationState(edisonBulbPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 6,
+      acceptedFigureCount: 6,
+    });
+    expect(decision.figureManifest.figures.every((figure) => figure.status === "accepted")).toBe(
+      true,
+    );
+    expect(completeArchivalEditionForViewer(edisonBulbPatent)).toBe(edisonLightbulbArchivalEdition);
+    expect(
+      (ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS as Record<string, unknown>)[patentId],
+    ).toMatchObject({
+      sourcePdfSha256: edisonLightbulbArchivalEdition.sourcePdfSha256,
+      reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+      reviewedAt: "2026-09-03",
+      acceptedOccurrenceCount: 6,
+      assets: {
+        "/patents/figures/us-223898-edison-lightbulb/source-sheet-1-v1.png": {
+          sha256: "6a6bb2965a4b3b68d964cf7ebe6885e2037876e80661bdd7d99b7f0398e0053c",
+          width: 2320,
+          height: 3408,
+        },
+      },
+    });
+    const locators = (FIGURE_OCCURRENCE_SOURCE_LOCATORS as Record<string, readonly unknown[]>)[
+      patentId
+    ];
+    expect(locators).toHaveLength(6);
+    for (const locator of locators ?? []) {
+      expect(locator).toMatchObject({
+        activeAsset: "/patents/figures/us-223898-edison-lightbulb/source-sheet-1-v1.png",
+        sourcePdfPage: 1,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 0, y: 0, width: 2320, height: 3408 },
+      });
     }
   });
 

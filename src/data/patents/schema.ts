@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import type { Patent } from "@/types/patent";
+import type { Patent, ReviewedTranscriptionPageAnchor } from "@/types/patent";
 
 const isoDate = z
   .string()
@@ -79,6 +79,21 @@ const plainEnglishSchema = z.object({
   whyItMattersToday: z.string().min(1),
 });
 
+const reviewedTranscriptionPageAnchorSchema: z.ZodType<ReviewedTranscriptionPageAnchor> = z.union([
+  z.object({
+    page: z.number().int().positive(),
+    exactSourceText: z.string().min(1),
+    sourceRelationship: z.string().min(1),
+    isBlank: z.literal(false).optional(),
+  }),
+  z.object({
+    page: z.number().int().positive(),
+    isBlank: z.literal(true),
+    sourceRelationship: z.string().min(1),
+    exactSourceText: z.undefined().optional(),
+  }),
+]);
+
 const originalTextAssetSchema = z.object({
   url: z.string().startsWith("/patents/"),
   pageCount: z.number().int().positive(),
@@ -89,6 +104,7 @@ const originalTextAssetSchema = z.object({
     .string()
     .regex(/^[a-f0-9]{64}$/, "expected a SHA-256 hex digest")
     .optional(),
+  pageAnchors: z.array(reviewedTranscriptionPageAnchorSchema).readonly().optional(),
 });
 
 const curatedSpecificationInlineSchema = z.discriminatedUnion("kind", [

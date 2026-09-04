@@ -248,8 +248,10 @@ describe("patent E2E scenario contract", () => {
     expect(scenarios.some((scenario) => !scenario.hasEnergyChannels)).toBe(true);
     expect(scenarios.some((scenario) => scenario.controls.length > 0)).toBe(true);
 
-    const teslaMotor = scenarios.find((scenario) => scenario.patentId === "us-381968-tesla-motor");
-    expect(teslaMotor?.sourceDecision.figureAttestation).toMatchObject({
+    const renoEscalator = scenarios.find(
+      (scenario) => scenario.patentId === "us-470918-reno-escalator",
+    );
+    expect(renoEscalator?.sourceDecision.figureAttestation).toMatchObject({
       reviewer: expect.any(String),
       reviewedAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
       acceptanceBasis: expect.any(String),
@@ -257,20 +259,22 @@ describe("patent E2E scenario contract", () => {
       matchesEdition: true,
       matchesLocators: false,
     });
-    expect(teslaMotor?.sourceDecision.figureAttestation?.acceptedOccurrenceCount).toBe(
-      teslaMotor?.sourceDecision.requiredFigureCount,
+    expect(renoEscalator?.sourceDecision.figureAttestation?.acceptedOccurrenceCount).toBe(
+      renoEscalator?.sourceDecision.requiredFigureCount,
     );
-    expect(teslaMotor?.sourceState).toBe("edition");
-    expect(teslaMotor?.sourceReasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
-    expect(teslaMotor?.sourceDecision.acceptedFigureCount).toBe(0);
+    expect(renoEscalator?.sourceState).toBe("edition");
+    expect(renoEscalator?.sourceReasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+    expect(renoEscalator?.sourceDecision.acceptedFigureCount).toBe(0);
     expect(
-      teslaMotor?.sourceDecision.figures.every(
+      renoEscalator?.sourceDecision.figures.every(
         (figure) =>
           figure.status === "pending" &&
           figure.sourcePdfPage === null &&
           figure.sourceRegion === null,
       ),
     ).toBe(true);
+
+    const teslaMotor = scenarios.find((s) => s.patentId === "us-381968-tesla-motor");
     expect(teslaMotor?.sourceDecision.ledgerContent).toMatchObject({
       status: "verified",
       valid: true,

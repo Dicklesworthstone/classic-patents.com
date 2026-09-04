@@ -3,6 +3,12 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS } from "@/data/editions/archivalFigureAcceptance";
+import { FIGURE_OCCURRENCE_SOURCE_LOCATORS } from "@/data/editions/figureOccurrenceSourceLocators";
+import {
+  completeArchivalEditionForViewer,
+  evaluateArchivalPublicationState,
+} from "@/data/editions/publicationApproval";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import { spencerMicrowavePatent } from "@/data/patents/spencer-microwave";
 import {
@@ -62,7 +68,7 @@ describe("US 2,495,429 manual source edition", () => {
     );
   });
 
-  test("covers every source paragraph and uses the local source crop at its sole figure citation", () => {
+  test("covers every source paragraph and uses a complete local source sheet at its sole figure citation", () => {
     const paragraphIndexes = spencerMicrowaveArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
     );
@@ -82,9 +88,59 @@ describe("US 2,495,429 manual source edition", () => {
     expect(figureReferences).toHaveLength(1);
     const preview = figureReferences[0]?.figurePreviews?.[0];
     expect(preview?.src).toBe(
-      "/patents/figures/us-2495429-spencer-microwave/fig-1-source-crop-v1.png",
+      "/patents/figures/us-2495429-spencer-microwave/drawing-sheet-source-v1.png",
     );
+    expect(preview).toMatchObject({
+      width: 2320,
+      height: 3408,
+      alt: expect.stringContaining("Complete source drawing sheet 1 of 1"),
+    });
     expect(existsSync(resolve(process.cwd(), "public", preview?.src.slice(1) ?? ""))).toBe(true);
+    expect(
+      existsSync(
+        resolve(
+          process.cwd(),
+          "public/patents/figures/us-2495429-spencer-microwave/fig-1-source-crop-v1.png",
+        ),
+      ),
+    ).toBe(true);
+  });
+
+  test("accepts the complete source-sheet evidence while keeping the source edition available", () => {
+    const patentId = spencerMicrowavePatent.id;
+    const decision = evaluateArchivalPublicationState(spencerMicrowavePatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 1,
+      acceptedFigureCount: 1,
+    });
+    expect(completeArchivalEditionForViewer(spencerMicrowavePatent)).toBe(
+      spencerMicrowaveArchivalEdition,
+    );
+
+    const attestation = (ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS as Record<string, any>)[patentId];
+    expect(attestation).toMatchObject({
+      sourcePdfSha256: spencerMicrowaveArchivalEdition.sourcePdfSha256,
+      reviewedAt: "2026-09-03",
+      acceptedOccurrenceCount: 1,
+      assets: {
+        "/patents/figures/us-2495429-spencer-microwave/drawing-sheet-source-v1.png": {
+          sha256: "ab3aef1cd0afe66a2fa7f728bfedd51f0caaa7d1c80da36932e0a897841bd826",
+          width: 2320,
+          height: 3408,
+        },
+      },
+    });
+    expect((FIGURE_OCCURRENCE_SOURCE_LOCATORS as Record<string, any>)[patentId]).toEqual([
+      expect.objectContaining({
+        occurrenceKey: "edition-block-6-group-0-inline-1",
+        activeAsset: "/patents/figures/us-2495429-spencer-microwave/drawing-sheet-source-v1.png",
+        sourcePdfPage: 1,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 0, y: 0, width: 2320, height: 3408 },
+      }),
+    ]);
   });
 
   test("does not carry fabricated preamble, door hardware, or unprinted operating claims into visitor-facing data", () => {

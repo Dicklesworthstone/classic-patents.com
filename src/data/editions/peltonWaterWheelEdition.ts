@@ -18,6 +18,19 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
+/**
+ * The four figures share one interleaved nineteenth-century source sheet.
+ * Keeping the complete upright sheet is more faithful than asserting a clean
+ * boundary around an individual drawing where surrounding printed matter is
+ * part of the original layout.
+ */
+const sourceSheetPreview = (label: "Fig. 1" | "Fig. 2" | "Fig. 3" | "Fig. 4") => ({
+  src: "/patents/figures/us-233692-pelton-water-wheel/source-sheet-1-v1.png",
+  alt: `Complete source drawing sheet 1 of 1 from US 233,692, including ${label}.`,
+  width: 2320,
+  height: 3408,
+});
+
 const figure = (
   label: "Fig. 1" | "Fig. 2" | "Fig. 3" | "Fig. 4",
   sourceText: string = label,
@@ -27,9 +40,7 @@ const figure = (
   href: `#figure-${label.replace("Fig. ", "")}`,
   referenceType: "figure",
   label: `US 233,692 ${label}`,
-  // Existing crops are retained on disk but are not bound here: the current
-  // versions include neighboring drawing matter and are awaiting a fresh
-  // source-coordinate crop pass under a permitted load gate.
+  figurePreviews: [sourceSheetPreview(label)],
 });
 
 const claim = (number: number, value: string | CuratedSpecificationInlines) => ({
@@ -41,18 +52,15 @@ const claim = (number: number, value: string | CuratedSpecificationInlines) => (
 /**
  * A continuous, manually prepared edition of the complete three-sheet US
  * 233,692 facsimile. The drawing sheet is represented by source-semantic
- * references; figure-preview binding remains withheld until the existing
- * neighboring-matter crops can be replaced under a permitted load gate.
+ * references and a complete, digest-pinned source-sheet preview. The previous
+ * research crops remain preserved on disk but are not bound to the edition.
  */
-export const peltonWaterWheelArchivalEdition: Omit<
-  CuratedSpecificationEdition,
-  "completeFacsimileReviewed"
-> & { completeFacsimileReviewed: false } = {
+export const peltonWaterWheelArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "b81019c0239af3ab932bd477970c1a414a91f765a68b28f9b22444e4f95c597c",
-  preparedBy: "Classic Patents editorial agent (GPT-5.6)",
-  preparedAt: "2026-08-21",
-  completeFacsimileReviewed: false,
+  preparedBy: "Classic Patents editorial agent (Codex; direct source-pixel review)",
+  preparedAt: "2026-09-03",
+  completeFacsimileReviewed: true,
   blocks: [
     {
       kind: "masthead",
@@ -181,7 +189,7 @@ export const peltonWaterWheelParallelReadings: Readonly<Record<number, readonly 
     "The proposed bucket splits the incoming stream at its center. Each half enters its own curved bottom, travels upward along an outward-flaring side, and exits away from both the following bucket and the wheel. Pelton's stated gain is that the momentum delivered at entry is supplemented by the force associated with changing the stream's direction.",
   ],
   7: [
-    "The four figures separate the overall wheel, the water-distribution arrangement, a perspective bucket, and a cross-section of that bucket. The references open cropped portions of the historical drawing sheet rather than a generic turbine illustration.",
+    "The four figures separate the overall wheel, the water-distribution arrangement, a perspective bucket, and a cross-section of that bucket. Each citation opens the same complete historical drawing sheet, retaining the original figure layout and formal printed matter rather than a generic turbine illustration or speculative isolated crop.",
   ],
   8: [
     "The wheel has a flat rim face carrying buckets B. Each bucket may be separate or integral with the rim. Its two curved bottoms c meet at central apex d. The jet strikes d, divides in two, passes down the curved bottoms, rises along sides e, and exits laterally. The source's mechanism is the full bucket geometry, not merely a center splitter considered alone.",

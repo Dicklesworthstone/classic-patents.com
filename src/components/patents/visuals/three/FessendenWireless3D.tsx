@@ -17,6 +17,10 @@ import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
+  type FessendenWirelessCameraPreset,
+  fessendenWirelessCameraForViewport,
+} from "./fessendenWirelessCamera";
+import {
   articulateFessendenWireless,
   buildFessendenWirelessModel,
   type FessendenWirelessModelNodes,
@@ -27,18 +31,6 @@ import { createOrbitingStudioOverlayActions } from "./studioOverlayActions";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset = "isometric" | "alternator" | "cageAntenna" | "liquidBarretter";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  isometric: { pos: [3.5, 3.0, 4.5], target: [0, 1.2, 0] },
-  alternator: { pos: [-1.8, 1.2, 2.0], target: [-1.8, 0.4, 0] },
-  cageAntenna: { pos: [0.5, 2.2, 2.5], target: [0.5, 1.8, 0] },
-  liquidBarretter: { pos: [2.0, 0.8, 1.2], target: [1.9, 0.3, 0] },
-};
 
 const IDLE_EM: ElectromagneticsState = {
   frequencyHz: 0,
@@ -65,7 +57,7 @@ export function FessendenWireless3D() {
   const audioModPct = params.audioModulationPct ?? 65;
   const antennaTuningUh = params.antennaTuningUh ?? 450;
   const distanceKm = params.transmissionDistanceKm ?? 25;
-  const [cameraPreset, setCameraPreset] = useState<CameraPreset>("isometric");
+  const [cameraPreset, setCameraPreset] = useState<FessendenWirelessCameraPreset>("isometric");
   const [isRotating, setIsRotating] = useState(false);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
@@ -159,9 +151,12 @@ export function FessendenWireless3D() {
     return unregister;
   }, [live]);
 
-  const handlePresetChange = (preset: CameraPreset) => {
+  const handlePresetChange = (preset: FessendenWirelessCameraPreset) => {
     setCameraPreset(preset);
-    const { pos, target } = CAMERA_PRESETS[preset];
+    const { pos, target } = fessendenWirelessCameraForViewport(
+      preset,
+      containerRef.current?.clientWidth ?? 0,
+    );
     studioRef.current?.controls.setView(pos, target);
   };
 
@@ -169,7 +164,7 @@ export function FessendenWireless3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const overview = CAMERA_PRESETS.isometric;
+    const overview = fessendenWirelessCameraForViewport("isometric", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: overview.pos,
@@ -232,6 +227,20 @@ export function FessendenWireless3D() {
     };
   }, [live]);
 
+  useEffect(() => {
+    const restoreResponsiveCamera = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const { pos, target } = fessendenWirelessCameraForViewport(
+        cameraPreset,
+        container.clientWidth,
+      );
+      studioRef.current?.controls.setView(pos, target);
+    };
+    window.addEventListener("resize", restoreResponsiveCamera);
+    return () => window.removeEventListener("resize", restoreResponsiveCamera);
+  }, [cameraPreset]);
+
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
       <div className="sr-only">Reginald Fessenden Wireless Signaling 3D</div>
@@ -256,7 +265,12 @@ export function FessendenWireless3D() {
                 <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
               </span>
               {(
-                ["isometric", "alternator", "cageAntenna", "liquidBarretter"] as CameraPreset[]
+                [
+                  "isometric",
+                  "alternator",
+                  "cageAntenna",
+                  "liquidBarretter",
+                ] as FessendenWirelessCameraPreset[]
               ).map((preset) => (
                 <button
                   type="button"

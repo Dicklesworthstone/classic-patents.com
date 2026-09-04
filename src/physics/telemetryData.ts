@@ -173,6 +173,7 @@ import {
   readSikorskyControls,
   stepSikorskyHelicopterSi,
 } from "./sikorskyHelicopterKernel";
+import { stepSpencerMicrowaveSource } from "./spencerMicrowaveKernel";
 import {
   readStackhouseSourceControls,
   STACKHOUSE_SOURCE_DEFAULT_CONTROLS,
@@ -202,6 +203,7 @@ import { readWrightControls, stepWrightFlyerSi, WRIGHT_COUPLING } from "./wright
 
 export type MetricProvenanceClassification =
   | "source-disclosed"
+  | "source-derived"
   | "scenario-modern"
   | "scenario-reader"
   | "topology-normalized"
@@ -2581,12 +2583,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     domain: "electromagnetics",
     domainTitle: "Dual-Magnetron Guided Food-Treatment Apparatus",
     equationName: "Source-Stated Microwave Wavelength Region",
-    governingEquation: "\\lambda \\lesssim 10\\ \\text{cm}",
-    engineMethod: "Source-bounded TypeScript apparatus state; no quantitative tube model",
+    governingEquation: "\\lambda \\lesssim 10\\ \\text{cm}, \\quad c = \\lambda f",
+    engineMethod: "stepSpencerMicrowaveSource (source topology + exact c = lambda f reference)",
     controls: [
       {
         id: "rfPowerSetting",
-        label: "Illustrative Energy Path",
+        label: "Source-Path Highlight",
         min: 0,
         max: 1,
         step: 1,
@@ -2596,40 +2598,53 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const energyPathActive = (p.rfPowerSetting ?? 1) > 0;
+      const source = stepSpencerMicrowaveSource(p);
 
       return [
         {
           label: "Energy Path",
-          value: energyPathActive ? "active" : "disabled",
+          value: source.energyPathActive ? "active" : "disabled",
           unit: "",
           badgeColor: "cyan",
-          progressPct: energyPathActive ? 100 : 0,
+          progressPct: source.energyPathActive ? 100 : 0,
           provenance: "scenario-reader",
         },
         {
-          label: "Oscillators",
-          value: "10 and 11",
-          unit: "source numerals",
+          label: "Wavelength Region",
+          value: "about 10 cm or less",
+          unit: "source text",
           badgeColor: "emerald",
           progressPct: 100,
           provenance: "source-disclosed",
+          provenanceCitation: "US 2,495,429 specification and Claims 4–6",
         },
         {
-          label: "Common Guide",
-          value: "23",
-          unit: "source numeral",
+          label: "Vacuum f at 10 cm",
+          value: (source.vacuumFrequencyAtTenCentimetersHz / 1e9).toFixed(3),
+          unit: "GHz",
           badgeColor: "purple",
           progressPct: 100,
-          provenance: "source-disclosed",
+          provenance: "source-derived",
+          provenanceCitation:
+            "Derived from the printed ten-centimetre reference using c = lambda f",
         },
         {
-          label: "Conveyor",
-          value: "28",
-          unit: "source numeral",
+          label: "Printed Path",
+          value: "10/11 → 24/25 → 23 → 28",
+          unit: "source numerals",
           badgeColor: "amber",
           progressPct: 100,
           provenance: "source-disclosed",
+        },
+        {
+          label: "Tube & Cooking SI",
+          value: "refused",
+          unit: "missing source card",
+          badgeColor: "rose",
+          progressPct: 0,
+          provenance: "refusal-bounded",
+          provenanceCitation:
+            "US 2,495,429 does not print the parameter card needed for quantitative tube or cooking performance.",
         },
       ];
     },

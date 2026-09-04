@@ -1,11 +1,30 @@
 import { INITIAL_SIKORSKY_STATE } from "@/physics/sikorskyHelicopterKernel";
 import { sikorskyStudioAltitude } from "./sikorskyHelicopterModel";
 
+// The full-width desktop card resolves to a 1214 × 680 px WebGL surface: its
+// 4:3 layout is capped by max-h-[680px].  This closer pose was projected
+// against the complete three-blade phase envelope in the default, collective-
+// maximum, and Claim 1-inverted states.  It leaves room above for the view
+// rail/source boundary and below for the live reader controls while making the
+// VS-300's open truss and pitch-control assembly useful at overview scale.
+export const SIKORSKY_DESKTOP_OVERVIEW = {
+  position: [4.5, 3.8, 5.5] as [number, number, number],
+  target: [-1, 2.15, -1.25] as [number, number, number],
+};
+
+export const SIKORSKY_DESKTOP_OVERVIEW_SAFE_ZONE = {
+  viewportWidth: 1214,
+  viewportHeight: 680,
+  horizontalNdcEdge: 0.95,
+  topPx: 140,
+  bottomPx: 560,
+  minimumAirframeWidthPx: 1080,
+  minimumOpenFrameWidthPx: 250,
+  minimumOpenFrameHeightPx: 270,
+} as const;
+
 export const SIKORSKY_HELICOPTER_CAMERA_VIEWS = {
-  overview: {
-    position: [5.9, 4.5, 7.2] as [number, number, number],
-    target: [0, 1.55, -1.25] as [number, number, number],
-  },
+  overview: SIKORSKY_DESKTOP_OVERVIEW,
   rotorHead: {
     position: [1.4, 3.7, 1.7] as [number, number, number],
     target: [0, 3.1, 0] as [number, number, number],

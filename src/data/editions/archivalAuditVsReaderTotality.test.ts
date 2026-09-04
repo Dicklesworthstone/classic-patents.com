@@ -42,32 +42,38 @@ describe("archival audit vs reader totality contract (3hc.9)", () => {
     expect(editionCount + transcriptCount + facsimileCount).toBe(103);
   });
 
-  test("maintains strict audit standards without conflating audit holds with reader withholding", () => {
-    // Exactly 14 patents meet the strictest full publication criteria
-    const auditDecisions = allPatents.map((p) => evaluateArchivalPublicationState(p));
-    const acceptedCount = auditDecisions.filter((d) => d.isPublished).length;
-    const nonAcceptedCount = auditDecisions.filter((d) => !d.isPublished).length;
+  test(
+    "maintains strict audit standards without conflating audit holds with reader withholding",
+    () => {
+      // Exactly 30 patents meet the strictest full publication criteria
+      const auditDecisions = allPatents.map((p) => evaluateArchivalPublicationState(p));
+      const acceptedCount = auditDecisions.filter((d) => d.isPublished).length;
+      const nonAcceptedCount = auditDecisions.filter((d) => !d.isPublished).length;
 
-    expect(acceptedCount).toBe(14);
-    expect(nonAcceptedCount).toBe(89);
+      expect(acceptedCount).toBe(30);
+      expect(nonAcceptedCount).toBe(73);
 
-    // For each of the 89 non-accepted patents, verify that reader delivery is NOT withheld
-    for (const patent of allPatents) {
-      const decision = evaluateArchivalPublicationState(patent);
-      if (!decision.isPublished) {
-        const viewerPatent = patentForSourceReader(patent);
-        const archivalSource = completeArchivalEditionForViewer(viewerPatent);
-        const reviewedTranscript = archivalSource ? undefined : reviewedLedgerTextForViewer(patent);
+      // For each of the 83 non-accepted patents, verify that reader delivery is NOT withheld
+      for (const patent of allPatents) {
+        const decision = evaluateArchivalPublicationState(patent);
+        if (!decision.isPublished) {
+          const viewerPatent = patentForSourceReader(patent);
+          const archivalSource = completeArchivalEditionForViewer(viewerPatent);
+          const reviewedTranscript = archivalSource
+            ? undefined
+            : reviewedLedgerTextForViewer(patent);
 
-        // Every non-accepted patent MUST still deliver either a continuous edition or reviewed ledger
-        const hasCompleteSource = Boolean(archivalSource || reviewedTranscript);
-        expect(
-          hasCompleteSource,
-          `Patent ${patent.id} with hold reason ${decision.reasonCode} must deliver complete source`,
-        ).toBe(true);
+          // Every non-accepted patent MUST still deliver either a continuous edition or reviewed ledger
+          const hasCompleteSource = Boolean(archivalSource || reviewedTranscript);
+          expect(
+            hasCompleteSource,
+            `Patent ${patent.id} with hold reason ${decision.reasonCode} must deliver complete source`,
+          ).toBe(true);
+        }
       }
-    }
-  });
+    },
+    { timeout: 30000 },
+  );
 
   test("demonstrates that modifying audit state does not break visitor source delivery", () => {
     for (const patent of allPatents.slice(0, 5)) {

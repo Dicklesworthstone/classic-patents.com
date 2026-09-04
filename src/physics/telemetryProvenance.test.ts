@@ -3,9 +3,10 @@ import { PATENT_PHYSICS_REGISTRY } from "./telemetryData";
 import { getProvenanceLabel } from "./telemetryProvenance";
 
 describe("Telemetry Provenance Classification", () => {
-  it("provides valid labels for all 5 classification categories", () => {
+  it("provides valid labels for all 6 classification categories", () => {
     const categories = [
       "source-disclosed",
+      "source-derived",
       "scenario-modern",
       "scenario-reader",
       "topology-normalized",

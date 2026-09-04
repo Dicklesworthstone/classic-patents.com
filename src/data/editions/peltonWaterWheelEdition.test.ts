@@ -1,25 +1,32 @@
 import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { peltonWaterWheelPatent } from "@/data/patents/pelton-water-wheel";
 import {
+  normalizeLiteralSourceText,
+  normalizeReviewedLedgerText,
   validateReviewedTranscription,
   validateReviewedTranscriptionEditorialIntegrity,
 } from "@/data/patents/sourceTextValidation";
-import type { CuratedSpecificationEdition } from "@/types/patent";
+import type { CuratedSpecificationInline } from "@/types/patent";
+import { ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS } from "./archivalFigureAcceptance";
+import { FIGURE_OCCURRENCE_SOURCE_LOCATORS } from "./figureOccurrenceSourceLocators";
 import {
   peltonWaterWheelArchivalEdition,
   peltonWaterWheelClaimText,
   peltonWaterWheelParallelReadings,
 } from "./peltonWaterWheelEdition";
+import {
+  completeArchivalEditionForViewer,
+  evaluateArchivalPublicationState,
+} from "./publicationApproval";
 
-const normalized = (value: string) => value.replace(/\s+/g, " ").trim();
+const normalized = (value: string) => normalizeLiteralSourceText(value);
 
 describe("US 233,692 manual source edition", () => {
   test("pins the three-sheet facsimile and the source's one printed claim", () => {
-    // The edition is published unconditionally per the 2026-08-22 owner
-    // policy; maturity gaps are disclosed rather than gating publication.
     expect(peltonWaterWheelPatent.archivalEdition).toBe(peltonWaterWheelArchivalEdition);
     expect(peltonWaterWheelPatent.originalTextAsset).toMatchObject({
       url: "/patents/transcripts/us-233692-pelton-water-wheel-reviewed.txt",
@@ -27,12 +34,11 @@ describe("US 233,692 manual source edition", () => {
       kind: "reviewed-transcription",
       sourcePdfSha256: "b81019c0239af3ab932bd477970c1a414a91f765a68b28f9b22444e4f95c597c",
     });
-    const candidateValidation = validateCuratedSpecificationEdition(
-      peltonWaterWheelArchivalEdition as unknown as CuratedSpecificationEdition,
-      { requireCompleteFacsimileReview: false },
-    );
-    expect(candidateValidation.valid).toBeTrue();
-    expect(candidateValidation.errors).toEqual([]);
+    expect(validateCuratedSpecificationEdition(peltonWaterWheelArchivalEdition)).toEqual({
+      valid: true,
+      errors: [],
+    });
+    expect(peltonWaterWheelArchivalEdition.completeFacsimileReviewed).toBe(true);
     const pdf = readFileSync(
       `${process.cwd()}/public/patents/pdfs/us-233692-pelton-water-wheel.pdf`,
     );
@@ -50,9 +56,7 @@ describe("US 233,692 manual source edition", () => {
     const ledger = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
     expect(validateReviewedTranscription(ledger, 3)).toEqual({ valid: true });
     expect(validateReviewedTranscriptionEditorialIntegrity(ledger, 3)).toEqual({ valid: true });
-    const normalizedLedger = normalized(
-      ledger.replace(/^--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---$/gm, ""),
-    );
+    const normalizedLedger = normalized(normalizeReviewedLedgerText(ledger));
     for (const block of peltonWaterWheelArchivalEdition.blocks) {
       if (block.kind !== "masthead" && block.kind !== "paragraph" && block.kind !== "claim") {
         continue;
@@ -65,7 +69,7 @@ describe("US 233,692 manual source edition", () => {
     }
   });
 
-  test("pairs every paragraph with a companion and every printed figure with a semantic ref", () => {
+  test("pairs every paragraph with a companion and every printed figure with a source-sheet ref", () => {
     const paragraphIndexes = peltonWaterWheelArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
     );
@@ -76,9 +80,14 @@ describe("US 233,692 manual source edition", () => {
     ).toEqual(paragraphIndexes);
 
     const references = peltonWaterWheelArchivalEdition.blocks.flatMap((block) => {
-      if (!("inlines" in block)) return [];
-      return block.inlines.filter(
-        (inline): inline is Extract<(typeof block.inlines)[number], { kind: "reference" }> =>
+      let inlines: readonly CuratedSpecificationInline[] = [];
+      if (block.kind === "figure-sheet") {
+        inlines = Array.isArray(block.description) ? block.description : [];
+      } else if ("inlines" in block && Array.isArray(block.inlines)) {
+        inlines = block.inlines;
+      }
+      return inlines.filter(
+        (inline): inline is Extract<CuratedSpecificationInline, { kind: "reference" }> =>
           inline.kind === "reference" && inline.referenceType === "figure",
       );
     });
@@ -91,7 +100,74 @@ describe("US 233,692 manual source edition", () => {
         ),
       ).toBe(true);
     }
-    expect(references.every((reference) => !reference.figurePreviews)).toBe(true);
+    expect(references).toHaveLength(8);
+    for (const reference of references) {
+      expect(reference.figurePreviews).toEqual([
+        expect.objectContaining({
+          src: "/patents/figures/us-233692-pelton-water-wheel/source-sheet-1-v1.png",
+          width: 2320,
+          height: 3408,
+        }),
+      ]);
+    }
+  });
+
+  test("binds every cited figure to the complete, digest-pinned drawing sheet", () => {
+    const patentId = "us-233692-pelton-water-wheel";
+    const asset = "/patents/figures/us-233692-pelton-water-wheel/source-sheet-1-v1.png";
+    const attestation = ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[patentId];
+    expect(attestation).toMatchObject({
+      sourcePdfSha256: peltonWaterWheelArchivalEdition.sourcePdfSha256,
+      reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+      reviewedAt: "2026-09-03",
+      acceptanceBasis: "independent-figure-review",
+      acceptedOccurrenceCount: 8,
+      assets: {
+        [asset]: {
+          sha256: "a1766af4b2a4d72bef0a3578fda56c8c5949060ec8a0fa4554d227db9546c512",
+          width: 2320,
+          height: 3408,
+        },
+      },
+    });
+    const assetPath = resolve(process.cwd(), "public", asset.slice(1));
+    expect(existsSync(assetPath)).toBe(true);
+    expect(createHash("sha256").update(readFileSync(assetPath)).digest("hex")).toBe(
+      attestation.assets[asset]?.sha256,
+    );
+
+    const locators = FIGURE_OCCURRENCE_SOURCE_LOCATORS[patentId];
+    expect(locators).toHaveLength(8);
+    for (const locator of locators) {
+      expect(locator).toMatchObject({
+        activeAsset: asset,
+        sourcePdfPage: 1,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 0, y: 0, width: 2320, height: 3408 },
+        normalizedSourceRect: { x: 0, y: 0, width: 1, height: 1 },
+        reviewer: attestation.reviewer,
+        reviewedAt: attestation.reviewedAt,
+        evidenceReference:
+          "docs/provenance/us-233692-pelton-water-wheel.md#source-sheet-acceptance-2026-09-03",
+      });
+    }
+    for (const legacyCrop of [
+      "fig-1-source-crop-v1.png",
+      "fig-1-source-crop-v2.png",
+      "fig-2-source-crop-v1.png",
+      "fig-2-source-crop-v2.png",
+      "fig-2-source-crop-v3.png",
+      "fig-3-source-crop-v1.png",
+      "fig-3-source-crop-v2.png",
+      "fig-4-source-crop-v1.png",
+      "fig-4-source-crop-v2.png",
+    ]) {
+      expect(
+        existsSync(
+          resolve(process.cwd(), "public/patents/figures/us-233692-pelton-water-wheel", legacyCrop),
+        ),
+      ).toBe(true);
+    }
   });
 
   test("keeps the drawing-sheet formal matter in the candidate edition", () => {
@@ -129,6 +205,17 @@ describe("US 233,692 manual source edition", () => {
     ]) {
       expect(normalizedLedger).toContain(normalized(printedLine));
     }
+  });
+
+  test("keeps the claim introduction on its actual facsimile sheets", () => {
+    const ledger = readFileSync(
+      `${process.cwd()}/public/patents/transcripts/us-233692-pelton-water-wheel-reviewed.txt`,
+      "utf8",
+    );
+    const pages = ledger.split(/^--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---$/m).slice(1);
+    expect(pages[1]).toContain("Having thus described my invention, what");
+    expect(pages[1]).not.toContain("I claim as new, and desire to secure");
+    expect(pages[2]).toStartWith("\n2                         233,692\n\nI claim as new");
   });
 
   test("removes invented numeric turbine claims and the fabricated second claim", () => {
@@ -172,13 +259,17 @@ describe("US 233,692 manual source edition", () => {
     expect(energyChannelsFor("us-233692-pelton-water-wheel", {})).toEqual([]);
   });
 
-  test("enforces facsimile review pending audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(peltonWaterWheelPatent, {
-      hasCompanionReadings: true,
+  test("accepts the internal source packet without changing source-reader availability", () => {
+    const decision = evaluateArchivalPublicationState(peltonWaterWheelPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.state.kind).toBe("accepted");
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 8,
+      acceptedFigureCount: 8,
     });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("source-bounded");
-    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
+    expect(completeArchivalEditionForViewer(peltonWaterWheelPatent)).toBe(
+      peltonWaterWheelArchivalEdition,
+    );
   });
 });

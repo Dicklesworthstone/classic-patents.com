@@ -5,6 +5,7 @@ import {
   Box3,
   type CylinderGeometry,
   InstancedMesh,
+  Matrix4,
   Mesh,
   MeshStandardMaterial,
   type Object3D,
@@ -42,6 +43,55 @@ function projectedBounds(object: Object3D, viewportWidth: number, viewportHeight
     maxX: Math.max(...corners.map((corner) => corner.x)),
     minY: Math.min(...corners.map((corner) => corner.y)),
     maxY: Math.max(...corners.map((corner) => corner.y)),
+  };
+}
+
+/**
+ * Box corners are intentionally too conservative for this articulated model:
+ * a corner may combine the motor plate from one side with the tool from another
+ * even though no drawn part occupies that point. Project the actual rendered
+ * mesh vertices so framing tests measure the exhibit a visitor can see.
+ */
+function projectedMeshBounds(object: Object3D, viewportWidth: number, viewportHeight: number) {
+  object.updateMatrixWorld(true);
+  const view = stackhouseSourceCameraForViewport("overview", viewportWidth);
+  const camera = new PerspectiveCamera(42, viewportWidth / viewportHeight, 0.1, 1000);
+  camera.position.set(...view.position);
+  camera.lookAt(...view.target);
+  camera.updateProjectionMatrix();
+  camera.updateMatrixWorld();
+
+  const projected: Vector3[] = [];
+  object.traverse((candidate) => {
+    if (!(candidate instanceof Mesh)) return;
+    const positions = candidate.geometry.getAttribute("position");
+    if (!positions) return;
+
+    const matrices: readonly Matrix4[] =
+      candidate instanceof InstancedMesh
+        ? Array.from({ length: candidate.count }, (_, index) => {
+            const instance = new Matrix4();
+            candidate.getMatrixAt(index, instance);
+            return new Matrix4().multiplyMatrices(candidate.matrixWorld, instance);
+          })
+        : [candidate.matrixWorld];
+
+    for (const matrix of matrices) {
+      for (let index = 0; index < positions.count; index += 1) {
+        projected.push(
+          new Vector3(positions.getX(index), positions.getY(index), positions.getZ(index))
+            .applyMatrix4(matrix)
+            .project(camera),
+        );
+      }
+    }
+  });
+
+  return {
+    minX: Math.min(...projected.map((point) => point.x)),
+    maxX: Math.max(...projected.map((point) => point.x)),
+    minY: Math.min(...projected.map((point) => point.y)),
+    maxY: Math.max(...projected.map((point) => point.y)),
   };
 }
 
@@ -235,40 +285,56 @@ describe("Stackhouse source-bounded connected wrist", () => {
     expect(() => model.dispose()).not.toThrow();
   });
 
-  test("frames End Effector 11 inside the desktop and tablet overview instead of cropping it", () => {
+  test("gives the desktop overview useful source-geometry scale without entering either HUD lane", () => {
     const model = buildStackhouseSourceModel();
     try {
-      const controls = readStackhouseSourceControls({});
-      model.update(stepStackhouseSourceTopology(controls), controls);
-
       const desktop = stackhouseSourceCameraForViewport("overview", 1180);
       const tablet = stackhouseSourceCameraForViewport("overview", 684);
       const phone = stackhouseSourceCameraForViewport("overview", 375);
-      const desktopWholeModel = projectedBounds(model.root, 1180, 520);
-      const tabletWholeModel = projectedBounds(model.root, 684, 520);
-      const desktopEndEffector = projectedBounds(model.toolRollGroup, 1180, 520);
-      const tabletEndEffector = projectedBounds(model.toolRollGroup, 684, 520);
 
       expect(desktop).toEqual({
+        position: [1.05, 2.75, -0.48],
+        target: [-0.1, -0.4, -0.48],
+      });
+      expect(tablet).toEqual({
         position: [2.275, 1.515, 2.354],
         target: [0, -0.5, -0.48],
       });
-      expect(tablet).toEqual(desktop);
       expect(phone.target).toEqual([0, -0.14, -0.48]);
       expect(phone.position[0]).toBeCloseTo(3.325, 12);
       expect(phone.position[1]).toBeCloseTo(2.121, 12);
       expect(phone.position[2]).toBeCloseTo(3.662, 12);
 
-      for (const frame of [desktopWholeModel, tabletWholeModel]) {
-        expect(frame.minX).toBeGreaterThan(-0.9);
-        expect(frame.maxX).toBeLessThan(0.9);
-        expect(frame.minY).toBeGreaterThan(-0.9);
-        expect(frame.maxY).toBeLessThan(0.85);
+      for (const params of [
+        {},
+        { forearmRollDeg: 180 },
+        { forearmRollDeg: 180, singleIntersection: 0 },
+      ]) {
+        const controls = readStackhouseSourceControls(params);
+        model.update(stepStackhouseSourceTopology(controls), controls);
+        const frame = projectedMeshBounds(model.root, 1180, 518);
+
+        // Top-left source identity reaches to roughly NDC x=-0.25/y=0.72;
+        // the bottom-right source boundary begins near x=0.42/y=-0.63.
+        // Keep the physical exhibit in the unobscured central field.
+        expect(frame.minX).toBeGreaterThan(-0.55);
+        expect(frame.maxX).toBeLessThan(0.7);
+        expect(frame.minY).toBeGreaterThan(-0.62);
+        expect(frame.maxY).toBeLessThan(0.72);
+        expect(frame.maxX - frame.minX).toBeGreaterThan(1);
+        expect(frame.maxY - frame.minY).toBeGreaterThan(1);
       }
-      for (const frame of [desktopEndEffector, tabletEndEffector]) {
-        expect(frame.minY).toBeGreaterThan(-0.8);
-        expect(frame.maxY).toBeLessThan(0.8);
-      }
+
+      const tabletControls = readStackhouseSourceControls({});
+      model.update(stepStackhouseSourceTopology(tabletControls), tabletControls);
+      const tabletWholeModel = projectedBounds(model.root, 684, 520);
+      const tabletEndEffector = projectedBounds(model.toolRollGroup, 684, 520);
+      expect(tabletWholeModel.minX).toBeGreaterThan(-0.9);
+      expect(tabletWholeModel.maxX).toBeLessThan(0.9);
+      expect(tabletWholeModel.minY).toBeGreaterThan(-0.9);
+      expect(tabletWholeModel.maxY).toBeLessThan(0.85);
+      expect(tabletEndEffector.minY).toBeGreaterThan(-0.8);
+      expect(tabletEndEffector.maxY).toBeLessThan(0.8);
     } finally {
       model.dispose();
     }

@@ -18,25 +18,17 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
+const sourceSheetPreview = (sheet: 1 | 2, figure: string, description: string) => ({
+  src: `/patents/figures/us-319596-maxim-machine-gun/source-sheet-${sheet}-v1.png`,
+  alt: `Complete unmodified source drawing sheet ${sheet} of 2 from US 319,596, including ${figure}: ${description}`,
+  width: 2320,
+  height: 3408,
+});
+
 const FIGURES = {
-  "Fig. 1": {
-    src: "/patents/figures/us-319596-maxim-machine-gun/fig-1-source-crop-v1.png",
-    alt: "Source-facsimile crop of Fig. 1, the vertical central longitudinal section, from US 319,596.",
-    width: 1070,
-    height: 2640,
-  },
-  "Fig. 2": {
-    src: "/patents/figures/us-319596-maxim-machine-gun/fig-2-source-crop-v1.png",
-    alt: "Source-facsimile crop of Fig. 2, the partly sectional plan, from US 319,596.",
-    width: 1030,
-    height: 2640,
-  },
-  "Fig. 3": {
-    src: "/patents/figures/us-319596-maxim-machine-gun/fig-3-source-crop-v1.png",
-    alt: "Source-facsimile crop of Fig. 3, the side view of the breech-case portion, from US 319,596.",
-    width: 1210,
-    height: 1450,
-  },
+  "Fig. 1": sourceSheetPreview(1, "Fig. 1", "the vertical central longitudinal section"),
+  "Fig. 2": sourceSheetPreview(1, "Fig. 2", "the partly sectional plan"),
+  "Fig. 3": sourceSheetPreview(2, "Fig. 3", "the breech-case side view"),
 } as const;
 
 const figure = (
@@ -47,7 +39,7 @@ const figure = (
   text: sourceText,
   href: "#",
   referenceType: "figure",
-  label: `Open the source-facsimile crop for ${label} in US 319,596`,
+  label: `Open the complete source drawing sheet containing ${label} in US 319,596`,
   figurePreviews: [FIGURES[label]],
 });
 
@@ -91,7 +83,10 @@ export const maximMachineGunArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 2"),
         { kind: "text", text: ", and " },
         figure("Fig. 3"),
-        { kind: "text", text: ". Each preview is a direct crop from the pinned facsimile." },
+        {
+          kind: "text",
+          text: ". Each preview is the complete source sheet that contains the cited figure.",
+        },
       ],
     },
     p("To all whom it may concern:"),

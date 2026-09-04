@@ -5,6 +5,14 @@ import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import { teslaMotorPatent } from "@/data/patents/tesla-motor";
+import { ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS } from "./archivalFigureAcceptance";
+import {
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS,
+  type FigureOccurrenceSourceLocator,
+  figureOccurrenceKey,
+  normalizeSourceRectangle,
+  validateFigureOccurrenceSourceLocators,
+} from "./figureOccurrenceSourceLocators";
 import { teslaMotorArchivalEdition, teslaMotorParallelReadings } from "./teslaMotorEdition";
 
 describe("US 381,968 manual source edition", () => {
@@ -44,34 +52,23 @@ describe("US 381,968 manual source edition", () => {
   });
 
   test("uses an authored local source crop for every printed figure citation", () => {
-    const singularPreviewSource = {
-      "Fig. 1": "/patents/figures/us-381968-tesla-motor/fig-1-source-crop-v2.png",
-      "Fig. 2": "/patents/figures/us-381968-tesla-motor/fig-2-source-crop-v2.png",
-      "Fig. 3": "/patents/figures/us-381968-tesla-motor/fig-3-source-crop-v3.png",
-      "Fig. 4": "/patents/figures/us-381968-tesla-motor/fig-4-source-crop-v2.png",
-      "Fig. 5": "/patents/figures/us-381968-tesla-motor/fig-5-source-crop-v2.png",
-      "Fig. 6": "/patents/figures/us-381968-tesla-motor/fig-6-source-crop-v2.png",
-      "Fig. 7": "/patents/figures/us-381968-tesla-motor/fig-7-source-crop-v2.png",
-      "Fig. 8": "/patents/figures/us-381968-tesla-motor/fig-8-source-crop-v2.png",
-      "Fig. 1a": "/patents/figures/us-381968-tesla-motor/fig-1a-source-crop-v2.png",
-      "Fig. 2a": "/patents/figures/us-381968-tesla-motor/fig-2a-source-crop-v2.png",
-      "Fig. 3a": "/patents/figures/us-381968-tesla-motor/fig-3a-source-crop-v2.png",
-      "Fig. 4a": "/patents/figures/us-381968-tesla-motor/fig-4a-source-crop-v3.png",
-      "Fig. 5a": "/patents/figures/us-381968-tesla-motor/fig-5a-source-crop-v3.png",
-      "Fig. 6a": "/patents/figures/us-381968-tesla-motor/fig-6a-source-crop-v3.png",
-      "Fig. 7a": "/patents/figures/us-381968-tesla-motor/fig-7a-source-crop-v2.png",
-      "Fig. 8a": "/patents/figures/us-381968-tesla-motor/fig-8a-source-crop-v2.png",
-      "Fig. 9": "/patents/figures/us-381968-tesla-motor/fig-9-source-crop-v1.png",
-      "Fig. 10": "/patents/figures/us-381968-tesla-motor/fig-10-source-crop-v2.png",
-      "Fig. 11": "/patents/figures/us-381968-tesla-motor/fig-11-source-crop-v2.png",
-      "Fig. 12": "/patents/figures/us-381968-tesla-motor/fig-12-source-crop-v2.png",
-      "Fig. 13": "/patents/figures/us-381968-tesla-motor/fig-13-source-crop-v2.png",
-      "Fig. 14": "/patents/figures/us-381968-tesla-motor/fig-14-source-crop-v2.png",
-      "Fig. 15": "/patents/figures/us-381968-tesla-motor/fig-15-source-crop-v2.png",
-      "Fig. 16": "/patents/figures/us-381968-tesla-motor/fig-16-source-crop-v2.png",
-      "Fig. 17": "/patents/figures/us-381968-tesla-motor/fig-17-source-crop-v1.png",
-      "Fig. 18": "/patents/figures/us-381968-tesla-motor/fig-18-source-crop-v1.png",
-      "Fig. 19": "/patents/figures/us-381968-tesla-motor/fig-19-source-crop-v1.png",
+    const sourceSheets = {
+      "/patents/figures/us-381968-tesla-motor/figs-1-to-8-and-1a-to-8a-source-sheet-v2.png": {
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-381968-tesla-motor/figs-9-to-12-source-sheet-v2.png": {
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-381968-tesla-motor/figs-13-to-16-source-sheet-v2.png": {
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-381968-tesla-motor/figs-17-to-19-source-sheet-v2.png": {
+        width: 2320,
+        height: 3408,
+      },
     } as const;
     const references = teslaMotorArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
@@ -84,49 +81,103 @@ describe("US 381,968 manual source edition", () => {
     expect(references).not.toHaveLength(0);
     const previewSources = new Set<string>();
     for (const reference of references) {
-      expect(reference.figurePreviews?.length).toBeGreaterThan(0);
+      expect(reference.figurePreviews).toHaveLength(1);
       for (const preview of reference.figurePreviews ?? []) {
         expect(preview.src).toStartWith("/patents/figures/us-381968-tesla-motor/");
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+        const expected = sourceSheets[preview.src as keyof typeof sourceSheets];
+        expect(expected).toBeDefined();
+        expect(preview).toMatchObject(expected);
         previewSources.add(preview.src);
       }
-      const figureLabel = reference.label.match(/crop for (.+) in US 381,968$/)?.[1];
-      if (figureLabel && Object.hasOwn(singularPreviewSource, figureLabel)) {
-        expect(reference.figurePreviews).toHaveLength(1);
-        expect(reference.figurePreviews?.[0]?.src).toBe(
-          singularPreviewSource[figureLabel as keyof typeof singularPreviewSource],
-        );
-      }
     }
-    expect([...previewSources].sort()).toEqual([
+    expect([...previewSources].sort()).toEqual(Object.keys(sourceSheets).sort());
+    for (const preservedLegacyCrop of [
       "/patents/figures/us-381968-tesla-motor/fig-1-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-10-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-11-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-12-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-13-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-14-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-15-source-crop-v2.png",
       "/patents/figures/us-381968-tesla-motor/fig-16-source-crop-v2.png",
       "/patents/figures/us-381968-tesla-motor/fig-17-source-crop-v1.png",
-      "/patents/figures/us-381968-tesla-motor/fig-18-source-crop-v1.png",
-      "/patents/figures/us-381968-tesla-motor/fig-19-source-crop-v1.png",
-      "/patents/figures/us-381968-tesla-motor/fig-1a-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-2-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-2a-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-3-source-crop-v3.png",
-      "/patents/figures/us-381968-tesla-motor/fig-3a-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-4-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-4a-source-crop-v3.png",
-      "/patents/figures/us-381968-tesla-motor/fig-5-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-5a-source-crop-v3.png",
-      "/patents/figures/us-381968-tesla-motor/fig-6-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-6a-source-crop-v3.png",
-      "/patents/figures/us-381968-tesla-motor/fig-7-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-7a-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-8-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-8a-source-crop-v2.png",
       "/patents/figures/us-381968-tesla-motor/fig-9-source-crop-v1.png",
-    ]);
+    ]) {
+      expect(existsSync(resolve(process.cwd(), "public", preservedLegacyCrop.slice(1)))).toBe(true);
+      expect(previewSources.has(preservedLegacyCrop)).toBe(false);
+    }
+  });
+
+  test("binds every active Tesla citation to its direct-reviewed complete source sheet", () => {
+    const patentId = teslaMotorPatent.id;
+    const attestation = (ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS as Record<string, any>)[patentId];
+    const locators = (FIGURE_OCCURRENCE_SOURCE_LOCATORS as Record<string, any>)[
+      patentId
+    ] as FigureOccurrenceSourceLocator[];
+    const activeOccurrences = Object.fromEntries(
+      teslaMotorArchivalEdition.blocks.flatMap((block, blockIndex) => {
+        const inlineGroups =
+          block.kind === "paragraph" || block.kind === "claim"
+            ? [block.inlines]
+            : block.kind === "figure-sheet"
+              ? [block.description]
+              : block.kind === "table"
+                ? [...block.headers, ...block.rows.flat()]
+                : [];
+        return inlineGroups.flatMap((inlines, groupIndex) =>
+          inlines.flatMap((inline, inlineIndex) =>
+            inline.kind === "reference" && inline.referenceType === "figure"
+              ? [
+                  [
+                    figureOccurrenceKey(blockIndex, groupIndex, inlineIndex),
+                    inline.figurePreviews?.[0]?.src ?? null,
+                  ],
+                ]
+              : [],
+          ),
+        );
+      }),
+    );
+    const sheetsByPdfPage = {
+      1: "/patents/figures/us-381968-tesla-motor/figs-1-to-8-and-1a-to-8a-source-sheet-v2.png",
+      2: "/patents/figures/us-381968-tesla-motor/figs-9-to-12-source-sheet-v2.png",
+      3: "/patents/figures/us-381968-tesla-motor/figs-13-to-16-source-sheet-v2.png",
+      4: "/patents/figures/us-381968-tesla-motor/figs-17-to-19-source-sheet-v2.png",
+    } as const;
+
+    expect(locators).toHaveLength(57);
+    expect(Object.keys(activeOccurrences)).toHaveLength(57);
+    expect(
+      validateFigureOccurrenceSourceLocators(
+        { [patentId]: locators },
+        {
+          canonicalAssetsByPatent: { [patentId]: Object.keys(attestation.assets) },
+          canonicalOccurrencesByPatent: { [patentId]: activeOccurrences },
+          sourcePdfPageCountsByPatent: { [patentId]: 9 },
+        },
+      ),
+    ).toEqual({ valid: true, errors: [] });
+    expect(attestation).toMatchObject({
+      reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 dpi source-pixel review",
+      reviewedAt: "2026-09-03",
+      acceptanceBasis: "direct-facsimile-crop-review",
+      acceptedOccurrenceCount: 57,
+    });
+    expect(
+      new Set(locators.map((locator: FigureOccurrenceSourceLocator) => locator.activeAsset)),
+    ).toEqual(new Set(Object.values(sheetsByPdfPage)));
+    for (const locator of locators) {
+      expect(locator.sourcePdfPage).toBeGreaterThanOrEqual(1);
+      expect(locator.sourcePdfPage).toBeLessThanOrEqual(4);
+      expect(locator.activeAsset).toBe(
+        sheetsByPdfPage[locator.sourcePdfPage as keyof typeof sheetsByPdfPage],
+      );
+      expect(locator.sourceRaster).toEqual({ width: 2320, height: 3408 });
+      expect(locator.sourceRectPixels).toEqual({ x: 0, y: 0, width: 2320, height: 3408 });
+      expect(locator.normalizedSourceRect).toEqual(
+        normalizeSourceRectangle(locator.sourceRectPixels, locator.sourceRaster),
+      );
+      expect(locator.reviewer).toBe(attestation.reviewer);
+      expect(locator.reviewedAt).toBe(attestation.reviewedAt);
+      expect(locator.evidenceReference).toBe(
+        "docs/provenance/us-381968-tesla-motor.md#source-sheet-crop-review-2026-09-03",
+      );
+    }
   });
 
   test("makes historical technical terms explicit authored annotations", () => {

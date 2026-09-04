@@ -13,54 +13,68 @@ describe("server-only archival audit inventory", () => {
     );
     expect(inventory.summary).toMatchObject({
       catalogueRecordCount: 103,
-      acceptedRecordCount: 14,
-      nonacceptedRecordCount: 89,
+      acceptedRecordCount: 30,
+      nonacceptedRecordCount: 73,
       primaryReasonCounts: {
-        figure: 57,
-        "facsimile-review": 15,
-        ledger: 6,
+        figure: 49,
+        "facsimile-review": 14,
+        ledger: 0,
         "full-specification": 5,
-        "claim-parity": 1,
+        "claim-parity": 0,
         reconstruction: 3,
         "primary-facsimile": 2,
         other: 0,
       },
       readerDeliveryCounts: { edition: 88, transcript: 15, facsimile: 0 },
-      unacceptedFigureOccurrenceCount: 2415,
-      recordsWithAttestedFiguresMissingLocators: 37,
-      recordsMissingFigureAttestationsAndLocators: 45,
+      unacceptedFigureOccurrenceCount: 2235,
+      recordsWithAttestedFiguresMissingLocators: 26,
+      recordsMissingFigureAttestationsAndLocators: 39,
     });
   }, 30000);
 
-  test("keeps latent evidence visible even when a stricter override is the primary reason", () => {
-    const inventory = buildArchivalAuditInventory(allPatents);
-    const fermi = inventory.records.find(
-      (record) => record.patentId === "us-2708656-fermi-reactor",
-    );
-    if (!fermi) throw new Error("Fermi reactor is missing from the inventory");
+  test(
+    "keeps latent evidence visible even when a stricter override is the primary reason",
+    () => {
+      const inventory = buildArchivalAuditInventory(allPatents);
+      const fermi = inventory.records.find(
+        (record) => record.patentId === "us-2708656-fermi-reactor",
+      );
+      if (!fermi) throw new Error("Fermi reactor is missing from the inventory");
 
-    expect(fermi.strictDecision.reasonCode).toBe("AUDIT_FULL_SPECIFICATION_PENDING");
-    expect(fermi.readerDelivery).toBe("transcript");
-    expect(fermi.findings.some((finding) => finding.scope === "figure-occurrence")).toBe(true);
-    expect(fermi.findings.some((finding) => finding.key.startsWith("ledger:"))).toBe(true);
-  });
+      expect(fermi.strictDecision.reasonCode).toBe("AUDIT_FULL_SPECIFICATION_PENDING");
+      expect(fermi.readerDelivery).toBe("transcript");
+      expect(fermi.findings.some((finding) => finding.scope === "figure-occurrence")).toBe(true);
+      expect(fermi.findings.some((finding) => finding.key.startsWith("ledger:"))).toBe(true);
+    },
+    { timeout: 30000 },
+  );
 
-  test("never turns an internal audit hold into a missing source-reader delivery", () => {
-    const inventory = buildArchivalAuditInventory(allPatents);
-    for (const record of inventory.records) {
-      expect(["edition", "transcript", "facsimile"]).toContain(record.readerDelivery);
-    }
+  test(
+    "never turns an internal audit hold into a missing source-reader delivery",
+    () => {
+      const inventory = buildArchivalAuditInventory(allPatents);
+      for (const record of inventory.records) {
+        expect(["edition", "transcript", "facsimile"]).toContain(record.readerDelivery);
+      }
 
-    const wright = inventory.records.find((record) => record.patentId === "us-821393-wright-flyer");
-    if (!wright) throw new Error("Wright Flyer is missing from the inventory");
-    expect(wright.strictDecision.isPublished).toBe(false);
-    expect(wright.readerDelivery).toBe("edition");
-  });
+      const wright = inventory.records.find(
+        (record) => record.patentId === "us-821393-wright-flyer",
+      );
+      if (!wright) throw new Error("Wright Flyer is missing from the inventory");
+      expect(wright.strictDecision.isPublished).toBe(true);
+      expect(wright.readerDelivery).toBe("edition");
+    },
+    { timeout: 30000 },
+  );
 
-  test("is deterministic and contains no route or client-facing identifiers", () => {
-    const first = buildArchivalAuditInventory(allPatents);
-    const second = buildArchivalAuditInventory(allPatents);
-    expect(JSON.stringify(first)).toBe(JSON.stringify(second));
-    expect(JSON.stringify(first)).not.toContain("data-archival-publication-");
-  });
+  test(
+    "is deterministic and contains no route or client-facing identifiers",
+    () => {
+      const first = buildArchivalAuditInventory(allPatents);
+      const second = buildArchivalAuditInventory(allPatents);
+      expect(JSON.stringify(first)).toBe(JSON.stringify(second));
+      expect(JSON.stringify(first)).not.toContain("data-archival-publication-");
+    },
+    { timeout: 30000 },
+  );
 });

@@ -1,3 +1,5 @@
+import { SPENCER_SOURCE_BOUNDARY } from "@/physics/spencerMicrowaveKernel";
+
 export type SpencerCameraPreset =
   | "iso"
   | "cavity_resonator"
@@ -18,8 +20,7 @@ const CAMERA_PRESETS: Record<
   top: { pos: [-1.4, 12, 0.1], target: [-1.4, -0.4, 0] },
 };
 
-export const SPENCER_3D_SOURCE_BOUNDARY =
-  "US 2,495,429 establishes the connected dual-oscillator treatment path and a wavelength region, but supplies no tube voltage, magnetic field, RF power, or quantitative magnetron model. The displayed numerical operating point is a modern illustrative scenario only.";
+export const SPENCER_3D_SOURCE_BOUNDARY = `${SPENCER_SOURCE_BOUNDARY} The scene therefore animates only a normalized push-pull path and normalized conveyor travel; it does not publish a tube operating point or a cooking prediction.`;
 
 export function spencerViewForViewport(preset: SpencerCameraPreset, viewportWidth: number) {
   const config = CAMERA_PRESETS[preset];

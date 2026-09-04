@@ -160,7 +160,7 @@ export function FermiReactor3D() {
 
         {/* Top-Left Camera View Presets Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 shadow-sm max-w-[calc(100%-14rem)] sm:max-w-[calc(100%-28rem)]">
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 shadow-sm max-w-[calc(100%-14rem)] sm:max-w-[calc(100%-9rem)]">
             {(Object.keys(FERMI_REACTOR_CAMERA_PRESETS) as CameraPreset[]).map((preset) => (
               <button
                 key={preset}

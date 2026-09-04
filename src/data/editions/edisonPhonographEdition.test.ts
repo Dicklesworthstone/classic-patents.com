@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { evaluateArchivalPublicationState } from "@/data/editions/publicationApproval";
 import { edisonPhonographPatent } from "@/data/patents/edison-phonograph";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import {
@@ -26,7 +27,7 @@ describe("edisonPhonographArchivalEdition", () => {
     ).toEqual([1, 2, 3, 4]);
   });
 
-  test("makes every cited source figure available as a local crop, including Figs. 3 and 4", () => {
+  test("makes every cited source figure available on a complete local source sheet", () => {
     const figureReferences = edisonPhonographArchivalEdition.blocks.flatMap((block) => {
       if (!("inlines" in block)) return [];
       return block.inlines.filter(
@@ -45,13 +46,55 @@ describe("edisonPhonographArchivalEdition", () => {
     for (const reference of figureReferences) {
       expect(reference.figurePreviews?.length).toBeGreaterThan(0);
       for (const preview of reference.figurePreviews ?? []) {
-        expect(preview.src).toStartWith("/patents/figures/us-200521-edison-phonograph-fig-");
+        expect(preview).toMatchObject({
+          src: "/patents/figures/us-200521-edison-phonograph/drawing-sheet-source-v1.png",
+          width: 2320,
+          height: 3408,
+        });
+        expect(preview.alt).toContain("Complete unmodified source drawing sheet");
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
       }
     }
-    const fig3Reference = figureReferences.find((reference) => reference.text === "Fig. 3");
-    expect(fig3Reference?.figurePreviews?.[0]?.src).toBe(
-      "/patents/figures/us-200521-edison-phonograph-fig-3-complete-source-crop-v2.png",
+
+    for (const legacyCrop of [
+      "us-200521-edison-phonograph-fig-1-source-crop.png",
+      "us-200521-edison-phonograph-fig-2-tight-source-crop.png",
+      "us-200521-edison-phonograph-fig-3-complete-source-crop-v2.png",
+      "us-200521-edison-phonograph-fig-4-source-crop.png",
+    ]) {
+      expect(existsSync(resolve(process.cwd(), "public/patents/figures", legacyCrop))).toBe(true);
+    }
+  });
+
+  test("accepts all eight source citations against full-sheet source-pixel evidence", () => {
+    const decision = evaluateArchivalPublicationState(edisonPhonographPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 8,
+      acceptedFigureCount: 8,
+    });
+    expect(decision.figureManifest.figures.every((figure) => figure.status === "accepted")).toBe(
+      true,
+    );
+  });
+
+  test("keeps the former per-figure previews outside the active source evidence", () => {
+    const figureReferences = edisonPhonographArchivalEdition.blocks.flatMap((block) => {
+      if (!("inlines" in block)) return [];
+      return block.inlines.filter(
+        (inline): inline is Extract<(typeof block.inlines)[number], { kind: "reference" }> =>
+          inline.kind === "reference" && inline.referenceType === "figure",
+      );
+    });
+    const activeAssets = figureReferences.flatMap((reference) =>
+      (reference.figurePreviews ?? []).map((preview) => preview.src),
+    );
+    expect(activeAssets).toEqual(
+      Array.from(
+        { length: 4 },
+        () => "/patents/figures/us-200521-edison-phonograph/drawing-sheet-source-v1.png",
+      ),
     );
   });
 

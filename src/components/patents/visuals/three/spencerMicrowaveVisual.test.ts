@@ -2,7 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import * as THREE from "three";
-import { FrankenSimEngine } from "@/physics/engine";
+import {
+  SPENCER_NORMALIZED_DISPLAY_PHASE_RATE_RAD_PER_S,
+  stepSpencerMicrowaveSource,
+} from "@/physics/spencerMicrowaveKernel";
 import { spencerViewForViewport } from "./spencerMicrowaveCamera";
 import {
   buildSpencerMicrowaveModel,
@@ -31,7 +34,9 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
     expect(threeSource).not.toContain("Strapping Rings");
     expect(threeSource).not.toContain("useGLTF");
     expect(modelSource).not.toContain("delta * 4.5");
-    expect(modelSource).toContain("spokeDisplayOmegaRadPerS");
+    expect(modelSource).toContain("displayPhaseRateRadPerS");
+    expect(modelSource).not.toContain("heatFrames");
+    expect(modelSource).not.toContain("sampleHeatAt");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -84,29 +89,48 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
     expect(distance(phone) / distance(desktop)).toBeCloseTo(2.15, 8);
     expect(threeSource).toContain("Source-bounded energy path");
     expect(threeSource).toContain("SPENCER_3D_SOURCE_BOUNDARY");
-    expect(cameraSource).toContain("modern illustrative scenario only");
+    expect(cameraSource).toContain("normalized push-pull path");
     expect(threeSource).toContain("refusal: { isRefused: true");
     expect(threeSource).not.toContain("refusal: { isRefused: false }");
     expect(threeSource).not.toContain("em: {");
-    expect(threeSource).toContain("Modern-scenario frequency:");
-    expect(threeSource).toContain("Illustrative modern magnetron scenario");
+    expect(threeSource).toContain("Source wavelength region:");
+    expect(threeSource).toContain("Source-bounded apparatus state");
+    expect(threeSource).toContain("Tube & cooking SI:");
     expect(threeSource).toContain('updateParam("rfPowerSetting", active ? 1 : 0)');
     expect(threeSource).not.toContain('updateParam("rfPowerSetting", active ? 800 : 0)');
     expect(threeSource).not.toContain('label="RF Power Rating"');
     expect(threeSource).not.toContain('paramKey="anodeVoltage"');
     expect(threeSource).not.toContain("PortHamiltonianEnergyStrip");
-    expect(threeSource).toContain("fieldPlane.visible = Boolean(p.isOscillating)");
+    expect(threeSource).toContain("fieldPlane.visible = Boolean(p.pathActive)");
+    expect(threeSource).not.toContain("FrankenSimEngine.stepSpencerMicrowave");
+    expect(threeSource).not.toContain("ensureGenericWasm");
+    expect(threeSource).not.toContain("genericKernelSource");
+    for (const unsupportedScenarioLiteral of [
+      "Modern-scenario",
+      "Hull cutoff",
+      "dielectric loss",
+      "2200",
+      "1450",
+      "2450",
+    ]) {
+      expect(threeSource).not.toContain(unsupportedScenarioLiteral);
+    }
   });
 
-  test("keeps the disclosed modern magnetron scenario deterministic and outside the source receipt", () => {
-    const result = FrankenSimEngine.stepSpencerMicrowave(2.2, 1450, 800);
-    expect(result.hullCutoffGauss).toBeGreaterThan(500);
-    expect(result.isOscillating).toBe(true);
-    expect(result.microwaveFreqMhz).toBeGreaterThan(2000);
-    expect(result.dielectricLossWattsPerDm3).toBeGreaterThan(100);
-    expect(result.anodeKv).toBe(2.2);
-    expect(result.microwaveFreqHz).toBe(2450e6);
-    expect(result.electricFieldVpm).toBeCloseTo(220000, 0);
+  test("enforces the no-quantitative-tube-model boundary and refuses ungrounded tube metrics", () => {
+    const result = stepSpencerMicrowaveSource({ rfPowerSetting: 1 });
+    expect(result.quantitativeTubeModelAvailable).toBe(false);
+    expect(result.quantitativeCookingModelAvailable).toBe(false);
+    expect(result.refusal.refused).toBe(true);
+    expect(result.refusal.reason).toContain(
+      "US 2,495,429 supplies two push-pull magnetron oscillators",
+    );
+    expect(result.sourcePathContinuous).toBe(true);
+    expect(result.sourceNumerals.oscillators).toEqual([10, 11]);
+    expect(result.sourceNumerals.transformer).toBe(18);
+    expect(result.vacuumFrequencyAtTenCentimetersHz / 1e9).toBeCloseTo(2.99792458, 8);
+    expect(result.normalizedDisplayPhaseRateRadPerS).toBeGreaterThan(0);
+    expect(result.normalizedConveyorSpeed).toBeGreaterThan(0);
   });
 
   test("builds and articulates procedural copper anode block, resonant cavities, cathode rod, and electron spokes correctly", () => {
@@ -137,14 +161,46 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
     expect(model.root.getObjectByName("Oscillator source 10")).toBeDefined();
     expect(model.root.getObjectByName("Oscillator source 11")).toBeDefined();
 
-    // Test kinematics update & cutaway
-    updateSpencerMicrowaveKinematics(model, 1 / 60, true, 4.5, 0.547, true, true);
-    expect(model.spokePointSets.every((spokes) => spokes.visible)).toBe(true);
-    expect(model.spokePointSets[0].rotation.y).toBeCloseTo(model.spokePointSets[1].rotation.y, 10);
+    // The deliberately slowed display alternates the two push-pull sources;
+    // it does not pretend to render the source's 60-cycle supply in real time.
+    updateSpencerMicrowaveKinematics(
+      model,
+      1 / 60,
+      true,
+      SPENCER_NORMALIZED_DISPLAY_PHASE_RATE_RAD_PER_S,
+      0.85,
+      true,
+      true,
+    );
+    expect(model.spokePointSets.filter((spokes) => spokes.visible)).toHaveLength(1);
+    expect(model.spokePointSets[0].visible).toBe(true);
+    expect(model.spokePointSets[1].visible).toBe(false);
     expect(model.spokePoints.rotation.y).toBeGreaterThan(0);
+    expect(model.root.userData.activeOscillatorNumeral).toBe(10);
     expect(model.materials.copperAnodeMat.opacity).toBe(0.35);
-    updateSpencerMicrowaveKinematics(model, 1 / 60, false, 4.5, 0.547, true, true);
+    updateSpencerMicrowaveKinematics(
+      model,
+      Math.PI / SPENCER_NORMALIZED_DISPLAY_PHASE_RATE_RAD_PER_S,
+      true,
+      SPENCER_NORMALIZED_DISPLAY_PHASE_RATE_RAD_PER_S,
+      0.85,
+      true,
+      true,
+    );
+    expect(model.spokePointSets[0].visible).toBe(false);
+    expect(model.spokePointSets[1].visible).toBe(true);
+    expect(model.root.userData.activeOscillatorNumeral).toBe(11);
+    updateSpencerMicrowaveKinematics(
+      model,
+      1 / 60,
+      false,
+      SPENCER_NORMALIZED_DISPLAY_PHASE_RATE_RAD_PER_S,
+      0.85,
+      true,
+      true,
+    );
     expect(model.spokePointSets.every((spokes) => !spokes.visible)).toBe(true);
+    expect(model.root.userData.activeOscillatorNumeral).toBeNull();
 
     model.dispose();
   });
@@ -181,7 +237,10 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
         .setFromObject(conveyorBelt)
         .getSize(new THREE.Vector3());
       expect(conveyorSize.z).toBeGreaterThan(conveyorSize.x * 3);
-      expect(guideBounds.max.x).toBeGreaterThan(new THREE.Box3().setFromObject(conveyorBelt).min.x);
+      const beltBounds = new THREE.Box3().setFromObject(conveyorBelt);
+      expect(guideBounds.max.x).toBeGreaterThan(beltBounds.min.x);
+      const foodBounds = new THREE.Box3().setFromObject(model.foodLoad);
+      expect(Math.abs(foodBounds.min.y - beltBounds.max.y)).toBeLessThan(1e-3);
 
       for (let index = 0; index < model.coaxialLines.length; index += 1) {
         const tube = model.coaxialLines[index];
@@ -225,7 +284,15 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
     const advance = (fps: number) => {
       const model = buildSpencerMicrowaveModel();
       for (let frame = 0; frame < fps * 2; frame += 1) {
-        updateSpencerMicrowaveKinematics(model, 1 / fps, true, 4.5, 0.8, true, true);
+        updateSpencerMicrowaveKinematics(
+          model,
+          1 / fps,
+          true,
+          SPENCER_NORMALIZED_DISPLAY_PHASE_RATE_RAD_PER_S,
+          0.8,
+          true,
+          true,
+        );
       }
       const result = {
         foodZ: model.foodLoad.position.z,

@@ -87,11 +87,6 @@ describe("2D rAF presentation ownership", () => {
         "useState<SalisburyKernelSource>(salisburyKernelSource)",
         "useState<SalisburyKernelSource>(salisburyKernelSource())",
       ],
-      [
-        "three/SpencerMicrowave3D.tsx",
-        "useState(genericKernelSource)",
-        "useState(genericKernelSource())",
-      ],
       ["three/WrightFlyer3D.tsx", "useState(flyerKernelSource)", "useState(flyerKernelSource())"],
       ["three/WrightFlyer3D.tsx", "useState(flyerAeroSource)", "useState(flyerAeroSource())"],
     ] as const;

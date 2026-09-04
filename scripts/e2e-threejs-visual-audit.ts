@@ -151,9 +151,17 @@ function diagnosticsFor(page: Page): RuntimeDiagnostics {
   });
   page.on("pageerror", (error) => diagnostics.pageErrors.push(error.message));
   page.on("requestfailed", (request) => {
-    diagnostics.networkErrors.push(
-      `${request.method()} ${request.url()} :: ${request.failure()?.errorText ?? "unknown failure"}`,
-    );
+    const failureText = request.failure()?.errorText ?? "unknown failure";
+    // Next's App Router may cancel a superseded React Server Component
+    // navigation after the destination is already committed. Chromium reports
+    // that intentional cancellation as ERR_ABORTED; treating it as a product
+    // network failure makes an otherwise complete visual audit nondeterministic.
+    const isSupersededRscNavigation =
+      request.method() === "GET" &&
+      request.url().includes("_rsc=") &&
+      failureText === "net::ERR_ABORTED";
+    if (isSupersededRscNavigation) return;
+    diagnostics.networkErrors.push(`${request.method()} ${request.url()} :: ${failureText}`);
   });
   page.on("response", (response) => {
     if (response.status() >= 400) {
@@ -1415,6 +1423,16 @@ async function auditPatent(
 
     if (patentId === "us-4098001-watson-rcc") {
       const watsonSurface = surface.getByTestId("watson-rcc-three");
+      const watsonCanvas = watsonSurface.locator("canvas").first();
+      const settleWatsonCanvasForScreenshot = async () => {
+        await watsonCanvas.scrollIntoViewIfNeeded();
+        await page.evaluate(
+          () =>
+            new Promise<void>((resolve) => {
+              requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+            }),
+        );
+      };
       const readWatsonState = () =>
         watsonSurface.evaluate((element) => ({
           tipContactGap: Number(element.getAttribute("data-tip-contact-gap")),
@@ -1452,6 +1470,7 @@ async function auditPatent(
         SCREENSHOT_DIRECTORY,
         `${patentId}.${viewport}.local-wrist-contrast.png`,
       );
+      await settleWatsonCanvasForScreenshot();
       await dispatcher.screenshot({ path: localScreenshotPath });
 
       await topologySelect.selectOption("1");
@@ -1464,6 +1483,7 @@ async function auditPatent(
         SCREENSHOT_DIRECTORY,
         `${patentId}.${viewport}.figure-4-approach.png`,
       );
+      await settleWatsonCanvasForScreenshot();
       await dispatcher.screenshot({ path: approachScreenshotPath });
       await surface.getByRole("button", { name: "Reset" }).click();
 
@@ -2849,6 +2869,16 @@ async function auditPatent(
       const expectedRiserContacts = ["", "", "a", "a", "b", ""] as const;
       const stateSnapshots: Awaited<ReturnType<typeof readKamenState>>[] = [];
       const stateScreenshotPaths: string[] = [];
+      const kamenCanvas = threeDimensional.locator("canvas").first();
+      const settleKamenCanvasForScreenshot = async () => {
+        await kamenCanvas.scrollIntoViewIfNeeded();
+        await page.evaluate(
+          () =>
+            new Promise<void>((resolve) => {
+              requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+            }),
+        );
+      };
       for (const [index, stateName] of stateNames.entries()) {
         await dispatcher.locator("#kamen-3d-topology-state button").nth(index).click();
         await page.waitForFunction(
@@ -2866,6 +2896,11 @@ async function auditPatent(
             SCREENSHOT_DIRECTORY,
             `${patentId}.${viewport}.${stateName.replaceAll("_", "-")}.png`,
           );
+          // The shared Three.js studio intentionally skips rendering while it
+          // is offscreen. Buttons below the canvas scroll it away, so put the
+          // canvas back in view and allow two frames before preserving visual
+          // evidence; otherwise Playwright can capture an unpainted buffer.
+          await settleKamenCanvasForScreenshot();
           await dispatcher.screenshot({ path: stateScreenshotPath });
           stateScreenshotPaths.push(stateScreenshotPath);
         }
@@ -2919,6 +2954,7 @@ async function auditPatent(
         SCREENSHOT_DIRECTORY,
         `${patentId}.${viewport}.claim-16-cluster-withheld-direct-support.png`,
       );
+      await settleKamenCanvasForScreenshot();
       await dispatcher.screenshot({ path: clusterWithheldScreenshotPath });
       await claim16Toggle.click();
 
@@ -2938,6 +2974,7 @@ async function auditPatent(
         SCREENSHOT_DIRECTORY,
         `${patentId}.${viewport}.claim-1-balance-loop-withheld.png`,
       );
+      await settleKamenCanvasForScreenshot();
       await dispatcher.screenshot({ path: balanceWithheldScreenshotPath });
       await claim1Toggle.click();
       await page.waitForFunction(
@@ -3055,6 +3092,125 @@ async function auditPatent(
         transferChangesOnlyChassisPitch &&
         crossFaceParity &&
         claimRefusalsRemainSupported;
+    }
+
+    if (patentId === "us-2495429-spencer-microwave") {
+      const readSpencerState = (testId: string) =>
+        dispatcher.getByTestId(testId).evaluate((element) => ({
+          sourcePath: element.getAttribute("data-source-path"),
+          sourcePathContinuous: element.getAttribute("data-source-path-continuous"),
+          wavelengthReferenceM: Number(element.getAttribute("data-source-wavelength-reference-m")),
+          vacuumFrequencyHz: Number(
+            element.getAttribute("data-vacuum-frequency-at-ten-centimeters-hz"),
+          ),
+          kernelSource: element.getAttribute("data-kernel-source"),
+          quantitativeTubeModel: element.getAttribute("data-quantitative-tube-model"),
+          quantitativeCookingModel: element.getAttribute("data-quantitative-cooking-model"),
+          displayRateKind: element.getAttribute("data-display-rate-kind"),
+        }));
+      const threeDimensional = dispatcher.getByTestId("spencer-microwave-three");
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      const defaultState = await readSpencerState("spencer-microwave-three");
+      const energyToggle = threeDimensional.getByRole("button", {
+        name: "Energy path enabled",
+      });
+      await energyToggle.click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="spencer-microwave-three"]')
+            ?.getAttribute("data-source-path") === "disabled",
+        undefined,
+        { timeout: 3_000 },
+      );
+      const disabledState = await readSpencerState("spencer-microwave-three");
+      const disabledScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.source-path-disabled.png`,
+      );
+      const spencerCanvas = threeDimensional.locator("canvas").first();
+      await spencerCanvas.scrollIntoViewIfNeeded();
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) => {
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+          }),
+      );
+      await dispatcher.screenshot({ path: disabledScreenshotPath });
+
+      await threeDimensional.getByRole("button", { name: "Energy path disabled" }).click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="spencer-microwave-three"]')
+            ?.getAttribute("data-source-path") === "active",
+        undefined,
+        { timeout: 3_000 },
+      );
+      const restoredState = await readSpencerState("spencer-microwave-three");
+
+      await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
+      const twoDimensional = dispatcher.getByTestId("spencer-microwave-two");
+      await twoDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      const twoDimensionalState = await readSpencerState("spencer-microwave-two");
+      const twoDimensionalScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.source-bounded-two-dimensional.png`,
+      );
+      await dispatcher.screenshot({ path: twoDimensionalScreenshotPath });
+
+      await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      await spencerCanvas.scrollIntoViewIfNeeded();
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) => {
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+          }),
+      );
+      const restoredScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.source-path-restored.png`,
+      );
+      await dispatcher.screenshot({ path: restoredScreenshotPath });
+
+      const near = (value: number, target: number, tolerance = 1e-9) =>
+        Math.abs(value - target) <= tolerance;
+      const sourceBoundaryHonest =
+        defaultState.sourcePath === "active" &&
+        defaultState.sourcePathContinuous === "true" &&
+        near(defaultState.wavelengthReferenceM, 0.1) &&
+        near(defaultState.vacuumFrequencyHz, 2_997_924_580, 1e-3) &&
+        defaultState.kernelSource === "source-bounded-ts" &&
+        defaultState.quantitativeTubeModel === "refused" &&
+        defaultState.quantitativeCookingModel === "refused" &&
+        defaultState.displayRateKind === "normalized";
+      const toggleSequenceCompleted =
+        disabledState.sourcePath === "disabled" && restoredState.sourcePath === "active";
+      const crossFaceParity =
+        twoDimensionalState.sourcePath === restoredState.sourcePath &&
+        twoDimensionalState.sourcePathContinuous === restoredState.sourcePathContinuous &&
+        near(twoDimensionalState.wavelengthReferenceM, restoredState.wavelengthReferenceM) &&
+        near(twoDimensionalState.vacuumFrequencyHz, restoredState.vacuumFrequencyHz, 1e-3) &&
+        twoDimensionalState.kernelSource === restoredState.kernelSource &&
+        twoDimensionalState.quantitativeTubeModel === restoredState.quantitativeTubeModel &&
+        twoDimensionalState.quantitativeCookingModel === restoredState.quantitativeCookingModel;
+      mechanismInteraction = {
+        available: true,
+        kind: "source-bounded-push-pull-guide-path-refusal-toggle-and-cross-face-parity",
+        defaultState,
+        disabledState,
+        restoredState,
+        twoDimensionalState,
+        sourceBoundaryHonest,
+        toggleSequenceCompleted,
+        crossFaceParity,
+        disabledScreenshotPath,
+        twoDimensionalScreenshotPath,
+        restoredScreenshotPath,
+      };
+      mechanismInteractionValid =
+        sourceBoundaryHonest && toggleSequenceCompleted && crossFaceParity;
     }
 
     if (patentId === "us-586193-marconi-radio") {

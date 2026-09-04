@@ -1166,20 +1166,7 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Newcomen atmospheric engine condensed steam directly inside the working cylinder on every power stroke.",
     },
   ],
-  "gb-1306-watt-rotary-engine": [
-    {
-      claimNumber: 1,
-      patentId: "gb-1306-watt-rotary-engine",
-      claimTitle: "Sun and Planet Rotary Gear Transmission with Flywheel Integration",
-      activeDescription:
-        "Claim 1 converts reciprocating beam motion into continuous shaft rotation using a sun gear and orbiting planet gear, doubling shaft speed.",
-      invertedDescription:
-        "Unconnected reciprocating beam: vertical pump-only motion cannot drive rotating factory shafts, mills, or machine tools.",
-      failureModeName: "Non-Rotary Reciprocating Constraint Bottleneck",
-      historicalPriorArt:
-        "Reciprocating atmospheric and early steam beam engines were confined strictly to vertical water pumping.",
-    },
-  ],
+
   "us-x8277-mccormick-reaper": [
     {
       claimNumber: 1,

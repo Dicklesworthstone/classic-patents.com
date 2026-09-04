@@ -9,7 +9,7 @@
 - Filing date: not printed in the reviewed facsimile; canonical value is `null`
 - Primary public record: https://patents.google.com/patent/US132A/en
 - Local immutable facsimile: `public/patents/pdfs/us-132-davenport-electric-motor.pdf`
-- Retrieval and review date: 2026-08-17
+- Retrieval date: 2026-08-17; complete visual re-review: 2026-09-03
 - Rights basis: United States patent issued in 1837. The published patent text and drawings are public-domain United States Government material.
 - SHA-256: `9147fc5c9d6565aa765198b42e900c90c5c0fe550b9162fe62727f86a5071960`
 - PDF page count: 3
@@ -31,7 +31,17 @@ breaks while preserving the printed sequence.
 | PDF p. 3, left column | Completion of the polarity-change and rotary-motion explanation; claim preamble and first line of the only claim. |
 | PDF p. 3, right column | Completion of the single broad claim, `THOMAS DAVENPORT.` signature, and witnesses `W. W. AYRES` and `CHAS. A. COOK`. |
 
-## Drawing-preview crop receipt
+On 2026-09-03, the current editorial review rendered and compared all three
+pinned PDF pages at 300 DPI. It reconfirmed the page-one masthead and drawing
+characters, the continuous two-column specification on page two, and the
+page-three continuation, broad claim, signature, and printed witness lines.
+The canonical `-reviewed.txt` ledger has all three ordered markers and covers
+all 19 authored masthead, figure-sheet, paragraph, claim, signature, and
+witness sections. This was a source-pixel comparison, not OCR. It removes the
+stale ledger-acceptance hold only; the separate source-crop attestation and
+occurrence-locator work remains pending in the figure-evidence queue.
+
+## Historical drawing-preview crop receipt
 
 The drawing sheet does not assign `Fig.` numbers to its three views. The
 specification refers collectively to the “annexed drawings,” so that authored
@@ -41,7 +51,7 @@ made the apparatus unnecessarily small and included the sheet masthead and
 signature blocks. The old `drawing-sheet-preview.png` remains preserved as
 comparison evidence but is no longer served by the edition.
 
-The accepted previews below are unmasked source-pixel rectangles cut from that
+The historical previews below are unmasked source-pixel rectangles cut from that
 1702 x 2500 pinned-sheet render. They are already upright: all printed letters
 read in their normal orientation. Each excludes the sheet masthead, inventor
 signature, witness signatures, and the other two apparatus views.
@@ -53,13 +63,32 @@ signature, witness signatures, and the other two apparatus views.
 | Lower commutator/plate plan | `(440, 1540, 630, 500)` | `drawing-view-3-source-crop-v2.png` | `630 x 500` | `a2bccbe0bcca8234fd10b67636552128d1d4cd2f9812d325a0bc72cb759bc7d9` |
 
 The lower source view is printed immediately between the witness and inventor
-signature blocks. Its accepted rectangle retains the complete circular plate,
+signature blocks. Its historical rectangle retains the complete circular plate,
 shaft connection, contact assembly, and visible lettered callouts while ending
 before either signature block; it does not erase or reconstruct source pixels.
 The ledger transcribes the printed drawing-sheet masthead and reference-character
 set. It identifies the inventor's handwritten signature, but does not guess at
 the two witness signatures, which are not confidently legible in the supplied
 scan; that legibility boundary is stated explicitly under the page-1 marker.
+
+## Source-sheet acceptance (2026-09-03)
+
+The active preview is the complete, unmodified page-1 source sheet rather than
+an isolated crop. It was freshly rendered from the pinned PDF at 300 DPI for
+source-pixel inspection only: no OCR, masking, compositing, or reconstruction
+was used. The upper perspective, middle rotor plan, lower commutator plan,
+printed patent furniture, and signatures remain visible in the 2320×3408-pixel
+asset, so the archive does not falsely represent a partial view as a complete
+figure.
+
+| Active asset | Pinned PDF page / source rectangle | Output pixels / SHA-256 | Accepted coverage |
+| --- | --- | --- | --- |
+| `public/patents/figures/us-132-davenport-electric-motor/drawing-sheet-source-v1.png` | p. 1; `x=0, y=0, width=2320, height=3408` | 2320×3408; `f47bf13c2da1b30cb022f54021b375e3a21bf05ff2726246c054374b22e8f09f` | The only authored “annexed drawings” reference and all three printed motor views. |
+
+The three historical detail crops remain preserved as research artifacts but
+are no longer active evidence. The occurrence locator, asset digest, reviewer,
+and acceptance count are pinned in the figure-evidence registries. This repair
+does not change the legal text or the visitor’s source-reader delivery.
 
 ## Editorial boundaries
 

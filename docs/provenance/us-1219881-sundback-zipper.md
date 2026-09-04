@@ -30,6 +30,38 @@ The pinned five-page PDF was visually reviewed at 300 DPI. The public source fac
 ## Editorial and preservation boundaries
 
 - `src/data/editions/sundbackZipperEdition.ts` is the complete visitor-facing source face. Its prose, claims, glossary annotations, and figure references are individually authored typed React nodes. It does not render raw OCR, an unedited PDF text layer, or scan-page banners.
-- Each figure reference in the edition points to an isolated local crop in `public/patents/figures/us-1219881-sundback-zipper/` taken from the pinned drawing sheet.
+- Each figure reference in the edition points to the complete local source sheet in `public/patents/figures/us-1219881-sundback-zipper/`. This deliberately preserves the one-sheet layout rather than treating a clipped or mixed-detail crop as an isolated figure.
 - `public/patents/transcripts/us-1219881-sundback-zipper-reviewed.txt` is the review ledger for this edition, recording all five facsimile pages with standard ordered page markers.
 - The source contains eleven printed claims plus the 1932 disclaimer. The manual edition preserves the complete ordered set without summary compression or truncation.
+
+## Source-sheet acceptance (2026-09-03)
+
+The pinned drawing sheet (PDF p. 1) was rendered directly at 300 DPI for
+source-pixel inspection only; no OCR, text extraction, masking, compositing,
+or reconstruction was used. The source raster is 2320×3408 pixels, upper-left
+origin. Inspection showed that the prior figure-specific assets did not provide
+a dependable uniform basis for an isolated-figure assertion: the one printed
+sheet interleaves Figures 1–9, with adjacent figures and printed patent
+furniture close to several crop boundaries. The old assets remain preserved as
+research artifacts and are not overwritten.
+
+The active preview is therefore the complete, unmodified source drawing sheet,
+not a synthetic composite or a misleadingly named isolated crop:
+
+| Active asset | Pinned PDF page / source rectangle | Output pixels / SHA-256 | Accepted coverage |
+| --- | --- | --- | --- |
+| `public/patents/figures/us-1219881-sundback-zipper/source-sheet-1-v1.png` | p. 1; `x=0, y=0, width=2320, height=3408` | 2320×3408; `d2c2c475fb2fe63d493c6cb15377af95b8b4fcbc0f76fa695c98a4c2bde44fc6` | The complete printed sheet containing Figures 1 through 9 and its genuine patent furniture. |
+
+Every one of the edition’s 25 authored figure-reference occurrences now names
+that same complete source sheet. Exact page, source-raster, and full-sheet
+rectangle evidence is recorded in
+`src/data/editions/figureOccurrenceSourceLocators.ts`; the byte digest,
+dimensions, reviewer, and occurrence count are pinned in
+`src/data/editions/archivalFigureAcceptance.ts`. This evidence repair changes
+neither the legal text nor the visitor’s source-reader delivery.
+
+An independent source-pixel check rendered PDF p. 1 afresh at 300 DPI and
+compared it with the active asset: both are 2320×3408 pixels and the absolute
+pixel error is zero. That check confirms that Figures 1–9 remain legible and
+complete in the active sheet, with no clipping, mask, reconstruction, or
+compositing.

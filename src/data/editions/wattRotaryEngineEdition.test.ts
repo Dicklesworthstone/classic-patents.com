@@ -3,24 +3,44 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { resolve } from "node:path";
 import { wattRotaryEnginePatent } from "@/data/patents/watt-rotary-engine";
 import {
+  archivalEditionForPublication,
+  evaluateArchivalPublicationState,
+  isArchivalEditionExplicitlyWithheld,
+} from "./publicationApproval";
+import { reviewedLedgerTextForViewer } from "./reviewedLedgerPublicationEvidence.server";
+import {
   manualWattRotaryClaimText,
   wattRotaryEngineArchivalEdition,
   wattRotaryEngineParallelReadings,
 } from "./wattRotaryEngineEdition";
 
 describe("James Watt Rotary Motion 1781 (GB 1306) source-identity hold", () => {
-  test("pins the two-page facsimile fingerprint and publishes the bound edition", () => {
+  test("pins the two-page reconstruction PDF and enforces source-bounded quarantine", () => {
     const pdfPath = resolve(process.cwd(), "public/patents/pdfs/gb-1306-watt-rotary-engine.pdf");
     expect(existsSync(pdfPath)).toBe(true);
     expect(statSync(pdfPath).size).toBeGreaterThan(50000);
 
     expect(wattRotaryEngineArchivalEdition.kind).toBe("manual-react-edition");
-    expect(wattRotaryEngineArchivalEdition.completeFacsimileReviewed).toBe(true);
+    expect(wattRotaryEngineArchivalEdition.completeFacsimileReviewed).toBe(false);
     expect(wattRotaryEngineArchivalEdition.sourcePdfSha256).toBe(
       "339921eba26299f65c60e0d9d283deb09419fed3260ba6dc7208ecd55d2471f1",
     );
-    expect(wattRotaryEnginePatent.archivalEdition).toBe(wattRotaryEngineArchivalEdition);
-    expect(wattRotaryEnginePatent.originalTextAsset).toBeDefined();
+    expect(wattRotaryEnginePatent.archivalEdition).toBeUndefined();
+    expect(wattRotaryEnginePatent.originalTextAsset).toBeUndefined();
+    expect(wattRotaryEnginePatent.claims).toEqual([]);
+    expect(wattRotaryEnginePatent.drawings).toEqual([]);
+    expect(wattRotaryEnginePatent.stats).toEqual({ totalClaims: 0, independentClaims: 0 });
+    expect(isArchivalEditionExplicitlyWithheld(wattRotaryEnginePatent.id)).toBe(true);
+
+    const decision = evaluateArchivalPublicationState(wattRotaryEnginePatent);
+    expect(decision.status).toBe("withheld-reconstruction-quarantine");
+    expect(decision.isPublished).toBe(false);
+    expect(decision.reasonCode).toBe("AUDIT_RECONSTRUCTION_QUARANTINE");
+    expect(archivalEditionForPublication(wattRotaryEnginePatent)).toBeUndefined();
+
+    const viewerTranscript = reviewedLedgerTextForViewer(wattRotaryEnginePatent);
+    expect(viewerTranscript).toBeDefined();
+    expect(viewerTranscript).toContain("--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---");
   });
 
   test("retains all 4 staged claim nodes and extracts text dynamically", () => {

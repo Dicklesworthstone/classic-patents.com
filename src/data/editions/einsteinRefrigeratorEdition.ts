@@ -17,10 +17,10 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
 });
 
 const DRAWING = {
-  src: "/patents/figures/us-1781541-einstein-refrigerator/fig-1-source-crop-v1.png",
-  alt: "Source-facsimile crop of the sole drawing sheet in US 1,781,541.",
-  width: 2040,
-  height: 2840,
+  src: "/patents/figures/us-1781541-einstein-refrigerator/source-sheet-1-v1.png",
+  alt: "Complete upright source drawing sheet 1 of 1 for US 1,781,541.",
+  width: 2320,
+  height: 3408,
 } as const;
 
 const drawingReference = (sourceText: string): CuratedSpecificationInline => ({
@@ -40,8 +40,9 @@ const claim = (number: number, value: string) => ({
 
 /**
  * Continuous, manually prepared source edition of the four-page US 1,781,541
- * facsimile. It keeps the sole drawing as a local source crop and presents the
- * specification as one argument rather than a reconstruction of printed pages.
+ * facsimile. It keeps the sole drawing as an unmodified local source sheet and
+ * presents the specification as one argument rather than a reconstruction of
+ * printed pages.
  */
 export const einsteinRefrigeratorArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",

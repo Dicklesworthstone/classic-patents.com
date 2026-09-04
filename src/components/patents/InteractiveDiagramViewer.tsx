@@ -102,6 +102,7 @@ import { readOtisTopologyControls, stepOtis1861Topology } from "@/physics/otisKe
 import { stepParsonsMarine } from "@/physics/parsonsMarineKernel";
 import { stepRobotEndEffector } from "@/physics/robotEndEffectorKernel";
 import { readSalisburyRobotHandControls } from "@/physics/salisburyRobotHandKernel";
+import { stepSpencerMicrowaveSource } from "@/physics/spencerMicrowaveKernel";
 import { stepStackhouseSourceTopology } from "@/physics/stackhouseSourceKernel";
 import {
   stepTeslaMotorFig9,
@@ -1194,8 +1195,14 @@ function _renderHistoricalSchematic(
       );
     }
     case "spencer-microwave": {
+      const source = stepSpencerMicrowaveSource(params ?? {});
       return (
-        <g stroke="#38bdf8" strokeWidth="1.5">
+        <g
+          stroke={source.energyPathActive ? "#38bdf8" : "#94a3b8"}
+          strokeWidth="1.5"
+          data-source-path={source.energyPathActive ? "active" : "disabled"}
+          data-kernel-source={source.kernelSource}
+        >
           <rect x="18" y="18" width="364" height="264" rx="8" fill="#0f172a" />
           <g fill="#1e293b" stroke="#cbd5e1">
             <rect x="34" y="62" width="66" height="48" rx="4" />
@@ -1243,6 +1250,9 @@ function _renderHistoricalSchematic(
               27
             </text>
           </g>
+          <text x="200" y="265" fill="#94a3b8" stroke="none" fontSize="7" textAnchor="middle">
+            SOURCE: λ OF ORDER 10 cm OR LESS · TUBE / FIELD / COOKING SI REFUSED
+          </text>
         </g>
       );
     }

@@ -7,6 +7,10 @@ import {
   davenportElectricMotorArchivalEdition,
   davenportElectricMotorParallelReadings,
 } from "@/data/editions/davenportElectricMotorEdition";
+import {
+  completeArchivalEditionForViewer,
+  evaluateArchivalPublicationState,
+} from "@/data/editions/publicationApproval";
 import { davenportElectricMotorPatent } from "@/data/patents/davenport-electric-motor";
 import {
   validateReviewedTranscriptionEditorialIntegrity,
@@ -60,22 +64,10 @@ describe("davenportElectricMotorArchivalEdition", () => {
     );
     const expectedPreviews = [
       {
-        src: "/patents/figures/us-132-davenport-electric-motor/drawing-view-1-source-crop-v2.png",
-        width: 1080,
-        height: 560,
-        sha256: "c1e0f4d53c41e80b1e0b9ddd69007f3e92fded589313d7cf9d64aadcffceb86e",
-      },
-      {
-        src: "/patents/figures/us-132-davenport-electric-motor/drawing-view-2-source-crop-v2.png",
-        width: 730,
-        height: 500,
-        sha256: "ec1cb8b8f44380320e08ab84eb7f94dd09b4dd637e18400a4469c55a6063e2be",
-      },
-      {
-        src: "/patents/figures/us-132-davenport-electric-motor/drawing-view-3-source-crop-v2.png",
-        width: 630,
-        height: 500,
-        sha256: "a2bccbe0bcca8234fd10b67636552128d1d4cd2f9812d325a0bc72cb759bc7d9",
+        src: "/patents/figures/us-132-davenport-electric-motor/drawing-sheet-source-v1.png",
+        width: 2320,
+        height: 3408,
+        sha256: "f47bf13c2da1b30cb022f54021b375e3a21bf05ff2726246c054374b22e8f09f",
       },
     ] as const;
     const drawingReference = davenportElectricMotorArchivalEdition.blocks
@@ -97,6 +89,21 @@ describe("davenportElectricMotorArchivalEdition", () => {
         height: expected.height,
       });
       expect(createHash("sha256").update(bytes).digest("hex")).toBe(expected.sha256);
+    }
+    for (const historicalCrop of [
+      "drawing-view-1-source-crop-v2.png",
+      "drawing-view-2-source-crop-v2.png",
+      "drawing-view-3-source-crop-v2.png",
+    ]) {
+      expect(
+        existsSync(
+          join(
+            process.cwd(),
+            "public/patents/figures/us-132-davenport-electric-motor",
+            historicalCrop,
+          ),
+        ),
+      ).toBe(true);
     }
     expect(
       readFileSync(
@@ -150,6 +157,28 @@ describe("davenportElectricMotorArchivalEdition", () => {
     expect(ledger).not.toContain("Drawing sheet:");
     expect(ledger).toContain("A, B, C, D, E, F, G, H, I, K, L, M, N, O, P, Q, R, S, T, V");
     expect(ledger).toContain("not confidently legible in the supplied scan");
+  });
+
+  test("accepts the full drawing sheet while the complete edition remains reader-visible", () => {
+    const decision = evaluateArchivalPublicationState(davenportElectricMotorPatent);
+
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.state.evidence.ledgerContent).toMatchObject({
+      status: "verified",
+      valid: true,
+      ledgerUrl: "/patents/transcripts/us-132-davenport-electric-motor-reviewed.txt",
+      coverageFraction: 1,
+      missingSectionIndexes: [],
+      missingClaimNumbers: [],
+    });
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 1,
+      acceptedFigureCount: 1,
+    });
+    expect(completeArchivalEditionForViewer(davenportElectricMotorPatent)).toBe(
+      davenportElectricMotorArchivalEdition,
+    );
   });
 
   test("provides valid provenance classifications for all Davenport controls and metrics", () => {

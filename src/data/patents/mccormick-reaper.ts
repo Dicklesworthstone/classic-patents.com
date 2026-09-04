@@ -35,9 +35,29 @@ export const mccormickReaperPatent: Patent = {
     url: "/patents/transcripts/us-x8277-mccormick-reaper-reviewed.txt",
     pageCount: 3,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (PurpleSummit)",
-    reviewedAt: "2026-08-17",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6); direct facsimile review",
+    reviewedAt: "2026-09-03",
     sourcePdfSha256: "24712ca3e966994d72716ccca6df6ef9a1fb3751b30fe34bfeb549ab6ba7f400",
+    pageAnchors: [
+      {
+        page: 1,
+        sourceRelationship:
+          "Single unnumbered drawing sheet with the printed inventor, title, and grant date.",
+        exactSourceText: "C. H. McCORMICK. REAPER. Patented June 21, 1834.",
+      },
+      {
+        page: 2,
+        sourceRelationship:
+          "Patent-office masthead and the opening two-column construction description, through the tongue-support chain.",
+        exactSourceText: "UNITED STATES PATENT OFFICE.",
+      },
+      {
+        page: 3,
+        sourceRelationship:
+          "Gear train, cutter and reel description, both printed claim paragraphs, execution, and witnesses.",
+        exactSourceText: "My claim is for the arrangement of the several parts",
+      },
+    ],
   },
   originalText:
     "Be it known that I, CYRUS H. McCORMICK, of Rockbridge county and State of Virginia, have invented a new and useful Improvement in Reaping all Kinds of Small Grain, and I do hereby declare that the following is a full and exact description of the construction and operation of the said machine as invented or improved by me.",

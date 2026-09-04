@@ -24,38 +24,64 @@ const crop = (file: string, width: number, height: number, label: string) => ({
   height,
 });
 
-// Every source figure gets its own source-derived preview. Plural references below
-// deliberately present the constituent figures rather than a generic sheet crop.
-const FIGURE_1 = crop("fig-1-source-crop-v2", 700, 230, "Fig. 1");
-const FIGURE_2 = crop("fig-2-source-crop-v2", 700, 230, "Fig. 2");
-const FIGURE_3 = crop("fig-3-source-crop-v3", 650, 210, "Fig. 3");
-const FIGURE_4 = crop("fig-4-source-crop-v2", 700, 230, "Fig. 4");
-const FIGURE_5 = crop("fig-5-source-crop-v2", 700, 230, "Fig. 5");
-const FIGURE_6 = crop("fig-6-source-crop-v2", 700, 200, "Fig. 6");
-const FIGURE_7 = crop("fig-7-source-crop-v2", 700, 230, "Fig. 7");
-const FIGURE_8 = crop("fig-8-source-crop-v2", 700, 230, "Fig. 8");
-const FIGURE_1A = crop("fig-1a-source-crop-v2", 900, 220, "Fig. 1a");
-const FIGURE_2A = crop("fig-2a-source-crop-v2", 900, 220, "Fig. 2a");
-const FIGURE_3A = crop("fig-3a-source-crop-v2", 900, 220, "Fig. 3a");
-// The first v2 selections were too shallow for these closely stacked states.
-// These narrower, source-sheet v3 crops retain each complete state and its
-// printed label, rather than treating an adjacent state as the preview.
-const FIGURE_4A = crop("fig-4a-source-crop-v3", 800, 190, "Fig. 4a");
-const FIGURE_5A = crop("fig-5a-source-crop-v3", 800, 180, "Fig. 5a");
-const FIGURE_6A = crop("fig-6a-source-crop-v3", 800, 180, "Fig. 6a");
-const FIGURE_7A = crop("fig-7a-source-crop-v2", 900, 190, "Fig. 7a");
-const FIGURE_8A = crop("fig-8a-source-crop-v2", 900, 160, "Fig. 8a");
-const FIGURE_9 = crop("fig-9-source-crop-v1", 1120, 800, "Fig. 9");
-const FIGURE_10 = crop("fig-10-source-crop-v2", 930, 650, "Fig. 10");
-const FIGURE_11 = crop("fig-11-source-crop-v2", 900, 600, "Fig. 11");
-const FIGURE_12 = crop("fig-12-source-crop-v2", 1950, 600, "Fig. 12");
-const FIGURE_13 = crop("fig-13-source-crop-v2", 1800, 650, "Fig. 13");
-const FIGURE_14 = crop("fig-14-source-crop-v2", 650, 550, "Fig. 14");
-const FIGURE_15 = crop("fig-15-source-crop-v2", 1850, 830, "Fig. 15");
-const FIGURE_16 = crop("fig-16-source-crop-v2", 700, 350, "Fig. 16");
-const FIGURE_17 = crop("fig-17-source-crop-v1", 650, 750, "Fig. 17");
-const FIGURE_18 = crop("fig-18-source-crop-v1", 570, 500, "Fig. 18");
-const FIGURE_19 = crop("fig-19-source-crop-v1", 1060, 700, "Fig. 19");
+/**
+ * The individual historic crops remain preserved as research evidence, but
+ * several clipped source material or included neighboring figures. The public
+ * source face therefore cites the entire upright drawing sheet rendered from
+ * the pinned PDF at 300 dpi, retaining all printed drawing context.
+ */
+const DRAWING_SHEET_1 = crop(
+  "figs-1-to-8-and-1a-to-8a-source-sheet-v2",
+  2320,
+  3408,
+  "drawing sheet 1 (Figs. 1-8 and Figs. 1a-8a)",
+);
+const DRAWING_SHEET_2 = crop(
+  "figs-9-to-12-source-sheet-v2",
+  2320,
+  3408,
+  "drawing sheet 2 (Figs. 9-12)",
+);
+const DRAWING_SHEET_3 = crop(
+  "figs-13-to-16-source-sheet-v2",
+  2320,
+  3408,
+  "drawing sheet 3 (Figs. 13-16)",
+);
+const DRAWING_SHEET_4 = crop(
+  "figs-17-to-19-source-sheet-v2",
+  2320,
+  3408,
+  "drawing sheet 4 (Figs. 17-19)",
+);
+
+const FIGURE_1 = DRAWING_SHEET_1;
+const FIGURE_2 = DRAWING_SHEET_1;
+const FIGURE_3 = DRAWING_SHEET_1;
+const FIGURE_4 = DRAWING_SHEET_1;
+const FIGURE_5 = DRAWING_SHEET_1;
+const FIGURE_6 = DRAWING_SHEET_1;
+const FIGURE_7 = DRAWING_SHEET_1;
+const FIGURE_8 = DRAWING_SHEET_1;
+const FIGURE_1A = DRAWING_SHEET_1;
+const FIGURE_2A = DRAWING_SHEET_1;
+const FIGURE_3A = DRAWING_SHEET_1;
+const FIGURE_4A = DRAWING_SHEET_1;
+const FIGURE_5A = DRAWING_SHEET_1;
+const FIGURE_6A = DRAWING_SHEET_1;
+const FIGURE_7A = DRAWING_SHEET_1;
+const FIGURE_8A = DRAWING_SHEET_1;
+const FIGURE_9 = DRAWING_SHEET_2;
+const FIGURE_10 = DRAWING_SHEET_2;
+const FIGURE_11 = DRAWING_SHEET_2;
+const FIGURE_12 = DRAWING_SHEET_2;
+const FIGURE_13 = DRAWING_SHEET_3;
+const FIGURE_14 = DRAWING_SHEET_3;
+const FIGURE_15 = DRAWING_SHEET_3;
+const FIGURE_16 = DRAWING_SHEET_3;
+const FIGURE_17 = DRAWING_SHEET_4;
+const FIGURE_18 = DRAWING_SHEET_4;
+const FIGURE_19 = DRAWING_SHEET_4;
 
 const FIGURES = {
   "Fig. 1": [FIGURE_1],
@@ -85,20 +111,11 @@ const FIGURES = {
   "Fig. 17": [FIGURE_17],
   "Fig. 18": [FIGURE_18],
   "Fig. 19": [FIGURE_19],
-  "Figs. 1 to 8": [FIGURE_1, FIGURE_2, FIGURE_3, FIGURE_4, FIGURE_5, FIGURE_6, FIGURE_7, FIGURE_8],
-  "Figs. 1a to 8a": [
-    FIGURE_1A,
-    FIGURE_2A,
-    FIGURE_3A,
-    FIGURE_4A,
-    FIGURE_5A,
-    FIGURE_6A,
-    FIGURE_7A,
-    FIGURE_8A,
-  ],
-  "Figs. 10 to 12": [FIGURE_10, FIGURE_11, FIGURE_12],
-  "Figs. 13 and 14": [FIGURE_13, FIGURE_14],
-  "Figs. 15 and 16": [FIGURE_15, FIGURE_16],
+  "Figs. 1 to 8": [DRAWING_SHEET_1],
+  "Figs. 1a to 8a": [DRAWING_SHEET_1],
+  "Figs. 10 to 12": [DRAWING_SHEET_2],
+  "Figs. 13 and 14": [DRAWING_SHEET_3],
+  "Figs. 15 and 16": [DRAWING_SHEET_3],
 } as const;
 
 const figure = (

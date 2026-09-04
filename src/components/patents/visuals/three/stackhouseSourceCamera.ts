@@ -25,14 +25,23 @@ const SOURCE_VIEWS: Record<StackhouseSourceCameraPreset, StackhouseSourceCameraV
 };
 
 const COMPACT_STUDIO_MAX_WIDTH_PX = 640;
+const DESKTOP_STUDIO_MIN_WIDTH_PX = 900;
 const COMPACT_VIEW_DISTANCE_MULTIPLIER = 1.9;
 
-// The desktop and tablet overview must show the entire source-described path,
-// including End Effector 11 below the wrist. The close-up presets deliberately
-// keep their original framing for inspection of a particular shaft or joint.
-const FITTED_OVERVIEW: StackhouseSourceCameraView = {
+// Tablet keeps the deliberately conservative full-path fit. Its shorter canvas
+// must retain the whole wrist, including End Effector 11 below the shafts.
+const TABLET_OVERVIEW: StackhouseSourceCameraView = {
   position: [2.275, 1.515, 2.354],
   target: [0, -0.5, -0.48],
+};
+
+// A desktop canvas has the room to look more across the forearm instead of
+// down its length. That makes the concentric shafts, bevel train, point P, and
+// terminal tool materially legible in the overview while retaining clear lanes
+// for the top-left source card and bottom-right refusal card.
+const DESKTOP_OVERVIEW: StackhouseSourceCameraView = {
+  position: [1.05, 2.75, -0.48],
+  target: [-0.1, -0.4, -0.48],
 };
 
 function pullCameraBack(
@@ -60,5 +69,7 @@ export function stackhouseSourceCameraForViewport(
     return pullCameraBack(selected, COMPACT_VIEW_DISTANCE_MULTIPLIER);
   }
 
-  return preset === "overview" ? FITTED_OVERVIEW : selected;
+  if (preset !== "overview") return selected;
+
+  return viewportWidth >= DESKTOP_STUDIO_MIN_WIDTH_PX ? DESKTOP_OVERVIEW : TABLET_OVERVIEW;
 }

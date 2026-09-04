@@ -3,6 +3,12 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS } from "@/data/editions/archivalFigureAcceptance";
+import { FIGURE_OCCURRENCE_SOURCE_LOCATORS } from "@/data/editions/figureOccurrenceSourceLocators";
+import {
+  completeArchivalEditionForViewer,
+  evaluateArchivalPublicationState,
+} from "@/data/editions/publicationApproval";
 import { teslaCoil593138Patent } from "@/data/patents/tesla-coil-593138";
 import {
   teslaCoil593138ArchivalEdition,
@@ -52,7 +58,7 @@ describe("US 593,138 Electrical Transformer manual source edition", () => {
     }
   });
 
-  test("makes every figure citation an explicit local source-derived preview", () => {
+  test("makes every figure citation an explicit complete source-sheet preview", () => {
     const references = teslaCoil593138ArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
         ? block.inlines.filter(
@@ -74,17 +80,96 @@ describe("US 593,138 Electrical Transformer manual source edition", () => {
       expect(reference.figurePreviews?.length).toBeGreaterThan(0);
       for (const preview of reference.figurePreviews ?? []) {
         expect(preview.src).toMatch(
-          /^\/patents\/figures\/us-593138-tesla-coil\/fig-[1-2]-source-crop-v2\.png$|^\/patents\/figures\/us-593138-tesla-coil\/fig-3-source-crop-v3\.png$/,
+          /^\/patents\/figures\/us-593138-tesla-coil\/source-sheet-[12]\.png$/,
         );
+        expect(preview).toMatchObject({ width: 2320, height: 3408 });
+        expect(preview.alt).toContain("Complete upright source drawing sheet");
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
         previewSources.add(preview.src);
       }
     }
     expect([...previewSources].sort()).toEqual([
-      "/patents/figures/us-593138-tesla-coil/fig-1-source-crop-v2.png",
-      "/patents/figures/us-593138-tesla-coil/fig-2-source-crop-v2.png",
-      "/patents/figures/us-593138-tesla-coil/fig-3-source-crop-v3.png",
+      "/patents/figures/us-593138-tesla-coil/source-sheet-1.png",
+      "/patents/figures/us-593138-tesla-coil/source-sheet-2.png",
     ]);
+    const sourceSheets = [
+      {
+        file: "source-sheet-1.png",
+        sha256: "1cd9e455b7277744b52865ac27aba4b43180494bb608c2c33d69c59bc371004a",
+      },
+      {
+        file: "source-sheet-2.png",
+        sha256: "a7112e2d25055cb226c93504977020e5322e68005a61744b6506e3bb282b49d7",
+      },
+    ];
+    for (const sourceSheet of sourceSheets) {
+      const bytes = readFileSync(
+        resolve(process.cwd(), "public/patents/figures/us-593138-tesla-coil", sourceSheet.file),
+      );
+      expect(createHash("sha256").update(bytes).digest("hex")).toBe(sourceSheet.sha256);
+      expect({ width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) }).toEqual({
+        width: 2320,
+        height: 3408,
+      });
+    }
+    for (const legacyCrop of [
+      "fig-1-source-crop-v2.png",
+      "fig-2-source-crop-v2.png",
+      "fig-3-source-crop-v3.png",
+    ]) {
+      expect(
+        existsSync(
+          resolve(process.cwd(), "public/patents/figures/us-593138-tesla-coil", legacyCrop),
+        ),
+      ).toBe(true);
+    }
+  });
+
+  test("accepts all eleven source citations internally without gating the source edition", () => {
+    const patentId = teslaCoil593138Patent.id;
+    const decision = evaluateArchivalPublicationState(teslaCoil593138Patent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 11,
+      acceptedFigureCount: 11,
+    });
+    expect(decision.figureManifest.figures.every((figure) => figure.status === "accepted")).toBe(
+      true,
+    );
+    expect(completeArchivalEditionForViewer(teslaCoil593138Patent)).toBe(
+      teslaCoil593138ArchivalEdition,
+    );
+    expect(
+      (ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS as Record<string, unknown>)[patentId],
+    ).toMatchObject({
+      sourcePdfSha256: teslaCoil593138ArchivalEdition.sourcePdfSha256,
+      reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+      reviewedAt: "2026-09-03",
+      acceptedOccurrenceCount: 11,
+      assets: {
+        "/patents/figures/us-593138-tesla-coil/source-sheet-1.png": {
+          sha256: "1cd9e455b7277744b52865ac27aba4b43180494bb608c2c33d69c59bc371004a",
+          width: 2320,
+          height: 3408,
+        },
+        "/patents/figures/us-593138-tesla-coil/source-sheet-2.png": {
+          sha256: "a7112e2d25055cb226c93504977020e5322e68005a61744b6506e3bb282b49d7",
+          width: 2320,
+          height: 3408,
+        },
+      },
+    });
+    const locators = (FIGURE_OCCURRENCE_SOURCE_LOCATORS as Record<string, readonly unknown[]>)[
+      patentId
+    ];
+    expect(locators).toHaveLength(11);
+    for (const locator of locators ?? []) {
+      expect(locator).toMatchObject({
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 0, y: 0, width: 2320, height: 3408 },
+      });
+    }
   });
 
   test("covers every source paragraph with a non-lossy local companion and preserves the review ledger", () => {
@@ -102,6 +187,6 @@ describe("US 593,138 Electrical Transformer manual source edition", () => {
     );
     expect(provenance).toContain("Two complete visual passes");
     expect(provenance).toContain("Claims 1–4");
-    expect(provenance).toContain("fig-3-source-crop-v3.png");
+    expect(provenance).toContain("source-sheet-2.png");
   });
 });

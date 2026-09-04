@@ -18,16 +18,17 @@ const claim = (number: number, text: string) => ({
 });
 
 const SPENCER_FIGURE_PREVIEW = {
-  src: "/patents/figures/us-2495429-spencer-microwave/fig-1-source-crop-v1.png",
-  alt: "US 2,495,429 drawing: two magnetron oscillators feed a common wave guide and conveyor treatment region.",
-  width: 2040,
-  height: 1550,
+  src: "/patents/figures/us-2495429-spencer-microwave/drawing-sheet-source-v1.png",
+  alt: "Complete source drawing sheet 1 of 1 for US 2,495,429: two magnetron oscillators feed a common wave guide and conveyor treatment region.",
+  width: 2320,
+  height: 3408,
 } as const;
 
 /**
  * This reference is authored at the sole source occurrence. It opens a
- * selected crop from the pinned drawing sheet; it is never inferred by a
- * formatter from the words around it.
+ * complete, unmodified pinned drawing sheet; it is never inferred by a
+ * formatter from the words around it. The earlier selected crop is preserved
+ * on disk but no longer serves as the active archival evidence.
  */
 const singleFigureReference: CuratedSpecificationInline = {
   kind: "reference",

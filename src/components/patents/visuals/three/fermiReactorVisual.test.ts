@@ -4,7 +4,7 @@ import { join } from "node:path";
 import * as THREE from "three";
 import { FERMI_KINETICS_SOURCE_BOUNDARY, stepFermiKinetics } from "@/physics/fermiKinetics";
 import { computeFermiNormalizedDisplayField } from "@/physics/fieldTextures";
-import { fermiReactorViewForViewport } from "./fermiReactorCamera";
+import { FERMI_REACTOR_CAMERA_PRESETS, fermiReactorViewForViewport } from "./fermiReactorCamera";
 import { buildFermiReactorModel, updateFermiReactorKinematics } from "./fermiReactorModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
@@ -98,6 +98,22 @@ describe("US 2,708,656 source-bounded graphite and natural-uranium reactor visua
     ).toBeGreaterThan(
       new THREE.Vector3(...desktop.pos).distanceTo(new THREE.Vector3(...desktop.target)),
     );
+  });
+
+  test("keeps every desktop camera preset label available instead of clipping the final tab", () => {
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "FermiReactor3D.tsx"),
+      "utf8",
+    );
+
+    // The former 28rem reservation cut the six source-specific labels off at
+    // a normal desktop studio width even though the action buttons occupy only
+    // a narrow utility lane. Keep the compact rail scrollable, but reserve
+    // just that lane at sm+ widths so every desktop view remains selectable.
+    expect(threeSource).toContain("sm:max-w-[calc(100%-9rem)]");
+    expect(threeSource).not.toContain("sm:max-w-[calc(100%-28rem)]");
+    expect(threeSource).toContain("FERMI_REACTOR_CAMERA_PRESETS[preset].label");
+    expect(Object.values(FERMI_REACTOR_CAMERA_PRESETS)).toHaveLength(6);
   });
 
   test("publishes a quantitative refusal and only a normalized control lens", () => {

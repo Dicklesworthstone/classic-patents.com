@@ -19,10 +19,10 @@ const term = (
 ];
 
 const drawingPreview = {
-  src: "/patents/figures/us-x8277-mccormick-reaper-drawing-preview-v2.png",
-  alt: "The unnumbered patent drawing in US X8277, showing the platform, tongue, reel, cutter, divider, and ground-wheel drive.",
-  width: 3000,
-  height: 1900,
+  src: "/patents/figures/us-x8277-mccormick-reaper/source-sheet-1-v1.png",
+  alt: "Complete first source sheet of US X8277, retaining the printed drawing, identifier, title, and all lettered construction detail.",
+  width: 2320,
+  height: 3408,
 } as const;
 
 const drawingReference = (text: string): CuratedSpecificationInline => ({

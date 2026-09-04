@@ -3,11 +3,17 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { deForestAudionPatent } from "@/data/patents/de-forest-audion";
+import { ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS } from "./archivalFigureAcceptance";
 import {
   deForestAudionArchivalEdition,
   deForestAudionParallelReadings,
   manualDeForestClaimText,
 } from "./deForestAudionEdition";
+import { FIGURE_OCCURRENCE_SOURCE_LOCATORS } from "./figureOccurrenceSourceLocators";
+import {
+  completeArchivalEditionForViewer,
+  evaluateArchivalPublicationState,
+} from "./publicationApproval";
 
 describe("US 879,532 Lee de Forest Audion Triode Archival Edition Publication Contract", () => {
   const rootDir = process.cwd();
@@ -16,7 +22,12 @@ describe("US 879,532 Lee de Forest Audion Triode Archival Edition Publication Co
     rootDir,
     "public/patents/transcripts/us-879532-de-forest-audion-reviewed.txt",
   );
-  const figureAssets = [
+  const activeFigureAsset = {
+    path: "public/patents/figures/us-879532-de-forest-audion/source-sheet-1-v1.png",
+    width: 2320,
+    height: 3408,
+  } as const;
+  const legacyFigureAssets = [
     {
       path: "public/patents/figures/us-879532-de-forest-audion/fig-1-source-crop-v2.png",
       width: 1200,
@@ -38,7 +49,7 @@ describe("US 879,532 Lee de Forest Audion Triode Archival Edition Publication Co
   });
 
   test("verifies figure crops exist on disk for all edition figure references", () => {
-    for (const asset of figureAssets) {
+    for (const asset of [activeFigureAsset, ...legacyFigureAssets]) {
       const cropPath = join(rootDir, asset.path);
       expect(existsSync(cropPath)).toBe(true);
       const png = readFileSync(cropPath);
@@ -56,8 +67,20 @@ describe("US 879,532 Lee de Forest Audion Triode Archival Edition Publication Co
         : [],
     );
     expect(new Set(previews.map((preview) => preview.src))).toEqual(
-      new Set(figureAssets.map((asset) => `/${asset.path.replace(/^public\//, "")}`)),
+      new Set([`/${activeFigureAsset.path.replace(/^public\//, "")}`]),
     );
+    expect(previews).toHaveLength(6);
+    for (const preview of previews) {
+      expect(preview).toMatchObject({
+        src: "/patents/figures/us-879532-de-forest-audion/source-sheet-1-v1.png",
+        width: 2320,
+        height: 3408,
+      });
+      expect(preview.alt).toContain("Complete source drawing sheet 1 of 1");
+    }
+    expect(
+      existsSync(join(rootDir, "public/patents/figures/us-879532-de-forest-audion/sheet-1.png")),
+    ).toBe(true);
   });
 
   test("confirms reviewed transcript ledger exists and contains all 4 page markers", () => {
@@ -109,5 +132,64 @@ describe("US 879,532 Lee de Forest Audion Triode Archival Edition Publication Co
       expect(readings?.length).toBeGreaterThan(0);
       expect(readings?.[0]?.length).toBeGreaterThan(25);
     }
+  });
+
+  test("accepts all six citations against one complete source sheet without gating the reader", () => {
+    const patentId = "us-879532-de-forest-audion" as const;
+    const sourceSheet = "/patents/figures/us-879532-de-forest-audion/source-sheet-1-v1.png";
+    const attestation = ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[patentId];
+    expect(attestation).toMatchObject({
+      sourcePdfSha256: deForestAudionArchivalEdition.sourcePdfSha256,
+      reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+      reviewedAt: "2026-09-03",
+      acceptanceBasis: "independent-figure-review",
+      acceptedOccurrenceCount: 6,
+      assets: {
+        [sourceSheet]: {
+          sha256: "27c094b22bc5ca46c4e6c664e5c986c51d4076c2f49818b23055e6f60cff7182",
+          width: 2320,
+          height: 3408,
+        },
+      },
+    });
+    const sheetBytes = readFileSync(join(rootDir, "public", sourceSheet));
+    expect(createHash("sha256").update(sheetBytes).digest("hex")).toBe(
+      attestation.assets[sourceSheet]?.sha256,
+    );
+
+    const locators = FIGURE_OCCURRENCE_SOURCE_LOCATORS[patentId];
+    expect(locators).toHaveLength(6);
+    expect(locators.map((locator) => locator.occurrenceKey)).toEqual([
+      "edition-block-5-group-0-inline-1",
+      "edition-block-5-group-0-inline-3",
+      "edition-block-7-group-0-inline-3",
+      "edition-block-7-group-0-inline-5",
+      "edition-block-9-group-0-inline-3",
+      "edition-block-9-group-0-inline-5",
+    ]);
+    for (const locator of locators) {
+      expect(locator).toMatchObject({
+        activeAsset: sourceSheet,
+        sourcePdfPage: 1,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 0, y: 0, width: 2320, height: 3408 },
+        normalizedSourceRect: { x: 0, y: 0, width: 1, height: 1 },
+        reviewer: attestation.reviewer,
+        reviewedAt: attestation.reviewedAt,
+        evidenceReference:
+          "docs/provenance/us-879532-de-forest-audion.md#source-sheet-acceptance-2026-09-03",
+      });
+    }
+
+    const decision = evaluateArchivalPublicationState(deForestAudionPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 6,
+      acceptedFigureCount: 6,
+    });
+    expect(completeArchivalEditionForViewer(deForestAudionPatent)).toBe(
+      deForestAudionArchivalEdition,
+    );
   });
 });

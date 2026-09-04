@@ -36,7 +36,7 @@ import {
   computeCarrierSprayField,
   computeFarnsworthRasterField,
   computeNoyceDepletionField,
-  computeSpencerCavityField,
+  computeSpencerPathFieldDisplay,
   computeTeslaRotatingBField,
   sampleThermalColormap,
   writeColormappedField,
@@ -352,7 +352,10 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     expect(max).toBeGreaterThan(0);
     expect(computeNoyceDepletionField(5, 16).length).toBe(256);
     expect(computeFarnsworthRasterField(0.4, 16).length).toBe(256);
-    expect(computeSpencerCavityField(800, true, 0.2, 16).length).toBe(256);
+    const field = computeSpencerPathFieldDisplay(1, 0.2, 16);
+    expect(field.length).toBe(256);
+    expect(Math.max(...field)).toBeGreaterThan(0);
+    expect(computeSpencerPathFieldDisplay(0, 0.2, 16).every((value) => value === 0)).toBe(true);
     expect(computeCarrierSprayField(15000, 16).length).toBe(256);
 
     const {

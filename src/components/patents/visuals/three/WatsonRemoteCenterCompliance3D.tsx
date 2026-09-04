@@ -19,7 +19,9 @@ const PATENT_ID = "us-4098001-watson-rcc";
 const VIEWS = {
   overview: {
     position: [4.9, 3.6, 6.2] as [number, number, number],
-    target: [0, -0.7, 0] as [number, number, number],
+    // Keep free end 52 and fixed chamfer 75 above the desktop control tray;
+    // their contact is the point of the remote-center demonstration.
+    target: [0, -0.95, 0] as [number, number, number],
   },
   flexures: {
     position: [3.2, 1.2, 4.0] as [number, number, number],

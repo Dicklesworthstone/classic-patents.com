@@ -1,14 +1,17 @@
 import { describe, expect, test } from "bun:test";
+import { decodeCrumpFdmWasmStep } from "./crumpFdmWasm";
 import { decodeDaimlerMarineWasmStep } from "./daimlerWasm";
 import { decodeDaVinciTopologyWasmStep } from "./daVinciWasm";
 import { decodeEdisonRadiativeWasmStep } from "./edisonWasm";
 import { decodeFlyerState } from "./flyerWasm";
 import { decodeGoddardApparatusWasmStep, decodeGoddardWasmStep } from "./goddardWasm";
 import { decodeHoweTopologyWasmStep } from "./howeWasm";
+import { decodeKamenTransporterWasmStep } from "./kamenTransporterWasm";
 import { decodeOtisTopologyWasmStep } from "./otisWasm";
 import { decodeOttoTopologyStep } from "./ottoWasm";
 import { initialRoombaState, ROOMBA_COLLIDERS, ROOMBA_ROOM } from "./roombaKernel";
 import { decodeRoombaWasmStep } from "./roombaWasm";
+import { decodeSalisburyWasmStep } from "./salisburyWasm";
 import { decodeTeslaTransformerWasmStep } from "./teslaWasm";
 
 async function wasmBytes(relativePath: string): Promise<ArrayBuffer> {
@@ -281,6 +284,83 @@ describe("shipped FrankenSim WebAssembly artifacts", () => {
     expect(refused.refusal?.ranked_repairs.length).toBeGreaterThan(0);
   });
 
+  test("instantiates the Crump generic flow/conduction composition and proves its refusal", async () => {
+    const module = await import("../../public/wasm/fs-crump/fs_crump_wasm.js");
+    const bytes = await wasmBytes("../../public/wasm/fs-crump/fs_crump_wasm_bg.wasm");
+    expect(WebAssembly.validate(bytes)).toBe(true);
+    await module.default({ module_or_path: bytes });
+
+    const state = decodeCrumpFdmWasmStep(
+      module.crump_fdm_step(280, 0.0016, 0.0002, 4.05e-9, 0.0002, 8.2e-8, 498.15, 298.15, 378.15),
+    );
+    expect(state).not.toBeNull();
+    expect(state?.pressure_drop_pa).toBeGreaterThan(0);
+    expect(state?.time_to_threshold_s).toBeGreaterThan(0);
+
+    const refused = JSON.parse(
+      module.crump_fdm_step(280, 0.0016, 0, 4.05e-9, 0.0002, 8.2e-8, 498.15, 298.15, 378.15),
+    ) as { refusal?: { code: string; repairs: string[] } };
+    expect(refused.refusal?.code).toBe("capillary-input-outside-domain");
+    expect(refused.refusal?.repairs.length).toBeGreaterThan(0);
+  });
+
+  test("instantiates the Salisbury generic multibody composition and proves its refusal", async () => {
+    const module = await import("../../public/wasm/fs-salisbury/fs_salisbury_wasm.js");
+    const bytes = await wasmBytes("../../public/wasm/fs-salisbury/fs_salisbury_wasm_bg.wasm");
+    expect(WebAssembly.validate(bytes)).toBe(true);
+    await module.default({ module_or_path: bytes });
+
+    const state = decodeSalisburyWasmStep(module.salisbury_hand_step(18, 22, 10, 14, 0.01, true));
+    expect(state).not.toBeNull();
+    expect(state?.scalar_joint_coordinates).toBe(9);
+    expect(state?.cable_end_count).toBe(12);
+    expect(state?.historical_dynamics_available).toBe(false);
+
+    const refused = JSON.parse(module.salisbury_hand_step(-1, 22, 10, 14, 0.01, true)) as {
+      refusal?: { code: string; repairs: string[] };
+    };
+    expect(refused.refusal?.code).toBe("input-outside-domain");
+    expect(refused.refusal?.repairs.length).toBeGreaterThan(0);
+  });
+
+  test("instantiates the Kamen tri-wheel composition and proves tread/riser refusals", async () => {
+    const module = await import("../../public/wasm/fs-kamen/fs_kamen_wasm.js");
+    const bytes = await wasmBytes("../../public/wasm/fs-kamen/fs_kamen_wasm_bg.wasm");
+    expect(WebAssembly.validate(bytes)).toBe(true);
+    await module.default({ module_or_path: bytes });
+
+    const expectedTreadContacts = ["a,b", "a", "a,b", "a,b", "b,c", "c"];
+    const expectedRiserContacts = ["", "", "a", "a", "b", ""];
+    for (let stateIndex = 0; stateIndex < expectedTreadContacts.length; stateIndex += 1) {
+      const state = decodeKamenTransporterWasmStep(module.kamen_cluster_step(stateIndex));
+      expect(state).not.toBeNull();
+      expect(
+        state?.contact_mask
+          .map((touching, index) => (touching ? ["a", "b", "c"][index] : null))
+          .filter(Boolean)
+          .join(","),
+      ).toBe(expectedTreadContacts[stateIndex]);
+      expect(
+        state?.riser_contact_mask
+          .map((touching, index) => (touching ? ["a", "b", "c"][index] : null))
+          .filter(Boolean)
+          .join(","),
+      ).toBe(expectedRiserContacts[stateIndex]);
+      expect(state?.minimum_gap_m ?? -1).toBeGreaterThanOrEqual(-1e-8);
+      if (state?.stair_active) {
+        expect(state.minimum_riser_clearance_m ?? -1).toBeGreaterThanOrEqual(-1e-8);
+      } else {
+        expect(state?.minimum_riser_clearance_m).toBeNull();
+      }
+    }
+
+    const refused = JSON.parse(module.kamen_cluster_step(6)) as {
+      refusal?: { code: string; repairs: string[] };
+    };
+    expect(refused.refusal?.code).toBe("state-outside-domain");
+    expect(refused.refusal?.repairs.length).toBeGreaterThan(0);
+  });
+
   test("instantiates the Otto fs-mbd composition and proves closure, timing, and refusal", async () => {
     const module = await import("../../public/wasm/fs-otto/fs_otto_wasm.js");
     const bytes = await wasmBytes("../../public/wasm/fs-otto/fs_otto_wasm_bg.wasm");
@@ -461,6 +541,9 @@ describe("shipped FrankenSim WebAssembly artifacts", () => {
   });
 
   test("host decoders fail closed on malformed or non-finite owner output", () => {
+    expect(decodeCrumpFdmWasmStep("not json")).toBeNull();
+    expect(decodeKamenTransporterWasmStep("not json")).toBeNull();
+    expect(decodeSalisburyWasmStep("not json")).toBeNull();
     expect(decodeDaimlerMarineWasmStep("not json")).toBeNull();
     expect(decodeDaimlerMarineWasmStep('{"ok":{"shaft_axis":[1,0,0]}}')).toBeNull();
     expect(

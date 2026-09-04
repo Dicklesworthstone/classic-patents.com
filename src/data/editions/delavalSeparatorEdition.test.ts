@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { evaluateArchivalPublicationState } from "@/data/editions/publicationApproval";
 import { delavalSeparatorPatent } from "@/data/patents/delaval-separator";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import {
@@ -55,7 +56,7 @@ describe("US 247,804 manual source edition", () => {
     }
   });
 
-  test("pairs every source paragraph with a companion and every source figure with a local crop", () => {
+  test("pairs every source paragraph with a companion and every source figure with a complete local sheet", () => {
     const paragraphIndexes = delavalSeparatorArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
     );
@@ -82,8 +83,35 @@ describe("US 247,804 manual source edition", () => {
     for (const reference of references) {
       for (const preview of reference.figurePreviews ?? []) {
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+        expect(preview).toMatchObject({
+          src: "/patents/figures/us-247804-delaval-separator/drawing-sheet-source-v1.png",
+          width: 2320,
+          height: 3408,
+        });
+        expect(preview.alt).toContain("Complete unmodified source drawing sheet");
       }
     }
+
+    for (const legacyCrop of ["fig-1-source-crop-v2.png", "fig-2-source-crop-v2.png"]) {
+      expect(
+        existsSync(
+          resolve(process.cwd(), "public/patents/figures/us-247804-delaval-separator", legacyCrop),
+        ),
+      ).toBe(true);
+    }
+  });
+
+  test("accepts all four source citations against full-sheet source-pixel evidence", () => {
+    const decision = evaluateArchivalPublicationState(delavalSeparatorPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 4,
+      acceptedFigureCount: 4,
+    });
+    expect(decision.figureManifest.figures.every((figure) => figure.status === "accepted")).toBe(
+      true,
+    );
   });
 
   test("removes invented rates, mechanics, and claim count from public data", () => {

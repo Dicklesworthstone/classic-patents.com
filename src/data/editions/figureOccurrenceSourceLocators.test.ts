@@ -416,6 +416,166 @@ const HULL_OCCURRENCES = Object.fromEntries(
   FIGURE_OCCURRENCE_SOURCE_LOCATORS[HULL_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
 );
 
+const WRIGHT_ID = "us-821393-wright-flyer";
+const WRIGHT_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[WRIGHT_ID].assets);
+const WRIGHT_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[WRIGHT_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
+);
+
+const SUNDBACK_ZIPPER_ID = "us-1219881-sundback-zipper";
+const SUNDBACK_ZIPPER_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[SUNDBACK_ZIPPER_ID].assets,
+);
+const SUNDBACK_ZIPPER_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[SUNDBACK_ZIPPER_ID].map((l) => [
+    l.occurrenceKey,
+    l.activeAsset,
+  ]),
+);
+
+const SPENCER_MICROWAVE_ID = "us-2495429-spencer-microwave";
+const SPENCER_MICROWAVE_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[SPENCER_MICROWAVE_ID].assets,
+);
+const SPENCER_MICROWAVE_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[SPENCER_MICROWAVE_ID].map((l) => [
+    l.occurrenceKey,
+    l.activeAsset,
+  ]),
+);
+
+const EINSTEIN_REFRIGERATOR_ID = "us-1781541-einstein-refrigerator";
+const EINSTEIN_REFRIGERATOR_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[EINSTEIN_REFRIGERATOR_ID].assets,
+);
+const EINSTEIN_REFRIGERATOR_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[EINSTEIN_REFRIGERATOR_ID].map((l) => [
+    l.occurrenceKey,
+    l.activeAsset,
+  ]),
+);
+
+const TESLA_MOTOR_ID = "us-381968-tesla-motor";
+const TESLA_MOTOR_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[TESLA_MOTOR_ID].assets,
+);
+const TESLA_MOTOR_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[TESLA_MOTOR_ID].map((locator) => [
+    locator.occurrenceKey,
+    locator.activeAsset,
+  ]),
+);
+
+const TESLA_COIL_593138_ID = "us-593138-tesla-coil";
+const TESLA_COIL_593138_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[TESLA_COIL_593138_ID].assets,
+);
+const TESLA_COIL_593138_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[TESLA_COIL_593138_ID].map((locator) => [
+    locator.occurrenceKey,
+    locator.activeAsset,
+  ]),
+);
+
+const DAVENPORT_ELECTRIC_MOTOR_ID = "us-132-davenport-electric-motor";
+const DAVENPORT_ELECTRIC_MOTOR_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[DAVENPORT_ELECTRIC_MOTOR_ID].assets,
+);
+const DAVENPORT_ELECTRIC_MOTOR_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[DAVENPORT_ELECTRIC_MOTOR_ID].map((locator) => [
+    locator.occurrenceKey,
+    locator.activeAsset,
+  ]),
+);
+
+const DE_FOREST_ID = "us-879532-de-forest-audion";
+const DE_FOREST_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[DE_FOREST_ID].assets);
+const DE_FOREST_SOURCE_SHEET = "/patents/figures/us-879532-de-forest-audion/source-sheet-1-v1.png";
+const DE_FOREST_OCCURRENCES = {
+  "edition-block-5-group-0-inline-1": DE_FOREST_SOURCE_SHEET,
+  "edition-block-5-group-0-inline-3": DE_FOREST_SOURCE_SHEET,
+  "edition-block-7-group-0-inline-3": DE_FOREST_SOURCE_SHEET,
+  "edition-block-7-group-0-inline-5": DE_FOREST_SOURCE_SHEET,
+  "edition-block-9-group-0-inline-3": DE_FOREST_SOURCE_SHEET,
+  "edition-block-9-group-0-inline-5": DE_FOREST_SOURCE_SHEET,
+} as const;
+
+const GLIDDEN_BARBED_WIRE_ID = "us-157124-glidden-barbed-wire";
+const GLIDDEN_BARBED_WIRE_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[GLIDDEN_BARBED_WIRE_ID].assets,
+);
+const GLIDDEN_BARBED_WIRE_SOURCE_SHEET =
+  "/patents/figures/us-157124-glidden-barbed-wire/source-sheet-1-v1.png";
+const GLIDDEN_BARBED_WIRE_OCCURRENCES = {
+  "edition-block-1-group-0-inline-1": GLIDDEN_BARBED_WIRE_SOURCE_SHEET,
+  "edition-block-1-group-0-inline-2": GLIDDEN_BARBED_WIRE_SOURCE_SHEET,
+  "edition-block-1-group-0-inline-3": GLIDDEN_BARBED_WIRE_SOURCE_SHEET,
+  "edition-block-4-group-0-inline-0": GLIDDEN_BARBED_WIRE_SOURCE_SHEET,
+  "edition-block-4-group-0-inline-2": GLIDDEN_BARBED_WIRE_SOURCE_SHEET,
+  "edition-block-4-group-0-inline-4": GLIDDEN_BARBED_WIRE_SOURCE_SHEET,
+} as const;
+
+const PELTON_ID = "us-233692-pelton-water-wheel";
+const PELTON_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[PELTON_ID].assets);
+const PELTON_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[PELTON_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
+);
+
+const DELAVAL_ID = "us-247804-delaval-separator";
+const DELAVAL_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[DELAVAL_ID].assets);
+const DELAVAL_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[DELAVAL_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
+);
+
+const EDISON_BULB_ID = "us-223898-edison-lightbulb";
+const EDISON_BULB_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[EDISON_BULB_ID].assets,
+);
+const EDISON_BULB_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[EDISON_BULB_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
+);
+
+const EDISON_PHONOGRAPH_ID = "us-200521-edison-phonograph";
+const EDISON_PHONOGRAPH_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[EDISON_PHONOGRAPH_ID].assets,
+);
+const EDISON_PHONOGRAPH_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[EDISON_PHONOGRAPH_ID].map((l) => [
+    l.occurrenceKey,
+    l.activeAsset,
+  ]),
+);
+
+const MCCORMICK_REAPER_ID = "us-x8277-mccormick-reaper";
+const MCCORMICK_REAPER_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[MCCORMICK_REAPER_ID].assets,
+);
+const MCCORMICK_REAPER_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[MCCORMICK_REAPER_ID].map((l) => [
+    l.occurrenceKey,
+    l.activeAsset,
+  ]),
+);
+
+const MAXIM_MACHINE_GUN_ID = "us-319596-maxim-machine-gun";
+const MAXIM_MACHINE_GUN_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[MAXIM_MACHINE_GUN_ID].assets,
+);
+const MAXIM_MACHINE_GUN_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[MAXIM_MACHINE_GUN_ID].map((l) => [
+    l.occurrenceKey,
+    l.activeAsset,
+  ]),
+);
+
+const DAIMLER_ENGINE_ID = "us-361931-daimler-engine";
+const DAIMLER_ENGINE_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[DAIMLER_ENGINE_ID].assets,
+);
+const DAIMLER_ENGINE_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[DAIMLER_ENGINE_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
+);
+
 const VALIDATION_OPTIONS = {
   canonicalAssetsByPatent: {
     [HULL_ID]: HULL_ASSETS,
@@ -428,6 +588,22 @@ const VALIDATION_OPTIONS = {
     [COLT_ID]: COLT_ASSETS,
     [CLAVEL_DELTA_ROBOT_ID]: CLAVEL_DELTA_ROBOT_ASSETS,
     [PAGERANK_ID]: PAGERANK_ASSETS,
+    [WRIGHT_ID]: WRIGHT_ASSETS,
+    [DE_FOREST_ID]: DE_FOREST_ASSETS,
+    [GLIDDEN_BARBED_WIRE_ID]: GLIDDEN_BARBED_WIRE_ASSETS,
+    [SUNDBACK_ZIPPER_ID]: SUNDBACK_ZIPPER_ASSETS,
+    [PELTON_ID]: PELTON_ASSETS,
+    [EINSTEIN_REFRIGERATOR_ID]: EINSTEIN_REFRIGERATOR_ASSETS,
+    [SPENCER_MICROWAVE_ID]: SPENCER_MICROWAVE_ASSETS,
+    [TESLA_MOTOR_ID]: TESLA_MOTOR_ASSETS,
+    [TESLA_COIL_593138_ID]: TESLA_COIL_593138_ASSETS,
+    [DAVENPORT_ELECTRIC_MOTOR_ID]: DAVENPORT_ELECTRIC_MOTOR_ASSETS,
+    [DELAVAL_ID]: DELAVAL_ASSETS,
+    [EDISON_BULB_ID]: EDISON_BULB_ASSETS,
+    [EDISON_PHONOGRAPH_ID]: EDISON_PHONOGRAPH_ASSETS,
+    [MAXIM_MACHINE_GUN_ID]: MAXIM_MACHINE_GUN_ASSETS,
+    [DAIMLER_ENGINE_ID]: DAIMLER_ENGINE_ASSETS,
+    [MCCORMICK_REAPER_ID]: MCCORMICK_REAPER_ASSETS,
   },
   canonicalOccurrencesByPatent: {
     [HULL_ID]: HULL_OCCURRENCES,
@@ -440,6 +616,22 @@ const VALIDATION_OPTIONS = {
     [COLT_ID]: COLT_REVOLVER_OCCURRENCES,
     [CLAVEL_DELTA_ROBOT_ID]: CLAVEL_DELTA_ROBOT_OCCURRENCES,
     [PAGERANK_ID]: PAGERANK_OCCURRENCES,
+    [WRIGHT_ID]: WRIGHT_OCCURRENCES,
+    [DE_FOREST_ID]: DE_FOREST_OCCURRENCES,
+    [GLIDDEN_BARBED_WIRE_ID]: GLIDDEN_BARBED_WIRE_OCCURRENCES,
+    [SUNDBACK_ZIPPER_ID]: SUNDBACK_ZIPPER_OCCURRENCES,
+    [PELTON_ID]: PELTON_OCCURRENCES,
+    [EINSTEIN_REFRIGERATOR_ID]: EINSTEIN_REFRIGERATOR_OCCURRENCES,
+    [SPENCER_MICROWAVE_ID]: SPENCER_MICROWAVE_OCCURRENCES,
+    [TESLA_MOTOR_ID]: TESLA_MOTOR_OCCURRENCES,
+    [TESLA_COIL_593138_ID]: TESLA_COIL_593138_OCCURRENCES,
+    [DAVENPORT_ELECTRIC_MOTOR_ID]: DAVENPORT_ELECTRIC_MOTOR_OCCURRENCES,
+    [DELAVAL_ID]: DELAVAL_OCCURRENCES,
+    [EDISON_BULB_ID]: EDISON_BULB_OCCURRENCES,
+    [EDISON_PHONOGRAPH_ID]: EDISON_PHONOGRAPH_OCCURRENCES,
+    [MAXIM_MACHINE_GUN_ID]: MAXIM_MACHINE_GUN_OCCURRENCES,
+    [DAIMLER_ENGINE_ID]: DAIMLER_ENGINE_OCCURRENCES,
+    [MCCORMICK_REAPER_ID]: MCCORMICK_REAPER_OCCURRENCES,
   },
   sourcePdfPageCountsByPatent: {
     [HULL_ID]: 16,
@@ -452,6 +644,22 @@ const VALIDATION_OPTIONS = {
     [COLT_ID]: 7,
     [CLAVEL_DELTA_ROBOT_ID]: 11,
     [PAGERANK_ID]: 15,
+    [WRIGHT_ID]: 10,
+    [DE_FOREST_ID]: 4,
+    [GLIDDEN_BARBED_WIRE_ID]: 2,
+    [SUNDBACK_ZIPPER_ID]: 5,
+    [PELTON_ID]: 3,
+    [EINSTEIN_REFRIGERATOR_ID]: 4,
+    [SPENCER_MICROWAVE_ID]: 3,
+    [TESLA_MOTOR_ID]: 9,
+    [TESLA_COIL_593138_ID]: 4,
+    [DAVENPORT_ELECTRIC_MOTOR_ID]: 3,
+    [DELAVAL_ID]: 3,
+    [EDISON_BULB_ID]: 4,
+    [EDISON_PHONOGRAPH_ID]: 3,
+    [MAXIM_MACHINE_GUN_ID]: 5,
+    [DAIMLER_ENGINE_ID]: 6,
+    [MCCORMICK_REAPER_ID]: 3,
   },
 } as const;
 
@@ -469,6 +677,22 @@ describe("figure occurrence source locators", () => {
       COLT_ID,
       CLAVEL_DELTA_ROBOT_ID,
       PAGERANK_ID,
+      WRIGHT_ID,
+      DE_FOREST_ID,
+      GLIDDEN_BARBED_WIRE_ID,
+      SUNDBACK_ZIPPER_ID,
+      PELTON_ID,
+      EINSTEIN_REFRIGERATOR_ID,
+      SPENCER_MICROWAVE_ID,
+      TESLA_MOTOR_ID,
+      TESLA_COIL_593138_ID,
+      DAVENPORT_ELECTRIC_MOTOR_ID,
+      DELAVAL_ID,
+      EDISON_BULB_ID,
+      EDISON_PHONOGRAPH_ID,
+      MAXIM_MACHINE_GUN_ID,
+      DAIMLER_ENGINE_ID,
+      MCCORMICK_REAPER_ID,
     ]);
     expect(locators).toHaveLength(3);
     expect(new Set(locators.map((locator) => locator.activeAsset))).toEqual(
@@ -484,6 +708,21 @@ describe("figure occurrence source locators", () => {
       { x: 280, y: 620, width: 1750, height: 1150 },
       { x: 280, y: 620, width: 1750, height: 1150 },
       { x: 710, y: 1770, width: 900, height: 750 },
+    ]);
+  });
+
+  test("binds Spencer's sole cited drawing to its complete primary source sheet", () => {
+    const locators = FIGURE_OCCURRENCE_SOURCE_LOCATORS[SPENCER_MICROWAVE_ID];
+    expect(locators).toEqual([
+      expect.objectContaining({
+        occurrenceKey: "edition-block-6-group-0-inline-1",
+        activeAsset: "/patents/figures/us-2495429-spencer-microwave/drawing-sheet-source-v1.png",
+        sourcePdfPage: 1,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 0, y: 0, width: 2320, height: 3408 },
+        evidenceReference:
+          "docs/provenance/us-2495429-spencer-microwave.md#source-sheet-acceptance-2026-09-03",
+      }),
     ]);
   });
 

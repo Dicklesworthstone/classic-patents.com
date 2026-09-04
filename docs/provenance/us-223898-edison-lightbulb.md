@@ -71,14 +71,37 @@ coverage to the test suite but are not rendered into the visitor's reading
 experience. The older source-text layer remains research evidence, not the
 public complete-source edition.
 
-| Source figure | Local selected crop |
+| Source figures | Active local source asset |
 | --- | --- |
-| Fig. 1 | `public/patents/figures/us-223898-edison-lightbulb/fig-1-source-crop-v4.png` |
-| Fig. 2 | `public/patents/figures/us-223898-edison-lightbulb/fig-2-source-crop-v6.png` |
-| Fig. 3 | `public/patents/figures/us-223898-edison-lightbulb/fig-3-source-crop-v3.png` |
+| Figs. 1-3 | `public/patents/figures/us-223898-edison-lightbulb/source-sheet-1-v1.png` |
 
-The selected crop files are unmodified selections from the pinned drawing
-sheet. They add no reconstructed linework, labels, or historical claims.
+## Source-sheet acceptance (2026-09-03)
+
+The four-page pinned PDF was visually reviewed again at 300 DPI. Its first
+page is one upright drawing sheet: Fig. 1 is the lamp section, Fig. 2 is the
+plastic stock before winding, and Fig. 3 is the carbonized spiral. All three
+labels and the drawing detail needed by the corresponding source references
+are visible and legible on that sheet.
+
+The formerly active individual crops were not retained as active evidence:
+their narrow boundaries cut across neighboring drawing matter or source-sheet
+furniture, so they cannot honestly be certified as isolated historical
+figures. They remain preserved in
+`public/patents/figures/us-223898-edison-lightbulb/` for audit and comparison;
+nothing was deleted or overwritten.
+
+`source-sheet-1-v1.png` is a direct, unmodified 300-DPI Poppler rendering of
+PDF page 1. It is 2320 x 3408 pixels and has SHA-256
+`6a6bb2965a4b3b68d964cf7ebe6885e2037876e80661bdd7d99b7f0398e0053c`.
+A fresh page-1 render compares with absolute error 0. The active
+asset contains no masking, compositing, reconstruction, added labels, or crop
+boundary assertion. Each of the six active figure-reference occurrences is
+bound to the complete page-1 rectangle `(x=0, y=0, width=2320, height=3408)`
+in `figureOccurrenceSourceLocators.ts`.
+
+This is evidence for the internal archival audit only. It does not alter or
+condition delivery of the complete source edition, reviewed ledger, or pinned
+facsimile to visitors.
 
 ## Review boundary
 
