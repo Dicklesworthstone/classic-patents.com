@@ -2180,4 +2180,38 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
       },
     },
   },
+  "us-613809-tesla-teleautomaton": {
+    sourcePdfSha256: "b92da6bad46cca996f7ecc99a16a87bdd38d12b3e04a0fce11cc5f033aed849b",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 30,
+    assets: {
+      "/patents/figures/us-613809-tesla-teleautomaton/source-sheet-1-v1.png": {
+        sha256: "29889ce4d7f9b814aab48def45dccf3eebaaa7ae7863c1dc724f8c1ef199af0e",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-613809-tesla-teleautomaton/source-sheet-2-v1.png": {
+        sha256: "85db77322a3890247d19f2893edf0e0f2b2d45def4f44e272b550c5e668e5af5",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-613809-tesla-teleautomaton/source-sheet-3-v1.png": {
+        sha256: "60713b7124217c8a116cab5baa816381410f5d4061c30e8b5ee3dd65e82b2871",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-613809-tesla-teleautomaton/source-sheet-4-v1.png": {
+        sha256: "b035aec55dad08bf8e9a1d63e7bc2aff649b23d08d8a2c196853a83f51423f43",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-613809-tesla-teleautomaton/source-sheet-5-v1.png": {
+        sha256: "a55e7bbc83d1925598b81b3d6b93a75c0a3739bcde65e8b19dea15bbc18ba0ac",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
 } as const satisfies Readonly<Record<string, ArchivalFigureAcceptanceAttestation>>;

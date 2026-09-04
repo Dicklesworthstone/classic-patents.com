@@ -25,7 +25,7 @@ describe("US 613,809 Nikola Tesla Teleautomaton manual archival edition", () => 
     ]);
   });
 
-  test("makes figure previews available as local crops", () => {
+  test("makes complete pinned drawing sheets primary and retains local crops", () => {
     const references = teslaTeleautomatonArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
         ? block.inlines.filter(
@@ -37,6 +37,10 @@ describe("US 613,809 Nikola Tesla Teleautomaton manual archival edition", () => 
     expect(references).not.toHaveLength(0);
     for (const reference of references) {
       expect(reference.figurePreviews?.length).toBeGreaterThan(0);
+      expect(reference.figurePreviews?.[0]?.src).toMatch(
+        /^\/patents\/figures\/us-613809-tesla-teleautomaton\/source-sheet-[1-5]-v1\.png$/,
+      );
+      expect(reference.figurePreviews?.[0]).toMatchObject({ width: 2320, height: 3408 });
       for (const preview of reference.figurePreviews ?? []) {
         expect(preview.src).toStartWith("/patents/figures/us-613809-tesla-teleautomaton/");
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);

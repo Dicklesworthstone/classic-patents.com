@@ -4336,6 +4336,78 @@ function fessendenWirelessSourceSheetLocator(
   };
 }
 
+const TESLA_TELEAUTOMATON_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const TESLA_TELEAUTOMATON_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-613809-tesla-teleautomaton.md#independent-source-sheet-review-2026-09-04";
+const TESLA_TELEAUTOMATON_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-613809-tesla-teleautomaton/source-sheet-1-v1.png",
+  2: "/patents/figures/us-613809-tesla-teleautomaton/source-sheet-2-v1.png",
+  3: "/patents/figures/us-613809-tesla-teleautomaton/source-sheet-3-v1.png",
+  4: "/patents/figures/us-613809-tesla-teleautomaton/source-sheet-4-v1.png",
+  5: "/patents/figures/us-613809-tesla-teleautomaton/source-sheet-5-v1.png",
+} as const;
+const TESLA_TELEAUTOMATON_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-17-group-0-inline-2", 1],
+  ["edition-block-17-group-0-inline-4", 2],
+  ["edition-block-17-group-0-inline-6", 3],
+  ["edition-block-17-group-0-inline-8", 4],
+  ["edition-block-17-group-0-inline-10", 4],
+  ["edition-block-17-group-0-inline-12", 4],
+  ["edition-block-17-group-0-inline-14", 4],
+  ["edition-block-17-group-0-inline-16", 4],
+  ["edition-block-17-group-0-inline-18", 3],
+  ["edition-block-17-group-0-inline-20", 5],
+  ["edition-block-18-group-0-inline-1", 1],
+  ["edition-block-18-group-0-inline-3", 2],
+  ["edition-block-20-group-0-inline-1", 3],
+  ["edition-block-20-group-0-inline-3", 5],
+  ["edition-block-20-group-0-inline-5", 2],
+  ["edition-block-22-group-0-inline-1", 4],
+  ["edition-block-22-group-0-inline-3", 4],
+  ["edition-block-22-group-0-inline-5", 4],
+  ["edition-block-22-group-0-inline-7", 4],
+  ["edition-block-24-group-0-inline-1", 4],
+  ["edition-block-28-group-0-inline-1", 4],
+  ["edition-block-28-group-0-inline-3", 4],
+  ["edition-block-29-group-0-inline-1", 1],
+  ["edition-block-29-group-0-inline-3", 3],
+  ["edition-block-29-group-0-inline-5", 5],
+  ["edition-block-30-group-0-inline-1", 2],
+  ["edition-block-30-group-0-inline-3", 3],
+  ["edition-block-33-group-0-inline-1", 1],
+  ["edition-block-33-group-0-inline-3", 3],
+  ["edition-block-34-group-0-inline-1", 3],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof TESLA_TELEAUTOMATON_SOURCE_SHEET_ASSETS,
+])[];
+
+function teslaTeleautomatonSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof TESLA_TELEAUTOMATON_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: TESLA_TELEAUTOMATON_SOURCE_SHEET_RASTER.width,
+    height: TESLA_TELEAUTOMATON_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: TESLA_TELEAUTOMATON_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: TESLA_TELEAUTOMATON_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      TESLA_TELEAUTOMATON_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: TESLA_TELEAUTOMATON_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
 const WOZNIAK_APPLE_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
 const WOZNIAK_APPLE_EVIDENCE_REFERENCE =
   "docs/provenance/us-4136359-wozniak-apple.md#editorial-boundaries";
@@ -6589,6 +6661,10 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
   ),
   "us-706737-fessenden-wireless": FESSENDEN_WIRELESS_SOURCE_SHEET_OCCURRENCES.map(
     fessendenWirelessSourceSheetLocator,
+  ),
+  "us-613809-tesla-teleautomaton": TESLA_TELEAUTOMATON_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) =>
+      teslaTeleautomatonSourceSheetLocator(occurrenceKey, sourcePdfPage),
   ),
   "us-4136359-wozniak-apple": [
     // Fig. 1 (Page 2)

@@ -24,6 +24,29 @@ const figureDimensions: Record<number, readonly [number, number]> = {
   10: [1150, 1460],
 };
 
+const sourceSheetByFigure: Record<number, number> = {
+  1: 1,
+  2: 2,
+  3: 3,
+  4: 4,
+  5: 4,
+  6: 4,
+  7: 4,
+  8: 4,
+  9: 3,
+  10: 5,
+};
+
+const sourceSheetPreview = (number: number, label: string) => {
+  const sheet = sourceSheetByFigure[number];
+  return {
+    src: `/patents/figures/us-613809-tesla-teleautomaton/source-sheet-${sheet}-v1.png`,
+    alt: `Pinned source drawing sheet ${sheet} of 5 containing ${label}.`,
+    width: 2320,
+    height: 3408,
+  };
+};
+
 const figure = (number: number, label = `Fig. ${number}`) => {
   const [width, height] = figureDimensions[number] ?? [780, 1390];
   const revision = number === 9 ? 3 : 1;
@@ -34,6 +57,7 @@ const figure = (number: number, label = `Fig. ${number}`) => {
     referenceType: "figure" as const,
     label: `Source drawing ${label} from US 613,809`,
     figurePreviews: [
+      sourceSheetPreview(number, label),
       {
         src: `/patents/figures/us-613809-tesla-teleautomaton/fig-${number}-source-crop-v${revision}.png`,
         alt: `US 613,809 ${label} source crop.`,

@@ -42,4 +42,34 @@
 
 ## Root figure-QC hold (2026-08-20)
 
-Independent review of every visitor-reachable preview rejected the current crop set. Several files retain drawing-sheet headers, signatures, or neighboring figures; several are framed as broad sheet regions rather than the single numbered figure named by the authored reference. The canonical record therefore has no `archivalEdition` or `originalTextAsset` binding. The edition, ledger, PDF, and all existing crop versions remain preserved as comparison evidence while new source-pixel crops and occurrence mappings are prepared and independently reviewed.
+Independent review of every visitor-reachable preview rejected the then-active crop set. Several files retained drawing-sheet headers, signatures, or neighboring figures; several were framed as broad sheet regions rather than the single numbered figure named by the authored reference. The strict archival state therefore remains held while source-pixel crops and occurrence mappings are independently reviewed. That internal hold never suppresses the canonical record, reviewed ledger, pinned PDF, or complete-source reader.
+
+## Independent source-sheet review (2026-09-04)
+
+All five printed drawing sheets were rendered directly from the pinned PDF at
+300 DPI (2320 × 3408 pixels) and visually inspected. Their source bindings are:
+sheet 1 / Fig. 1, sheet 2 / Fig. 2, sheet 3 / Figs. 3 and 9, sheet 4 /
+Figs. 4–8, and sheet 5 / Fig. 10. The respective SHA-256 values are
+`29889ce4d7f9b814aab48def45dccf3eebaaa7ae7863c1dc724f8c1ef199af0e`,
+`85db77322a3890247d19f2893edf0e0f2b2d45def4f44e272b550c5e668e5af5`,
+`60713b7124217c8a116cab5baa816381410f5d4061c30e8b5ee3dd65e82b2871`,
+`b035aec55dad08bf8e9a1d63e7bc2aff649b23d08d8a2c196853a83f51423f43`,
+and `a55e7bbc83d1925598b81b3d6b93a75c0a3739bcde65e8b19dea15bbc18ba0ac`.
+
+The complete source sheet is now the first preview for each of the thirty
+authored figure citations, with a full-page source rectangle (`0,0,2320,3408`)
+and explicit occurrence locator. The earlier numbered crops remain preserved
+as supplemental assets; none were replaced or deleted. This evidence repair
+does not alter the independent full-facsimile review hold or the reader's
+always-available complete-source fallback.
+
+## Independent source-sheet review (2026-09-04)
+
+PDF pages 1–5 were rendered directly from the pinned facsimile at 300 DPI (2320 × 3408 pixels) and visually compared against the printed sheets. They contain the complete printed set of Figures 1–10:
+- Sheet 1 (PDF page 1): Fig. 1 plan view of the vessel
+- Sheet 2 (PDF page 2): Fig. 2 longitudinal section of the vessel
+- Sheet 3 (PDF page 3): Fig. 3 partly diagrammatic plan and Fig. 9 system diagram
+- Sheet 4 (PDF page 4): Figs. 4, 5, 6, 7, 8 sensitive-device and controlling-mechanism details
+- Sheet 5 (PDF page 5): Fig. 10 system and mechanism diagram
+
+The resulting immutable full-sheet assets are `public/patents/figures/us-613809-tesla-teleautomaton/source-sheet-[1-5]-v1.png`. All thirty authored figure-reference occurrences now lead with their respective full sheet, whose source rectangle is the entire page (`0,0,2320,3408`). The prior versioned figure crops remain preserved as supplemental research assets. This repairs the active citation path's incomplete-crop risk, but does not change the separate candidate hold: the continuous edition still requires independent review of the complete specification and claims before it can be accepted as an archival edition.
