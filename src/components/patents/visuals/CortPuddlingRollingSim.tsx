@@ -1,8 +1,17 @@
 "use client";
 
-import { Flame, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useMemo, useState } from "react";
-import { stepCortPuddlingRolling } from "@/physics/cortKernel";
+import { Flame, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { useState } from "react";
+import {
+  CORT_DEFAULT_CONTROLS,
+  CORT_FRANKENSIM_BOUNDARY,
+  CORT_KERNEL_SOURCE,
+  CORT_SOURCE_BOUNDARY,
+  CORT_ZERO_PHASES,
+  getCortTapeFrame,
+  stepCortPuddlingRolling,
+} from "@/physics/cortKernel";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -17,25 +26,45 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
 
   const [activeTab, setActiveTab] = useState<"furnace" | "mill">("furnace");
 
-  const furnaceTempC = params.furnaceTemperatureCelsius ?? 1350;
-  const initialCarbonPct = params.initialCarbonPercent ?? 3.8;
-  const rabbleRpm = params.rabbleStirringRpm ?? 15;
-  const puddlingTimeMin = params.puddlingDurationMinutes ?? 90;
-  const rollerPasses = params.rollerPassCount ?? 5;
-
-  const sim = useMemo(() => {
-    return stepCortPuddlingRolling({
+  const furnaceTempC =
+    params.furnaceTemperatureCelsius ?? CORT_DEFAULT_CONTROLS.furnaceTemperatureCelsius;
+  const initialCarbonPct =
+    params.initialCarbonPercent ?? CORT_DEFAULT_CONTROLS.initialCarbonPercent;
+  const rabbleRpm = params.rabbleStirringRpm ?? CORT_DEFAULT_CONTROLS.rabbleStirringRpm;
+  const puddlingTimeMin =
+    params.puddlingDurationMinutes ?? CORT_DEFAULT_CONTROLS.puddlingDurationMinutes;
+  const rollerPasses = params.rollerPassCount ?? CORT_DEFAULT_CONTROLS.rollerPassCount;
+  const isRunning = (params.isRunning ?? 1) > 0.5;
+  const { frame } = useFrankenSimPhysics("gb-1420-cort-puddling-rolling", {
+    domain: "thermodynamics_transport",
+    refusal: { isRefused: true, reason: CORT_SOURCE_BOUNDARY },
+  });
+  const tape = getCortTapeFrame();
+  const phases = tape?.phases ?? CORT_ZERO_PHASES;
+  const sim =
+    tape?.outputs ??
+    stepCortPuddlingRolling({
       furnaceTemperatureCelsius: furnaceTempC,
       initialCarbonPercent: initialCarbonPct,
       rabbleStirringRpm: rabbleRpm,
       puddlingDurationMinutes: puddlingTimeMin,
       rollerPassCount: rollerPasses,
     });
-  }, [furnaceTempC, initialCarbonPct, rabbleRpm, puddlingTimeMin, rollerPasses]);
 
   return (
     <div
       className={`w-full rounded-2xl bg-parchment-50 dark:bg-ink-950/90 border border-parchment-300 dark:border-parchment-700/40 shadow-md p-4 sm:p-6 text-ink-900 dark:text-parchment-100 transition-colors ${className}`}
+      data-cort-face="two"
+      data-cort-runtime-tick={frame.tick}
+      data-cort-runtime-provenance={frame.provenance}
+      data-cort-kernel-source={CORT_KERNEL_SOURCE}
+      data-cort-frankensim-boundary={CORT_FRANKENSIM_BOUNDARY}
+      data-cort-running={isRunning}
+      data-cort-top-roll-phase-rad={phases.topRollRad}
+      data-cort-bottom-roll-phase-rad={phases.bottomRollRad}
+      data-cort-rabble-phase-rad={phases.rabbleCycleRad}
+      data-cort-billet-travel-m={phases.billetTravelM}
+      data-cort-nip-interference-mm={sim.nipInterferenceMm}
     >
       {/* Header */}
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4 mb-5">
@@ -50,8 +79,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             Reverberatory Decarburization &amp; Continuous Grooved Roll Squeeze
           </p>
           <p className="mt-2 max-w-2xl text-[11px] leading-relaxed text-amber-800 dark:text-amber-300">
-            Editorial process model only. It illustrates the stated puddling-and-rolling sequence,
-            not a reconstruction of a surviving patent drawing or a measured production record.
+            {CORT_SOURCE_BOUNDARY}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
@@ -88,6 +116,18 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
           <button
             type="button"
             onClick={() => {
+              updateParam("isRunning", isRunning ? 0 : 1);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isRunning ? "Pause Process Motion" : "Resume Process Motion"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isRunning ? "Pause Process Motion" : "Resume Process Motion"}
+          >
+            {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               toggleSound();
               soundEngine.playSwitchClick();
             }}
@@ -101,6 +141,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             type="button"
             onClick={() => {
               resetParams();
+              updateParam("resetEpoch", (params.resetEpoch ?? 0) + 1);
               setActiveTab("furnace");
               soundEngine.playSwitchClick();
             }}
@@ -162,7 +203,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
               Chimney Stack (Draft)
             </text>
 
-            {/* Firebox & Grate (A) */}
+            {/* Editorial firebox and grate */}
             <rect
               x="80"
               y="240"
@@ -197,7 +238,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
               fill="#fef08a"
               textAnchor="middle"
             >
-              Coal Grate (A)
+              Coal Grate
             </text>
 
             {/* Fire Bridge Wall (B) */}
@@ -218,10 +259,10 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
               fill="#d6d3d1"
               textAnchor="middle"
             >
-              Bridge (B)
+              Fire Bridge
             </text>
 
-            {/* Arched Reverberatory Roof (D) */}
+            {/* Editorial arched reverberatory roof */}
             <path
               d="M 80 180 Q 420 90 680 180 L 680 220 Q 420 130 80 220 Z"
               fill="url(#roofGlow)"
@@ -237,10 +278,10 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
               fill="#fed7aa"
               textAnchor="middle"
             >
-              Reverberatory Arched Roof (D) — Radiates Heat &amp; Deflects Clean Flame
+              Reverberatory Arched Roof — Radiates Heat &amp; Deflects Flame
             </text>
 
-            {/* Concave Hearth Basin (C) */}
+            {/* Editorial concave hearth basin */}
             <path
               d="M 260 270 Q 460 350 660 270 L 660 380 L 260 380 Z"
               fill="#1e1812"
@@ -277,8 +318,8 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
               {sim.isPastyNatureState ? 'Puddle Ball ("Nature")' : "Molten Iron Bath"}
             </text>
 
-            {/* Rabble Rod (G) */}
-            <g transform="rotate(-18 460 295)">
+            {/* Editorial rabble rod, animated from the shared tape */}
+            <g transform={`rotate(${-18 + Math.sin(phases.rabbleCycleRad) * 7} 330 225)`}>
               <line
                 x1="280"
                 y1="210"
@@ -304,7 +345,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
               fill="#fde68a"
               textAnchor="middle"
             >
-              Rabble (G)
+              Rabble
             </text>
 
             {/* Deflected Flame Flow Stream */}
@@ -347,7 +388,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
               </linearGradient>
             </defs>
 
-            {/* Heavy Cast-Iron Mill Stands (H) */}
+            {/* Editorial heavy cast-iron mill stands */}
             <rect
               x="140"
               y="60"
@@ -379,7 +420,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
               strokeWidth="2"
             />
 
-            {/* Screw-Down Adjustment Spindles (K) */}
+            {/* Editorial screw-down adjustment spindles */}
             <rect
               x="165"
               y="20"
@@ -401,7 +442,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             />
             <circle cx="720" cy="15" r="14" fill="#a8a29e" stroke="#1c1917" strokeWidth="2" />
 
-            {/* Top Grooved Roller (J1) */}
+            {/* Top grooved roller */}
             <g transform="translate(220, 130)">
               <rect
                 x="0"
@@ -443,7 +484,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
               <circle cx="415" cy="42" r="8" fill="#1c1917" stroke="#292524" strokeWidth="1.5" />
             </g>
 
-            {/* Bottom Grooved Roller (J2) */}
+            {/* Bottom grooved roller */}
             <g transform="translate(220, 235)">
               <rect
                 x="0"
@@ -530,7 +571,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
               fill="#e7e5e4"
               textAnchor="middle"
             >
-              Grooved Rolls (J) — Graduated Passes (Roughing Box → Diamond → Flat → Round)
+              Graduated Teaching Passes — no source drawing survives in the pinned witness
             </text>
             <text
               x="450"
@@ -551,7 +592,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 mb-6">
         <div className="bg-ink-900/60 p-2.5 rounded-xl border border-ink-800">
           <div className="text-[10px] font-mono text-parchment-400 uppercase tracking-wider">
-            Residual Carbon
+            Model Carbon
           </div>
           <div className="text-sm font-mono font-bold text-amber-400">
             {sim.residualCarbonPercent.toFixed(2)}% C
@@ -563,7 +604,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
 
         <div className="bg-ink-900/60 p-2.5 rounded-xl border border-ink-800">
           <div className="text-[10px] font-mono text-parchment-400 uppercase tracking-wider">
-            Melting Point (Solidus)
+            Model Solidus
           </div>
           <div className="text-sm font-mono font-bold text-rose-400">
             {sim.ironMeltingPointCelsius} °C
@@ -575,7 +616,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
 
         <div className="bg-ink-900/60 p-2.5 rounded-xl border border-ink-800">
           <div className="text-[10px] font-mono text-parchment-400 uppercase tracking-wider">
-            Charge State
+            Model Charge State
           </div>
           <div
             className={`text-sm font-mono font-bold ${
@@ -591,7 +632,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
 
         <div className="bg-ink-900/60 p-2.5 rounded-xl border border-ink-800">
           <div className="text-[10px] font-mono text-parchment-400 uppercase tracking-wider">
-            Residual Slag
+            Model Residual Slag
           </div>
           <div className="text-sm font-mono font-bold text-indigo-400">
             {sim.residualSlagVolumeFractionPercent.toFixed(1)}%
@@ -603,7 +644,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
 
         <div className="bg-ink-900/60 p-2.5 rounded-xl border border-ink-800">
           <div className="text-[10px] font-mono text-parchment-400 uppercase tracking-wider">
-            Tensile Strength
+            Model Tensile Strength
           </div>
           <div className="text-sm font-mono font-bold text-emerald-400">
             {sim.tensileStrengthMpa.toFixed(0)} MPa
@@ -615,13 +656,13 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
 
         <div className="bg-ink-900/60 p-2.5 rounded-xl border border-ink-800">
           <div className="text-[10px] font-mono text-parchment-400 uppercase tracking-wider">
-            Rolling Speedup
+            First-Pass Nip
           </div>
           <div className="text-sm font-mono font-bold text-purple-400">
-            {sim.productionSpeedupVsHammer}×
+            {sim.rollNipGapMm.toFixed(0)} mm
           </div>
           <div className="text-[10px] font-mono text-parchment-500">
-            {sim.hourlyIronOutputKg} kg/h output
+            {sim.nipInterferenceMm.toFixed(0)} mm interference
           </div>
         </div>
       </div>

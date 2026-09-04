@@ -19,7 +19,6 @@ import {
   stepWhitneyCottonGin,
   stepWozniakApple,
 } from "./catalogKernels";
-import { stepCortPuddlingRolling } from "./cortKernel";
 import { FrankenSimEngine } from "./engine";
 import { stepHopkinsPotash } from "./hopkinsPotashKernel";
 import { readKamenSegwayControls, stepKamenSegwaySi } from "./kamenSegwayKernel";
@@ -35,6 +34,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "The pinned GB 931 artifact is a modern reconstruction and supplies no authenticated water head, flow rate, wheel torque, bearing friction, roller work, spindle inertia, or loss measurements from which a closed SI energy partition can be derived.",
   "gb-1306-watt-rotary-engine":
     "The surviving GB 1306 record used here establishes the sun-and-planet topology but supplies no source engine dimensions, pressure trace, steam mass flow, condenser heat rejection, friction, efficiency, or calibrated flywheel inertia from which a closed SI energy partition can be derived.",
+  "gb-1420-cort-puddling-rolling":
+    "The pinned GB 1420 witness is a later abridgment with no furnace dimensions, charge thermal state, coal calorimetry, fuel or flue flow, roll torque, rolling speed, loss measurements, or material card from which a closed SI energy partition can be derived.",
   "us-3138743-kilby-integrated-circuit":
     "US 3,138,743 prints the monolithic circuit construction, wafer dimensions and resistivity, layer depth, selected resistor and capacitor values, contacts, leads, and interconnect topology, but no supply voltage, operating current, transistor gain, junction geometry, measured frequency, delay, thermal point, or power datum from which a closed SI energy balance can be derived.",
   "us-2981877-noyce-ic":
@@ -328,26 +329,7 @@ export function energyChannelsFor(
 
   if (patentId === "gb-1306-watt-rotary-engine") return [];
 
-  if (patentId === "gb-1420-cort-puddling-rolling") {
-    const cort = stepCortPuddlingRolling({
-      furnaceTemperatureCelsius: params.furnaceTemperatureCelsius ?? 1350,
-      initialCarbonPercent: params.initialCarbonPercent ?? 3.5,
-      rabbleStirringRpm: params.rabbleStirringRpm ?? 15,
-      puddlingDurationMinutes: params.puddlingDurationMinutes ?? 60,
-      rollerPassCount: params.rollerPassCount ?? 4,
-    });
-    const furnaceW = (cort.currentTemperatureCelsius / 1400) * 45000;
-    const decarbW = (cort.carbonRemovedPercent / 3.0) * 12500;
-    return [
-      { name: "Furnace Heat", watts: furnaceW, tone: "in" },
-      {
-        name: "Decarburization Enthalpy",
-        watts: decarbW,
-        tone: "useful",
-      },
-      { name: "Flue Radiation Loss", watts: Math.max(0, furnaceW - decarbW), tone: "loss" },
-    ];
-  }
+  if (patentId === "gb-1420-cort-puddling-rolling") return [];
 
   if (patentId === "us-x72-whitney-cotton-gin") {
     const _gin = stepWhitneyCottonGin({ crankRpm: params.crankRpm });

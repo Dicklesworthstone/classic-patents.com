@@ -8,8 +8,58 @@ import {
   bellPhotophoneArchivalEdition,
   manualPhotophoneClaimText,
 } from "./bellPhotophoneEdition";
+import { completeArchivalEditionForViewer } from "./publicationApproval";
 
 const PINNED_SHA256 = "924fc983c2b53e84e122b7fb84014b5d37cf2461eae4132ea235211364f25e85";
+const SOURCE_SHEETS = {
+  1: {
+    path: "/patents/figures/us-235199-bell-photophone/source-sheet-1-v1.png",
+    sha256: "28d4be40b8c2cc3e6468337814d202e1f2001086f66ee96e1a79ef6be4fa9705",
+  },
+  2: {
+    path: "/patents/figures/us-235199-bell-photophone/source-sheet-2-v1.png",
+    sha256: "e624181efbebc2fbf30da6db8a322b8e9eb0431990045fb7bf04638394e908d7",
+  },
+  3: {
+    path: "/patents/figures/us-235199-bell-photophone/source-sheet-3-v1.png",
+    sha256: "b4e4616fd74a3c88ab2e05057cb2318b7b0467f4f9f1223b21f05e6c8b13bc92",
+  },
+} as const;
+
+const SOURCE_SHEET_BY_ACTIVE_OCCURRENCE: Record<string, keyof typeof SOURCE_SHEETS> = {
+  "edition-block-20-group-0-inline-0": 1,
+  "edition-block-20-group-0-inline-2": 1,
+  "edition-block-23-group-0-inline-1": 1,
+  "edition-block-27-group-0-inline-1": 2,
+  "edition-block-28-group-0-inline-0": 2,
+  "edition-block-30-group-0-inline-1": 2,
+  "edition-block-33-group-0-inline-3": 2,
+  "edition-block-33-group-0-inline-5": 2,
+  "edition-block-33-group-0-inline-7": 2,
+  "edition-block-33-group-0-inline-9": 2,
+  "edition-block-34-group-0-inline-1": 2,
+  "edition-block-36-group-0-inline-1": 2,
+  "edition-block-37-group-0-inline-0": 2,
+  "edition-block-40-group-0-inline-1": 2,
+  "edition-block-40-group-0-inline-3": 2,
+  "edition-block-43-group-0-inline-1": 2,
+  "edition-block-44-group-0-inline-1": 2,
+  "edition-block-46-group-0-inline-1": 2,
+  "edition-block-53-group-0-inline-0": 3,
+  "edition-block-62-group-0-inline-1": 2,
+  "edition-block-64-group-0-inline-1": 2,
+  "edition-block-64-group-0-inline-3": 2,
+  "edition-block-66-group-0-inline-1": 2,
+  "edition-block-67-group-0-inline-1": 2,
+  "edition-block-68-group-0-inline-1": 3,
+  "edition-block-68-group-0-inline-3": 3,
+  "edition-block-68-group-0-inline-5": 3,
+  "edition-block-68-group-0-inline-7": 2,
+  "edition-block-68-group-0-inline-9": 3,
+  "edition-block-72-group-0-inline-1": 3,
+  "edition-block-72-group-0-inline-3": 3,
+  "edition-block-87-group-0-inline-1": 2,
+};
 
 describe("US 235,199 Alexander Graham Bell Photophone Archival Edition Contract", () => {
   test("catalogue record links the verified archival edition and reviewed transcript", () => {
@@ -44,108 +94,58 @@ describe("US 235,199 Alexander Graham Bell Photophone Archival Edition Contract"
     }
   });
 
-  test("all figure preview assets exist on disk with exact pixel dimensions", () => {
-    const figurePreviews = bellPhotophoneArchivalEdition.blocks.flatMap((block) => {
-      if (block.kind === "paragraph") {
-        return block.inlines.flatMap((inline) =>
-          inline.kind === "reference" && inline.referenceType === "figure"
-            ? (inline.figurePreviews ?? [])
-            : [],
-        );
-      }
-      return [];
+  test("uses direct complete drawing sheets for every active figure occurrence", () => {
+    const activeReferences = bellPhotophoneArchivalEdition.blocks.flatMap((block, blockIndex) => {
+      if (block.kind !== "paragraph") return [];
+      return block.inlines.flatMap((inline, inlineIndex) =>
+        inline.kind === "reference" && inline.referenceType === "figure"
+          ? [
+              {
+                occurrenceKey: `edition-block-${blockIndex}-group-0-inline-${inlineIndex}`,
+                previews: inline.figurePreviews ?? [],
+              },
+            ]
+          : [],
+      );
     });
+    const previewsByOccurrence = new Map(
+      activeReferences.map((reference) => [reference.occurrenceKey, reference.previews]),
+    );
 
-    expect(figurePreviews.length).toBeGreaterThanOrEqual(10);
-
-    for (const preview of figurePreviews) {
-      const relativePath = preview.src.replace(/^\//, "");
-      const fullPath = path.join(process.cwd(), "public", relativePath);
-      expect(fs.existsSync(fullPath)).toBe(true);
-      expect(preview.width).toBeGreaterThan(0);
-      expect(preview.height).toBeGreaterThan(0);
-
-      const png = fs.readFileSync(fullPath);
-      expect(png.subarray(1, 4).toString("ascii")).toBe("PNG");
-      expect(png.readUInt32BE(16)).toBe(preview.width);
-      expect(png.readUInt32BE(20)).toBe(preview.height);
+    expect([...previewsByOccurrence.keys()]).toEqual(
+      Object.keys(SOURCE_SHEET_BY_ACTIVE_OCCURRENCE),
+    );
+    for (const [occurrenceKey, sourceSheet] of Object.entries(SOURCE_SHEET_BY_ACTIVE_OCCURRENCE)) {
+      const previews = previewsByOccurrence.get(occurrenceKey);
+      expect(previews).toHaveLength(1);
+      expect(previews?.[0]).toEqual({
+        src: SOURCE_SHEETS[sourceSheet].path,
+        alt: expect.stringContaining(`drawing sheet ${sourceSheet}`),
+        width: 2320,
+        height: 3408,
+      });
     }
   });
 
-  test("uses upright source-faithful crops for every drawing-sheet-3 figure", () => {
-    const figureReferences = bellPhotophoneArchivalEdition.blocks.flatMap((block) =>
-      block.kind === "paragraph"
-        ? block.inlines.filter(
-            (inline): inline is Extract<typeof inline, { kind: "reference" }> =>
-              inline.kind === "reference" && inline.referenceType === "figure",
-          )
-        : [],
-    );
-    const figurePreviews = figureReferences.flatMap((reference) => reference.figurePreviews ?? []);
-
-    expect(figurePreviews).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          src: "/patents/figures/us-235199-bell-photophone/figs-16-and-17-source-crop-v5.png",
-          width: 360,
-          height: 560,
-        }),
-        ...(
-          [
-            [18, 500, 510],
-            [19, 310, 480],
-            [20, 280, 480],
-            [21, 320, 480],
-            [22, 260, 340],
-            [23, 200, 340],
-            [24, 230, 470],
-          ] as const
-        ).map(([number, width, height]) =>
-          expect.objectContaining({
-            src: `/patents/figures/us-235199-bell-photophone/fig-${number}-source-crop-v5.png`,
-            width,
-            height,
-          }),
-        ),
-      ]),
-    );
+  test("pins direct full-sheet source renders without replacing legacy crops", () => {
+    for (const { path: sourceSheetPath, sha256 } of Object.values(SOURCE_SHEETS)) {
+      const fullPath = path.join(process.cwd(), "public", sourceSheetPath);
+      expect(fs.existsSync(fullPath)).toBe(true);
+      const png = fs.readFileSync(fullPath);
+      expect(png.subarray(1, 4).toString("ascii")).toBe("PNG");
+      expect(png.readUInt32BE(16)).toBe(2320);
+      expect(png.readUInt32BE(20)).toBe(3408);
+      expect(createHash("sha256").update(png).digest("hex")).toBe(sha256);
+    }
 
     expect(
-      figureReferences.some(
-        (reference) =>
-          reference.text.includes("24") &&
-          reference.figurePreviews?.some((preview) =>
-            preview.src.endsWith("fig-24-source-crop-v5.png"),
-          ),
+      fs.existsSync(
+        path.join(
+          process.cwd(),
+          "public/patents/figures/us-235199-bell-photophone/fig-1-source-crop-v3.png",
+        ),
       ),
     ).toBe(true);
-  });
-
-  test("uses individually reviewed upright source crops for Figures 14 and 15", () => {
-    const figurePreviews = bellPhotophoneArchivalEdition.blocks.flatMap((block) =>
-      block.kind === "paragraph"
-        ? block.inlines.flatMap((inline) =>
-            inline.kind === "reference" && inline.referenceType === "figure"
-              ? (inline.figurePreviews ?? [])
-              : [],
-          )
-        : [],
-    );
-
-    expect(figurePreviews).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          src: "/patents/figures/us-235199-bell-photophone/fig-14-source-crop-v4.png",
-          width: 900,
-          height: 1100,
-        }),
-        expect.objectContaining({
-          src: "/patents/figures/us-235199-bell-photophone/fig-15-source-crop-v4.png",
-          width: 700,
-          height: 900,
-        }),
-      ]),
-    );
   });
 
   test("every paragraph block has a corresponding parallel reading", () => {
@@ -229,13 +229,9 @@ describe("US 235,199 Alexander Graham Bell Photophone Archival Edition Contract"
     }
   });
 
-  test("enforces figure acceptance audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(bellPhotophonePatent, {
-      hasCompanionReadings: true,
-    });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+  test("keeps the complete continuous source edition readable during figure-evidence review", () => {
+    expect(completeArchivalEditionForViewer(bellPhotophonePatent)).toBe(
+      bellPhotophoneArchivalEdition,
+    );
   });
 });

@@ -34,15 +34,38 @@ reproducible locators.
 | PDF p. 8 | Claims 8 through 28. |
 | PDF p. 9 | Claims 29 through 41, printed signature `GEO. EASTMAN.`, and witnesses Edwin O. Sago and Geo. W. Deming. |
 
+## Source-sheet acceptance (2026-09-03)
+
+Each active figure citation in the public edition was visually checked against
+the pinned facsimile, then assigned to an intact 300-DPI render of its actual
+three-sheet drawing page. The assets below are direct full-page renders of the
+pinned PDF: no figure was reconstructed, composited, or substituted. A fresh
+render of each page compared to its committed asset at zero differing pixels.
+
+| Active source sheet | Pinned PDF locator and printed figures | Asset dimensions | SHA-256 |
+| --- | --- | --- | --- |
+| `source-sheet-1-v1.png` | PDF p. 1, drawing sheet 1 of 3; Figs. 1, 2, 3 | 2560 × 3300 | `67b465101abf5be4d2b653ce5e8a7df161e97a85d2166b229541484fbedc19a1` |
+| `source-sheet-2-v1.png` | PDF p. 2, drawing sheet 2 of 3; Figs. 4, 5, 6, 7, 8, 11 | 2560 × 3300 | `2d6f3da0a93b5a4f5248db89f9dc950284ce6f94c836bee38540ae537534edcb` |
+| `source-sheet-3-v1.png` | PDF p. 3, drawing sheet 3 of 3; Figs. 9, 10 | 2560 × 3300 | `b3d072a586e67e41c2fb960e8e92a646289f68122ce76f930df180fc107902d0` |
+
+The eleven authored references occur only in the figure-list paragraph at
+edition block 4: `edition-block-4-group-0-inline-1`, `-3`, and `-5` cite
+Figs. 1–3 on source sheet 1; `-7`, `-9`, `-11`, `-13`, `-15`, and `-23` cite
+Figs. 4–8 and 11 on source sheet 2; `-17` and `-19` cite Figs. 9–10 on source
+sheet 3. The page carries no other authored figure references. The focused
+test pins this count, order, page mapping, dimensions, asset digests, and the
+continued presence of every earlier crop asset.
+
 ## Editorial and preservation boundaries
 
 - `src/data/editions/eastmanKodakEdition.ts` is the visitor-facing source
   face. Its continuous prose, claims, term annotations, and figure references
   are authored typed React nodes, not a PDF text layer, OCR dump, Markdown, or
   generated HTML.
-- Local previews under `public/patents/figures/us-388850-eastman-kodak/` are
-  tight crops from the pinned three drawing sheets. They are evidence crops,
-  not reconstructed illustrations.
+- Active local previews under `public/patents/figures/us-388850-eastman-kodak/`
+  are the three source-sheet assets documented above. The prior
+  `fig-*-source-crop-v1.png` files remain preserved, non-active evidence crops;
+  they are not reconstructed illustrations.
 - `public/patents/source-text/us-388850-eastman-kodak.txt` remains a machine
   text-layer research aid only. It contains recognition defects and is not
   evidence of editorial completeness.

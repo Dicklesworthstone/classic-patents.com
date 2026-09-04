@@ -1444,6 +1444,218 @@ async function auditPatent(
         resumed;
     }
 
+    if (patentId === "gb-931-arkwright-water-frame") {
+      const readArkwrightOwner = async () => {
+        const snapshot = await runtimeOwnerSnapshot(page, patentId);
+        return {
+          raw: snapshot,
+          running: snapshot?.["data-arkwright-running"],
+          totalDraftRatio: Number(snapshot?.["data-arkwright-total-draft-ratio"]),
+          timeSec: Number(snapshot?.["data-arkwright-time-sec"]),
+          wheelRad: Number(snapshot?.["data-arkwright-wheel-phase-rad"]),
+          feedRad: Number(snapshot?.["data-arkwright-feed-phase-rad"]),
+          intermediateOneRad: Number(snapshot?.["data-arkwright-intermediate-one-phase-rad"]),
+          intermediateTwoRad: Number(snapshot?.["data-arkwright-intermediate-two-phase-rad"]),
+          deliveryRad: Number(snapshot?.["data-arkwright-delivery-phase-rad"]),
+          spindleLayshaftRad: Number(snapshot?.["data-arkwright-spindle-layshaft-phase-rad"]),
+          spindleRad: Number(snapshot?.["data-arkwright-spindle-phase-rad"]),
+          bobbinRad: Number(snapshot?.["data-arkwright-bobbin-phase-rad"]),
+          traverseRad: Number(snapshot?.["data-arkwright-traverse-phase-rad"]),
+          provenance: snapshot?.["data-runtime-provenance"],
+          kernelSource: snapshot?.["data-arkwright-kernel-source"],
+          frankenSimBoundary: snapshot?.["data-arkwright-frankensim-boundary"],
+        };
+      };
+      const readArkwrightFace = (face: "two" | "three") =>
+        dispatcher.locator(`[data-arkwright-face="${face}"]`).evaluate((element) => ({
+          running: element.getAttribute("data-arkwright-running"),
+          wheelRad: Number(element.getAttribute("data-arkwright-wheel-phase-rad")),
+          feedRad: Number(element.getAttribute("data-arkwright-feed-phase-rad")),
+          intermediateOneRad: Number(
+            element.getAttribute("data-arkwright-intermediate-one-phase-rad"),
+          ),
+          intermediateTwoRad: Number(
+            element.getAttribute("data-arkwright-intermediate-two-phase-rad"),
+          ),
+          deliveryRad: Number(element.getAttribute("data-arkwright-delivery-phase-rad")),
+          spindleLayshaftRad: Number(
+            element.getAttribute("data-arkwright-spindle-layshaft-phase-rad"),
+          ),
+          spindleRad: Number(element.getAttribute("data-arkwright-spindle-phase-rad")),
+          traverseRad: Number(element.getAttribute("data-arkwright-traverse-phase-rad")),
+        }));
+
+      await page.waitForFunction(
+        (id) => {
+          const owner = document.querySelector(
+            `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+          );
+          const time = owner?.getAttribute("data-arkwright-time-sec");
+          return time !== null && time !== "" && Number.isFinite(Number(time));
+        },
+        patentId,
+        { timeout: 3_000 },
+      );
+      const movingStart = await readArkwrightOwner();
+      await page.waitForFunction(
+        ({ id, startTime }) => {
+          const owner = document.querySelector(
+            `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+          );
+          return Number(owner?.getAttribute("data-arkwright-time-sec")) > startTime + 1 / 30;
+        },
+        { id: patentId, startTime: movingStart.timeSec },
+        { timeout: 5_000 },
+      );
+      const movingEnd = await readArkwrightOwner();
+      const deltas = {
+        wheel: movingEnd.wheelRad - movingStart.wheelRad,
+        feed: movingEnd.feedRad - movingStart.feedRad,
+        intermediateOne: movingEnd.intermediateOneRad - movingStart.intermediateOneRad,
+        intermediateTwo: movingEnd.intermediateTwoRad - movingStart.intermediateTwoRad,
+        delivery: movingEnd.deliveryRad - movingStart.deliveryRad,
+        spindleLayshaft: movingEnd.spindleLayshaftRad - movingStart.spindleLayshaftRad,
+        spindle: movingEnd.spindleRad - movingStart.spindleRad,
+        bobbin: movingEnd.bobbinRad - movingStart.bobbinRad,
+      };
+      const expectedStageRatio = movingEnd.totalDraftRatio ** (1 / 3);
+      const stageRatioTolerance = 1e-8;
+      const fourStageDraftLawClosed =
+        deltas.feed > 1e-4 &&
+        deltas.intermediateOne > deltas.feed &&
+        deltas.intermediateTwo > deltas.intermediateOne &&
+        deltas.delivery > deltas.intermediateTwo &&
+        Math.abs(deltas.intermediateOne / deltas.feed - expectedStageRatio) < stageRatioTolerance &&
+        Math.abs(deltas.intermediateTwo / deltas.intermediateOne - expectedStageRatio) <
+          stageRatioTolerance &&
+        Math.abs(deltas.delivery / deltas.intermediateTwo - expectedStageRatio) <
+          stageRatioTolerance;
+      const twoStageSpindleDriveClosed =
+        Math.abs(Math.abs(deltas.spindleLayshaft / deltas.wheel) - 3.7) < stageRatioTolerance &&
+        Math.abs(Math.abs(deltas.spindle / deltas.spindleLayshaft) - 5) < stageRatioTolerance;
+      const allDrivenCoordinatesAdvance =
+        deltas.wheel > 1e-4 &&
+        Math.abs(deltas.spindleLayshaft) > 1e-4 &&
+        deltas.spindle > 1e-4 &&
+        deltas.bobbin > 1e-4;
+      const sourceBoundaryHonest =
+        movingEnd.provenance === "TS_FALLBACK" &&
+        movingEnd.kernelSource === "source-bounded-ts" &&
+        movingEnd.frankenSimBoundary ===
+          "fs-mbd::articulated-revolute-and-prismatic-browser-step-unavailable";
+
+      await surface.getByRole("button", { name: "Hide Transmission Cover" }).click();
+      await surface
+        .getByRole("button", { name: "Show Transmission Cover" })
+        .waitFor({ state: "visible", timeout: 3_000 });
+      const openTransmissionScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.transmission-open.png`,
+      );
+      await dispatcher.screenshot({ path: openTransmissionScreenshotPath });
+      await surface.getByRole("button", { name: "Show Transmission Cover" }).click();
+
+      await surface.getByRole("button", { name: "Pause Motion" }).click();
+      await page.waitForFunction(
+        (id) =>
+          document
+            .querySelector(`[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`)
+            ?.getAttribute("data-arkwright-running") === "false",
+        patentId,
+        { timeout: 3_000 },
+      );
+      const pausedStart = await readArkwrightOwner();
+      const pausedThreeFace = await readArkwrightFace("three");
+      await page.waitForTimeout(200);
+      const pausedEnd = await readArkwrightOwner();
+      const pauseHeld =
+        Math.abs(pausedEnd.timeSec - pausedStart.timeSec) < 1e-12 &&
+        Math.abs(pausedEnd.wheelRad - pausedStart.wheelRad) < 1e-12 &&
+        Math.abs(pausedEnd.feedRad - pausedStart.feedRad) < 1e-12 &&
+        Math.abs(pausedEnd.intermediateOneRad - pausedStart.intermediateOneRad) < 1e-12 &&
+        Math.abs(pausedEnd.intermediateTwoRad - pausedStart.intermediateTwoRad) < 1e-12 &&
+        Math.abs(pausedEnd.deliveryRad - pausedStart.deliveryRad) < 1e-12 &&
+        Math.abs(pausedEnd.spindleLayshaftRad - pausedStart.spindleLayshaftRad) < 1e-12 &&
+        Math.abs(pausedEnd.spindleRad - pausedStart.spindleRad) < 1e-12;
+
+      await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
+      await dispatcher
+        .locator('[data-arkwright-face="two"]')
+        .waitFor({ state: "visible", timeout: 20_000 });
+      const pausedTwoFace = await readArkwrightFace("two");
+      const faceTolerance = 1e-9;
+      const pausedCrossFaceParity =
+        pausedThreeFace.running === "false" &&
+        pausedTwoFace.running === "false" &&
+        Math.abs(pausedTwoFace.wheelRad - pausedThreeFace.wheelRad) < faceTolerance &&
+        Math.abs(pausedTwoFace.feedRad - pausedThreeFace.feedRad) < faceTolerance &&
+        Math.abs(pausedTwoFace.intermediateOneRad - pausedThreeFace.intermediateOneRad) <
+          faceTolerance &&
+        Math.abs(pausedTwoFace.intermediateTwoRad - pausedThreeFace.intermediateTwoRad) <
+          faceTolerance &&
+        Math.abs(pausedTwoFace.deliveryRad - pausedThreeFace.deliveryRad) < faceTolerance &&
+        Math.abs(pausedTwoFace.spindleLayshaftRad - pausedThreeFace.spindleLayshaftRad) <
+          faceTolerance &&
+        Math.abs(pausedTwoFace.spindleRad - pausedThreeFace.spindleRad) < faceTolerance;
+      const twoDimensionalScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.shared-tape-two-dimensional.png`,
+      );
+      await dispatcher.screenshot({ path: twoDimensionalScreenshotPath });
+
+      await surface.getByRole("button", { name: "Resume Motion" }).click();
+      const resumed = await page
+        .waitForFunction(
+          ({ id, heldTime }) => {
+            const owner = document.querySelector(
+              `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+            );
+            return (
+              owner?.getAttribute("data-arkwright-running") === "true" &&
+              Number(owner?.getAttribute("data-arkwright-time-sec")) > heldTime
+            );
+          },
+          { id: patentId, heldTime: pausedEnd.timeSec },
+          { timeout: 3_000 },
+        )
+        .then(() => true)
+        .catch(() => false);
+      await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
+      await dispatcher
+        .locator('[data-arkwright-face="three"]')
+        .waitFor({ state: "visible", timeout: 20_000 });
+
+      mechanismInteraction = {
+        available: true,
+        kind: "four-stage-draft-law-pause-and-cross-face-parity",
+        movingStart,
+        movingEnd,
+        deltas,
+        expectedStageRatio,
+        fourStageDraftLawClosed,
+        twoStageSpindleDriveClosed,
+        allDrivenCoordinatesAdvance,
+        sourceBoundaryHonest,
+        openTransmissionScreenshotPath,
+        pausedStart,
+        pausedEnd,
+        pauseHeld,
+        pausedThreeFace,
+        pausedTwoFace,
+        pausedCrossFaceParity,
+        resumed,
+        twoDimensionalScreenshotPath,
+      };
+      mechanismInteractionValid =
+        fourStageDraftLawClosed &&
+        twoStageSpindleDriveClosed &&
+        allDrivenCoordinatesAdvance &&
+        sourceBoundaryHonest &&
+        pauseHeld &&
+        pausedCrossFaceParity &&
+        resumed;
+    }
+
     if (patentId === "us-4063220-metcalfe-ethernet") {
       const beforeCollision = await runtimeOwnerSnapshot(page, patentId);
       const beforeCollisionCount = Number(beforeCollision?.["data-collision-count"] ?? 0);

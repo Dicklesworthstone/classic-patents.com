@@ -105,7 +105,7 @@ describe("US 388,850 Eastman Camera manual source edition", () => {
     }
   });
 
-  test("provides a local source crop for every authored figure reference", () => {
+  test("binds every authored figure reference to its complete, digest-pinned source sheet", () => {
     const references = eastmanKodakArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
         ? block.inlines.filter(
@@ -114,13 +114,56 @@ describe("US 388,850 Eastman Camera manual source edition", () => {
           )
         : [],
     );
-    expect(references).toHaveLength(11);
-    for (const reference of references) {
+    const expectedSourceSheets = [
+      ["Fig. 1", 1],
+      ["Fig. 2", 1],
+      ["Fig. 3", 1],
+      ["Fig. 4", 2],
+      ["Fig. 5", 2],
+      ["Fig. 6", 2],
+      ["Fig. 7", 2],
+      ["Fig. 8", 2],
+      ["Fig. 9", 3],
+      ["Fig. 10", 3],
+      ["Fig. 11", 2],
+    ] as const;
+    const sourceSheetDigests = {
+      1: "67b465101abf5be4d2b653ce5e8a7df161e97a85d2166b229541484fbedc19a1",
+      2: "2d6f3da0a93b5a4f5248db89f9dc950284ce6f94c836bee38540ae537534edcb",
+      3: "b3d072a586e67e41c2fb960e8e92a646289f68122ce76f930df180fc107902d0",
+    } as const;
+
+    expect(references).toHaveLength(expectedSourceSheets.length);
+    expect(references.map((reference) => reference.text)).toEqual(
+      expectedSourceSheets.map(([figure]) => figure),
+    );
+    for (const [reference, [, sheet]] of references.map(
+      (reference, index) => [reference, expectedSourceSheets[index]] as const,
+    )) {
       const preview = reference.figurePreviews?.[0];
-      expect(preview?.src).toMatch(
-        /^\/patents\/figures\/us-388850-eastman-kodak\/fig-\d+-source-crop-v1\.png$/,
+      const path = `/patents/figures/us-388850-eastman-kodak/source-sheet-${sheet}-v1.png`;
+      expect(preview).toMatchObject({
+        src: path,
+        width: 2560,
+        height: 3300,
+      });
+      const asset = resolve(process.cwd(), "public", path.slice(1));
+      expect(existsSync(asset)).toBe(true);
+      expect(createHash("sha256").update(readFileSync(asset)).digest("hex")).toBe(
+        sourceSheetDigests[sheet],
       );
-      expect(existsSync(resolve(process.cwd(), "public", preview?.src.slice(1) ?? ""))).toBe(true);
+    }
+
+    for (const number of Array.from({ length: 11 }, (_, index) => index + 1)) {
+      expect(
+        existsSync(
+          resolve(
+            process.cwd(),
+            "public/patents/figures/us-388850-eastman-kodak",
+            `fig-${number}-source-crop-v1.png`,
+          ),
+        ),
+      ).toBe(true);
     }
   });
 

@@ -9,7 +9,6 @@ import {
 } from "./publicationApproval";
 
 const EXPECTED_ROOT_QA_WITHHOLDS = [
-  "us-2297691-carlson-electrophotography",
   "us-2543181-land-polaroid",
   "us-2708656-fermi-reactor",
   "us-313224-mergenthaler-linotype",
@@ -18,7 +17,6 @@ const EXPECTED_ROOT_QA_WITHHOLDS = [
   "us-347140-thomson-welding",
   "us-3541541-engelbart-mouse",
   "us-395781-hollerith-tabulating",
-  "us-400766-hall-aluminium",
   "us-542846-diesel-engine",
   "us-6120588-eink",
   "us-621195-zeppelin-airship",

@@ -1,6 +1,6 @@
 /// <reference types="next" />
 /// <reference types="next/image-types/global" />
-/// <reference path="./.next-final-20260904-v25-external/types/routes.d.ts" />
+/// <reference path="./tmp/classic-patents-next-audit-cort-20260904/types/routes.d.ts" />
 
 // NOTE: This file should not be edited
 // see https://nextjs.org/docs/app/api-reference/config/typescript for more information.

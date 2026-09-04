@@ -1,18 +1,29 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { stepCortPuddlingRolling } from "@/physics/cortKernel";
-import { createStudioClock } from "@/physics/tickScheduler";
-import type { ThermodynamicsState } from "@/physics/types";
 import {
-  globalTransportBus,
-  type TapeUpdater,
-  useFrankenSimPhysics,
-} from "@/physics/useFrankenSimPhysics";
+  Camera,
+  Eye,
+  EyeOff,
+  Layers,
+  Pause,
+  Play,
+  RotateCcw,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  CORT_DEFAULT_CONTROLS,
+  CORT_FRANKENSIM_BOUNDARY,
+  CORT_KERNEL_SOURCE,
+  CORT_SOURCE_BOUNDARY,
+  CORT_ZERO_PHASES,
+  getCortTapeFrame,
+  stepCortPuddlingRolling,
+} from "@/physics/cortKernel";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   type CortPuddlingRollingCameraPreset as CameraPreset,
   cortPuddlingRollingViewForViewport,
@@ -33,35 +44,25 @@ const CAMERA_PRESET_OPTIONS: readonly { readonly id: CameraPreset; readonly labe
   { id: "grooves", label: "Groove Passes" },
 ];
 
-const IDLE_THERMO: ThermodynamicsState = {
-  temperatureCelsius: 0,
-  temperatureKelvin: 273.15,
-  pressureAtm: 1,
-  partialPressureButaneAtm: 0,
-  heatInputWatts: 0,
-  coolingPowerWatts: 0,
-  coefficientOfPerformance: 0,
-  blackbodyRadiantPowerWatts: 0,
-  fluidFlowVelocityMps: 0,
-};
-
 export function CortPuddlingRolling3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [cutaway, setCutaway] = useState(true);
-  const [showCallouts, setShowCallouts] = useState(true);
   const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
-  const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
-  const furnaceTempC = params.furnaceTemperatureCelsius ?? 1350;
-  const initialCarbon = params.initialCarbonPercent ?? 3.8;
-  const rabbleRpm = params.rabbleStirringRpm ?? 15;
-  const puddlingMin = params.puddlingDurationMinutes ?? 90;
-  const rollerPassCount = params.rollerPassCount ?? 5;
-  const rollSpeedRpm = params.rollSpeedRpm ?? 30;
+  const { params, updateParam, resetParams } = usePatentPhysics(EXHIBIT_ID);
+  const furnaceTempC =
+    params.furnaceTemperatureCelsius ?? CORT_DEFAULT_CONTROLS.furnaceTemperatureCelsius;
+  const initialCarbon = params.initialCarbonPercent ?? CORT_DEFAULT_CONTROLS.initialCarbonPercent;
+  const rabbleRpm = params.rabbleStirringRpm ?? CORT_DEFAULT_CONTROLS.rabbleStirringRpm;
+  const puddlingMin =
+    params.puddlingDurationMinutes ?? CORT_DEFAULT_CONTROLS.puddlingDurationMinutes;
+  const rollerPassCount = params.rollerPassCount ?? CORT_DEFAULT_CONTROLS.rollerPassCount;
+  const rollSpeedRpm = params.rollSpeedRpm ?? CORT_DEFAULT_CONTROLS.rollSpeedRpm;
+  const isRunning = (params.isRunning ?? 1) > 0.5;
 
-  const outputs = stepCortPuddlingRolling({
+  const fallbackOutputs = stepCortPuddlingRolling({
     furnaceTemperatureCelsius: furnaceTempC,
     initialCarbonPercent: initialCarbon,
     rabbleStirringRpm: rabbleRpm,
@@ -71,76 +72,17 @@ export function CortPuddlingRolling3D() {
   });
 
   const live = useLiveSimParams({
-    furnaceTemperatureCelsius: furnaceTempC,
-    initialCarbonPercent: initialCarbon,
-    rabbleStirringRpm: rabbleRpm,
-    puddlingDurationMinutes: puddlingMin,
-    rollerPassCount: rollerPassCount,
-    rollSpeedRpm: rollSpeedRpm,
     cutaway,
-    showCallouts,
   });
 
-  // Shared transport tape: the cortKernel op point publishes to the
-  // patentId-keyed bus so every consumer reads one deterministic envelope.
-  useFrankenSimPhysics(EXHIBIT_ID, {
+  const { frame } = useFrankenSimPhysics(EXHIBIT_ID, {
     domain: "thermodynamics_transport",
-    timestampMs: 0,
-    timeStepDt: 1 / 60,
-    refusal: { isRefused: false },
-    thermo: {
-      temperatureCelsius: outputs.currentTemperatureCelsius,
-      temperatureKelvin: outputs.currentTemperatureCelsius + 273.15,
-      pressureAtm: 1,
-      partialPressureButaneAtm: 0,
-      heatInputWatts: 0,
-      coolingPowerWatts: 0,
-      coefficientOfPerformance: 0,
-      blackbodyRadiantPowerWatts: 0,
-      fluidFlowVelocityMps: 0,
-    },
+    refusal: { isRefused: true, reason: CORT_SOURCE_BOUNDARY },
   });
+  const tape = getCortTapeFrame();
+  const outputs = tape?.outputs ?? fallbackOutputs;
 
   const studioRef = useRef<StudioContext | null>(null);
-
-  // One tape-bound stepper (br-ixl.3): the registered updater owns the
-  // per-tick cortKernel evaluation; the render loop only consumes the latest
-  // bus-published outputs. Accumulators live in refs so re-registering on
-  // control changes never resets the roll phase.
-  const rollAngleRef = useRef(0);
-  const kernelOutputsRef = useRef(outputs);
-  useEffect(() => {
-    const integrate: TapeUpdater = (prev, dt) => {
-      const next = stepCortPuddlingRolling({
-        furnaceTemperatureCelsius: live.current.furnaceTemperatureCelsius,
-        initialCarbonPercent: live.current.initialCarbonPercent,
-        rabbleStirringRpm: live.current.rabbleStirringRpm,
-        puddlingDurationMinutes: live.current.puddlingDurationMinutes,
-        rollerPassCount: live.current.rollerPassCount,
-        rollSpeedRpm: live.current.rollSpeedRpm,
-      });
-      kernelOutputsRef.current = next;
-      rollAngleRef.current += next.rollOmegaRadPerS * dt;
-      return {
-        refusal: { isRefused: false },
-        machine: {
-          poseXMeters: 0,
-          poseYMeters: 0,
-          headingRad: rollAngleRef.current,
-          modeLabel: next.isPastyNatureState ? "pasty nature" : "fluid bath",
-          // Grooved rolls use the kernel's Ø450 mm default geometry.
-          wheelSpeedMps: Number((next.rollOmegaRadPerS * 0.225).toFixed(3)),
-        },
-        thermo: {
-          ...(prev.thermo ?? IDLE_THERMO),
-          temperatureCelsius: next.currentTemperatureCelsius,
-          temperatureKelvin: next.currentTemperatureCelsius + 273.15,
-        },
-      };
-    };
-    const unregister = globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
-    return unregister;
-  }, [live]);
 
   // The persistent WebGL scene consumes the stable layout-effect-synchronized control ref so toggles do not rebuild and flash the studio.
   useEffect(() => {
@@ -161,25 +103,19 @@ export function CortPuddlingRolling3D() {
     studio.scene.add(model.root);
 
     let animId = 0;
-    const clock = createStudioClock();
 
-    const renderLoop = (now: number) => {
+    const renderLoop = () => {
       animId = requestAnimationFrame(renderLoop);
       if (!studio.isVisible()) return;
-      const { simTimeSec: virtualTime } = clock.pump(now);
-
-      // Pure consumer of the tape: the registered updater owns the per-tick
-      // kernel evaluation; fall back to the initial op point until the first
-      // bus frame lands.
-      const outputs = kernelOutputsRef.current;
+      // Pure consumer of the shared transport tape: kinematic phases arrive
+      // pre-integrated on the tape, so no local clock or synthetic dt is needed.
+      const liveTape = getCortTapeFrame();
 
       model.setCutaway(live.current.cutaway);
-      model.setShowCallouts(live.current.showCallouts);
       model.updateAnimation(
-        virtualTime,
-        outputs.isPastyNatureState,
-        outputs.rollOmegaRadPerS,
-        outputs.rabbleOmegaRadPerS,
+        liveTape?.phases ?? CORT_ZERO_PHASES,
+        liveTape?.timeSec ?? 0,
+        liveTape?.outputs.isPastyNatureState ?? fallbackOutputs.isPastyNatureState,
       );
 
       studio.controls.update();
@@ -193,7 +129,7 @@ export function CortPuddlingRolling3D() {
       model.dispose();
       studio.cleanup();
     };
-  }, [live]);
+  }, [fallbackOutputs.isPastyNatureState, live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActivePreset(preset);
@@ -220,39 +156,52 @@ export function CortPuddlingRolling3D() {
 
   const chips: KernelChip[] = [
     {
-      label: "Charge State",
+      label: "Scenario Charge",
       value: outputs.isPastyNatureState ? "Coming to Nature" : "Molten Fluid",
       unit: `${outputs.residualCarbonPercent.toFixed(2)}% C`,
       tone: outputs.isPastyNatureState ? "ok" : "warn",
     },
     {
-      label: "Melting Point",
+      label: "Scenario Solidus",
       value: `${outputs.ironMeltingPointCelsius} °C`,
-      unit: `+${outputs.ironMeltingPointCelsius - 1147}°C rise`,
+      unit: "linearized Fe–C relation",
       tone: "ok",
     },
     {
-      label: "Residual Slag",
+      label: "Scenario Slag",
       value: `${outputs.residualSlagVolumeFractionPercent.toFixed(1)}%`,
       unit: `-${outputs.slagExpelledKg.toFixed(1)} kg`,
       tone: outputs.residualSlagVolumeFractionPercent < 3.0 ? "ok" : "warn",
     },
     {
-      label: "Tensile Strength",
-      value: `${outputs.tensileStrengthMpa.toFixed(0)} MPa`,
-      unit: `${outputs.ductilityElongationPercent.toFixed(0)}% elongation`,
+      label: "Scenario Roll Load",
+      value: `${outputs.rollSeparationForceKn.toFixed(0)} kN`,
+      unit: `${outputs.hydrostaticSqueezePressureMpa.toFixed(0)} MPa`,
       tone: "ok",
     },
     {
-      label: "Throughput Speedup",
-      value: `${outputs.productionSpeedupVsHammer}×`,
-      unit: "vs Tilt Hammer",
+      label: "First-Pass Nip",
+      value: `${outputs.rollNipGapMm.toFixed(0)} mm`,
+      unit: `${outputs.nipInterferenceMm.toFixed(0)} mm interference`,
       tone: "ok",
     },
   ];
 
   return (
-    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+    <div
+      className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent"
+      data-cort-face="three"
+      data-cort-runtime-tick={frame.tick}
+      data-cort-runtime-provenance={frame.provenance}
+      data-cort-kernel-source={CORT_KERNEL_SOURCE}
+      data-cort-frankensim-boundary={CORT_FRANKENSIM_BOUNDARY}
+      data-cort-running={isRunning}
+      data-cort-top-roll-phase-rad={tape?.phases.topRollRad ?? 0}
+      data-cort-bottom-roll-phase-rad={tape?.phases.bottomRollRad ?? 0}
+      data-cort-rabble-phase-rad={tape?.phases.rabbleCycleRad ?? 0}
+      data-cort-billet-travel-m={tape?.phases.billetTravelM ?? 0}
+      data-cort-nip-interference-mm={outputs.nipInterferenceMm}
+    >
       <div className="sr-only">Henry Cort Puddling Process and Grooved Rollers 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -301,18 +250,15 @@ export function CortPuddlingRolling3D() {
           <button
             type="button"
             onClick={() => {
-              setShowCallouts((v) => !v);
+              updateParam("isRunning", isRunning ? 0 : 1);
               soundEngine.playSwitchClick();
             }}
-            title={showCallouts ? "Hide Callout Letters" : "Show Callout Letters"}
-            className={`min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
-              showCallouts
-                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-700"
-                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
-            }`}
+            title={isRunning ? "Pause Process Motion" : "Resume Process Motion"}
+            aria-label={isRunning ? "Pause Process Motion" : "Resume Process Motion"}
+            className="min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
           >
-            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
-            <span className="hidden md:inline">{showCallouts ? "Pins" : "Pins Off"}</span>
+            {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+            <span className="hidden md:inline">{isRunning ? "Pause" : "Resume"}</span>
           </button>
           <button
             type="button"
@@ -346,11 +292,16 @@ export function CortPuddlingRolling3D() {
           </button>
 
           <button
-            aria-label="Reset camera view"
+            aria-label="Reset Simulation and Camera"
             type="button"
-            onClick={() => applyCameraPreset("iso")}
+            onClick={() => {
+              resetParams();
+              updateParam("resetEpoch", (params.resetEpoch ?? 0) + 1);
+              applyCameraPreset("iso");
+              soundEngine.playSwitchClick();
+            }}
             className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
+            title="Reset Simulation and Camera"
           >
             <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
@@ -426,15 +377,8 @@ export function CortPuddlingRolling3D() {
         </div>
 
         <p className="mt-3 text-[11px] leading-relaxed text-amber-800 dark:text-amber-300">
-          Editorial process model only. It illustrates the stated puddling-and-rolling sequence, not
-          a reconstruction of a drawing sheet, numbered claim probe, or measured production record.
+          {CORT_SOURCE_BOUNDARY}
         </p>
-
-        <PortHamiltonianEnergyStrip
-          patentId="gb-1420-cort-puddling-rolling"
-          params={params}
-          className="mt-3"
-        />
       </div>
     </div>
   );

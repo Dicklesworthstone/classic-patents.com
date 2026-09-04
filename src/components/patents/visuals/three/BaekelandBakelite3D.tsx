@@ -28,7 +28,7 @@ const CAMERA_PRESETS: Record<
   iso: { pos: [4.5, 3.2, 5.5], target: [0, 1.6, 0] },
   autoclave: { pos: [0, 1.8, 4.0], target: [0, 1.4, 0] },
   mold: { pos: [0, 1.4, 1.6], target: [0, 1.3, 0] },
-  molecular: { pos: [0, 4.2, 2.5], target: [0, 3.4, 0] },
+  molecular: { pos: [0, 2.25, 2.2], target: [0, 1.35, 0] },
   gauges: { pos: [0, 2.8, 1.8], target: [0, 2.4, 0] },
 };
 
@@ -158,7 +158,7 @@ export function BaekelandBakelite3D() {
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActivePreset(preset);
-    if (preset === "mold") setCutaway(true);
+    if (preset === "mold" || preset === "molecular") setCutaway(true);
     const cfg = CAMERA_PRESETS[preset];
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };

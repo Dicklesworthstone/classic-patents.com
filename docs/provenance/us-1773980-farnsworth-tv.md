@@ -12,7 +12,8 @@
 - Pinned facsimile: `public/patents/pdfs/us-1773980-farnsworth-tv.pdf`
 - SHA-256: `b1ca00feb8a6212894a3ac6fd8aed229493b929b2469a7fe710e9ee53c046538`
 - PDF pages: 13 (four drawing sheets, eight specification/claims pages, and the final claim/signature page)
-- Retrieval and full-facsimile visual review: 2026-08-18, two complete passes.
+- Retrieval and full-facsimile visual review: 2026-08-18, two complete passes;
+  source-sheet comparison repeated at 300 DPI on 2026-09-04.
 - Rights basis: the historical United States patent text and drawings are United States Government public-domain material.
 
 ## Facsimile map
@@ -51,16 +52,25 @@ catalogue entry. Its stated system uses a photo-electric plate, fixed
 electrical shutter, differently timed electrical potentials, radio link,
 light rotator, and quartz oscillographs.
 
-## Current candidate boundary (2026-08-21)
+## Source-sheet acceptance (2026-09-04)
 
-The current text candidate preserves the complete ordered 13-page ledger and
-all eighteen printed claims, and its continuous edition now carries authored
-multi-preview references for the grouped citations “Figures 4 and 5” and
-“Figures 15, 16 and 17.” The v2 figure PNGs remain preserved source-derived
-assets, but they are not independently accepted by this receipt: the reported
-Fig. 1 header/signature contamination, Fig. 2 inclusion of Fig. 3, and Fig. 3
-signature contamination require a fresh cloud Luna visual comparison against
-the pinned drawing sheets. PNG existence and IHDR dimension checks establish
-neither crop boundaries nor figure identity. Until that comparison and any
-needed versioned crops are independently reviewed, this record is a candidate
-only and must remain withheld from publication.
+The active edition now uses four direct, untrimmed 300-DPI PNG renders of the
+pinned drawing sheets rather than relying on figure-boundary crops. I visually
+compared each render to PDF pages 1–4 and reviewed the remaining specification
+and claim pages (PDF pages 5–13) as the complete facsimile. The full sheets
+intentionally retain the historical headers, sheet labels, inventor signatures,
+and attorney signatures; those features authenticate the sheet and are not
+crop contamination.
+
+| Active asset | Pinned PDF page / printed sheet | Figures visible and cited | Pixels | SHA-256 |
+| --- | --- | --- | --- | --- |
+| `public/patents/figures/us-1773980-farnsworth-tv/source-sheet-1-v1.png` | 1 / Sheet 1 | 1 | 2320 × 3408 | `eb27560b188bd56be680648d130de208b2504ee1da54dd6498110f97e6e9c400` |
+| `public/patents/figures/us-1773980-farnsworth-tv/source-sheet-2-v1.png` | 2 / Sheet 2 | 2–3 | 2320 × 3408 | `792aeed0d8422ae01f2647bddcd685ddbe6f3dee7daf35a83c464681bae5d8c9` |
+| `public/patents/figures/us-1773980-farnsworth-tv/source-sheet-3-v1.png` | 3 / Sheet 3 | 4–10 | 2320 × 3408 | `19ba9574fca6e379d7834a0a39e2768dd4231e9f1f62bcef04fdcfa6f8100b34` |
+| `public/patents/figures/us-1773980-farnsworth-tv/source-sheet-4-v1.png` | 4 / Sheet 4 | 11–17 | 2320 × 3408 | `3be324ceffb5ddc27c6feaa94bd6577aeb2d4939b3986c0871282b83ffc1d04e` |
+
+All 32 active authored figure-reference occurrences (38 preview entries,
+including repeated and grouped citations) resolve to these direct sheets:
+Figure 1 to PDF page 1; Figures 2–3 to page 2; Figures 4–10 to page 3; and
+Figures 11–17 to page 4. The old v1/v2 figure crops remain preserved as
+historical derivative assets but no longer serve as the active source evidence.

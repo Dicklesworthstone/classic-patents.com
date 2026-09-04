@@ -83,24 +83,100 @@ describe("US 4,341,502 Makino Assembly Robot archival edition", () => {
     }
   });
 
-  test("pins every source figure crop and every paragraph reading", () => {
-    const figures = makinoScaraArchivalEdition.blocks.flatMap((block) =>
+  test("binds all 16 active figure citations to complete digest-pinned source sheets", () => {
+    const sourceSheet2 = "/patents/figures/us-4341502-makino-scara/source-sheet-2-v1.png";
+    const sourceSheet3 = "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png";
+    const figureOccurrences = makinoScaraArchivalEdition.blocks.flatMap((block, blockIndex) =>
       block.kind === "paragraph"
-        ? block.inlines.flatMap((inline) =>
+        ? block.inlines.flatMap((inline, inlineIndex) =>
             inline.kind === "reference" && inline.referenceType === "figure"
-              ? (inline.figurePreviews ?? [])
+              ? [
+                  {
+                    occurrenceKey: `edition-block-${blockIndex}-group-0-inline-${inlineIndex}`,
+                    text: inline.text,
+                    previews: inline.figurePreviews,
+                  },
+                ]
               : [],
           )
         : [],
     );
-    expect(figures.length).toBeGreaterThanOrEqual(8);
-    for (const figure of figures) {
-      const path = join(ROOT, "public", figure.src.replace(/^\//, ""));
+
+    expect(
+      figureOccurrences.map((occurrence) => [
+        occurrence.occurrenceKey,
+        occurrence.text,
+        occurrence.previews?.[0]?.src,
+      ]),
+    ).toEqual([
+      ["edition-block-11-group-0-inline-0", "FIG. 1", sourceSheet2],
+      ["edition-block-11-group-0-inline-2", "FIG. 2", sourceSheet3],
+      ["edition-block-11-group-0-inline-4", "FIG. 1", sourceSheet2],
+      ["edition-block-11-group-0-inline-6", "FIGS. 3 to 6", sourceSheet3],
+      ["edition-block-11-group-0-inline-8", "FIG. 2", sourceSheet3],
+      ["edition-block-13-group-0-inline-1", "FIG. 1", sourceSheet2],
+      ["edition-block-14-group-0-inline-1", "FIG. 2", sourceSheet3],
+      ["edition-block-15-group-0-inline-0", "FIGS. 3 to 6", sourceSheet3],
+      ["edition-block-15-group-0-inline-2", "FIG. 3", sourceSheet3],
+      ["edition-block-16-group-0-inline-1", "FIG. 4", sourceSheet3],
+      ["edition-block-16-group-0-inline-3", "FIG. 5", sourceSheet3],
+      ["edition-block-16-group-0-inline-5", "FIG. 3", sourceSheet3],
+      ["edition-block-16-group-0-inline-7", "FIG. 4", sourceSheet3],
+      ["edition-block-16-group-0-inline-9", "FIG. 3", sourceSheet3],
+      ["edition-block-17-group-0-inline-1", "FIG. 6", sourceSheet3],
+      ["edition-block-17-group-0-inline-3", "FIG. 4", sourceSheet3],
+    ]);
+    for (const occurrence of figureOccurrences) {
+      expect(occurrence.previews).toHaveLength(1);
+      expect(occurrence.previews).toEqual([expect.objectContaining({ width: 2320, height: 3408 })]);
+      expect(occurrence.previews?.[0]?.alt).toContain("Complete unmodified source drawing sheet");
+    }
+
+    for (const sourceSheet of [
+      {
+        path: sourceSheet2,
+        sha256: "e6ec06f96c767ce5f8a6ff43d912466f6ef3739e31302cc80aac712be2e0155a",
+      },
+      {
+        path: sourceSheet3,
+        sha256: "74beb6e9c0c307287bbb8d1b4c797a1d3942f6ddf27cf9e256c0d4757c346398",
+      },
+    ]) {
+      const path = join(ROOT, "public", sourceSheet.path.replace(/^\//, ""));
       expect(existsSync(path)).toBe(true);
       const bytes = readFileSync(path);
-      expect(bytes.readUInt32BE(16)).toBe(figure.width);
-      expect(bytes.readUInt32BE(20)).toBe(figure.height);
+      expect(createHash("sha256").update(bytes).digest("hex")).toBe(sourceSheet.sha256);
+      expect({ width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) }).toEqual({
+        width: 2320,
+        height: 3408,
+      });
     }
+
+    for (const legacyCrop of [
+      "fig-1-source-crop-v1.png",
+      "fig-2-source-crop-v1.png",
+      "fig-3-source-crop-v1.png",
+      "fig-4-source-crop-v1.png",
+      "fig-5-source-crop-v1.png",
+      "fig-6-source-crop-v1.png",
+    ]) {
+      expect(
+        existsSync(join(ROOT, "public/patents/figures/us-4341502-makino-scara", legacyCrop)),
+      ).toBe(true);
+    }
+
+    const provenance = readFileSync(
+      join(ROOT, "docs/provenance/us-4341502-makino-scara.md"),
+      "utf8",
+    );
+    expect(provenance).toContain("## Source-sheet acceptance (2026-09-03)");
+    expect(provenance).toContain("The 16 authored active figure references");
+    expect(provenance).toContain(
+      "e6ec06f96c767ce5f8a6ff43d912466f6ef3739e31302cc80aac712be2e0155a",
+    );
+    expect(provenance).toContain(
+      "74beb6e9c0c307287bbb8d1b4c797a1d3942f6ddf27cf9e256c0d4757c346398",
+    );
 
     for (const [index, block] of makinoScaraArchivalEdition.blocks.entries()) {
       if (block.kind !== "paragraph") continue;

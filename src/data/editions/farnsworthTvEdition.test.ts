@@ -42,25 +42,121 @@ describe("US 1,773,980 manual source edition", () => {
         inline.kind === "reference" && inline.referenceType === "figure" ? [inline] : [],
       );
     });
-    const expectedDimensions: Readonly<Record<number, readonly [number, number]>> = {
-      1: [1600, 1150],
-      2: [1600, 450],
-      3: [1500, 760],
-      4: [1300, 270],
-      5: [1300, 230],
-      6: [500, 340],
-      7: [650, 350],
-      8: [380, 360],
-      9: [450, 350],
-      10: [350, 350],
-      11: [1350, 360],
-      12: [1350, 260],
-      13: [1400, 280],
-      14: [400, 560],
-      15: [420, 420],
-      16: [480, 420],
-      17: [400, 400],
+    const sourceSheets: Readonly<Record<number, { page: number; sha256: string }>> = {
+      1: {
+        page: 1,
+        sha256: "eb27560b188bd56be680648d130de208b2504ee1da54dd6498110f97e6e9c400",
+      },
+      2: {
+        page: 2,
+        sha256: "792aeed0d8422ae01f2647bddcd685ddbe6f3dee7daf35a83c464681bae5d8c9",
+      },
+      3: {
+        page: 2,
+        sha256: "792aeed0d8422ae01f2647bddcd685ddbe6f3dee7daf35a83c464681bae5d8c9",
+      },
+      4: {
+        page: 3,
+        sha256: "19ba9574fca6e379d7834a0a39e2768dd4231e9f1f62bcef04fdcfa6f8100b34",
+      },
+      5: {
+        page: 3,
+        sha256: "19ba9574fca6e379d7834a0a39e2768dd4231e9f1f62bcef04fdcfa6f8100b34",
+      },
+      6: {
+        page: 3,
+        sha256: "19ba9574fca6e379d7834a0a39e2768dd4231e9f1f62bcef04fdcfa6f8100b34",
+      },
+      7: {
+        page: 3,
+        sha256: "19ba9574fca6e379d7834a0a39e2768dd4231e9f1f62bcef04fdcfa6f8100b34",
+      },
+      8: {
+        page: 3,
+        sha256: "19ba9574fca6e379d7834a0a39e2768dd4231e9f1f62bcef04fdcfa6f8100b34",
+      },
+      9: {
+        page: 3,
+        sha256: "19ba9574fca6e379d7834a0a39e2768dd4231e9f1f62bcef04fdcfa6f8100b34",
+      },
+      10: {
+        page: 3,
+        sha256: "19ba9574fca6e379d7834a0a39e2768dd4231e9f1f62bcef04fdcfa6f8100b34",
+      },
+      11: {
+        page: 4,
+        sha256: "3be324ceffb5ddc27c6feaa94bd6577aeb2d4939b3986c0871282b83ffc1d04e",
+      },
+      12: {
+        page: 4,
+        sha256: "3be324ceffb5ddc27c6feaa94bd6577aeb2d4939b3986c0871282b83ffc1d04e",
+      },
+      13: {
+        page: 4,
+        sha256: "3be324ceffb5ddc27c6feaa94bd6577aeb2d4939b3986c0871282b83ffc1d04e",
+      },
+      14: {
+        page: 4,
+        sha256: "3be324ceffb5ddc27c6feaa94bd6577aeb2d4939b3986c0871282b83ffc1d04e",
+      },
+      15: {
+        page: 4,
+        sha256: "3be324ceffb5ddc27c6feaa94bd6577aeb2d4939b3986c0871282b83ffc1d04e",
+      },
+      16: {
+        page: 4,
+        sha256: "3be324ceffb5ddc27c6feaa94bd6577aeb2d4939b3986c0871282b83ffc1d04e",
+      },
+      17: {
+        page: 4,
+        sha256: "3be324ceffb5ddc27c6feaa94bd6577aeb2d4939b3986c0871282b83ffc1d04e",
+      },
     };
+
+    expect(refs).toHaveLength(32);
+    expect(
+      refs.map((reference) =>
+        (reference.figurePreviews ?? []).map((preview) => {
+          const match = /source-sheet-(\d)-v1\.png$/.exec(preview.src);
+          if (!match)
+            throw new Error(`Figure preview is not a versioned source sheet: ${preview.src}`);
+          return Number(match[1]);
+        }),
+      ),
+    ).toEqual([
+      [1],
+      [2],
+      [2],
+      [3],
+      [3],
+      [3],
+      [3],
+      [3],
+      [3],
+      [3],
+      [3],
+      [4],
+      [4],
+      [4],
+      [4],
+      [4],
+      [4],
+      [4],
+      [4],
+      [4],
+      [4],
+      [4],
+      [4],
+      [4],
+      [4],
+      [4],
+      [4, 4, 4],
+      [4, 4, 4],
+      [4],
+      [3, 3],
+      [3, 3],
+      [2],
+    ]);
 
     for (const reference of refs) {
       for (const preview of reference.figurePreviews ?? []) {
@@ -74,9 +170,8 @@ describe("US 1,773,980 manual source edition", () => {
       }
     }
 
-    for (const [figureNumber, dimensions] of Object.entries(expectedDimensions)) {
-      const number = Number(figureNumber);
-      const previewPath = `/patents/figures/us-1773980-farnsworth-tv/fig-${number}-source-crop-v2.png`;
+    for (const source of Object.values(sourceSheets)) {
+      const previewPath = `/patents/figures/us-1773980-farnsworth-tv/source-sheet-${source.page}-v1.png`;
       const matchingReferences = refs.filter((reference) =>
         reference.figurePreviews?.some((preview) => preview.src === previewPath),
       );
@@ -85,10 +180,13 @@ describe("US 1,773,980 manual source edition", () => {
         const preview = reference.figurePreviews?.find(
           (candidate) => candidate.src === previewPath,
         );
-        expect(preview?.width).toBe(dimensions[0]);
-        expect(preview?.height).toBe(dimensions[1]);
-        expect(preview?.alt).toContain("oriented for legibility");
+        expect(preview?.width).toBe(2320);
+        expect(preview?.height).toBe(3408);
+        expect(preview?.alt).toContain("Direct full source drawing sheet");
       }
+      const path = resolve(process.cwd(), "public", previewPath.slice(1));
+      const png = readFileSync(path);
+      expect(createHash("sha256").update(png).digest("hex")).toBe(source.sha256);
     }
   });
 
@@ -136,13 +234,14 @@ describe("US 1,773,980 manual source edition", () => {
     expect(energyChannelsFor("us-1773980-farnsworth-tv", {})).toEqual([]);
   });
 
-  test("enforces figure acceptance pending audit hold in publication state registry", () => {
+  test("never lets an internal figure-review decision withhold the complete source face", () => {
     const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const { completeArchivalEditionForViewer } = require("./publicationApproval");
     const decision = evaluateTypedArchivalPublicationState(farnsworthTvPatent, {
       hasCompanionReadings: true,
     });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+    expect(completeArchivalEditionForViewer(farnsworthTvPatent, decision)).toBe(
+      farnsworthTvPatent.archivalEdition,
+    );
   });
 });

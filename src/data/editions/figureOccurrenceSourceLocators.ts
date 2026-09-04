@@ -848,6 +848,307 @@ function hallAluminiumSourceSheetLocator(args: {
   };
 }
 
+const EASTMAN_KODAK_SOURCE_SHEET_RASTER = { width: 2560, height: 3300 } as const;
+const EASTMAN_KODAK_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-388850-eastman-kodak.md#source-sheet-acceptance-2026-09-03";
+const EASTMAN_KODAK_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-388850-eastman-kodak/source-sheet-1-v1.png",
+  2: "/patents/figures/us-388850-eastman-kodak/source-sheet-2-v1.png",
+  3: "/patents/figures/us-388850-eastman-kodak/source-sheet-3-v1.png",
+} as const;
+
+function eastmanKodakSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  sourcePdfPage: keyof typeof EASTMAN_KODAK_SOURCE_SHEET_ASSETS;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: EASTMAN_KODAK_SOURCE_SHEET_RASTER.width,
+    height: EASTMAN_KODAK_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: EASTMAN_KODAK_SOURCE_SHEET_ASSETS[args.sourcePdfPage],
+    sourceRaster: EASTMAN_KODAK_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      EASTMAN_KODAK_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: EASTMAN_KODAK_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const MAKINO_SCARA_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const MAKINO_SCARA_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-4341502-makino-scara.md#source-sheet-acceptance-2026-09-03";
+const MAKINO_SCARA_SOURCE_SHEET_ASSETS = {
+  2: "/patents/figures/us-4341502-makino-scara/source-sheet-2-v1.png",
+  3: "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+} as const;
+
+function makinoScaraSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  sourcePdfPage: keyof typeof MAKINO_SCARA_SOURCE_SHEET_ASSETS;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: MAKINO_SCARA_SOURCE_SHEET_RASTER.width,
+    height: MAKINO_SCARA_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: MAKINO_SCARA_SOURCE_SHEET_ASSETS[args.sourcePdfPage],
+    sourceRaster: MAKINO_SCARA_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      MAKINO_SCARA_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: MAKINO_SCARA_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const BAER_ODYSSEY_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const BAER_ODYSSEY_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-3728480-baer-odyssey.md#source-sheet-evidence-attestation-2026-09-03";
+const BAER_ODYSSEY_SOURCE_SHEET_ASSETS = {
+  2: "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-02-v1.png",
+  3: "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-03-v1.png",
+  4: "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-04-v1.png",
+  5: "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-05-v1.png",
+  6: "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-06-v1.png",
+  7: "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-07-v1.png",
+  8: "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-08-v1.png",
+  11: "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-11-v1.png",
+  12: "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-12-v1.png",
+} as const;
+
+function baerOdysseySourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  sourcePdfPage: keyof typeof BAER_ODYSSEY_SOURCE_SHEET_ASSETS;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: BAER_ODYSSEY_SOURCE_SHEET_RASTER.width,
+    height: BAER_ODYSSEY_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: BAER_ODYSSEY_SOURCE_SHEET_ASSETS[args.sourcePdfPage],
+    sourceRaster: BAER_ODYSSEY_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      BAER_ODYSSEY_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: BAER_ODYSSEY_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const CARLSON_ELECTROPHOTOGRAPHY_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const CARLSON_ELECTROPHOTOGRAPHY_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-2297691-carlson-electrophotography.md#source-sheet-acceptance-2026-09-03";
+const CARLSON_ELECTROPHOTOGRAPHY_SOURCE_SHEET =
+  "/patents/figures/us-2297691-carlson-electrophotography/source-sheet-1-v1.png";
+const CARLSON_ELECTROPHOTOGRAPHY_SOURCE_SHEET_OCCURRENCE_KEYS = [
+  "edition-block-6-group-0-inline-1",
+  "edition-block-6-group-0-inline-3",
+  "edition-block-6-group-0-inline-5",
+  "edition-block-6-group-0-inline-7",
+  "edition-block-6-group-0-inline-9",
+  "edition-block-6-group-0-inline-11",
+  "edition-block-6-group-0-inline-13",
+  "edition-block-6-group-0-inline-15",
+  "edition-block-10-group-0-inline-0",
+  "edition-block-20-group-0-inline-1",
+  "edition-block-22-group-0-inline-1",
+  "edition-block-22-group-0-inline-3",
+  "edition-block-24-group-0-inline-0",
+  "edition-block-25-group-0-inline-0",
+  "edition-block-28-group-0-inline-1",
+  "edition-block-28-group-0-inline-3",
+  "edition-block-28-group-0-inline-5",
+  "edition-block-31-group-0-inline-1",
+  "edition-block-33-group-0-inline-1",
+  "edition-block-35-group-0-inline-1",
+  "edition-block-35-group-0-inline-3",
+  "edition-block-36-group-0-inline-0",
+  "edition-block-38-group-0-inline-1",
+  "edition-block-38-group-0-inline-3",
+  "edition-block-39-group-0-inline-0",
+  "edition-block-42-group-0-inline-1",
+  "edition-block-43-group-0-inline-1",
+  "edition-block-46-group-0-inline-1",
+  "edition-block-51-group-0-inline-1",
+  "edition-block-74-group-0-inline-0",
+] as const satisfies readonly FigureOccurrenceKey[];
+
+function carlsonElectrophotographySourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: CARLSON_ELECTROPHOTOGRAPHY_SOURCE_SHEET_RASTER.width,
+    height: CARLSON_ELECTROPHOTOGRAPHY_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: CARLSON_ELECTROPHOTOGRAPHY_SOURCE_SHEET,
+    sourcePdfPage: 1,
+    sourceRaster: CARLSON_ELECTROPHOTOGRAPHY_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      CARLSON_ELECTROPHOTOGRAPHY_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: CARLSON_ELECTROPHOTOGRAPHY_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const YALE_LOCK_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const YALE_LOCK_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-48475-yale-lock.md#source-sheet-acceptance-2026-09-03";
+const YALE_LOCK_SOURCE_SHEET = "/patents/figures/us-48475-yale-lock/source-sheet-1-v1.png";
+const YALE_LOCK_SOURCE_SHEET_OCCURRENCE_KEYS = [
+  "edition-block-1-group-0-inline-1",
+  "edition-block-3-group-0-inline-1",
+  "edition-block-3-group-0-inline-3",
+  "edition-block-3-group-0-inline-5",
+  "edition-block-3-group-0-inline-7",
+  "edition-block-3-group-0-inline-9",
+  "edition-block-3-group-0-inline-11",
+  "edition-block-3-group-0-inline-13",
+  "edition-block-3-group-0-inline-15",
+  "edition-block-3-group-0-inline-17",
+  "edition-block-3-group-0-inline-19",
+  "edition-block-3-group-0-inline-21",
+  "edition-block-3-group-0-inline-23",
+  "edition-block-3-group-0-inline-25",
+  "edition-block-3-group-0-inline-27",
+  "edition-block-3-group-0-inline-29",
+  "edition-block-3-group-0-inline-31",
+  "edition-block-3-group-0-inline-33",
+  "edition-block-6-group-0-inline-3",
+  "edition-block-6-group-0-inline-5",
+  "edition-block-7-group-0-inline-3",
+  "edition-block-7-group-0-inline-5",
+  "edition-block-8-group-0-inline-7",
+  "edition-block-8-group-0-inline-13",
+  "edition-block-9-group-0-inline-1",
+  "edition-block-9-group-0-inline-3",
+  "edition-block-10-group-0-inline-1",
+  "edition-block-12-group-0-inline-1",
+  "edition-block-12-group-0-inline-3",
+  "edition-block-13-group-0-inline-1",
+] as const satisfies readonly FigureOccurrenceKey[];
+
+function yaleLockSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: YALE_LOCK_SOURCE_SHEET_RASTER.width,
+    height: YALE_LOCK_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: YALE_LOCK_SOURCE_SHEET,
+    sourcePdfPage: 1,
+    sourceRaster: YALE_LOCK_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, YALE_LOCK_SOURCE_SHEET_RASTER),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: YALE_LOCK_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const BELL_PHOTOPHONE_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const BELL_PHOTOPHONE_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-235199-bell-photophone.md#complete-source-sheet-acceptance-2026-09-04";
+const BELL_PHOTOPHONE_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-235199-bell-photophone/source-sheet-1-v1.png",
+  2: "/patents/figures/us-235199-bell-photophone/source-sheet-2-v1.png",
+  3: "/patents/figures/us-235199-bell-photophone/source-sheet-3-v1.png",
+} as const;
+const BELL_PHOTOPHONE_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-20-group-0-inline-0", 1],
+  ["edition-block-20-group-0-inline-2", 1],
+  ["edition-block-23-group-0-inline-1", 1],
+  ["edition-block-27-group-0-inline-1", 2],
+  ["edition-block-28-group-0-inline-0", 2],
+  ["edition-block-30-group-0-inline-1", 2],
+  ["edition-block-33-group-0-inline-3", 2],
+  ["edition-block-33-group-0-inline-5", 2],
+  ["edition-block-33-group-0-inline-7", 2],
+  ["edition-block-33-group-0-inline-9", 2],
+  ["edition-block-34-group-0-inline-1", 2],
+  ["edition-block-36-group-0-inline-1", 2],
+  ["edition-block-37-group-0-inline-0", 2],
+  ["edition-block-40-group-0-inline-1", 2],
+  ["edition-block-40-group-0-inline-3", 2],
+  ["edition-block-43-group-0-inline-1", 2],
+  ["edition-block-44-group-0-inline-1", 2],
+  ["edition-block-46-group-0-inline-1", 2],
+  ["edition-block-53-group-0-inline-0", 3],
+  ["edition-block-62-group-0-inline-1", 2],
+  ["edition-block-64-group-0-inline-1", 2],
+  ["edition-block-64-group-0-inline-3", 2],
+  ["edition-block-66-group-0-inline-1", 2],
+  ["edition-block-67-group-0-inline-1", 2],
+  ["edition-block-68-group-0-inline-1", 3],
+  ["edition-block-68-group-0-inline-3", 3],
+  ["edition-block-68-group-0-inline-5", 3],
+  ["edition-block-68-group-0-inline-7", 2],
+  ["edition-block-68-group-0-inline-9", 3],
+  ["edition-block-72-group-0-inline-1", 3],
+  ["edition-block-72-group-0-inline-3", 3],
+  ["edition-block-87-group-0-inline-1", 2],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof BELL_PHOTOPHONE_SOURCE_SHEET_ASSETS,
+])[];
+
+function bellPhotophoneSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof BELL_PHOTOPHONE_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: BELL_PHOTOPHONE_SOURCE_SHEET_RASTER.width,
+    height: BELL_PHOTOPHONE_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: BELL_PHOTOPHONE_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: BELL_PHOTOPHONE_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      BELL_PHOTOPHONE_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: BELL_PHOTOPHONE_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
 const DE_FOREST_AUDION_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
 const DE_FOREST_AUDION_EVIDENCE_REFERENCE =
   "docs/provenance/us-879532-de-forest-audion.md#source-sheet-acceptance-2026-09-03";
@@ -2723,6 +3024,185 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
     hallAluminiumSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-1" }),
     hallAluminiumSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-3" }),
   ],
+  "us-388850-eastman-kodak": [
+    eastmanKodakSourceSheetLocator({
+      occurrenceKey: "edition-block-4-group-0-inline-1",
+      sourcePdfPage: 1,
+    }),
+    eastmanKodakSourceSheetLocator({
+      occurrenceKey: "edition-block-4-group-0-inline-3",
+      sourcePdfPage: 1,
+    }),
+    eastmanKodakSourceSheetLocator({
+      occurrenceKey: "edition-block-4-group-0-inline-5",
+      sourcePdfPage: 1,
+    }),
+    eastmanKodakSourceSheetLocator({
+      occurrenceKey: "edition-block-4-group-0-inline-7",
+      sourcePdfPage: 2,
+    }),
+    eastmanKodakSourceSheetLocator({
+      occurrenceKey: "edition-block-4-group-0-inline-9",
+      sourcePdfPage: 2,
+    }),
+    eastmanKodakSourceSheetLocator({
+      occurrenceKey: "edition-block-4-group-0-inline-11",
+      sourcePdfPage: 2,
+    }),
+    eastmanKodakSourceSheetLocator({
+      occurrenceKey: "edition-block-4-group-0-inline-13",
+      sourcePdfPage: 2,
+    }),
+    eastmanKodakSourceSheetLocator({
+      occurrenceKey: "edition-block-4-group-0-inline-15",
+      sourcePdfPage: 2,
+    }),
+    eastmanKodakSourceSheetLocator({
+      occurrenceKey: "edition-block-4-group-0-inline-17",
+      sourcePdfPage: 3,
+    }),
+    eastmanKodakSourceSheetLocator({
+      occurrenceKey: "edition-block-4-group-0-inline-19",
+      sourcePdfPage: 3,
+    }),
+    eastmanKodakSourceSheetLocator({
+      occurrenceKey: "edition-block-4-group-0-inline-23",
+      sourcePdfPage: 2,
+    }),
+  ],
+  "us-4341502-makino-scara": [
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-11-group-0-inline-0",
+      sourcePdfPage: 2,
+    }),
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-11-group-0-inline-2",
+      sourcePdfPage: 3,
+    }),
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-11-group-0-inline-4",
+      sourcePdfPage: 2,
+    }),
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-11-group-0-inline-6",
+      sourcePdfPage: 3,
+    }),
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-11-group-0-inline-8",
+      sourcePdfPage: 3,
+    }),
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-13-group-0-inline-1",
+      sourcePdfPage: 2,
+    }),
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-14-group-0-inline-1",
+      sourcePdfPage: 3,
+    }),
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-15-group-0-inline-0",
+      sourcePdfPage: 3,
+    }),
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-15-group-0-inline-2",
+      sourcePdfPage: 3,
+    }),
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-16-group-0-inline-1",
+      sourcePdfPage: 3,
+    }),
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-16-group-0-inline-3",
+      sourcePdfPage: 3,
+    }),
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-16-group-0-inline-5",
+      sourcePdfPage: 3,
+    }),
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-16-group-0-inline-7",
+      sourcePdfPage: 3,
+    }),
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-16-group-0-inline-9",
+      sourcePdfPage: 3,
+    }),
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-17-group-0-inline-1",
+      sourcePdfPage: 3,
+    }),
+    makinoScaraSourceSheetLocator({
+      occurrenceKey: "edition-block-17-group-0-inline-3",
+      sourcePdfPage: 3,
+    }),
+  ],
+  "us-3728480-baer-odyssey": [
+    baerOdysseySourceSheetLocator({
+      occurrenceKey: "edition-block-21-group-0-inline-0",
+      sourcePdfPage: 2,
+    }),
+    baerOdysseySourceSheetLocator({
+      occurrenceKey: "edition-block-22-group-0-inline-0",
+      sourcePdfPage: 2,
+    }),
+    baerOdysseySourceSheetLocator({
+      occurrenceKey: "edition-block-23-group-0-inline-0",
+      sourcePdfPage: 2,
+    }),
+    baerOdysseySourceSheetLocator({
+      occurrenceKey: "edition-block-24-group-0-inline-0",
+      sourcePdfPage: 3,
+    }),
+    baerOdysseySourceSheetLocator({
+      occurrenceKey: "edition-block-25-group-0-inline-0",
+      sourcePdfPage: 3,
+    }),
+    baerOdysseySourceSheetLocator({
+      occurrenceKey: "edition-block-26-group-0-inline-0",
+      sourcePdfPage: 4,
+    }),
+    baerOdysseySourceSheetLocator({
+      occurrenceKey: "edition-block-27-group-0-inline-0",
+      sourcePdfPage: 5,
+    }),
+    baerOdysseySourceSheetLocator({
+      occurrenceKey: "edition-block-28-group-0-inline-0",
+      sourcePdfPage: 4,
+    }),
+    baerOdysseySourceSheetLocator({
+      occurrenceKey: "edition-block-29-group-0-inline-0",
+      sourcePdfPage: 6,
+    }),
+    baerOdysseySourceSheetLocator({
+      occurrenceKey: "edition-block-30-group-0-inline-0",
+      sourcePdfPage: 11,
+    }),
+    baerOdysseySourceSheetLocator({
+      occurrenceKey: "edition-block-31-group-0-inline-0",
+      sourcePdfPage: 11,
+    }),
+    baerOdysseySourceSheetLocator({
+      occurrenceKey: "edition-block-32-group-0-inline-0",
+      sourcePdfPage: 12,
+    }),
+    baerOdysseySourceSheetLocator({
+      occurrenceKey: "edition-block-33-group-0-inline-0",
+      sourcePdfPage: 12,
+    }),
+    baerOdysseySourceSheetLocator({
+      occurrenceKey: "edition-block-35-group-0-inline-1",
+      sourcePdfPage: 2,
+    }),
+    baerOdysseySourceSheetLocator({
+      occurrenceKey: "edition-block-35-group-0-inline-3",
+      sourcePdfPage: 2,
+    }),
+  ],
+  "us-2297691-carlson-electrophotography":
+    CARLSON_ELECTROPHOTOGRAPHY_SOURCE_SHEET_OCCURRENCE_KEYS.map(
+      carlsonElectrophotographySourceSheetLocator,
+    ),
+  "us-48475-yale-lock": YALE_LOCK_SOURCE_SHEET_OCCURRENCE_KEYS.map(yaleLockSourceSheetLocator),
   "us-6594844-roomba": [
     roombaSourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-1" }),
     roombaSourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-3" }),

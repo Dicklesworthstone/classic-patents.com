@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import { roombaArchivalEdition } from "@/data/editions/roombaEdition";
+import { roombaArchivalEdition, roombaParallelReadings } from "@/data/editions/roombaEdition";
 import { manualClaimText, roombaPatent } from "@/data/patents/roomba";
 import { ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS } from "./archivalFigureAcceptance";
 import { FIGURE_OCCURRENCE_SOURCE_LOCATORS } from "./figureOccurrenceSourceLocators";
@@ -11,6 +11,10 @@ import {
   completeArchivalEditionForViewer,
   evaluateArchivalPublicationState,
 } from "./publicationApproval";
+import {
+  evaluateReviewedLedgerTextEvidence,
+  literalLedgerSectionsForEdition,
+} from "./reviewedLedgerPublicationEvidence";
 
 const PINNED_SHA256 = "66133fab282d46a32c5e5228d9207bcce1d2b49db90d627325592964fe4d5a3e";
 
@@ -160,5 +164,35 @@ describe("US 6,594,844 iRobot Roomba Archival Edition Contract", () => {
     const matches = content.match(/--- REVIEWED TRANSCRIPTION PAGE \d+ OF 26 ---/g);
     expect(matches).toBeDefined();
     expect(matches?.length).toBe(26);
+  });
+
+  test("pins every authored source section to the reviewed ledger", () => {
+    const transcriptPath = path.join(
+      process.cwd(),
+      "public",
+      "patents",
+      "transcripts",
+      "us-6594844-roomba-reviewed.txt",
+    );
+    const transcript = fs.readFileSync(transcriptPath, "utf-8");
+    const evidence = evaluateReviewedLedgerTextEvidence(roombaPatent, transcript);
+
+    expect(literalLedgerSectionsForEdition(roombaArchivalEdition)).toHaveLength(45);
+    expect(evidence).toMatchObject({
+      status: "verified",
+      valid: true,
+      authoredSectionCount: 45,
+      coveredSectionCount: 45,
+      coverageFraction: 1,
+      missingSectionIndexes: [],
+      missingClaimNumbers: [],
+      error: null,
+    });
+
+    for (const [index, block] of roombaArchivalEdition.blocks.entries()) {
+      if (block.kind !== "paragraph") continue;
+      const reading = roombaParallelReadings[index];
+      expect(reading?.join(" ").trim().length).toBeGreaterThan(40);
+    }
   });
 });

@@ -16,6 +16,10 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { useWasmKernelSource } from "@/physics/useWasmKernelSource";
 import { soundEngine } from "@/utils/soundEngine";
 import {
+  type DaimlerEngineCameraPreset as CameraPreset,
+  daimlerEngineCameraForViewport,
+} from "./daimlerEngineCamera";
+import {
   buildDaimlerMarineInstallationModel,
   updateDaimlerMarineInstallationKinematics,
 } from "./daimlerMarineInstallationModel";
@@ -23,28 +27,6 @@ import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset =
-  | "iso"
-  | "motor"
-  | "coupling"
-  | "reverse"
-  | "cooling"
-  | "reservoirs"
-  | "steering";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [10.5, 6.2, 11.5], target: [1, -0.25, 0] },
-  motor: { pos: [2.7, 2.7, 5.4], target: [0, 0.25, 0] },
-  coupling: { pos: [4.2, 4.2, 4.8], target: [1.45, -0.15, 0] },
-  reverse: { pos: [4.5, 4.0, 5.1], target: [1.72, -0.15, 0] },
-  cooling: { pos: [-0.5, 3.3, 6.5], target: [0, 0.45, 0.4] },
-  reservoirs: { pos: [1.4, 2.6, 6.8], target: [0.5, 0, 0] },
-  steering: { pos: [8.6, 3.4, 5.8], target: [4.6, -0.2, 0.5] },
-};
 
 export function DaimlerEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -94,7 +76,7 @@ export function DaimlerEngine3D() {
 
   const setCameraView = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = daimlerEngineCameraForViewport(preset, containerRef.current?.clientWidth ?? 0);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
   const applyCameraPreset = setCameraView;
@@ -103,10 +85,11 @@ export function DaimlerEngine3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = daimlerEngineCameraForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
-      cameraPos: CAMERA_PRESETS.iso.pos,
-      targetPos: CAMERA_PRESETS.iso.target,
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
     studioRef.current = studio;
 

@@ -66,6 +66,18 @@ Existing figure files are preserved under
 unmodified source sheet documented below. The ledger remains comparison evidence;
 the continuous manual edition remains the visitor-facing source face.
 
+## Ledger reconciliation (2026-09-03)
+
+The pinned facsimile was visually rechecked for PDF page 1 and specification
+pages 21–24. The reviewed ledger now carries the printed application and filing
+lines plus a clean contiguous abstract on page 1. The continuous edition's
+summary, figure-description, and selected preferred-embodiment paragraphs were
+replaced with the corresponding printed prose, including the `5/8"` traversable
+obstacle limit, the `22 degree` wall-sensor cones, the `0.604 inches` open-end
+dimension, and the cliff-sensor steps 150 and 152. This repairs literal
+ledger-to-edition coverage without treating the PDF text layer as authority and
+without changing access to the complete visitor-facing source text.
+
 ## Source-sheet acceptance (2026-09-03)
 
 The four active figure citations (FIGS. 1, 2, and 3 in the brief-description

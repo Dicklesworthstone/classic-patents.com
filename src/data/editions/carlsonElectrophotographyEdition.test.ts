@@ -2,11 +2,14 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { carlsonElectrophotographyPatent } from "@/data/patents/carlson-electrophotography";
 import {
   carlsonElectrophotographyArchivalEdition,
   carlsonElectrophotographyParallelReadings,
   manualCarlsonClaimText,
 } from "./carlsonElectrophotographyEdition";
+import { evaluateReviewedLedgerTextEvidence } from "./reviewedLedgerPublicationEvidence";
 
 describe("US 2,297,691 Chester F. Carlson Electrophotography Archival Edition Publication Contract", () => {
   const rootDir = process.cwd();
@@ -16,8 +19,15 @@ describe("US 2,297,691 Chester F. Carlson Electrophotography Archival Edition Pu
     "public/patents/transcripts/us-2297691-carlson-electrophotography-reviewed.txt",
   );
 
-  test("remains explicitly withheld until Luna source review is complete", () => {
-    expect(Boolean(carlsonElectrophotographyArchivalEdition.completeFacsimileReviewed)).toBe(false);
+  test("pins a complete direct review of the ten-page facsimile", () => {
+    expect(carlsonElectrophotographyPatent.archivalEdition).toBe(
+      carlsonElectrophotographyArchivalEdition,
+    );
+    expect(carlsonElectrophotographyArchivalEdition.completeFacsimileReviewed).toBe(true);
+    expect(validateCuratedSpecificationEdition(carlsonElectrophotographyArchivalEdition)).toEqual({
+      valid: true,
+      errors: [],
+    });
   });
 
   test("matches the cryptographic SHA-256 digest of the pinned 10-page USPTO facsimile PDF", () => {
@@ -31,36 +41,142 @@ describe("US 2,297,691 Chester F. Carlson Electrophotography Archival Edition Pu
     expect(computedDigest).toBe(carlsonElectrophotographyArchivalEdition.sourcePdfSha256);
   });
 
-  test("keeps the 10-page ledger fail-closed with ordered WIP markers", () => {
+  test("keeps the complete page-marked ten-page reviewed ledger", () => {
     expect(existsSync(transcriptPath)).toBe(true);
     const transcript = readFileSync(transcriptPath, "utf-8");
 
     for (let page = 1; page <= 10; page++) {
       expect(transcript).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 10 ---`);
     }
-    expect(transcript).toContain("Luna");
-    expect(transcript).toContain("signature glyphs");
+    expect(transcript).toContain("CHESTER F. CARLSON.");
   });
 
-  test("keeps rejected candidates and reserved v2 paths off the visitor preview surface", () => {
-    let references = 0;
-    for (const block of carlsonElectrophotographyArchivalEdition.blocks) {
-      if (block.kind === "paragraph" || block.kind === "claim") {
-        for (const inline of block.inlines) {
-          if (inline.kind === "reference" && inline.referenceType === "figure") {
-            references += 1;
-            expect(inline.figurePreviews).toBeUndefined();
-          }
-        }
-      }
+  test("proves literal coverage of every authored source section and printed claim", () => {
+    const evidence = evaluateReviewedLedgerTextEvidence(
+      carlsonElectrophotographyPatent,
+      readFileSync(transcriptPath, "utf8"),
+    );
+
+    expect(evidence).toEqual(
+      expect.objectContaining({
+        status: "verified",
+        valid: true,
+        authoredSectionCount: 120,
+        coveredSectionCount: 120,
+        coverageFraction: 1,
+        missingSectionIndexes: [],
+        missingClaimNumbers: [],
+        error: null,
+      }),
+    );
+  });
+
+  test("binds all active figure citations to the complete digest-pinned source sheet", () => {
+    const sourceSheet =
+      "/patents/figures/us-2297691-carlson-electrophotography/source-sheet-1-v1.png";
+    const occurrences = carlsonElectrophotographyArchivalEdition.blocks.flatMap(
+      (block, blockIndex) => {
+        const inlines =
+          block.kind === "figure-sheet"
+            ? block.description
+            : block.kind === "paragraph" || block.kind === "claim"
+              ? block.inlines
+              : [];
+        return inlines.flatMap((inline, inlineIndex) =>
+          inline.kind === "reference" && inline.referenceType === "figure"
+            ? [
+                {
+                  occurrenceKey: `edition-block-${blockIndex}-group-0-inline-${inlineIndex}`,
+                  text: inline.text,
+                  preview: inline.figurePreviews?.[0],
+                },
+              ]
+            : [],
+        );
+      },
+    );
+
+    expect(occurrences.map((occurrence) => occurrence.occurrenceKey)).toEqual([
+      "edition-block-6-group-0-inline-1",
+      "edition-block-6-group-0-inline-3",
+      "edition-block-6-group-0-inline-5",
+      "edition-block-6-group-0-inline-7",
+      "edition-block-6-group-0-inline-9",
+      "edition-block-6-group-0-inline-11",
+      "edition-block-6-group-0-inline-13",
+      "edition-block-6-group-0-inline-15",
+      "edition-block-10-group-0-inline-0",
+      "edition-block-20-group-0-inline-1",
+      "edition-block-22-group-0-inline-1",
+      "edition-block-22-group-0-inline-3",
+      "edition-block-24-group-0-inline-0",
+      "edition-block-25-group-0-inline-0",
+      "edition-block-28-group-0-inline-1",
+      "edition-block-28-group-0-inline-3",
+      "edition-block-28-group-0-inline-5",
+      "edition-block-31-group-0-inline-1",
+      "edition-block-33-group-0-inline-1",
+      "edition-block-35-group-0-inline-1",
+      "edition-block-35-group-0-inline-3",
+      "edition-block-36-group-0-inline-0",
+      "edition-block-38-group-0-inline-1",
+      "edition-block-38-group-0-inline-3",
+      "edition-block-39-group-0-inline-0",
+      "edition-block-42-group-0-inline-1",
+      "edition-block-43-group-0-inline-1",
+      "edition-block-46-group-0-inline-1",
+      "edition-block-51-group-0-inline-1",
+      "edition-block-74-group-0-inline-0",
+    ]);
+    expect(occurrences).toHaveLength(30);
+    for (const occurrence of occurrences) {
+      expect(occurrence.preview).toEqual(
+        expect.objectContaining({
+          src: sourceSheet,
+          width: 2320,
+          height: 3408,
+          alt: expect.stringContaining("Complete unmodified source drawing sheet 1 of 1"),
+        }),
+      );
     }
-    expect(references).toBeGreaterThan(0);
-    const editionSource = readFileSync(
-      join(rootDir, "src/data/editions/carlsonElectrophotographyEdition.ts"),
+
+    const sourceSheetPath = join(rootDir, "public", sourceSheet);
+    expect(existsSync(sourceSheetPath)).toBe(true);
+    expect(createHash("sha256").update(readFileSync(sourceSheetPath)).digest("hex")).toBe(
+      "995bf0d92d185edd7719ee76acf6d1db94b3ff4cc06ac787c6cf2534db747fa7",
+    );
+    for (const legacyAsset of [
+      "fig-1-source-crop-v1.png",
+      "fig-2-source-crop-v1.png",
+      "fig-3-source-crop-v1.png",
+      "fig-4-source-crop-v1.png",
+      "fig-5-source-crop-v1.png",
+      "fig-6-source-crop-v1.png",
+      "fig-7-source-crop-v1.png",
+      "fig-8-source-crop-v1.png",
+      "fig-9-source-crop-v1.png",
+      "fig-10-source-crop-v1.png",
+    ]) {
+      expect(
+        existsSync(
+          join(
+            rootDir,
+            "public/patents/figures/us-2297691-carlson-electrophotography",
+            legacyAsset,
+          ),
+        ),
+      ).toBe(true);
+    }
+
+    const provenance = readFileSync(
+      join(rootDir, "docs/provenance/us-2297691-carlson-electrophotography.md"),
       "utf8",
     );
-    expect(editionSource).toContain("fig-1-source-crop-v2.png");
-    expect(editionSource).toContain("ATTACH_ACCEPTED_FIGURE_PREVIEWS = false");
+    expect(provenance).toContain("## Source-sheet acceptance (2026-09-03)");
+    expect(provenance).toContain("All 30");
+    expect(provenance).toContain(
+      "995bf0d92d185edd7719ee76acf6d1db94b3ff4cc06ac787c6cf2534db747fa7",
+    );
   });
 
   test("exposes all 27 printed claims via dynamic single-source lookup", () => {
@@ -95,18 +211,5 @@ describe("US 2,297,691 Chester F. Carlson Electrophotography Archival Edition Pu
     for (const m of metrics) {
       expect(m.provenance).toBeDefined();
     }
-  });
-
-  test("enforces figure acceptance pending audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const {
-      carlsonElectrophotographyPatent,
-    } = require("@/data/patents/carlson-electrophotography");
-    const decision = evaluateTypedArchivalPublicationState(carlsonElectrophotographyPatent, {
-      hasCompanionReadings: true,
-    });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
   });
 });

@@ -17,45 +17,33 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
-const figureCropVersion: Readonly<Record<number, number>> = {
-  1: 2,
+/**
+ * A direct 300-DPI render of each pinned drawing sheet, visually compared to
+ * the 13-page facsimile on 2026-09-04.  Full sheets deliberately supersede
+ * the older figure crops in the active source face: no crop boundary has to
+ * stand in for the historical sheet, its filing header, or its signatures.
+ */
+const figureSourceSheet: Readonly<Record<number, number>> = {
+  1: 1,
   2: 2,
   3: 2,
-  4: 2,
-  5: 2,
-  6: 2,
-  7: 2,
-  8: 2,
-  9: 2,
-  10: 2,
-  11: 2,
-  12: 2,
-  13: 2,
-  14: 2,
-  15: 2,
-  16: 2,
-  17: 2,
+  4: 3,
+  5: 3,
+  6: 3,
+  7: 3,
+  8: 3,
+  9: 3,
+  10: 3,
+  11: 4,
+  12: 4,
+  13: 4,
+  14: 4,
+  15: 4,
+  16: 4,
+  17: 4,
 };
 
-const figureDimensions: Readonly<Record<number, readonly [number, number]>> = {
-  1: [1600, 1150],
-  2: [1600, 450],
-  3: [1500, 760],
-  4: [1300, 270],
-  5: [1300, 230],
-  6: [500, 340],
-  7: [650, 350],
-  8: [380, 360],
-  9: [450, 350],
-  10: [350, 350],
-  11: [1350, 360],
-  12: [1350, 260],
-  13: [1400, 280],
-  14: [400, 560],
-  15: [420, 420],
-  16: [480, 420],
-  17: [400, 400],
-};
+const sourceSheetDimensions = [2320, 3408] as const;
 
 const figureGroup = (
   numbers: readonly number[],
@@ -65,12 +53,12 @@ const figureGroup = (
   text: sourceText,
   href: `#figure-${numbers[0]}`,
   referenceType: "figure",
-  label: `Open the source-facsimile crops for ${sourceText} in US 1,773,980`,
+  label: `Open the direct source drawing sheet for ${sourceText} in US 1,773,980`,
   figurePreviews: numbers.map((number) => ({
-    src: `/patents/figures/us-1773980-farnsworth-tv/fig-${number}-source-crop-v${figureCropVersion[number]}.png`,
-    alt: `Source-facsimile crop containing Figure ${number}, oriented for legibility, from US 1,773,980.`,
-    width: figureDimensions[number][0],
-    height: figureDimensions[number][1],
+    src: `/patents/figures/us-1773980-farnsworth-tv/source-sheet-${figureSourceSheet[number]}-v1.png`,
+    alt: `Direct full source drawing sheet containing Figure ${number}, from US 1,773,980.`,
+    width: sourceSheetDimensions[0],
+    height: sourceSheetDimensions[1],
   })),
 });
 

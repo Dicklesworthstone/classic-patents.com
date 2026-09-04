@@ -45,6 +45,8 @@ export interface ArkwrightWaterFrameOutputs {
   flyerSpindleRpm: number;
   /** Spindle angular velocity (rad/s) */
   spindleOmegaRadPerSec: number;
+  /** Declared first-stage spindle layshaft angular velocity (rad/s) */
+  spindleLayshaftOmegaRadPerSec: number;
   /** Great-wheel angular velocity (rad/s) */
   wheelOmegaRadPerS: number;
   /** Feed-roller pair angular velocity (rad/s) */
@@ -101,6 +103,7 @@ export interface ArkwrightKinematicPhases {
   intermediateRollerOneRad: number;
   intermediateRollerTwoRad: number;
   deliveryRollerRad: number;
+  spindleLayshaftRad: number;
   spindleRad: number;
   bobbinRad: number;
   traverseRad: number;
@@ -129,6 +132,7 @@ export const ARKWRIGHT_ZERO_PHASES: Readonly<ArkwrightKinematicPhases> = Object.
   intermediateRollerOneRad: 0,
   intermediateRollerTwoRad: 0,
   deliveryRollerRad: 0,
+  spindleLayshaftRad: 0,
   spindleRad: 0,
   bobbinRad: 0,
   traverseRad: 0,
@@ -207,6 +211,9 @@ export function stepArkwrightWaterFrame(
   const flyerSpindleRpm = waterWheelRpm * 18.5;
   const spindleOmegaRadPerSec = (flyerSpindleRpm * 2 * Math.PI) / 60;
   const wheelOmegaRadPerS = (waterWheelRpm * 2 * Math.PI) / 60;
+  // 3.7:1 bevel stage followed by a 5:1 spur stage closes the declared
+  // 18.5:1 two-stage visual transmission without a same-size gear mismatch.
+  const spindleLayshaftOmegaRadPerSec = wheelOmegaRadPerS * 3.7;
 
   // 2. Declared four-pair drafting train. Equal roller diameters and equal
   // geometric ratio increments make the intermediate speeds explicit while
@@ -286,6 +293,7 @@ export function stepArkwrightWaterFrame(
     deliveryVelocityMPerSec,
     flyerSpindleRpm,
     spindleOmegaRadPerSec,
+    spindleLayshaftOmegaRadPerSec,
     wheelOmegaRadPerS,
     feedRollerOmegaRadPerS,
     intermediateRollerOneOmegaRadPerS,
@@ -340,6 +348,7 @@ export function createArkwrightTransportUpdater(
       phases.intermediateRollerOneRad += outputs.intermediateRollerOneOmegaRadPerS * dt;
       phases.intermediateRollerTwoRad += outputs.intermediateRollerTwoOmegaRadPerS * dt;
       phases.deliveryRollerRad += outputs.deliveryRollerOmegaRadPerS * dt;
+      phases.spindleLayshaftRad -= outputs.spindleLayshaftOmegaRadPerSec * dt;
       phases.spindleRad += outputs.spindleOmegaRadPerSec * dt;
       phases.bobbinRad += outputs.bobbinOmegaRadPerS * dt;
       phases.traverseRad =

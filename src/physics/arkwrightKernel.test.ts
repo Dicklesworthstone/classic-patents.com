@@ -15,6 +15,8 @@ describe("Richard Arkwright Water Frame Physics Kernel (GB 931 / 1769)", () => {
     expect(out.flyerSpindleRpm).toBeGreaterThanOrEqual(3000);
     expect(out.spindleOmegaRadPerSec).toBeGreaterThan(300);
     expect(out.wheelOmegaRadPerS).toBeCloseTo((180 * 2 * Math.PI) / 60, 6);
+    expect(out.spindleLayshaftOmegaRadPerSec / out.wheelOmegaRadPerS).toBeCloseTo(3.7, 12);
+    expect(out.spindleOmegaRadPerSec / out.spindleLayshaftOmegaRadPerSec).toBeCloseTo(5, 12);
     expect(out.feedRollerOmegaRadPerS).toBeCloseTo((((180 * 0.75) / 4.0) * 2 * Math.PI) / 60, 6);
     expect(out.deliveryRollerOmegaRadPerS).toBeCloseTo(
       (((180 * 0.75 * 6.0) / 4.0) * 2 * Math.PI) / 60,
@@ -24,6 +26,18 @@ describe("Richard Arkwright Water Frame Physics Kernel (GB 931 / 1769)", () => {
     expect(out.totalDraftRatio).toBe(6.0);
     expect(out.outputYarnCountNe).toBe(6.0);
     expect(out.yarnLinearDensityTex).toBeCloseTo(98.42, 1);
+    const stageRatio = out.totalDraftRatio ** (1 / 3);
+    expect(out.intermediateRollerOneOmegaRadPerS / out.feedRollerOmegaRadPerS).toBeCloseTo(
+      stageRatio,
+      12,
+    );
+    expect(
+      out.intermediateRollerTwoOmegaRadPerS / out.intermediateRollerOneOmegaRadPerS,
+    ).toBeCloseTo(stageRatio, 12);
+    expect(out.deliveryRollerOmegaRadPerS / out.intermediateRollerTwoOmegaRadPerS).toBeCloseTo(
+      stageRatio,
+      12,
+    );
     expect(out.twistTurnsPerMeter).toBeGreaterThan(200);
     expect(out.twistTurnsPerInch).toBeGreaterThan(5);
     expect(out.fiberParallelizationPct).toBeGreaterThan(90);
@@ -64,7 +78,17 @@ describe("Richard Arkwright Water Frame Physics Kernel (GB 931 / 1769)", () => {
     expect(moving).not.toBeNull();
     expect(moving?.timeSec).toBeCloseTo(12 / 60, 12);
     expect(moving?.phases.wheelRad).toBeGreaterThan(0);
+    expect(moving?.phases.intermediateRollerOneRad).toBeGreaterThan(
+      moving?.phases.feedRollerRad ?? 0,
+    );
+    expect(moving?.phases.intermediateRollerTwoRad).toBeGreaterThan(
+      moving?.phases.intermediateRollerOneRad ?? 0,
+    );
     expect(moving?.phases.deliveryRollerRad).toBeGreaterThan(moving?.phases.feedRollerRad ?? 0);
+    expect(moving?.phases.spindleLayshaftRad).toBeLessThan(0);
+    expect(
+      Math.abs(moving?.phases.spindleLayshaftRad ?? 0) / Math.abs(moving?.phases.wheelRad ?? 1),
+    ).toBeCloseTo(3.7, 12);
     expect(moving?.phases.spindleRad).toBeGreaterThan(moving?.phases.wheelRad ?? 0);
 
     controls = readArkwrightRuntimeControls({

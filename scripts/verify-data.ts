@@ -64,16 +64,23 @@ const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
   "us-971501-haber-ammonia",
   "us-1219881-sundback-zipper",
   "us-1781541-einstein-refrigerator",
+  "us-2297691-carlson-electrophotography",
   "us-2318259-sikorsky-helicopter",
   "us-2495429-spencer-microwave",
   "us-2717437-mestral-velcro",
+  "us-3728480-baer-odyssey",
   "us-3858581-kamen-medication-injection-device",
+  "us-388850-eastman-kodak",
+  "us-400766-hall-aluminium",
   "us-4063220-metcalfe-ethernet",
+  "us-4341502-makino-scara",
   "us-4575330-hull-stereolithography",
+  "us-48475-yale-lock",
   "us-4976582-clavel-delta-robot",
   "us-5701965-kamen-transporter",
   "us-6285999-pagerank",
   "us-6302230-kamen-segway",
+  "us-6594844-roomba",
 ]);
 
 const EXPECTED_MANUAL_EDITION_GAPS = allPatents

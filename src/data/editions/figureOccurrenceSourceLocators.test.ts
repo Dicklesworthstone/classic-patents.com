@@ -123,6 +123,126 @@ const HALL_ALUMINIUM_OCCURRENCES = {
   "edition-block-8-group-0-inline-3":
     "/patents/figures/us-400766-hall-aluminium/source-sheet-1-v1.png",
 } as const;
+const EASTMAN_KODAK_ID = "us-388850-eastman-kodak";
+const EASTMAN_KODAK_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[EASTMAN_KODAK_ID].assets,
+);
+const EASTMAN_KODAK_OCCURRENCES = {
+  "edition-block-4-group-0-inline-1":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-1-v1.png",
+  "edition-block-4-group-0-inline-3":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-1-v1.png",
+  "edition-block-4-group-0-inline-5":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-1-v1.png",
+  "edition-block-4-group-0-inline-7":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-2-v1.png",
+  "edition-block-4-group-0-inline-9":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-2-v1.png",
+  "edition-block-4-group-0-inline-11":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-2-v1.png",
+  "edition-block-4-group-0-inline-13":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-2-v1.png",
+  "edition-block-4-group-0-inline-15":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-2-v1.png",
+  "edition-block-4-group-0-inline-17":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-3-v1.png",
+  "edition-block-4-group-0-inline-19":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-3-v1.png",
+  "edition-block-4-group-0-inline-23":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-2-v1.png",
+} as const;
+const MAKINO_SCARA_ID = "us-4341502-makino-scara";
+const MAKINO_SCARA_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[MAKINO_SCARA_ID].assets,
+);
+const MAKINO_SCARA_OCCURRENCES = {
+  "edition-block-11-group-0-inline-0":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-2-v1.png",
+  "edition-block-11-group-0-inline-2":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-11-group-0-inline-4":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-2-v1.png",
+  "edition-block-11-group-0-inline-6":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-11-group-0-inline-8":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-13-group-0-inline-1":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-2-v1.png",
+  "edition-block-14-group-0-inline-1":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-15-group-0-inline-0":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-15-group-0-inline-2":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-16-group-0-inline-1":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-16-group-0-inline-3":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-16-group-0-inline-5":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-16-group-0-inline-7":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-16-group-0-inline-9":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-17-group-0-inline-1":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-17-group-0-inline-3":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+} as const;
+const BAER_ODYSSEY_ID = "us-3728480-baer-odyssey";
+const BAER_ODYSSEY_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[BAER_ODYSSEY_ID].assets,
+);
+const BAER_ODYSSEY_OCCURRENCES = {
+  "edition-block-21-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-02-v1.png",
+  "edition-block-22-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-02-v1.png",
+  "edition-block-23-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-02-v1.png",
+  "edition-block-24-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-03-v1.png",
+  "edition-block-25-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-03-v1.png",
+  "edition-block-26-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-04-v1.png",
+  "edition-block-27-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-05-v1.png",
+  "edition-block-28-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-04-v1.png",
+  "edition-block-29-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-06-v1.png",
+  "edition-block-30-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-11-v1.png",
+  "edition-block-31-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-11-v1.png",
+  "edition-block-32-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-12-v1.png",
+  "edition-block-33-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-12-v1.png",
+  "edition-block-35-group-0-inline-1":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-02-v1.png",
+  "edition-block-35-group-0-inline-3":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-02-v1.png",
+} as const;
+const CARLSON_ELECTROPHOTOGRAPHY_ID = "us-2297691-carlson-electrophotography";
+const CARLSON_ELECTROPHOTOGRAPHY_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[CARLSON_ELECTROPHOTOGRAPHY_ID].assets,
+);
+const CARLSON_ELECTROPHOTOGRAPHY_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[CARLSON_ELECTROPHOTOGRAPHY_ID].map((locator) => [
+    locator.occurrenceKey,
+    locator.activeAsset,
+  ]),
+);
+const YALE_LOCK_ID = "us-48475-yale-lock";
+const YALE_LOCK_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[YALE_LOCK_ID].assets);
+const YALE_LOCK_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[YALE_LOCK_ID].map((locator) => [
+    locator.occurrenceKey,
+    locator.activeAsset,
+  ]),
+);
 const COLT_ID = "us-x9430-colt-revolver";
 const COLT_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[COLT_ID].assets);
 const COLT_REVOLVER_OCCURRENCES = {
@@ -718,6 +838,11 @@ const VALIDATION_OPTIONS = {
     [MESTRAL_VELCRO_ID]: MESTRAL_VELCRO_ASSETS,
     [LINCOLN_BUOY_ID]: LINCOLN_BUOY_ASSETS,
     [HALL_ALUMINIUM_ID]: HALL_ALUMINIUM_ASSETS,
+    [EASTMAN_KODAK_ID]: EASTMAN_KODAK_ASSETS,
+    [MAKINO_SCARA_ID]: MAKINO_SCARA_ASSETS,
+    [BAER_ODYSSEY_ID]: BAER_ODYSSEY_ASSETS,
+    [CARLSON_ELECTROPHOTOGRAPHY_ID]: CARLSON_ELECTROPHOTOGRAPHY_ASSETS,
+    [YALE_LOCK_ID]: YALE_LOCK_ASSETS,
     [ROOMBA_ID]: ROOMBA_ASSETS,
     [CORLISS_ID]: CORLISS_ASSETS,
     [LINDE_AIR_LIQUEFACTION_ID]: LINDE_AIR_LIQUEFACTION_ASSETS,
@@ -755,6 +880,11 @@ const VALIDATION_OPTIONS = {
     [MESTRAL_VELCRO_ID]: MESTRAL_VELCRO_OCCURRENCES,
     [LINCOLN_BUOY_ID]: LINCOLN_BUOY_OCCURRENCES,
     [HALL_ALUMINIUM_ID]: HALL_ALUMINIUM_OCCURRENCES,
+    [EASTMAN_KODAK_ID]: EASTMAN_KODAK_OCCURRENCES,
+    [MAKINO_SCARA_ID]: MAKINO_SCARA_OCCURRENCES,
+    [BAER_ODYSSEY_ID]: BAER_ODYSSEY_OCCURRENCES,
+    [CARLSON_ELECTROPHOTOGRAPHY_ID]: CARLSON_ELECTROPHOTOGRAPHY_OCCURRENCES,
+    [YALE_LOCK_ID]: YALE_LOCK_OCCURRENCES,
     [ROOMBA_ID]: ROOMBA_OCCURRENCES,
     [CORLISS_ID]: CORLISS_OCCURRENCES,
     [LINDE_AIR_LIQUEFACTION_ID]: LINDE_AIR_LIQUEFACTION_OCCURRENCES,
@@ -792,6 +922,11 @@ const VALIDATION_OPTIONS = {
     [MESTRAL_VELCRO_ID]: 3,
     [LINCOLN_BUOY_ID]: 3,
     [HALL_ALUMINIUM_ID]: 3,
+    [EASTMAN_KODAK_ID]: 9,
+    [MAKINO_SCARA_ID]: 5,
+    [BAER_ODYSSEY_ID]: 21,
+    [CARLSON_ELECTROPHOTOGRAPHY_ID]: 10,
+    [YALE_LOCK_ID]: 4,
     [ROOMBA_ID]: 26,
     [CORLISS_ID]: 8,
     [LINDE_AIR_LIQUEFACTION_ID]: 5,
@@ -834,6 +969,11 @@ describe("figure occurrence source locators", () => {
       MESTRAL_VELCRO_ID,
       LINCOLN_BUOY_ID,
       HALL_ALUMINIUM_ID,
+      EASTMAN_KODAK_ID,
+      MAKINO_SCARA_ID,
+      BAER_ODYSSEY_ID,
+      CARLSON_ELECTROPHOTOGRAPHY_ID,
+      YALE_LOCK_ID,
       ROOMBA_ID,
       CORLISS_ID,
       LINDE_AIR_LIQUEFACTION_ID,

@@ -36,12 +36,10 @@ export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
   "us-2708656-fermi-reactor",
   "us-3541541-engelbart-mouse",
   "us-313224-mergenthaler-linotype",
-  "us-2297691-carlson-electrophotography",
   "us-2543181-land-polaroid",
   "us-3138743-kilby-integrated-circuit",
   "us-3353115-maiman-ruby-laser",
   "us-347140-thomson-welding",
-  "us-400766-hall-aluminium",
   "us-542846-diesel-engine",
   "us-6120588-eink",
   // --- Historical reason: companion-reading map had not been authored ---

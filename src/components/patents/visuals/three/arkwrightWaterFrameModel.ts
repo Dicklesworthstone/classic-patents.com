@@ -21,6 +21,7 @@ export interface ArkwrightWaterFrameModelNodes {
   shaftBevelRotor: THREE.Group;
   rollerDriveRotors: THREE.Group[];
   spindleDriveRotors: THREE.Group[];
+  spindleWhorlRotors: THREE.Group[];
   flyerGroups: THREE.Group[];
   bobbinGroups: THREE.Group[];
   traverseRailGroup: THREE.Group;
@@ -360,15 +361,25 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
     }
   });
 
-  // Source-bounded normalized transmission: four belt planes carry the main
-  // shaft's motion to the four drafting stages. The pinned reconstruction
-  // withholds tooth counts and pulley diameters, so speed ratios remain owned
-  // by the declared kinematic kernel instead of being inferred from these
-  // reader-aid members.
+  // Source-bounded normalized transmission housing. It physically receives
+  // shaft B and exposes four coaxial outputs into the four lower roller axles.
+  // The pinned reconstruction withholds its internal tooth counts, so the
+  // cover deliberately avoids drawing a false exposed gear or belt ratio.
   const rollerDriveRotors: THREE.Group[] = [];
-  const driveBeltMaterial = new THREE.LineBasicMaterial({ color: 0x6b4423 });
+  const transmissionCoverMaterial = new THREE.MeshStandardMaterial({
+    color: 0x334155,
+    roughness: 0.55,
+    metalness: 0.7,
+    transparent: true,
+    opacity: 0.72,
+  });
+  const transmissionCoverGeom = new THREE.BoxGeometry(0.1, 0.65, 0.28);
+  const transmissionCover = new THREE.Mesh(transmissionCoverGeom, transmissionCoverMaterial);
+  transmissionCover.name = "normalized-drafting-transmission-housing";
+  transmissionCover.position.set(0.52, 0.545, 0);
+  root.add(transmissionCover);
   const drivePulleyGeom = new THREE.CylinderGeometry(0.025, 0.025, 0.018, 20);
-  disposables.push(driveBeltMaterial, drivePulleyGeom);
+  disposables.push(transmissionCoverMaterial, transmissionCoverGeom, drivePulleyGeom);
   const rollerStages = [
     feedRollersGroup,
     intermediateRollerOneGroup,
@@ -376,51 +387,33 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
     deliveryRollersGroup,
   ];
   rollerStages.forEach((stage, stageIndex) => {
-    const x = 0.46 + stageIndex * 0.025;
-
-    const shaftPulley = new THREE.Mesh(drivePulleyGeom, ironMaterial);
-    shaftPulley.name = `main-shaft-drafting-pulley-${stageIndex + 1}`;
-    shaftPulley.rotation.z = Math.PI / 2;
-    shaftPulley.position.x = x;
-    shaftGroup.add(shaftPulley);
-
     const stagePulleyRotor = new THREE.Group();
     stagePulleyRotor.name = `drafting-stage-drive-rotor-${stageIndex + 1}`;
-    stagePulleyRotor.position.set(x, 0.87, stage.position.z);
+    stagePulleyRotor.position.set(0.47, 0.87, stage.position.z);
     const stagePulley = new THREE.Mesh(drivePulleyGeom, brassMaterial);
     stagePulley.rotation.z = Math.PI / 2;
     stagePulleyRotor.add(stagePulley);
     root.add(stagePulleyRotor);
     rollerDriveRotors.push(stagePulleyRotor);
-
-    const bottomY = 0.22;
-    const bottomZ = 0.06;
-    const topY = 0.87;
-    const topZ = stage.position.z;
-    const dy = topY - bottomY;
-    const dz = topZ - bottomZ;
-    const distance = Math.hypot(dy, dz);
-    const offsetY = (-dz / distance) * 0.025;
-    const offsetZ = (dy / distance) * 0.025;
-    const beltGeometry = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(x, bottomY + offsetY, bottomZ + offsetZ),
-      new THREE.Vector3(x, topY + offsetY, topZ + offsetZ),
-      new THREE.Vector3(x, topY - offsetY, topZ - offsetZ),
-      new THREE.Vector3(x, bottomY - offsetY, bottomZ - offsetZ),
-    ]);
-    disposables.push(beltGeometry);
-    const belt = new THREE.LineLoop(beltGeometry, driveBeltMaterial);
-    belt.name = `continuous-drafting-drive-belt-${stageIndex + 1}`;
-    root.add(belt);
   });
 
   // ==================== 5. E & F: SPINDLES, FLYERS & BOBBINS ====================
   const flyerGroups: THREE.Group[] = [];
   const bobbinGroups: THREE.Group[] = [];
   const spindleDriveRotors: THREE.Group[] = [];
-  const spindleDriverBevelGeom = new THREE.CylinderGeometry(0.012, 0.028, 0.035, 16);
-  const spindleDrivenBevelGeom = new THREE.CylinderGeometry(0.012, 0.028, 0.035, 16);
-  disposables.push(spindleDriverBevelGeom, spindleDrivenBevelGeom);
+  const spindleWhorlRotors: THREE.Group[] = [];
+  const spindleDriverBevelGeom = new THREE.CylinderGeometry(0.012, 0.037, 0.035, 16);
+  const spindleDrivenBevelGeom = new THREE.CylinderGeometry(0.004, 0.01, 0.035, 16);
+  const spindleLayshaftGeom = new THREE.CylinderGeometry(0.004, 0.004, 0.13, 12);
+  const layshaftSpurGeom = new THREE.CylinderGeometry(0.05, 0.05, 0.012, 24);
+  const spindleWhorlGeom = new THREE.CylinderGeometry(0.01, 0.01, 0.012, 16);
+  disposables.push(
+    spindleDriverBevelGeom,
+    spindleDrivenBevelGeom,
+    spindleLayshaftGeom,
+    layshaftSpurGeom,
+    spindleWhorlGeom,
+  );
 
   // Four continuous roving paths make the material flow physically legible:
   // feed nip -> delivery nip -> flyer guide -> bobbin. They remain stationary
@@ -454,7 +447,9 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
   traverseRailGroup.position.set(0, 0.52, 0.06);
   root.add(traverseRailGroup);
 
-  const travRailMesh = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.025, 0.12), oakMaterial);
+  const traverseRailGeom = new THREE.BoxGeometry(1.0, 0.025, 0.12);
+  disposables.push(traverseRailGeom);
+  const travRailMesh = new THREE.Mesh(traverseRailGeom, oakMaterial);
   traverseRailGroup.add(travRailMesh);
 
   for (let i = 0; i < 4; i++) {
@@ -472,30 +467,38 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
     spindleShaft.position.set(0, 0.515, 0);
     spindleStation.add(spindleShaft);
 
-    // Per-station bevel pairs close the power path from horizontal shaft B to
-    // each vertical spindle. The driver is a shaft child; the driven member
-    // follows the shared spindle phase on its own Y-axis rotor.
+    // Two physical stages close the declared 18.5:1 spindle drive: a 3.7:1
+    // bevel pair turns a short vertical layshaft, then a 5:1 external spur
+    // pair drives the spindle whorl. Pitch-radius × angular-speed products
+    // match at both meshes.
     const spindleDriverBevel = new THREE.Mesh(spindleDriverBevelGeom, brassMaterial);
     spindleDriverBevel.name = `spindle-driver-bevel-${i + 1}`;
     spindleDriverBevel.rotation.z = Math.PI / 2;
-    spindleDriverBevel.position.x = x;
+    spindleDriverBevel.position.x = x + 0.06;
     shaftGroup.add(spindleDriverBevel);
 
     const spindleDrivenRotor = new THREE.Group();
-    spindleDrivenRotor.name = `spindle-driven-bevel-rotor-${i + 1}`;
-    spindleDrivenRotor.position.set(x, 0.245, 0.06);
+    spindleDrivenRotor.name = `spindle-layshaft-rotor-${i + 1}`;
+    spindleDrivenRotor.position.set(x + 0.06, 0.245, 0.06);
     const spindleDrivenBevel = new THREE.Mesh(spindleDrivenBevelGeom, brassMaterial);
     spindleDrivenBevel.position.y = -0.018;
-    spindleDrivenRotor.add(spindleDrivenBevel);
+    const spindleLayshaft = new THREE.Mesh(spindleLayshaftGeom, steelMaterial);
+    spindleLayshaft.position.y = 0.05;
+    const layshaftSpur = new THREE.Mesh(layshaftSpurGeom, brassMaterial);
+    layshaftSpur.name = `layshaft-five-to-one-driver-${i + 1}`;
+    layshaftSpur.position.y = 0.095;
+    spindleDrivenRotor.add(spindleDrivenBevel, spindleLayshaft, layshaftSpur);
     root.add(spindleDrivenRotor);
     spindleDriveRotors.push(spindleDrivenRotor);
 
-    // Spindle Whorl (brass pulley at bottom)
-    const whorlGeom = new THREE.CylinderGeometry(0.02, 0.02, 0.02, 16);
-    disposables.push(whorlGeom);
-    const whorl = new THREE.Mesh(whorlGeom, brassMaterial);
-    whorl.position.set(0, 0.38, 0);
-    spindleStation.add(whorl);
+    const spindleWhorlRotor = new THREE.Group();
+    spindleWhorlRotor.name = `spindle-whorl-rotor-${i + 1}`;
+    spindleWhorlRotor.position.set(0, 0.34, 0);
+    const whorl = new THREE.Mesh(spindleWhorlGeom, brassMaterial);
+    whorl.name = `spindle-five-to-one-driven-whorl-${i + 1}`;
+    spindleWhorlRotor.add(whorl);
+    spindleStation.add(spindleWhorlRotor);
+    spindleWhorlRotors.push(spindleWhorlRotor);
 
     // E: Revolving Steel Flyer
     const flyerGroup = new THREE.Group();
@@ -642,8 +645,8 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
   }
 
   // Toggles
-  const setCutaway = (_cutaway: boolean) => {
-    // Framework is open-frame; cutaway highlights internal gears and drafting train
+  const setCutaway = (cutaway: boolean) => {
+    transmissionCover.visible = !cutaway;
   };
 
   const setCalloutsVisible = (visible: boolean) => {
@@ -683,7 +686,8 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
     rollerDriveRotors.forEach((rotor, index) => {
       rotor.rotation.x = draftingPhases[index];
     });
-    for (const rotor of spindleDriveRotors) rotor.rotation.y = phases.spindleRad;
+    for (const rotor of spindleDriveRotors) rotor.rotation.y = phases.spindleLayshaftRad;
+    for (const rotor of spindleWhorlRotors) rotor.rotation.y = phases.spindleRad;
     for (const flyer of flyerGroups) flyer.rotation.y = phases.spindleRad;
     for (const bobbin of bobbinGroups) bobbin.rotation.y = phases.bobbinRad;
 
@@ -726,6 +730,7 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
     shaftBevelRotor,
     rollerDriveRotors,
     spindleDriveRotors,
+    spindleWhorlRotors,
     flyerGroups,
     bobbinGroups,
     traverseRailGroup,

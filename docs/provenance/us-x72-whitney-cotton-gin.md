@@ -40,26 +40,44 @@ it does not contain a numbered claims section. The record must therefore state
 an evidence-backed no-formal-claims condition and must not substitute a modern
 summary of the mechanism for historical claim text.
 
-## Source-figure integrity hold (2026-08-19)
+## Source-sheet review (2026-09-03)
 
-The historical specification and the supplied drawing packet cannot yet be
-published together as a fully verified, figure-linked source face. A direct
-second review found that the descriptive schedule cites figures 4, 8, 9, and
-10 among others, while the pinned packet combines an original/copy sheet with
-later restored drawing sheets whose labels and depicted details cannot be
-proven one-to-one against each citation. The later sheets must not be silently
-substituted simply because they show a superficially similar component.
+This review replaces every active legacy figure preview with a complete,
+directly rendered source sheet from the pinned PDF. The earlier previews are
+preserved on disk as research evidence, but none remains an active source-face
+asset: several had a filename or a crop that did not match the printed figure
+label. The active edition therefore shows the complete page that was actually
+reviewed, never a narrower substitute.
 
-This is consistent with the preservation warning in Founders Online's
-[Drawing of the Cotton Gin, 28 October 1793](https://founders.archives.gov/documents/Jefferson/01-27-02-0224): its source note distinguishes a copy of the lost original from an 1845 Patent Office reconstruction and explains that the reconstruction and later plates vary significantly from Whitney's drawing.
+| Active source asset | PDF page | Dimensions | SHA-256 | Preservation status |
+| --- | ---: | ---: | --- | --- |
+| `source-sheet-1-v1.png` | 1 | 2320 × 3408 | `6d99d6afdcc73a4f9d25d349bbf938f6a79051e10b7c5e26ce0ed930991ded38` | Surviving original `72X` sheet |
+| `source-sheet-2-v1.png` | 2 | 2320 × 3408 | `d44db37019961e5485d20672bc66320579a7c1963705258275605eccb72ca4f9` | Pinned packet's restored sheet 1 |
+| `source-sheet-3-v1.png` | 3 | 2320 × 3408 | `1a3e2e973aa7e71186b8116251704c2518b9b828f46d64d42d8b6b440e620fda` | Pinned packet's restored sheet 2 |
 
-The existing manual-edition draft, ledger, and every existing crop are
-preserved as recovery evidence, but the catalog record is deliberately gated.
-Re-release requires an editor to establish, against an authoritative primary
-drawing source, an explicit citation-to-crop ledger for every occurrence in the
-description; crop each verified figure from that source; inspect the framing;
-and rerun the cross-catalog figure-reference audit. No inferred filename,
-automatic crop, or "close enough" drawing is acceptable.
+All three PNGs were rendered directly from the immutable PDF at 300 DPI and
+visually compared with their source pages. The original and restored status is
+retained rather than flattened into a claim that every drawing is original.
+
+### Active citation ledger
+
+| Printed citation in the edition | Active occurrence keys | Pinned source page | Review result |
+| --- | --- | ---: | --- |
+| Fig. 1 | `edition-block-1-group-0-inline-1`, `edition-block-7-group-0-inline-1`, `edition-block-9-group-0-inline-1`, `edition-block-11-group-0-inline-3`, `edition-block-17-group-0-inline-3`, `edition-block-17-group-0-inline-7`, `edition-block-18-group-0-inline-1`, `edition-block-22-group-0-inline-1`, `edition-block-26-group-0-inline-1`, `edition-block-26-group-0-inline-3`, `edition-block-30-group-0-inline-1`, `edition-block-31-group-0-inline-1` | 1 | Exact printed label on the surviving original sheet. |
+| Fig. 2 | `edition-block-10-group-0-inline-1`, `edition-block-11-group-0-inline-1`, `edition-block-17-group-0-inline-5` | 2 | The restored sheet prints related `Fig. 2a` through `Fig. 2e` details, not an unlettered `Fig. 2`; the full sheet is evidence, not an asserted exact crop. |
+| Fig. 3 | `edition-block-27-group-0-inline-1` | 3 | Exact printed label on restored sheet 2. |
+| Fig. 4 | `edition-block-25-group-0-inline-1` | 3 | Exact printed label on restored sheet 2. |
+| Fig. 6 | `edition-block-23-group-0-inline-1` | 3 | Exact printed label on restored sheet 2. |
+| Fig. 7 | `edition-block-10-group-0-inline-3` | 3 | Exact printed label on restored sheet 2. |
+| Fig. 8 | `edition-block-14-group-0-inline-1` | 3 | No matching printed label in the supplied pinned packet. The active full sheet preserves the available source; it does not pretend to identify a substitute figure. |
+| Fig. 9 | `edition-block-14-group-0-inline-3` | 3 | No matching printed label in the supplied pinned packet. The active full sheet preserves the available source; it does not pretend to identify a substitute figure. |
+| Fig. 10 | `edition-block-12-group-0-inline-1` | 3 | No matching printed label in the supplied pinned packet. The active full sheet preserves the available source; it does not pretend to identify a substitute figure. |
+| Fig. 11 | `edition-block-17-group-0-inline-1` | 3 | Exact printed label on restored sheet 2. |
+| Fig. 12 | `edition-block-19-group-0-inline-1` | 3 | Exact printed label on restored sheet 2. |
+| Fig. 14 | `edition-block-20-group-0-inline-1` | 3 | Exact printed label on restored sheet 2. |
+
+This confirms the preservation warning in Founders Online's
+[Drawing of the Cotton Gin, 28 October 1793](https://founders.archives.gov/documents/Jefferson/01-27-02-0224): the surviving original and later restored drawings vary. The exact-figure gaps for Figs. 2, 8, 9, and 10 remain a research task requiring a primary drawing source that supplies those labels. They are internal provenance facts only. They must never withhold the complete legal text, reviewed transcript, or pinned facsimile from a visitor.
 
 ## Editorial layers
 

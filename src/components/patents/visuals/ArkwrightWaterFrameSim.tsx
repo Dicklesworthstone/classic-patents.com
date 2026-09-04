@@ -80,6 +80,7 @@ export function ArkwrightWaterFrameSim() {
       data-arkwright-intermediate-one-phase-rad={phases.intermediateRollerOneRad}
       data-arkwright-intermediate-two-phase-rad={phases.intermediateRollerTwoRad}
       data-arkwright-delivery-phase-rad={phases.deliveryRollerRad}
+      data-arkwright-spindle-layshaft-phase-rad={phases.spindleLayshaftRad}
       data-arkwright-spindle-phase-rad={phases.spindleRad}
       data-arkwright-traverse-phase-rad={phases.traverseRad}
     >

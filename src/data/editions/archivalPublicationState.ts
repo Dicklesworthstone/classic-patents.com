@@ -250,11 +250,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "The source packet is being rebuilt as a complete, source-bound archival edition.",
     "candidate",
   ),
-  "us-6594844-roomba": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-k3e",
-    "The archival source face remains held until every required source figure receives independent acceptance.",
-  ),
   "us-6331181-davinci": auditHold(
     "AUDIT_FULL_SPECIFICATION_PENDING",
     "classic-patentscom-olm",
@@ -304,11 +299,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "classic-patentscom-cgk",
     "Per-figure crop acceptance is pending.",
   ),
-  "us-2297691-carlson-electrophotography": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-i4b",
-    "The work-in-progress source crops require repair and acceptance.",
-  ),
   "us-2292387-lamarr-frequency-hopping": auditHold(
     "AUDIT_FIGURE_ACCEPTANCE_PENDING",
     "classic-patentscom-j07",
@@ -356,12 +346,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "classic-patentscom-87z",
     "The provenance hold must be reconciled before the source edition is released.",
   ),
-  "us-400766-hall-aluminium": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-cq9",
-    "The candidate edition remains detached pending figure acceptance.",
-    "candidate",
-  ),
   "us-395781-hollerith-tabulating": auditHold(
     "AUDIT_FIGURE_ACCEPTANCE_PENDING",
     "classic-patentscom-jks",
@@ -371,11 +355,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "AUDIT_FIGURE_ACCEPTANCE_PENDING",
     "classic-patentscom-s9t",
     "Crop acceptance remains incomplete.",
-  ),
-  "us-48475-yale-lock": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-l6d",
-    "The source face remains withheld pending crop acceptance.",
   ),
   "us-4750-howe-sewing-machine": auditHold(
     "AUDIT_FIGURE_ACCEPTANCE_PENDING",

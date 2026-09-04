@@ -79,6 +79,10 @@ const ArkwrightPhysicsRuntimeOwner = dynamic(
   () => import("./PatentPhysicsRuntimeOwner").then((module) => module.ArkwrightPhysicsRuntimeOwner),
   { ssr: false },
 );
+const CortPhysicsRuntimeOwner = dynamic(
+  () => import("./PatentPhysicsRuntimeOwner").then((module) => module.CortPhysicsRuntimeOwner),
+  { ssr: false },
+);
 // 2D sims are lazy: the dispatcher defaults to the 3D face, so each page only
 // downloads the vector-diagram code when the visitor actually toggles it.
 const AmfVersatranSim = dynamic(() => import("./AMFVersatranSim").then((m) => m.AmfVersatranSim), {
@@ -1111,10 +1115,15 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
                 </>
               );
             case "gb-1420-cort-puddling-rolling":
-              return renderMode === "3d-physics" ? (
-                <CortPuddlingRolling3D />
-              ) : (
-                <CortPuddlingRollingSim />
+              return (
+                <>
+                  <CortPhysicsRuntimeOwner patentId={patentId} />
+                  {renderMode === "3d-physics" ? (
+                    <CortPuddlingRolling3D />
+                  ) : (
+                    <CortPuddlingRollingSim />
+                  )}
+                </>
               );
             case "us-x1-hopkins-potash":
               return renderMode === "3d-physics" ? <HopkinsPotash3D /> : <HopkinsPotashSim />;

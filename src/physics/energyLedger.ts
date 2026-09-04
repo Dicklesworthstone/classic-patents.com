@@ -863,11 +863,10 @@ export function computePortHamiltonianEnergy(
     }
 
     case "gb-1420-cort-puddling-rolling": {
-      const furnaceTempC = params.furnaceTempC ?? 1400.0;
-      const chargeKg = 250.0;
-      thermal = chargeKg * 650.0 * furnaceTempC; // Molten pig iron decarburization thermal energy
-      powerIn = 45000.0; // Coal reverberatory flame input power
-      dissipated = 42000.0; // Radiative furnace flue gas dissipation
+      // The later abridgment provides neither a closed thermal control volume
+      // nor authenticated fuel, flow, charge, torque, or loss measurements.
+      // Leave the ledger at zero instead of laundering scenario values into an
+      // apparently measured Port-Hamiltonian balance.
       break;
     }
 

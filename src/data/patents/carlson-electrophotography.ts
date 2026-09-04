@@ -69,7 +69,7 @@ export const carlsonElectrophotographyPatent: Patent = {
         sourceRelationship:
           "Printed specification page 3: semiconductor distinction, spectral response, layer thickness, charging, and camera exposure.",
         exactSourceText:
-          "The photoconductive insulating materials are to be distinguished from the semi-conductors",
+          "These photoconductive insulating materials are to be distinguished from the semi-conductors",
       },
       {
         page: 5,
@@ -103,9 +103,9 @@ export const carlsonElectrophotographyPatent: Patent = {
       {
         page: 10,
         sourceRelationship:
-          "Printed specification page 9: Claims 24–27, formal witness attestation, and signature of Chester F. Carlson",
+          "Printed specification page 9: Claims 24–27 and signature of Chester F. Carlson.",
         exactSourceText:
-          "IN TESTIMONY WHEREOF, I have hereunto subscribed my name this 3rd day of April, 1939. CHESTER F. CARLSON.",
+          "24. The method of applying a design to a surface which comprises producing an electrostatic charge pattern",
       },
     ],
   },

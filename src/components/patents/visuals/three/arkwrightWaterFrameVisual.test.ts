@@ -18,8 +18,15 @@ describe("GB 931 Richard Arkwright Water Frame Visual & Drafting Boundary", () =
     expect(model.deliveryRollersGroup).toBeDefined();
     expect(model.feedLowerRollers).toHaveLength(4);
     expect(model.feedUpperRollers).toHaveLength(4);
+    expect(model.intermediateOneLowerRollers).toHaveLength(4);
+    expect(model.intermediateOneUpperRollers).toHaveLength(4);
+    expect(model.intermediateTwoLowerRollers).toHaveLength(4);
+    expect(model.intermediateTwoUpperRollers).toHaveLength(4);
     expect(model.deliveryLowerRollers).toHaveLength(4);
     expect(model.deliveryUpperRollers).toHaveLength(4);
+    expect(model.rollerDriveRotors).toHaveLength(4);
+    expect(model.spindleDriveRotors).toHaveLength(4);
+    expect(model.spindleWhorlRotors).toHaveLength(4);
     expect(model.flyerGroups.length).toBe(4);
     expect(model.bobbinGroups.length).toBe(4);
     expect(model.traverseRailGroup).toBeDefined();
@@ -107,6 +114,7 @@ describe("GB 931 Richard Arkwright Water Frame Visual & Drafting Boundary", () =
       intermediateRollerOneRad: 0.833,
       intermediateRollerTwoRad: 0.916,
       deliveryRollerRad: 1,
+      spindleLayshaftRad: -4.625,
       spindleRad: 1.25,
       bobbinRad: 1.5,
       traverseRad: Math.PI / 2,
@@ -117,11 +125,32 @@ describe("GB 931 Richard Arkwright Water Frame Visual & Drafting Boundary", () =
     expect(model.shaftGroup.rotation.x).toBe(0.5);
     expect(model.shaftGroup.rotation.z).toBe(0);
     expect(model.feedRollersGroup.rotation.x).toBe(0);
+    expect(model.intermediateRollerOneGroup.rotation.x).toBe(0);
+    expect(model.intermediateRollerTwoGroup.rotation.x).toBe(0);
     expect(model.deliveryRollersGroup.rotation.x).toBe(0);
     expect(model.feedLowerRollers.every((roller) => roller.rotation.x === 0.75)).toBe(true);
     expect(model.feedUpperRollers.every((roller) => roller.rotation.x === -0.75)).toBe(true);
+    expect(model.intermediateOneLowerRollers.every((roller) => roller.rotation.x === 0.833)).toBe(
+      true,
+    );
+    expect(model.intermediateOneUpperRollers.every((roller) => roller.rotation.x === -0.833)).toBe(
+      true,
+    );
+    expect(model.intermediateTwoLowerRollers.every((roller) => roller.rotation.x === 0.916)).toBe(
+      true,
+    );
+    expect(model.intermediateTwoUpperRollers.every((roller) => roller.rotation.x === -0.916)).toBe(
+      true,
+    );
     expect(model.deliveryLowerRollers.every((roller) => roller.rotation.x === 1)).toBe(true);
     expect(model.deliveryUpperRollers.every((roller) => roller.rotation.x === -1)).toBe(true);
+    expect(model.wheelBevelRotor.rotation.z).toBe(0.25);
+    expect(model.shaftBevelRotor.rotation.x).toBe(0.5);
+    expect(model.rollerDriveRotors.map((rotor) => rotor.rotation.x)).toEqual([
+      0.75, 0.833, 0.916, 1,
+    ]);
+    expect(model.spindleDriveRotors.every((rotor) => rotor.rotation.y === -4.625)).toBe(true);
+    expect(model.spindleWhorlRotors.every((rotor) => rotor.rotation.y === 1.25)).toBe(true);
     expect(model.flyerGroups[0].rotation.y).toBe(1.25);
     expect(model.bobbinGroups[0].rotation.y).toBe(1.5);
     expect(model.traverseRailGroup.position.y).toBeCloseTo(0.56, 12);
@@ -129,6 +158,16 @@ describe("GB 931 Richard Arkwright Water Frame Visual & Drafting Boundary", () =
     expect(
       model.root.children.filter((child) => child.name.startsWith("continuous-roving-path-")),
     ).toHaveLength(4);
+    const transmissionHousing = model.root.getObjectByName(
+      "normalized-drafting-transmission-housing",
+    );
+    expect(transmissionHousing).toBeDefined();
+    model.setCutaway(true);
+    expect(transmissionHousing?.visible).toBe(false);
+    model.setCutaway(false);
+    expect(transmissionHousing?.visible).toBe(true);
+    expect(model.root.getObjectByName("feed-rollers-C1-continuous-lower-axle")).toBeDefined();
+    expect(model.root.getObjectByName("delivery-rollers-C4-continuous-lower-axle")).toBeDefined();
 
     model.dispose();
   });
@@ -152,6 +191,9 @@ describe("GB 931 Richard Arkwright Water Frame Visual & Drafting Boundary", () =
     expect(simSource).toContain("getArkwrightTapeFrame()");
     expect(simSource).not.toContain("requestAnimationFrame");
     expect(simSource).not.toContain("performance.now");
+    expect(simSource).toContain('aria-label={isRunning ? "Pause Motion" : "Resume Motion"}');
+    expect(simSource).toContain("SCALED SCENARIO OUTPUT");
+    expect(simSource).not.toContain("CROMFORD MILL CAPACITY");
     expect(energyChannelsFor("gb-931-arkwright-water-frame", {})).toEqual([]);
     expect(ENERGY_CHANNEL_OMISSION_REASONS["gb-931-arkwright-water-frame"]).toContain(
       "no authenticated water head",

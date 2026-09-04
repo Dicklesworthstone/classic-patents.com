@@ -11,6 +11,23 @@
  * 4. Slag extrusion dynamics and fibrous wrought-iron grain refinement
  */
 
+import type { TapeUpdater } from "./useFrankenSimPhysics";
+
+export const CORT_KERNEL_SOURCE = "source-bounded-ts" as const;
+export const CORT_FRANKENSIM_BOUNDARY =
+  "fs-mbd::revolute+fs-solid::contact+fs-conduction::transient-browser-composition-unavailable" as const;
+export const CORT_SOURCE_BOUNDARY =
+  "The pinned GB 1420 artifact is an 1854 Patent Office abridgment, not the enrolled 1784 specification, and it prints no drawings, dimensions, operating point, material card, or measured production data. The furnace, roll stand, dimensions, kinetics, loads, strength, and throughput shown here are an explicitly modern teaching scenario. No FrankenSim fs-mbd + fs-solid + fs-conduction browser composition stepped this frame." as const;
+
+/** Declared teaching geometry shared by the SI step and both visual faces. */
+export const CORT_ROLL_BODY_RADIUS_M = 0.26;
+export const CORT_ROLL_CENTER_SEPARATION_M = 0.59;
+export const CORT_ROLL_PASS_X_M = [-0.4, -0.15, 0.1, 0.35] as const;
+export const CORT_ROLL_PASS_RADII_M = [0.225, 0.235, 0.245, 0.252] as const;
+export const CORT_ROLL_PASS_WIDTHS_M = [0.14, 0.11, 0.12, 0.08] as const;
+export const CORT_ACTIVE_BILLET_HEIGHT_M = 0.14;
+export const CORT_BILLET_TRAVEL_M = 1.2;
+
 export interface CortKernelInputs {
   furnaceTemperatureCelsius: number; // 1100–1600 °C
   initialCarbonPercent: number; // 2.5–4.5 % (pig iron charge)
@@ -60,6 +77,88 @@ export interface CortKernelOutputs {
   rollSpeedRpm: number;
   rollOmegaRadPerS: number;
   rabbleOmegaRadPerS: number;
+
+  // Declared geometry closure for the visible first-pass roll bite.
+  workingRollRadiusMm: number;
+  rollNipGapMm: number;
+  billetEntryHeightMm: number;
+  nipInterferenceMm: number;
+}
+
+export interface CortRuntimeControls extends Required<CortKernelInputs> {
+  isRunning: boolean;
+  resetEpoch: number;
+}
+
+export interface CortKinematicPhases {
+  topRollRad: number;
+  bottomRollRad: number;
+  rabbleCycleRad: number;
+  billetTravelM: number;
+}
+
+export interface CortTapeFrame {
+  controls: CortRuntimeControls;
+  outputs: CortKernelOutputs;
+  phases: CortKinematicPhases;
+  timeSec: number;
+}
+
+export const CORT_DEFAULT_CONTROLS: Required<CortKernelInputs> = {
+  furnaceTemperatureCelsius: 1350,
+  initialCarbonPercent: 3.8,
+  rabbleStirringRpm: 15,
+  puddlingDurationMinutes: 90,
+  rollerPassCount: 5,
+  // The first visible pass has a declared 225 mm working radius.
+  rollerDiameterMm: CORT_ROLL_PASS_RADII_M[0] * 2000,
+  rollSpeedRpm: 30,
+  puddleBallMassKg: 35,
+};
+
+export const CORT_ZERO_PHASES: Readonly<CortKinematicPhases> = Object.freeze({
+  topRollRad: 0,
+  bottomRollRad: 0,
+  rabbleCycleRad: 0,
+  billetTravelM: 0,
+});
+
+let latestCortTapeFrame: CortTapeFrame | null = null;
+
+export function readCortControls(
+  raw: Partial<CortKernelInputs> | Record<string, number | undefined>,
+): Required<CortKernelInputs> {
+  return {
+    furnaceTemperatureCelsius: Number(
+      raw.furnaceTemperatureCelsius ?? CORT_DEFAULT_CONTROLS.furnaceTemperatureCelsius,
+    ),
+    initialCarbonPercent: Number(
+      raw.initialCarbonPercent ?? CORT_DEFAULT_CONTROLS.initialCarbonPercent,
+    ),
+    rabbleStirringRpm: Number(raw.rabbleStirringRpm ?? CORT_DEFAULT_CONTROLS.rabbleStirringRpm),
+    puddlingDurationMinutes: Number(
+      raw.puddlingDurationMinutes ?? CORT_DEFAULT_CONTROLS.puddlingDurationMinutes,
+    ),
+    rollerPassCount: Number(raw.rollerPassCount ?? CORT_DEFAULT_CONTROLS.rollerPassCount),
+    rollerDiameterMm: Number(raw.rollerDiameterMm ?? CORT_DEFAULT_CONTROLS.rollerDiameterMm),
+    rollSpeedRpm: Number(raw.rollSpeedRpm ?? CORT_DEFAULT_CONTROLS.rollSpeedRpm),
+    puddleBallMassKg: Number(raw.puddleBallMassKg ?? CORT_DEFAULT_CONTROLS.puddleBallMassKg),
+  };
+}
+
+export function readCortRuntimeControls(
+  raw: Partial<CortRuntimeControls> | Record<string, number | boolean | undefined>,
+): CortRuntimeControls {
+  return {
+    ...readCortControls(raw as Record<string, number | undefined>),
+    isRunning:
+      typeof raw.isRunning === "boolean" ? raw.isRunning : Number(raw.isRunning ?? 1) > 0.5,
+    resetEpoch: Number(raw.resetEpoch ?? 0),
+  };
+}
+
+export function getCortTapeFrame(): CortTapeFrame | null {
+  return latestCortTapeFrame;
 }
 
 export function stepCortPuddlingRolling(inputs: CortKernelInputs): CortKernelOutputs {
@@ -69,11 +168,11 @@ export function stepCortPuddlingRolling(inputs: CortKernelInputs): CortKernelOut
   const rabbleRpm = Math.max(0, Math.min(30, inputs.rabbleStirringRpm));
   const timeMin = Math.max(1, Math.min(180, inputs.puddlingDurationMinutes));
   const passes = Math.max(1, Math.min(8, Math.round(inputs.rollerPassCount)));
-  const rollDiamMm = inputs.rollerDiameterMm ?? 450;
+  const rollDiamMm = inputs.rollerDiameterMm ?? CORT_DEFAULT_CONTROLS.rollerDiameterMm;
   // GB 1420 names grooved rollers but supplies no rotational speed. This is a
   // visitor-controlled teaching default, not a historical measurement.
-  const rollRpm = inputs.rollSpeedRpm ?? 30;
-  const rawBallMassKg = inputs.puddleBallMassKg ?? 35;
+  const rollRpm = inputs.rollSpeedRpm ?? CORT_DEFAULT_CONTROLS.rollSpeedRpm;
+  const rawBallMassKg = inputs.puddleBallMassKg ?? CORT_DEFAULT_CONTROLS.puddleBallMassKg;
 
   // 1. Arrhenius Decarburization Kinetics
   // Rate constant k = A * exp(-E_a / RT) * (1 + beta * rabble_stir)
@@ -152,6 +251,8 @@ export function stepCortPuddlingRolling(inputs: CortKernelInputs): CortKernelOut
   const productionSpeedupVsHammer = 1.0;
   const rollOmegaRadPerS = (rollRpm * 2 * Math.PI) / 60;
   const rabbleOmegaRadPerS = (rabbleRpm * 2 * Math.PI) / 60;
+  const rollNipGapMm = CORT_ROLL_CENTER_SEPARATION_M * 1000 - 2 * CORT_ROLL_PASS_RADII_M[0] * 1000;
+  const billetEntryHeightMm = CORT_ACTIVE_BILLET_HEIGHT_M * 1000;
 
   return {
     currentTemperatureCelsius: tempC,
@@ -185,5 +286,62 @@ export function stepCortPuddlingRolling(inputs: CortKernelInputs): CortKernelOut
     rollSpeedRpm: rollRpm,
     rollOmegaRadPerS,
     rabbleOmegaRadPerS,
+    workingRollRadiusMm: rollRadiusMm,
+    rollNipGapMm,
+    billetEntryHeightMm,
+    nipInterferenceMm: Math.max(0, billetEntryHeightMm - rollNipGapMm),
+  };
+}
+
+/**
+ * Fixed-step owner for the declared Cort teaching mechanism. The two rolls
+ * satisfy no-slip surface travel at the visible first pass, counter-rotate at
+ * equal magnitude, and advance one billet coordinate from that same travel.
+ */
+export function createCortTransportUpdater(readControls: () => CortRuntimeControls): TapeUpdater {
+  const phases: CortKinematicPhases = { ...CORT_ZERO_PHASES };
+  let timeSec = 0;
+  let lastResetEpoch: number | null = null;
+  let ticksSincePublish = 4;
+
+  return (_previous, dt) => {
+    const controls = readControls();
+    if (lastResetEpoch !== null && controls.resetEpoch !== lastResetEpoch) {
+      Object.assign(phases, CORT_ZERO_PHASES);
+      timeSec = 0;
+    }
+    lastResetEpoch = controls.resetEpoch;
+    const outputs = stepCortPuddlingRolling(controls);
+
+    if (controls.isRunning) {
+      timeSec += dt;
+      phases.topRollRad -= outputs.rollOmegaRadPerS * dt;
+      phases.bottomRollRad += outputs.rollOmegaRadPerS * dt;
+      phases.rabbleCycleRad += outputs.rabbleOmegaRadPerS * dt;
+      phases.billetTravelM =
+        (phases.billetTravelM +
+          outputs.rollOmegaRadPerS * (outputs.workingRollRadiusMm / 1000) * dt) %
+        CORT_BILLET_TRAVEL_M;
+    }
+
+    latestCortTapeFrame = {
+      controls,
+      outputs,
+      phases: { ...phases },
+      timeSec,
+    };
+
+    ticksSincePublish += 1;
+    if (ticksSincePublish < 5) return null;
+    ticksSincePublish = 0;
+    return {
+      machine: {
+        poseXMeters: phases.billetTravelM,
+        poseYMeters: Math.sin(phases.rabbleCycleRad) * 0.18,
+        headingRad: phases.bottomRollRad,
+        modeLabel: controls.isRunning ? "declared Cort process motion" : "Cort process held",
+        wheelSpeedMps: outputs.rollOmegaRadPerS * (outputs.workingRollRadiusMm / 1000),
+      },
+    };
   };
 }

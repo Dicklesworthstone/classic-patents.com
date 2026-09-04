@@ -9,39 +9,60 @@ const PATENT_ID = "us-3728480-baer-odyssey";
 const SOURCE_SHA256 = "620a5c6c5563115c9ec3fa34f64c646b4f32cb9f587eda6bef78a9516439a0cc";
 const SOURCE_FIGURE_DIRECTORY = `/patents/figures/${PATENT_ID}`;
 
-const sourceSheetByFigure: Readonly<Record<number, string>> = {
-  1: "fig-1-source-crop-v1.png",
-  2: "fig-3-source-crop-v1.png",
-  3: "fig-3-source-crop-v1.png",
-  4: "fig-4-source-crop-v1.png",
-  5: "fig-5-source-crop-v1.png",
-  6: "fig-8-source-crop-v1.png",
-  7: "fig-10-source-crop-v1.png",
-  8: "fig-10-source-crop-v1.png",
-  9: "fig-11-source-crop-v1.png",
-  10: "fig-11-source-crop-v1.png",
+type SourceSheet = {
+  readonly fileName: string;
+  readonly pdfPage: number;
 };
 
-function sheetForFigure(figureNumber: number): string {
-  return sourceSheetByFigure[figureNumber] ?? "fig-1-source-crop-v1.png";
+/**
+ * Full, unmodified 300-DPI renders of the pinned drawing sheets. The old
+ * figure crops remain in the asset directory as preservation material, but
+ * references in the public source face use these complete sheets so a visitor
+ * can inspect the cited figure in its original drawing context.
+ */
+const sourceSheetsByFigure: Readonly<Record<number, readonly SourceSheet[]>> = {
+  1: [{ fileName: "source-sheet-pdf-02-v1.png", pdfPage: 2 }],
+  2: [{ fileName: "source-sheet-pdf-04-v1.png", pdfPage: 4 }],
+  3: [{ fileName: "source-sheet-pdf-05-v1.png", pdfPage: 5 }],
+  4: [{ fileName: "source-sheet-pdf-04-v1.png", pdfPage: 4 }],
+  5: [
+    { fileName: "source-sheet-pdf-06-v1.png", pdfPage: 6 },
+    { fileName: "source-sheet-pdf-07-v1.png", pdfPage: 7 },
+    { fileName: "source-sheet-pdf-08-v1.png", pdfPage: 8 },
+  ],
+  7: [{ fileName: "source-sheet-pdf-11-v1.png", pdfPage: 11 }],
+  8: [{ fileName: "source-sheet-pdf-11-v1.png", pdfPage: 11 }],
+  9: [{ fileName: "source-sheet-pdf-12-v1.png", pdfPage: 12 }],
+  10: [{ fileName: "source-sheet-pdf-12-v1.png", pdfPage: 12 }],
+};
+
+const sourceSheetsByReferenceText: Readonly<Record<string, readonly SourceSheet[]>> = {
+  "FIG. 1C": [{ fileName: "source-sheet-pdf-03-v1.png", pdfPage: 3 }],
+  "FIGS. 1D and 1E": [{ fileName: "source-sheet-pdf-03-v1.png", pdfPage: 3 }],
+};
+
+function sheetsForFigure(figureNumber: number, sourceText: string): readonly SourceSheet[] {
+  const sheets = sourceSheetsByReferenceText[sourceText] ?? sourceSheetsByFigure[figureNumber];
+  if (!sheets) {
+    throw new Error(`No pinned source sheet is mapped for ${sourceText}.`);
+  }
+  return sheets;
 }
 
 function _figure(number: number, sourceText = `FIG. ${number}`): CuratedSpecificationInline {
-  const sheet = sheetForFigure(number);
+  const sheets = sheetsForFigure(number, sourceText);
   return {
     kind: "reference",
     text: sourceText,
     href: `#fig-${number}`,
     referenceType: "figure",
     label: `Pinned source crop for Fig. ${number}`,
-    figurePreviews: [
-      {
-        src: `${SOURCE_FIGURE_DIRECTORY}/${sheet}`,
-        alt: `${sourceText} on its pinned US 3,728,480 drawing sheet.`,
-        width: 2320,
-        height: 3408,
-      },
-    ],
+    figurePreviews: sheets.map((sheet) => ({
+      src: `${SOURCE_FIGURE_DIRECTORY}/${sheet.fileName}`,
+      alt: `${sourceText} on pinned US 3,728,480 PDF page ${sheet.pdfPage}.`,
+      width: 2320,
+      height: 3408,
+    })),
   };
 }
 

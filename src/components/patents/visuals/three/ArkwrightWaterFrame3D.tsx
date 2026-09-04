@@ -49,7 +49,7 @@ export function ArkwrightWaterFrame3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
-  const [cutaway, _setCutaway] = useState(false);
+  const [cutaway, setCutaway] = useState(false);
   const [showCallouts, setShowCallouts] = useState(true);
   const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -190,6 +190,9 @@ export function ArkwrightWaterFrame3D() {
         getArkwrightTapeFrame()?.phases.intermediateRollerTwoRad ?? 0
       }
       data-arkwright-delivery-phase-rad={getArkwrightTapeFrame()?.phases.deliveryRollerRad ?? 0}
+      data-arkwright-spindle-layshaft-phase-rad={
+        getArkwrightTapeFrame()?.phases.spindleLayshaftRad ?? 0
+      }
       data-arkwright-spindle-phase-rad={getArkwrightTapeFrame()?.phases.spindleRad ?? 0}
       data-arkwright-traverse-phase-rad={getArkwrightTapeFrame()?.phases.traverseRad ?? 0}
     >
@@ -222,6 +225,23 @@ export function ArkwrightWaterFrame3D() {
 
         {/* Top-Right Action Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[min(90%,26rem)] sm:max-w-[26rem]">
+          <button
+            type="button"
+            onClick={() => {
+              setCutaway((previous) => !previous);
+              soundEngine.playSwitchClick();
+            }}
+            title={cutaway ? "Show Transmission Cover" : "Hide Transmission Cover"}
+            aria-label={cutaway ? "Show Transmission Cover" : "Hide Transmission Cover"}
+            className={`min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              cutaway
+                ? "bg-cyan-700 text-white border-cyan-800"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
+            }`}
+          >
+            <span className="hidden md:inline">{cutaway ? "Show Cover" : "Hide Cover"}</span>
+            <span className="md:hidden">Cover</span>
+          </button>
           <button
             type="button"
             onClick={() => {
