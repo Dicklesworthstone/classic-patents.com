@@ -83,7 +83,11 @@ function trackedWorkingTreeChanges(): string {
   return status
     .split("\n")
     .filter(
-      (line) => line && !line.endsWith(" tsconfig.tsbuildinfo") && !line.endsWith(" next-env.d.ts"),
+      (line) =>
+        line &&
+        !line.endsWith(" tsconfig.tsbuildinfo") &&
+        !line.endsWith(" next-env.d.ts") &&
+        !line.includes(" .beads/"),
     )
     .join("\n");
 }
