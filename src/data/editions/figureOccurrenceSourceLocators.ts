@@ -4408,6 +4408,63 @@ function teslaTeleautomatonSourceSheetLocator(
   };
 }
 
+const EINK_SOURCE_SHEET_RASTER = { width: 928, height: 1364 } as const;
+const EINK_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-6120588-eink.md#independent-source-sheet-review-2026-09-04";
+const EINK_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-6120588-eink/sheet-1-source-crop-v1.png",
+  3: "/patents/figures/us-6120588-eink/sheet-3-source-crop-v1.png",
+  4: "/patents/figures/us-6120588-eink/sheet-4-source-crop-v1.png",
+  5: "/patents/figures/us-6120588-eink/sheet-5-source-crop-v1.png",
+  8: "/patents/figures/us-6120588-eink/sheet-8-source-crop-v1.png",
+  10: "/patents/figures/us-6120588-eink/sheet-10-source-crop-v1.png",
+  14: "/patents/figures/us-6120588-eink/sheet-14-source-crop-v1.png",
+  16: "/patents/figures/us-6120588-eink/sheet-16-source-crop-v1.png",
+} as const;
+const EINK_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-7-group-0-inline-1", 1],
+  ["edition-block-10-group-0-inline-1", 4],
+  ["edition-block-12-group-0-inline-0", 1],
+  ["edition-block-12-group-0-inline-2", 3],
+  ["edition-block-12-group-0-inline-4", 4],
+  ["edition-block-12-group-0-inline-6", 5],
+  ["edition-block-12-group-0-inline-8", 8],
+  ["edition-block-12-group-0-inline-10", 10],
+  ["edition-block-12-group-0-inline-12", 14],
+  ["edition-block-14-group-0-inline-1", 1],
+  ["edition-block-16-group-0-inline-1", 4],
+  ["edition-block-17-group-0-inline-1", 5],
+  ["edition-block-17-group-0-inline-3", 4],
+  ["edition-block-19-group-0-inline-1", 16],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof EINK_SOURCE_SHEET_ASSETS,
+])[];
+
+function eInkSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourceSheet: keyof typeof EINK_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: EINK_SOURCE_SHEET_RASTER.width,
+    height: EINK_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: EINK_SOURCE_SHEET_ASSETS[sourceSheet],
+    // Drawing sheet 1 begins on PDF page 4, after the grant front matter.
+    sourcePdfPage: sourceSheet + 3,
+    sourceRaster: EINK_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, EINK_SOURCE_SHEET_RASTER),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct source-sheet review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: EINK_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
 const WOZNIAK_APPLE_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
 const WOZNIAK_APPLE_EVIDENCE_REFERENCE =
   "docs/provenance/us-4136359-wozniak-apple.md#editorial-boundaries";
@@ -6665,6 +6722,9 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
   "us-613809-tesla-teleautomaton": TESLA_TELEAUTOMATON_SOURCE_SHEET_OCCURRENCES.map(
     ([occurrenceKey, sourcePdfPage]) =>
       teslaTeleautomatonSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-6120588-eink": EINK_SOURCE_SHEET_OCCURRENCES.map(([occurrenceKey, sourceSheet]) =>
+    eInkSourceSheetLocator(occurrenceKey, sourceSheet),
   ),
   "us-4136359-wozniak-apple": [
     // Fig. 1 (Page 2)

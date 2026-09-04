@@ -659,6 +659,14 @@ const TESLA_TELEAUTOMATON_OCCURRENCES = Object.fromEntries(
     locator.activeAsset,
   ]),
 );
+const EINK_ID = "us-6120588-eink";
+const EINK_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[EINK_ID].assets);
+const EINK_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[EINK_ID].map((locator) => [
+    locator.occurrenceKey,
+    locator.activeAsset,
+  ]),
+);
 const COLT_ID = "us-x9430-colt-revolver";
 const COLT_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[COLT_ID].assets);
 const COLT_REVOLVER_OCCURRENCES = {
@@ -1310,6 +1318,7 @@ const VALIDATION_OPTIONS = {
     [RILLIEUX_EVAPORATOR_ID]: RILLIEUX_EVAPORATOR_ASSETS,
     [FESSENDEN_WIRELESS_ID]: FESSENDEN_WIRELESS_ASSETS,
     [TESLA_TELEAUTOMATON_ID]: TESLA_TELEAUTOMATON_ASSETS,
+    [EINK_ID]: EINK_ASSETS,
     [ROOMBA_ID]: ROOMBA_ASSETS,
     [CORLISS_ID]: CORLISS_ASSETS,
     [LINDE_AIR_LIQUEFACTION_ID]: LINDE_AIR_LIQUEFACTION_ASSETS,
@@ -1394,6 +1403,7 @@ const VALIDATION_OPTIONS = {
     [RILLIEUX_EVAPORATOR_ID]: RILLIEUX_EVAPORATOR_OCCURRENCES,
     [FESSENDEN_WIRELESS_ID]: FESSENDEN_WIRELESS_OCCURRENCES,
     [TESLA_TELEAUTOMATON_ID]: TESLA_TELEAUTOMATON_OCCURRENCES,
+    [EINK_ID]: EINK_OCCURRENCES,
     [WOZNIAK_APPLE_ID]: WOZNIAK_APPLE_OCCURRENCES,
     [ROOMBA_ID]: ROOMBA_OCCURRENCES,
     [CORLISS_ID]: CORLISS_OCCURRENCES,
@@ -1480,6 +1490,7 @@ const VALIDATION_OPTIONS = {
     [RILLIEUX_EVAPORATOR_ID]: 11,
     [FESSENDEN_WIRELESS_ID]: 7,
     [TESLA_TELEAUTOMATON_ID]: 13,
+    [EINK_ID]: 26,
     [ROOMBA_ID]: 26,
     [CORLISS_ID]: 8,
     [LINDE_AIR_LIQUEFACTION_ID]: 5,
@@ -1569,6 +1580,7 @@ describe("figure occurrence source locators", () => {
       RILLIEUX_EVAPORATOR_ID,
       FESSENDEN_WIRELESS_ID,
       TESLA_TELEAUTOMATON_ID,
+      EINK_ID,
       WOZNIAK_APPLE_ID,
       ROOMBA_ID,
       CORLISS_ID,
@@ -1685,6 +1697,30 @@ describe("figure occurrence source locators", () => {
           locator.sourceRectPixels.y === 0 &&
           locator.sourceRectPixels.width === 2320 &&
           locator.sourceRectPixels.height === 3408 &&
+          locator.evidenceReference.endsWith("#independent-source-sheet-review-2026-09-04"),
+      ),
+    ).toBe(true);
+  });
+
+  test("binds every E Ink citation to its byte-verified complete source sheet", () => {
+    const locators = FIGURE_OCCURRENCE_SOURCE_LOCATORS[EINK_ID];
+    expect(locators).toHaveLength(14);
+    expect(locators.map((locator) => locator.occurrenceKey)).toEqual(
+      Object.keys(EINK_OCCURRENCES) as FigureOccurrenceKey[],
+    );
+    expect(new Set(locators.map((locator) => locator.activeAsset))).toEqual(new Set(EINK_ASSETS));
+    expect(locators.map((locator) => locator.sourcePdfPage)).toEqual([
+      4, 7, 4, 6, 7, 8, 11, 13, 17, 4, 7, 8, 7, 19,
+    ]);
+    expect(
+      locators.every(
+        (locator) =>
+          locator.sourceRaster.width === 928 &&
+          locator.sourceRaster.height === 1364 &&
+          locator.sourceRectPixels.x === 0 &&
+          locator.sourceRectPixels.y === 0 &&
+          locator.sourceRectPixels.width === 928 &&
+          locator.sourceRectPixels.height === 1364 &&
           locator.evidenceReference.endsWith("#independent-source-sheet-review-2026-09-04"),
       ),
     ).toBe(true);

@@ -2214,4 +2214,53 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
       },
     },
   },
+  "us-6120588-eink": {
+    sourcePdfSha256: "574678473ca13e7daaeb661cfd96808fffb6c16d06d86872923fec52a08ab324",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct source-sheet review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 14,
+    assets: {
+      "/patents/figures/us-6120588-eink/sheet-1-source-crop-v1.png": {
+        sha256: "2e5332772f84f91b239fbaaf7898337d737ec659a3eb50a70c4e455b92ec99cb",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6120588-eink/sheet-3-source-crop-v1.png": {
+        sha256: "085301619c50098b664697bf7e740f33e6da19920dbb20d07e155f058d6c6518",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6120588-eink/sheet-4-source-crop-v1.png": {
+        sha256: "41723afca1dba529f19be7ad2391e72980294a3398f67d00f9b2a69ed7eeadfc",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6120588-eink/sheet-5-source-crop-v1.png": {
+        sha256: "9a7d34fa931e5a993bc01c0d8777d5cfaf50e443d65987fbbfbf8e8210ba152b",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6120588-eink/sheet-8-source-crop-v1.png": {
+        sha256: "9fa262fbf685803acd4a4f5d1050d159692bc85bb9e3613f70b39b50fdc62896",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6120588-eink/sheet-10-source-crop-v1.png": {
+        sha256: "f76237f1efa1cf0f5f834905a3c83f5681c3b6001c66ace0fd3e28bca3dc4f18",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6120588-eink/sheet-14-source-crop-v1.png": {
+        sha256: "86e8b71e955a827165ed837989fa6a32f433b22ab6e0dfea6cb58152ae261475",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6120588-eink/sheet-16-source-crop-v1.png": {
+        sha256: "003467d5e174e4dae5de154c89d36101a9406c1e14d8f14eab88db02fdee4180",
+        width: 928,
+        height: 1364,
+      },
+    },
+  },
 } as const satisfies Readonly<Record<string, ArchivalFigureAcceptanceAttestation>>;

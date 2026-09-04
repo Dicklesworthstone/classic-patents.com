@@ -1,0 +1,8 @@
+.next-final*
+tmp
+tmp/
+artifacts/
+.beads/
+.doctor/
+docs/
+ios/
