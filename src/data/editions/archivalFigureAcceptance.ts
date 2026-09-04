@@ -933,7 +933,8 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
   },
   "us-3212649-amf-versatran": {
     sourcePdfSha256: "9a985a6bf91770914a5049c3f03e0cee2dc4bfe8711633891df68cc0b894ccbd",
-    reviewer: "Classic Patents editorial agent (GPT-5.6); direct full-resolution source-pixel review",
+    reviewer:
+      "Classic Patents editorial agent (GPT-5.6); direct full-resolution source-pixel review",
     reviewedAt: "2026-09-04",
     acceptanceBasis: "independent-figure-review",
     acceptedOccurrenceCount: 234,
@@ -1022,6 +1023,30 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
         sha256: "e4fa3cdd274018d8d395fcb2d43319c16fb89fe3fbb71a50b28e3e829f86ceab",
         width: 2320,
         height: 3408,
+      },
+    },
+  },
+  "us-2524035-bardeen-transistor": {
+    sourcePdfSha256: "6de62de550a221c5380088e0485c2ae6955334a199b6da15ff3dcd6ca65978de",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 180 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 85,
+    assets: {
+      "/patents/figures/us-2524035-bardeen-transistor/figs-1-2-10-12-source-crop-v1.png": {
+        sha256: "7744e8caca186a4187d11adf9228d46e39f3c2e6c1ccf32ceac0e4faf5f0def4",
+        width: 1392,
+        height: 2045,
+      },
+      "/patents/figures/us-2524035-bardeen-transistor/figs-3-9-source-crop-v1.png": {
+        sha256: "0bbe47d9d635cbeca1802221de61ed4c0a4b1c47efa4792e91cc2dc204a35262",
+        width: 1392,
+        height: 2045,
+      },
+      "/patents/figures/us-2524035-bardeen-transistor/figs-13-16-source-crop-v1.png": {
+        sha256: "090ad87971cf90e34a8c0825748015105c4c93ada06a6723afe24e5a1d5236e9",
+        width: 1392,
+        height: 2045,
       },
     },
   },

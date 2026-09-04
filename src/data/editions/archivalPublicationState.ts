@@ -294,11 +294,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "classic-patentscom-vt5",
     "The complete archival packet has not yet been accepted.",
   ),
-  "us-2524035-bardeen-transistor": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-cgk",
-    "Per-figure crop acceptance is pending.",
-  ),
   "us-1102653-goddard-rocket": auditHold(
     "AUDIT_FACSIMILE_REVIEW_PENDING",
     "classic-patentscom-owu",

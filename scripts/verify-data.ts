@@ -73,6 +73,7 @@ const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
   "us-971501-haber-ammonia",
   "us-2495429-spencer-microwave",
   "us-2717437-mestral-velcro",
+  "us-3212649-amf-versatran",
   "us-3728480-baer-odyssey",
   "us-3858581-kamen-medication-injection-device",
   "us-388850-eastman-kodak",
