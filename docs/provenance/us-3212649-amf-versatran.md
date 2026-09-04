@@ -64,22 +64,56 @@
 ## 3. Figure-Crop Receipt
 
 The visitor-facing edition cites source crops under
-`public/patents/figures/us-3212649-amf-versatran/`. The authoritative crop
-set for this record is the reviewed drawing-sheet series
-`sheet-01-source-crop-v1.png` through `sheet-17-source-crop-v1.png`, taken
-from the seventeen pinned facsimile drawing sheets rather than reconstructed
-illustrations. `amfVersatranEdition.ts` maps each printed figure citation to
-the sheet that actually carries it: sheets 1–11 cover Figs. 1–36, sheet 12
+`public/patents/figures/us-3212649-amf-versatran/`. Active citations use the
+complete direct source-sheet renders `source-sheet-1-v1.png` through
+`source-sheet-17-v1.png`, each a 2320 × 3408 pixel render of its named page
+of the pinned PDF. `amfVersatranEdition.ts` maps each printed figure citation
+to the page that actually carries it: sheets 1–11 cover Figs. 1–36, sheet 12
 covers Figs. 37–41 plus 40A, sheets 13–16 cover Figs. 42–48, and sheet 17
 covers Figs. 49–50.
 
-Two older per-figure files remain in that directory but are deliberately not
-used as archival evidence: `fig-49-source-crop-v1.png` shows Fig. 48 rather
-than Fig. 49, and `fig-51-source-crop-v1.png` cannot correspond to this
-grant's printed figure set (Figs. 1–50 plus 40A). They are retained without
-modification; all edition previews for Figs. 49–50 instead point to the
-reviewed sheet-17 crop. The record neither deletes nor silently substitutes
-those legacy files.
+The older `sheet-01-source-crop-v1.png` through
+`sheet-17-source-crop-v1.png` series and all older per-figure files remain
+preserved without modification. In particular,
+`fig-49-source-crop-v1.png` shows Fig. 48 rather than Fig. 49, and
+`fig-51-source-crop-v1.png` cannot correspond to this grant's printed figure
+set (Figs. 1–50 plus 40A). Neither legacy file is an active archival preview.
+
+### Complete Source-Sheet Acceptance (2026-09-04)
+
+- **Reviewer / method**: Classic Patents editorial agent (GPT-5.6); direct
+  full-resolution source-pixel review of the complete 31-page pinned PDF.
+- **Active occurrence boundary**: all 234 active figure-reference occurrences
+  in the archival edition. Every occurrence uses its first active preview as
+  the complete source sheet below. Its source rectangle is the entire rendered
+  sheet: `x=0`, `y=0`, `width=2320`, `height=3408` pixels. The source-PDF
+  page is the number in that active asset's `source-sheet-<page>-v1.png`
+  filename. This makes the locator page and rectangle explicit without
+  pretending that a reduced legacy crop identifies a source region.
+- **Visual sheet map**: PDF pages 1–17 were checked as the drawing sequence;
+  PDF pages 18–31 were checked as the continuous specification, claims,
+  references, and examiner sequence. No active figure reference points to a
+  text-only page.
+
+| Source PDF page | Active complete-sheet asset | SHA-256 | Pixels | Figures visually checked |
+| --- | --- | --- | --- | --- |
+| 1 | `source-sheet-1-v1.png` | `537c38d3f5b9f574ea37af6e7e8798a86e3995bfd07f6cdd721a11bf60b713bf` | 2320 × 3408 | 1 |
+| 2 | `source-sheet-2-v1.png` | `242ab1b7d8898b4c902ed8d9f50031fa07cc1f196e4d4637c1a71fa8707da4bc` | 2320 × 3408 | 2–3 |
+| 3 | `source-sheet-3-v1.png` | `4ea41c2b9aae229b27b7bdaeabe502be8d804645b1b3e76f2ddc9fa441716872` | 2320 × 3408 | 4–7 |
+| 4 | `source-sheet-4-v1.png` | `84f7223ddb48136a2566499eb80490172cc88921f741692381a1fdec310376b9` | 2320 × 3408 | 8–11 |
+| 5 | `source-sheet-5-v1.png` | `6e1e26be74911f15bffbba08d20f04ef827102eed9a823f4683b478c761f0b5b` | 2320 × 3408 | 12–15 |
+| 6 | `source-sheet-6-v1.png` | `53e14f83ff37855aae0e17acf663371b95a63944eaa7bd3c349f5b3d12654507` | 2320 × 3408 | 16–19 |
+| 7 | `source-sheet-7-v1.png` | `d06ead5d84a76af5af19e6ecb92657dbbc8880987817f2c92d2a9b8b0cb365e5` | 2320 × 3408 | 20–23 |
+| 8 | `source-sheet-8-v1.png` | `32ec4fa1f91d114ec489e273ef5b67b06bfca1181e037a24ddad60b8f53ec004` | 2320 × 3408 | 24–27 |
+| 9 | `source-sheet-9-v1.png` | `e7bcf63768fbc860be9effc3b698d018979b95a5ae7c5d601db1e62d8b85746d` | 2320 × 3408 | 28–30 |
+| 10 | `source-sheet-10-v1.png` | `48bf047dc6d9c2866756a282fd3b037d3525ace947faaa65d5939330b159712b` | 2320 × 3408 | 31–33 |
+| 11 | `source-sheet-11-v1.png` | `2aeb3e6315b0b64d1b63d99678175682b8dfaf0bed5667a87ccfad21d46a1947` | 2320 × 3408 | 34–36 |
+| 12 | `source-sheet-12-v1.png` | `c90efd44ebf0f63efd254d4323dac6aae8fe376f4b355e3a9d5db7ae8dd3f03c` | 2320 × 3408 | 37–41, 40A |
+| 13 | `source-sheet-13-v1.png` | `ab6d702f07a28ecaf11a709029c1d4f43d5991f742e9f6fdff606d08640259f6` | 2320 × 3408 | 42–45 |
+| 14 | `source-sheet-14-v1.png` | `4c2b5a3c0d8728f51caf0b8ed987a96edb1fd0d5344abb707cd3dd16d0a42c85` | 2320 × 3408 | 46 |
+| 15 | `source-sheet-15-v1.png` | `398ff0479027df64c7aa6a95ce806937e0b3aeaaa57271196817a4c4462ef6d5` | 2320 × 3408 | 47 |
+| 16 | `source-sheet-16-v1.png` | `6c79cf1ab61307a0a77099036ce44886ff1b9d77c35650612310474e62d4ea19` | 2320 × 3408 | 48 |
+| 17 | `source-sheet-17-v1.png` | `e4fa3cdd274018d8d395fcb2d43319c16fb89fe3fbb71a50b28e3e829f86ceab` | 2320 × 3408 | 49–50 |
 
 ---
 

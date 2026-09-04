@@ -1735,13 +1735,30 @@ async function auditPatent(
         movingEnd.frankenSimBoundary ===
           "fs-mbd::revolute+fs-solid::contact+fs-conduction::transient-browser-composition-unavailable";
 
-      await surface.getByRole("button", { name: "Groove Passes" }).click();
+      const mobileCameraSelect = surface.getByLabel("Cort process camera view");
+      if (viewport === "phone" || viewport === "phone375") {
+        await mobileCameraSelect.selectOption("grooves", { force: true });
+      } else {
+        await surface.getByRole("button", { name: "Groove Passes" }).click();
+      }
       await page.waitForTimeout(100);
       const groovePassScreenshotPath = path.join(
         SCREENSHOT_DIRECTORY,
         `${patentId}.${viewport}.physical-groove-passes.png`,
       );
       await dispatcher.screenshot({ path: groovePassScreenshotPath });
+
+      if (viewport === "phone" || viewport === "phone375") {
+        await mobileCameraSelect.selectOption("drive", { force: true });
+      } else {
+        await surface.getByRole("button", { name: "Roll Drive" }).click();
+      }
+      await page.waitForTimeout(100);
+      const rollDriveScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.physical-roll-drive.png`,
+      );
+      await dispatcher.screenshot({ path: rollDriveScreenshotPath });
 
       await surface.getByRole("button", { name: "Pause Process Motion" }).click();
       await page.waitForFunction(
@@ -1831,6 +1848,7 @@ async function auditPatent(
         singleOwnerLifecycle,
         resumed,
         groovePassScreenshotPath,
+        rollDriveScreenshotPath,
         twoDimensionalScreenshotPath,
       };
       mechanismInteractionValid =

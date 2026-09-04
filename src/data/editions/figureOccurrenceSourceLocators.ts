@@ -1149,6 +1149,301 @@ function bellPhotophoneSourceSheetLocator(
   };
 }
 
+const GRAMME_DYNAMO_SOURCE_SHEET_RASTER = { width: 1392, height: 2045 } as const;
+const GRAMME_DYNAMO_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-120057-gramme-dynamo.md#source-sheet-acceptance-2026-09-04";
+const GRAMME_DYNAMO_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-120057-gramme-dynamo/drawing-sheet-1.png",
+  2: "/patents/figures/us-120057-gramme-dynamo/drawing-sheet-2.png",
+  3: "/patents/figures/us-120057-gramme-dynamo/drawing-sheet-3.png",
+  4: "/patents/figures/us-120057-gramme-dynamo/drawing-sheet-4.png",
+} as const;
+const GRAMME_DYNAMO_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-1-group-0-inline-1", 1],
+  ["edition-block-1-group-0-inline-3", 1],
+  ["edition-block-11-group-0-inline-0", 1],
+  ["edition-block-11-group-0-inline-2", 1],
+  ["edition-block-11-group-0-inline-4", 1],
+  ["edition-block-13-group-0-inline-1", 1],
+  ["edition-block-17-group-0-inline-1", 1],
+  ["edition-block-19-group-0-inline-0", 1],
+  ["edition-block-19-group-0-inline-2", 1],
+  ["edition-block-19-group-0-inline-4", 1],
+  ["edition-block-26-group-0-inline-1", 1],
+  ["edition-block-26-group-0-inline-3", 1],
+  ["edition-block-47-group-0-inline-1", 1],
+  ["edition-block-49-group-0-inline-1", 1],
+  ["edition-block-50-group-0-inline-1", 1],
+  ["edition-block-59-group-0-inline-1", 1],
+  ["edition-block-2-group-0-inline-1", 2],
+  ["edition-block-25-group-0-inline-0", 2],
+  ["edition-block-25-group-0-inline-2", 2],
+  ["edition-block-25-group-0-inline-4", 2],
+  ["edition-block-27-group-0-inline-1", 2],
+  ["edition-block-31-group-0-inline-1", 2],
+  ["edition-block-31-group-0-inline-3", 2],
+  ["edition-block-3-group-0-inline-1", 3],
+  ["edition-block-32-group-0-inline-0", 3],
+  ["edition-block-32-group-0-inline-2", 3],
+  ["edition-block-39-group-0-inline-0", 3],
+  ["edition-block-39-group-0-inline-2", 3],
+  ["edition-block-49-group-0-inline-3", 3],
+  ["edition-block-4-group-0-inline-1", 4],
+  ["edition-block-46-group-0-inline-0", 4],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof GRAMME_DYNAMO_SOURCE_SHEET_ASSETS,
+])[];
+
+function grammeDynamoSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof GRAMME_DYNAMO_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: GRAMME_DYNAMO_SOURCE_SHEET_RASTER.width,
+    height: GRAMME_DYNAMO_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: GRAMME_DYNAMO_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: GRAMME_DYNAMO_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      GRAMME_DYNAMO_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 180 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: GRAMME_DYNAMO_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const FARNSWORTH_TV_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const FARNSWORTH_TV_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-1773980-farnsworth-tv.md#source-sheet-acceptance-2026-09-04";
+const FARNSWORTH_TV_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-1773980-farnsworth-tv/source-sheet-1-v1.png",
+  2: "/patents/figures/us-1773980-farnsworth-tv/source-sheet-2-v1.png",
+  3: "/patents/figures/us-1773980-farnsworth-tv/source-sheet-3-v1.png",
+  4: "/patents/figures/us-1773980-farnsworth-tv/source-sheet-4-v1.png",
+} as const;
+const FARNSWORTH_TV_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-1-group-0-inline-1", 1],
+  ["edition-block-1-group-0-inline-3", 2],
+  ["edition-block-1-group-0-inline-5", 2],
+  ["edition-block-38-group-0-inline-1", 2],
+  ["edition-block-1-group-0-inline-7", 3],
+  ["edition-block-1-group-0-inline-9", 3],
+  ["edition-block-1-group-0-inline-11", 3],
+  ["edition-block-1-group-0-inline-13", 3],
+  ["edition-block-1-group-0-inline-15", 3],
+  ["edition-block-1-group-0-inline-17", 3],
+  ["edition-block-1-group-0-inline-19", 3],
+  ["edition-block-1-group-0-inline-21", 3],
+  ["edition-block-36-group-0-inline-1", 3],
+  ["edition-block-37-group-0-inline-1", 3],
+  ["edition-block-1-group-0-inline-23", 4],
+  ["edition-block-1-group-0-inline-25", 4],
+  ["edition-block-1-group-0-inline-27", 4],
+  ["edition-block-1-group-0-inline-29", 4],
+  ["edition-block-1-group-0-inline-31", 4],
+  ["edition-block-1-group-0-inline-33", 4],
+  ["edition-block-1-group-0-inline-35", 4],
+  ["edition-block-20-group-0-inline-1", 4],
+  ["edition-block-20-group-0-inline-3", 4],
+  ["edition-block-20-group-0-inline-5", 4],
+  ["edition-block-22-group-0-inline-1", 4],
+  ["edition-block-22-group-0-inline-3", 4],
+  ["edition-block-22-group-0-inline-5", 4],
+  ["edition-block-25-group-0-inline-1", 4],
+  ["edition-block-25-group-0-inline-3", 4],
+  ["edition-block-33-group-0-inline-1", 4],
+  ["edition-block-33-group-0-inline-3", 4],
+  ["edition-block-34-group-0-inline-1", 4],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof FARNSWORTH_TV_SOURCE_SHEET_ASSETS,
+])[];
+
+function farnsworthTvSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof FARNSWORTH_TV_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: FARNSWORTH_TV_SOURCE_SHEET_RASTER.width,
+    height: FARNSWORTH_TV_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: FARNSWORTH_TV_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: FARNSWORTH_TV_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      FARNSWORTH_TV_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: FARNSWORTH_TV_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const LAMARR_FREQUENCY_HOPPING_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const LAMARR_FREQUENCY_HOPPING_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-2292387-lamarr-frequency-hopping.md#complete-source-sheet-acceptance-2026-09-04";
+const LAMARR_FREQUENCY_HOPPING_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-2292387-lamarr-frequency-hopping/source-sheet-1-v1.png",
+  2: "/patents/figures/us-2292387-lamarr-frequency-hopping/source-sheet-2-v1.png",
+} as const;
+const LAMARR_FREQUENCY_HOPPING_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-7-group-0-inline-1", 1],
+  ["edition-block-7-group-0-inline-3", 1],
+  ["edition-block-7-group-0-inline-5", 1],
+  ["edition-block-13-group-0-inline-1", 1],
+  ["edition-block-14-group-0-inline-1", 1],
+  ["edition-block-15-group-0-inline-5", 1],
+  ["edition-block-18-group-0-inline-3", 1],
+  ["edition-block-19-group-0-inline-1", 1],
+  ["edition-block-19-group-0-inline-3", 1],
+  ["edition-block-20-group-0-inline-1", 1],
+  ["edition-block-24-group-0-inline-1", 1],
+  ["edition-block-24-group-0-inline-3", 1],
+  ["edition-block-24-group-0-inline-5", 1],
+  ["edition-block-25-group-0-inline-1", 1],
+  ["edition-block-7-group-0-inline-7", 2],
+  ["edition-block-7-group-0-inline-9", 2],
+  ["edition-block-7-group-0-inline-11", 2],
+  ["edition-block-7-group-0-inline-13", 2],
+  ["edition-block-7-group-0-inline-15", 2],
+  ["edition-block-7-group-0-inline-17", 2],
+  ["edition-block-8-group-0-inline-1", 2],
+  ["edition-block-10-group-0-inline-1", 2],
+  ["edition-block-15-group-0-inline-3", 2],
+  ["edition-block-16-group-0-inline-1", 2],
+  ["edition-block-16-group-0-inline-3", 2],
+  ["edition-block-16-group-0-inline-5", 2],
+  ["edition-block-18-group-0-inline-1", 2],
+  ["edition-block-22-group-0-inline-1", 2],
+  ["edition-block-22-group-0-inline-3", 2],
+  ["edition-block-23-group-0-inline-1", 2],
+  ["edition-block-23-group-0-inline-3", 2],
+  ["edition-block-23-group-0-inline-5", 2],
+  ["edition-block-23-group-0-inline-7", 2],
+  ["edition-block-26-group-0-inline-1", 2],
+  ["edition-block-27-group-0-inline-1", 2],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof LAMARR_FREQUENCY_HOPPING_SOURCE_SHEET_ASSETS,
+])[];
+
+function lamarrFrequencyHoppingSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof LAMARR_FREQUENCY_HOPPING_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: LAMARR_FREQUENCY_HOPPING_SOURCE_SHEET_RASTER.width,
+    height: LAMARR_FREQUENCY_HOPPING_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: LAMARR_FREQUENCY_HOPPING_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: LAMARR_FREQUENCY_HOPPING_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      LAMARR_FREQUENCY_HOPPING_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: LAMARR_FREQUENCY_HOPPING_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const HOWE_SEWING_MACHINE_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const HOWE_SEWING_MACHINE_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-4750-howe-sewing-machine.md#complete-source-sheet-acceptance-2026-09-04";
+const HOWE_SEWING_MACHINE_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-4750-howe-sewing-machine/source-sheet-1-v1.png",
+  2: "/patents/figures/us-4750-howe-sewing-machine/source-sheet-2-v1.png",
+  3: "/patents/figures/us-4750-howe-sewing-machine/source-sheet-3-v1.png",
+} as const;
+const HOWE_SEWING_MACHINE_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-1-group-0-inline-1", 1],
+  ["edition-block-1-group-0-inline-3", 1],
+  ["edition-block-1-group-0-inline-5", 1],
+  ["edition-block-9-group-0-inline-1", 1],
+  ["edition-block-15-group-0-inline-0", 1],
+  ["edition-block-18-group-0-inline-3", 1],
+  ["edition-block-20-group-0-inline-4", 1],
+  ["edition-block-21-group-0-inline-1", 1],
+  ["edition-block-23-group-0-inline-1", 1],
+  ["edition-block-23-group-0-inline-5", 1],
+  ["edition-block-24-group-0-inline-1", 1],
+  ["edition-block-24-group-0-inline-3", 1],
+  ["edition-block-25-group-0-inline-1", 1],
+  ["edition-block-26-group-0-inline-1", 1],
+  ["edition-block-2-group-0-inline-1", 2],
+  ["edition-block-2-group-0-inline-3", 2],
+  ["edition-block-9-group-0-inline-3", 2],
+  ["edition-block-13-group-0-inline-1", 2],
+  ["edition-block-15-group-0-inline-2", 2],
+  ["edition-block-16-group-0-inline-3", 2],
+  ["edition-block-16-group-0-inline-5", 2],
+  ["edition-block-18-group-0-inline-1", 2],
+  ["edition-block-20-group-0-inline-10", 2],
+  ["edition-block-26-group-0-inline-3", 2],
+  ["edition-block-3-group-0-inline-1", 3],
+  ["edition-block-3-group-0-inline-3", 3],
+  ["edition-block-3-group-0-inline-5", 3],
+  ["edition-block-9-group-0-inline-5", 3],
+  ["edition-block-13-group-0-inline-5", 3],
+  ["edition-block-17-group-0-inline-1", 3],
+  ["edition-block-19-group-0-inline-1", 3],
+  ["edition-block-20-group-0-inline-0", 3],
+  ["edition-block-20-group-0-inline-2", 3],
+  ["edition-block-20-group-0-inline-6", 3],
+  ["edition-block-20-group-0-inline-8", 3],
+  ["edition-block-27-group-0-inline-1", 3],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof HOWE_SEWING_MACHINE_SOURCE_SHEET_ASSETS,
+])[];
+
+function howeSewingMachineSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof HOWE_SEWING_MACHINE_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: HOWE_SEWING_MACHINE_SOURCE_SHEET_RASTER.width,
+    height: HOWE_SEWING_MACHINE_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: HOWE_SEWING_MACHINE_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: HOWE_SEWING_MACHINE_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      HOWE_SEWING_MACHINE_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: HOWE_SEWING_MACHINE_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
 const DE_FOREST_AUDION_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
 const DE_FOREST_AUDION_EVIDENCE_REFERENCE =
   "docs/provenance/us-879532-de-forest-audion.md#source-sheet-acceptance-2026-09-03";
@@ -3206,6 +3501,22 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
   "us-235199-bell-photophone": BELL_PHOTOPHONE_SOURCE_SHEET_OCCURRENCES.map(
     ([occurrenceKey, sourcePdfPage]) =>
       bellPhotophoneSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-120057-gramme-dynamo": GRAMME_DYNAMO_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) =>
+      grammeDynamoSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-1773980-farnsworth-tv": FARNSWORTH_TV_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) =>
+      farnsworthTvSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-2292387-lamarr-frequency-hopping": LAMARR_FREQUENCY_HOPPING_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) =>
+      lamarrFrequencyHoppingSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-4750-howe-sewing-machine": HOWE_SEWING_MACHINE_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) =>
+      howeSewingMachineSourceSheetLocator(occurrenceKey, sourcePdfPage),
   ),
   "us-6594844-roomba": [
     roombaSourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-1" }),

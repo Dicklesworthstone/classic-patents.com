@@ -9,6 +9,42 @@ import {
   lamarrFrequencyHoppingArchivalEdition,
   lamarrFrequencyHoppingParallelReadings,
 } from "./lamarrFrequencyHoppingEdition";
+import { completeArchivalEditionForViewer } from "./publicationApproval";
+
+const FIGURE_DIRECTORY = resolve(
+  process.cwd(),
+  "public/patents/figures/us-2292387-lamarr-frequency-hopping",
+);
+const SOURCE_SHEETS = {
+  1: {
+    filename: "source-sheet-1-v1.png",
+    sha256: "9a53787fc9b2315de7d6bec159b9de1a696e08926098bb6649e18ddafd945591",
+  },
+  2: {
+    filename: "source-sheet-2-v1.png",
+    sha256: "5c9297937ebcc0fb659118588069ac494485d1a4e9fc51bf6c9fe8048d3669c7",
+  },
+} as const;
+
+function activeFigurePreviews() {
+  return lamarrFrequencyHoppingArchivalEdition.blocks.flatMap((block) => {
+    const inlineGroups =
+      block.kind === "paragraph" || block.kind === "claim"
+        ? [block.inlines]
+        : block.kind === "figure-sheet"
+          ? [block.description]
+          : block.kind === "table"
+            ? [...block.headers, ...block.rows.flat()]
+            : [];
+    return inlineGroups.flatMap((inlines) =>
+      inlines.flatMap((inline) =>
+        inline.kind === "reference" && inline.referenceType === "figure"
+          ? (inline.figurePreviews ?? [])
+          : [],
+      ),
+    );
+  });
+}
 
 describe("US 2,292,387 manual source edition", () => {
   test("retains all seven source sheets and every printed claim for continued authoring", () => {
@@ -72,7 +108,7 @@ describe("US 2,292,387 manual source edition", () => {
     }
   });
 
-  test("pairs every source paragraph and points every figure reference at local crops", () => {
+  test("pairs every source paragraph and points every figure reference at a local source sheet", () => {
     const paragraphIndexes = lamarrFrequencyHoppingArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
     );
@@ -95,6 +131,51 @@ describe("US 2,292,387 manual source edition", () => {
       const preview = figure.figurePreviews?.[0];
       expect(preview).toBeDefined();
       expect(existsSync(resolve(process.cwd(), "public", preview?.src.slice(1) ?? ""))).toBe(true);
+    }
+  });
+
+  test("binds all active figure citations to direct, complete source sheets", () => {
+    for (const sourceSheet of Object.values(SOURCE_SHEETS)) {
+      const source = readFileSync(resolve(FIGURE_DIRECTORY, sourceSheet.filename));
+      expect(createHash("sha256").update(source).digest("hex")).toBe(sourceSheet.sha256);
+      expect(source.readUInt32BE(16)).toBe(2320);
+      expect(source.readUInt32BE(20)).toBe(3408);
+    }
+
+    const previews = activeFigurePreviews();
+    expect(previews).toHaveLength(35);
+    expect(
+      previews.filter(
+        (preview) =>
+          preview.src ===
+          "/patents/figures/us-2292387-lamarr-frequency-hopping/source-sheet-1-v1.png",
+      ),
+    ).toHaveLength(14);
+    expect(
+      previews.filter(
+        (preview) =>
+          preview.src ===
+          "/patents/figures/us-2292387-lamarr-frequency-hopping/source-sheet-2-v1.png",
+      ),
+    ).toHaveLength(21);
+    expect(previews.every((preview) => preview.width === 2320 && preview.height === 3408)).toBe(
+      true,
+    );
+  });
+
+  test("preserves all retired figure previews as research evidence", () => {
+    for (const filename of [
+      "fig-1.png",
+      "fig-2.png",
+      "fig-3.png",
+      "fig-3-v2.png",
+      "fig-4.png",
+      "fig-5.png",
+      "fig-6.png",
+      "fig-6-v2.png",
+      "fig-7.png",
+    ]) {
+      expect(existsSync(resolve(FIGURE_DIRECTORY, filename))).toBe(true);
     }
   });
 
@@ -232,13 +313,13 @@ describe("US 2,292,387 manual source edition", () => {
     expect(energyChannelsFor("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);
   });
 
-  test("enforces figure acceptance pending audit hold in publication state registry", () => {
+  test("never turns figure-audit status into a source-reader gate", () => {
     const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
     const decision = evaluateTypedArchivalPublicationState(lamarrPatent, {
       hasCompanionReadings: true,
     });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+    expect(completeArchivalEditionForViewer(lamarrPatent, decision)).toBe(
+      lamarrFrequencyHoppingArchivalEdition,
+    );
   });
 });

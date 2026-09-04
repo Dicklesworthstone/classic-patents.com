@@ -1,9 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import type { TorusGeometry } from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import {
   buildTeslaTeleautomatonModel,
+  TESLA_TELEAUTOMATON_RF_COMMAND_ENVELOPE,
   updateTeslaTeleautomatonKinematics,
 } from "./teslaTeleautomatonModel";
 
@@ -125,6 +127,48 @@ describe("US 613,809 Nikola Tesla Teleautomaton visual & RF logic boundary", () 
     expect(modelSource).not.toContain("timeSec * 0.8");
     expect(modelSource).not.toContain("dt * 1.5");
     expect(modelSource).toContain("cohererDisplayOmegaRadPerS");
+  });
+
+  test("keeps received RF command wavefronts bounded at the antenna and hides them off-peak", () => {
+    const { nodes, materials, dispose } = buildTeslaTeleautomatonModel();
+    const acceptedCommandOmega = FrankenSimEngine.stepTeslaTeleautomaton({
+      transmitterFreqKhz: 150,
+    }).cohererDisplayOmegaRadPerS;
+
+    let greatestEnvelopeRadius = 0;
+    for (let frame = 0; frame < 120; frame++) {
+      updateTeslaTeleautomatonKinematics(
+        nodes,
+        materials,
+        1 / 60,
+        frame / 60,
+        0,
+        0,
+        true,
+        true,
+        0,
+        acceptedCommandOmega,
+      );
+      for (const ring of nodes.rfWaveRings) {
+        const geometry = ring.geometry as TorusGeometry;
+        const outerRadius = (geometry.parameters.radius + geometry.parameters.tube) * ring.scale.x;
+        greatestEnvelopeRadius = Math.max(greatestEnvelopeRadius, outerRadius);
+        expect(ring.position.y).toBe(TESLA_TELEAUTOMATON_RF_COMMAND_ENVELOPE.antennaHeight);
+      }
+    }
+
+    // This is a near-field teaching envelope, not a kilometre-scale RF wavelength;
+    // it must remain below the overview camera and inside the boat's 8.2-unit plinth.
+    expect(greatestEnvelopeRadius).toBeLessThanOrEqual(2.25);
+    expect(materials.rfEnergy.opacity).toBe(TESLA_TELEAUTOMATON_RF_COMMAND_ENVELOPE.opacity);
+
+    updateTeslaTeleautomatonKinematics(nodes, materials, 1 / 60, 2, 0, 0, true, true, 0, 0);
+    expect(materials.rfEnergy.opacity).toBe(0);
+    for (const ring of nodes.rfWaveRings) {
+      expect(ring.scale.toArray()).toEqual([1, 1, 1]);
+      expect(ring.position.y).toBe(TESLA_TELEAUTOMATON_RF_COMMAND_ENVELOPE.antennaHeight);
+    }
+    dispose();
   });
 
   test("derives all printed claims dynamically from edition without duplicate strings", () => {

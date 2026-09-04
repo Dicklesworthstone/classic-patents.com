@@ -8,7 +8,7 @@
  * available in a reviewed facsimile, so this model is deliberately unlabelled
  * and must not be presented as an archival reconstruction.
  *
- * Faithfully constructs:
+ * Constructs a source-bounded teaching topology of:
  * - Reverberatory Puddling Furnace: brick hearth, coal firebox, arched roof crown,
  *   working door with puddler rabble rod, molten decarburizing bath, chimney stack.
  * - Grooved Rolling Mill: heavy cast-iron stanchions, counter-rotating chilled-iron
@@ -37,6 +37,8 @@ export interface CortModel {
   moltenBathMesh: THREE.Mesh;
   topRollGroup: THREE.Group;
   bottomRollGroup: THREE.Group;
+  topRollDriveGear: THREE.Group;
+  bottomRollDriveGear: THREE.Group;
   billetMesh: THREE.Mesh;
   sparkParticles: THREE.Points;
   setCutaway: (enabled: boolean) => void;
@@ -47,6 +49,12 @@ export interface CortModel {
   ) => void;
   dispose: () => void;
 }
+
+export const CORT_ROLL_DRIVE_GEAR_PITCH_RADIUS_M = CORT_ROLL_CENTER_SEPARATION_M / 2;
+export const CORT_ROLL_DRIVE_GEAR_TEETH = 24;
+export const CORT_ROLL_DRIVE_GEAR_TOOTH_DEPTH_M = 0.035;
+export const CORT_ROLL_DRIVE_GEAR_ROOT_RADIUS_M =
+  CORT_ROLL_DRIVE_GEAR_PITCH_RADIUS_M - CORT_ROLL_DRIVE_GEAR_TOOTH_DEPTH_M / 2;
 
 export function buildCortPuddlingRollingModel(): CortModel {
   const root = new THREE.Group();
@@ -98,6 +106,12 @@ export function buildCortPuddlingRollingModel(): CortModel {
     color: 0x4a4e52,
     roughness: 0.3,
     metalness: 0.9,
+  });
+
+  const driveGearMaterial = new THREE.MeshStandardMaterial({
+    color: 0x8a5a24,
+    roughness: 0.4,
+    metalness: 0.8,
   });
 
   const hotBilletMaterial = new THREE.MeshStandardMaterial({
@@ -334,6 +348,78 @@ export function buildCortPuddlingRollingModel(): CortModel {
   const bottomRoller = buildGroovedRoller();
   bottomRollGroup.add(bottomRoller);
 
+  // Equal external gears constrain the two rolls to opposite angular
+  // velocities. They are deliberately presented as a normalized teaching
+  // coupling because the pinned abridgment has no transmission drawing.
+  function buildRollDriveGear(phaseOffset: number): THREE.Group {
+    const gear = new THREE.Group();
+    // With equal pitch radii whose sum is the centre distance, the addendum
+    // of either normalized tooth lands exactly at the opposing root radius.
+    // That preserves meshing clearance instead of intersecting two solid hubs.
+    const disc = new THREE.Mesh(
+      new THREE.CylinderGeometry(
+        CORT_ROLL_DRIVE_GEAR_ROOT_RADIUS_M,
+        CORT_ROLL_DRIVE_GEAR_ROOT_RADIUS_M,
+        0.12,
+        48,
+      ),
+      driveGearMaterial,
+    );
+    disc.name = "normalized-roll-drive-root-disc";
+    disc.rotation.z = Math.PI / 2;
+    gear.add(disc);
+
+    const toothWidth =
+      (2 * Math.PI * CORT_ROLL_DRIVE_GEAR_PITCH_RADIUS_M * 0.48) / CORT_ROLL_DRIVE_GEAR_TEETH;
+    const toothGeometry = new THREE.BoxGeometry(
+      0.13,
+      CORT_ROLL_DRIVE_GEAR_TOOTH_DEPTH_M,
+      toothWidth,
+    );
+    for (let toothIndex = 0; toothIndex < CORT_ROLL_DRIVE_GEAR_TEETH; toothIndex++) {
+      const angle = phaseOffset + (toothIndex / CORT_ROLL_DRIVE_GEAR_TEETH) * Math.PI * 2;
+      const tooth = new THREE.Mesh(toothGeometry, driveGearMaterial);
+      tooth.name = "normalized-roll-drive-tooth";
+      tooth.position.set(
+        0,
+        Math.cos(angle) * CORT_ROLL_DRIVE_GEAR_PITCH_RADIUS_M,
+        Math.sin(angle) * CORT_ROLL_DRIVE_GEAR_PITCH_RADIUS_M,
+      );
+      tooth.rotation.x = angle;
+      gear.add(tooth);
+    }
+    return gear;
+  }
+
+  const extensionGeometry = new THREE.CylinderGeometry(0.07, 0.07, 0.52, 16);
+  extensionGeometry.rotateZ(Math.PI / 2);
+  const topDriveShaft = new THREE.Mesh(extensionGeometry, ironMetalMaterial);
+  topDriveShaft.name = "top-roll-drive-shaft-extension";
+  topDriveShaft.position.x = 1.01;
+  topRollGroup.add(topDriveShaft);
+  const bottomDriveShaft = new THREE.Mesh(extensionGeometry, ironMetalMaterial);
+  bottomDriveShaft.name = "bottom-roll-drive-shaft-extension";
+  bottomDriveShaft.position.x = 1.01;
+  bottomRollGroup.add(bottomDriveShaft);
+
+  const topRollDriveGear = buildRollDriveGear(Math.PI / CORT_ROLL_DRIVE_GEAR_TEETH);
+  topRollDriveGear.name = "normalized-top-roll-drive-gear";
+  topRollDriveGear.position.x = 1.08;
+  topRollGroup.add(topRollDriveGear);
+  const bottomRollDriveGear = buildRollDriveGear(0);
+  bottomRollDriveGear.name = "normalized-bottom-roll-drive-gear";
+  bottomRollDriveGear.position.x = 1.08;
+  bottomRollGroup.add(bottomRollDriveGear);
+
+  const inputCoupling = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.13, 0.13, 0.18, 24),
+    driveGearMaterial,
+  );
+  inputCoupling.name = "attached-off-scene-lineshaft-input-coupling";
+  inputCoupling.rotation.z = Math.PI / 2;
+  inputCoupling.position.x = 1.31;
+  bottomRollGroup.add(inputCoupling);
+
   // Hot Wrought Iron Billet Passing Through Pass 1
   const billetGeo = new THREE.BoxGeometry(0.12, CORT_ACTIVE_BILLET_HEIGHT_M, 1.2);
   const billetMesh = new THREE.Mesh(billetGeo, hotBilletMaterial);
@@ -376,6 +462,8 @@ export function buildCortPuddlingRollingModel(): CortModel {
     moltenBathMesh,
     topRollGroup,
     bottomRollGroup,
+    topRollDriveGear,
+    bottomRollDriveGear,
     billetMesh,
     sparkParticles,
 

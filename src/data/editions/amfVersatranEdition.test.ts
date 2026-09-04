@@ -22,6 +22,25 @@ const PATENT_ID = "us-3212649-amf-versatran";
 const PDF_PATH = join(ROOT, "public", "patents", "pdfs", `${PATENT_ID}.pdf`);
 const LEDGER_PATH = join(ROOT, "public", "patents", "transcripts", `${PATENT_ID}-reviewed.txt`);
 const DIGEST = "9a985a6bf91770914a5049c3f03e0cee2dc4bfe8711633891df68cc0b894ccbd";
+const DIRECT_SOURCE_SHEET_RECEIPTS = {
+  1: "537c38d3f5b9f574ea37af6e7e8798a86e3995bfd07f6cdd721a11bf60b713bf",
+  2: "242ab1b7d8898b4c902ed8d9f50031fa07cc1f196e4d4637c1a71fa8707da4bc",
+  3: "4ea41c2b9aae229b27b7bdaeabe502be8d804645b1b3e76f2ddc9fa441716872",
+  4: "84f7223ddb48136a2566499eb80490172cc88921f741692381a1fdec310376b9",
+  5: "6e1e26be74911f15bffbba08d20f04ef827102eed9a823f4683b478c761f0b5b",
+  6: "53e14f83ff37855aae0e17acf663371b95a63944eaa7bd3c349f5b3d12654507",
+  7: "d06ead5d84a76af5af19e6ecb92657dbbc8880987817f2c92d2a9b8b0cb365e5",
+  8: "32ec4fa1f91d114ec489e273ef5b67b06bfca1181e037a24ddad60b8f53ec004",
+  9: "e7bcf63768fbc860be9effc3b698d018979b95a5ae7c5d601db1e62d8b85746d",
+  10: "48bf047dc6d9c2866756a282fd3b037d3525ace947faaa65d5939330b159712b",
+  11: "2aeb3e6315b0b64d1b63d99678175682b8dfaf0bed5667a87ccfad21d46a1947",
+  12: "c90efd44ebf0f63efd254d4323dac6aae8fe376f4b355e3a9d5db7ae8dd3f03c",
+  13: "ab6d702f07a28ecaf11a709029c1d4f43d5991f742e9f6fdff606d08640259f6",
+  14: "4c2b5a3c0d8728f51caf0b8ed987a96edb1fd0d5344abb707cd3dd16d0a42c85",
+  15: "398ff0479027df64c7aa6a95ce806937e0b3aeaaa57271196817a4c4462ef6d5",
+  16: "6c79cf1ab61307a0a77099036ce44886ff1b9d77c35650612310474e62d4ea19",
+  17: "e4fa3cdd274018d8d395fcb2d43319c16fb89fe3fbb71a50b28e3e829f86ceab",
+} as const;
 const BARE_SOURCE_REFERENCE =
   /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|(?:section|division)\s+\d+)\b/i;
 
@@ -196,6 +215,7 @@ describe("US 3,212,649 Machine for Performing Work archival edition", () => {
       (inline): inline is Extract<SourceInline, { kind: "reference" }> =>
         inline.kind === "reference",
     );
+    expect(sourceReferences).toHaveLength(234);
     expect(
       sourceReferences.filter((reference) => BARE_SOURCE_REFERENCE.test(reference.text)),
     ).not.toHaveLength(0);
@@ -227,33 +247,45 @@ describe("US 3,212,649 Machine for Performing Work archival edition", () => {
       }
     }
     expect([...previewSources].sort()).toEqual(
-      Array.from(
-        { length: 17 },
-        (_, index) =>
-          `/patents/figures/${PATENT_ID}/sheet-${String(index + 1).padStart(2, "0")}-source-crop-v1.png`,
-      ),
+      Object.keys(DIRECT_SOURCE_SHEET_RECEIPTS)
+        .map((page) => `/patents/figures/${PATENT_ID}/source-sheet-${page}-v1.png`)
+        .sort(),
     );
+    for (const [sourcePdfPage, sha256] of Object.entries(DIRECT_SOURCE_SHEET_RECEIPTS)) {
+      const sourcePath = join(
+        ROOT,
+        "public",
+        "patents",
+        "figures",
+        PATENT_ID,
+        `source-sheet-${sourcePdfPage}-v1.png`,
+      );
+      const sourceBytes = readFileSync(sourcePath);
+      expect(sourceBytes.readUInt32BE(16)).toBe(2320);
+      expect(sourceBytes.readUInt32BE(20)).toBe(3408);
+      expect(createHash("sha256").update(sourceBytes).digest("hex")).toBe(sha256);
+    }
     const figureFortyNineReferences = sourceReferences.filter((reference) =>
       /\bFIG(?:URE)?\.?\s*49\b/i.test(reference.text),
     );
     expect(figureFortyNineReferences.length).toBeGreaterThan(0);
     for (const reference of figureFortyNineReferences) {
       expect(reference.figurePreviews?.map((preview) => preview.src)).toEqual([
-        `/patents/figures/${PATENT_ID}/sheet-17-source-crop-v1.png`,
+        `/patents/figures/${PATENT_ID}/source-sheet-17-v1.png`,
       ]);
     }
     const figureRange = sourceReferences.find((reference) =>
       /FIGURES 34 to 41 inclusive/i.test(reference.text),
     );
     expect(figureRange?.figurePreviews?.map((preview) => preview.src)).toEqual([
-      `/patents/figures/${PATENT_ID}/sheet-11-source-crop-v1.png`,
-      `/patents/figures/${PATENT_ID}/sheet-11-source-crop-v1.png`,
-      `/patents/figures/${PATENT_ID}/sheet-11-source-crop-v1.png`,
-      `/patents/figures/${PATENT_ID}/sheet-12-source-crop-v1.png`,
-      `/patents/figures/${PATENT_ID}/sheet-12-source-crop-v1.png`,
-      `/patents/figures/${PATENT_ID}/sheet-12-source-crop-v1.png`,
-      `/patents/figures/${PATENT_ID}/sheet-12-source-crop-v1.png`,
-      `/patents/figures/${PATENT_ID}/sheet-12-source-crop-v1.png`,
+      `/patents/figures/${PATENT_ID}/source-sheet-11-v1.png`,
+      `/patents/figures/${PATENT_ID}/source-sheet-11-v1.png`,
+      `/patents/figures/${PATENT_ID}/source-sheet-11-v1.png`,
+      `/patents/figures/${PATENT_ID}/source-sheet-12-v1.png`,
+      `/patents/figures/${PATENT_ID}/source-sheet-12-v1.png`,
+      `/patents/figures/${PATENT_ID}/source-sheet-12-v1.png`,
+      `/patents/figures/${PATENT_ID}/source-sheet-12-v1.png`,
+      `/patents/figures/${PATENT_ID}/source-sheet-12-v1.png`,
     ]);
     const examinerTable = amfVersatranArchivalEdition.blocks.find(
       (block) => block.kind === "table",

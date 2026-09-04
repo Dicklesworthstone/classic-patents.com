@@ -1,4 +1,10 @@
-export type CortPuddlingRollingCameraPreset = "iso" | "furnace" | "hearth" | "mill" | "grooves";
+export type CortPuddlingRollingCameraPreset =
+  | "iso"
+  | "furnace"
+  | "hearth"
+  | "mill"
+  | "grooves"
+  | "drive";
 
 const CAMERA_PRESETS: Record<
   CortPuddlingRollingCameraPreset,
@@ -12,6 +18,7 @@ const CAMERA_PRESETS: Record<
   hearth: { pos: [-2.5, 1.8, 1.6], target: [-2.5, 0.9, 0] },
   mill: { pos: [2.0, 1.8, 3.6], target: [2.0, 1.1, 0] },
   grooves: { pos: [2.0, 1.3, 1.8], target: [2.0, 1.0, 0] },
+  drive: { pos: [5.0, 1.8, 2.4], target: [3.0, 1.05, 0] },
 };
 
 const PHONE_OVERVIEW = {

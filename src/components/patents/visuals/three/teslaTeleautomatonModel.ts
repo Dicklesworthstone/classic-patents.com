@@ -44,6 +44,25 @@ export interface TeslaTeleautomatonModelResult {
 }
 
 /**
+ * Deliberately bounded studio mapping for the received RF-command envelope.
+ *
+ * A 100–200 kHz RF wavelength is measured in kilometres, not boat lengths.
+ * These rings therefore illustrate an accepted command at the antenna rather
+ * than pretending to plot a literal wavelength. Keeping the envelope at the
+ * antenna's elevation also prevents a decorative wavefront from crossing the
+ * overview camera.
+ */
+export const TESLA_TELEAUTOMATON_RF_COMMAND_ENVELOPE = {
+  antennaHeight: 3.5,
+  majorRadiusStart: 0.55,
+  majorRadiusStep: 0.32,
+  tubeRadius: 0.025,
+  minimumScale: 0.85,
+  phaseScale: 0.6,
+  opacity: 0.48,
+} as const;
+
+/**
  * Deterministic unit noise for procedural generation.
  */
 function deterministicUnit(index: number, channel: number): number {
@@ -483,16 +502,24 @@ export function buildTeslaTeleautomatonModel(): TeslaTeleautomatonModelResult {
   rudderGroup.add(rudderBlade);
 
   // -------------------------------------------------------------
-  // 9. Wireless RF Electromagnetic Wave Particle Rings
+  // 9. Wireless RF received-command envelope
   // -------------------------------------------------------------
   const rfWaveRings: THREE.Mesh[] = [];
   for (let w = 0; w < 4; w++) {
     const ring = new THREE.Mesh(
-      trackGeo(new THREE.TorusGeometry(0.5 + w * 0.6, 0.03, 8, 32)),
+      trackGeo(
+        new THREE.TorusGeometry(
+          TESLA_TELEAUTOMATON_RF_COMMAND_ENVELOPE.majorRadiusStart +
+            w * TESLA_TELEAUTOMATON_RF_COMMAND_ENVELOPE.majorRadiusStep,
+          TESLA_TELEAUTOMATON_RF_COMMAND_ENVELOPE.tubeRadius,
+          8,
+          32,
+        ),
+      ),
       materials.rfEnergy,
     );
     ring.rotation.x = Math.PI / 2;
-    ring.position.set(0, 3.5, 0);
+    ring.position.set(0, TESLA_TELEAUTOMATON_RF_COMMAND_ENVELOPE.antennaHeight, 0);
     root.add(ring);
     rfWaveRings.push(ring);
   }
@@ -564,16 +591,24 @@ export function updateTeslaTeleautomatonKinematics(
   nodes.hullMesh.visible = !cutawayMode;
   nodes.cutawayHullMesh.visible = cutawayMode;
 
-  // 5. Wireless RF Electromagnetic Wave Propagation
-  if (showRadioWaves) {
-    materials.rfEnergy.opacity = 0.85;
+  // 5. Received RF command envelope. The rings visualize a command accepted
+  // by the coherer; an off-peak receiver has no accepted command to display.
+  const receivedCommand = showRadioWaves && cohererDisplayOmegaRadPerS > 0;
+  if (receivedCommand) {
+    materials.rfEnergy.opacity = TESLA_TELEAUTOMATON_RF_COMMAND_ENVELOPE.opacity;
     nodes.rfWaveRings.forEach((ring, i) => {
-      const phase = (timeSec * ((cohererDisplayOmegaRadPerS * 4) / 3) + i * 0.5) % 2.0;
-      const scale = 1.0 + phase * 1.8;
+      const phase = (timeSec * ((cohererDisplayOmegaRadPerS * 4) / 3) + i * 0.25) % 1.0;
+      const scale =
+        TESLA_TELEAUTOMATON_RF_COMMAND_ENVELOPE.minimumScale +
+        phase * TESLA_TELEAUTOMATON_RF_COMMAND_ENVELOPE.phaseScale;
       ring.scale.set(scale, scale, scale);
-      ring.position.y = 3.5 + phase * 0.8;
+      ring.position.y = TESLA_TELEAUTOMATON_RF_COMMAND_ENVELOPE.antennaHeight;
     });
   } else {
     materials.rfEnergy.opacity = 0.0;
+    nodes.rfWaveRings.forEach((ring) => {
+      ring.scale.set(1, 1, 1);
+      ring.position.y = TESLA_TELEAUTOMATON_RF_COMMAND_ENVELOPE.antennaHeight;
+    });
   }
 }

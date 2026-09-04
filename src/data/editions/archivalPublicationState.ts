@@ -299,16 +299,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "classic-patentscom-cgk",
     "Per-figure crop acceptance is pending.",
   ),
-  "us-2292387-lamarr-frequency-hopping": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-j07",
-    "Independent crop acceptance is pending.",
-  ),
-  "us-1773980-farnsworth-tv": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-1t5",
-    "The crop acceptance hold remains in force.",
-  ),
   "us-1102653-goddard-rocket": auditHold(
     "AUDIT_FACSIMILE_REVIEW_PENDING",
     "classic-patentscom-owu",
@@ -336,11 +326,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "The archival recovery is incomplete.",
     "source-bounded",
   ),
-  "us-235199-bell-photophone": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-8vw",
-    "The crop hold remains in force.",
-  ),
   "us-542846-diesel-engine": auditHold(
     "AUDIT_FACSIMILE_REVIEW_PENDING",
     "classic-patentscom-87z",
@@ -350,17 +335,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "AUDIT_FIGURE_ACCEPTANCE_PENDING",
     "classic-patentscom-jks",
     "All 17 figure previews require QA acceptance.",
-  ),
-  "us-120057-gramme-dynamo": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-s9t",
-    "Crop acceptance remains incomplete.",
-  ),
-  "us-4750-howe-sewing-machine": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-pxe",
-    "Rejected figure previews require source-faithful replacements.",
-    "rejected",
   ),
   "us-3237-rillieux-evaporator": auditHold(
     "AUDIT_FACSIMILE_REVIEW_PENDING",

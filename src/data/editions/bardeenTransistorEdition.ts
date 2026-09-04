@@ -17,32 +17,39 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
-const crop = (file: string, width: number, height: number, label: string) => ({
+const sourceSheet = (file: string, contents: string) => ({
   src: `/patents/figures/us-2524035-bardeen-transistor/${file}.png`,
-  alt: `Source-facsimile crop of ${label} from US 2,524,035.`,
-  width,
-  height,
+  alt: `Complete 180 DPI source-facsimile drawing sheet containing ${contents} from US 2,524,035.`,
+  width: 1392,
+  height: 2045,
 });
 
+// These are complete, byte-pinned renders of PDF pages 1–3, rather than
+// inferred figure crops. The earlier per-figure PNGs remain on disk as
+// preservation assets but are deliberately not served by this edition.
+const SHEET_1 = sourceSheet("figs-1-2-10-12-source-crop-v1", "Figs. 1, 1a, 2, 10, 11, and 12");
+const SHEET_2 = sourceSheet("figs-3-9-source-crop-v1", "Figs. 3, 3a, 4, 5, 6, 7, 8, and 9");
+const SHEET_3 = sourceSheet("figs-13-16-source-crop-v1", "Figs. 13, 14, 15, and 16");
+
 const FIGURES = {
-  "Fig. 1": [crop("fig-1-source-crop-v1", 980, 420, "Fig. 1")],
-  "Fig. 1a": [crop("fig-1a-source-crop-v1", 1100, 390, "Fig. 1a")],
-  "Fig. 2": [crop("fig-2-source-crop-v1", 540, 410, "Fig. 2")],
-  "Fig. 3": [crop("fig-3-source-crop-v1", 450, 350, "Fig. 3")],
-  "Fig. 3a": [crop("fig-3a-source-crop-v1", 450, 350, "Fig. 3a")],
-  "Fig. 4": [crop("fig-4-source-crop-v1", 450, 330, "Fig. 4")],
-  "Fig. 5": [crop("fig-5-source-crop-v1", 450, 330, "Fig. 5")],
-  "Fig. 6": [crop("fig-6-source-crop-v1", 450, 330, "Fig. 6")],
-  "Fig. 7": [crop("fig-7-source-crop-v1", 450, 330, "Fig. 7")],
-  "Fig. 8": [crop("fig-8-source-crop-v1", 570, 520, "Fig. 8")],
-  "Fig. 9": [crop("fig-9-source-crop-v1", 570, 520, "Fig. 9")],
-  "Fig. 10": [crop("fig-10-source-crop-v1", 520, 410, "Fig. 10")],
-  "Fig. 11": [crop("fig-11-source-crop-v1", 560, 480, "Fig. 11")],
-  "Fig. 12": [crop("fig-12-source-crop-v2", 400, 375, "Fig. 12")],
-  "Fig. 13": [crop("fig-13-source-crop-v1", 760, 350, "Fig. 13")],
-  "Fig. 14": [crop("fig-14-source-crop-v1", 760, 310, "Fig. 14")],
-  "Fig. 15": [crop("fig-15-source-crop-v1", 850, 630, "Fig. 15")],
-  "Fig. 16": [crop("fig-16-source-crop-v1", 900, 630, "Fig. 16")],
+  "Fig. 1": [SHEET_1],
+  "Fig. 1a": [SHEET_1],
+  "Fig. 2": [SHEET_1],
+  "Fig. 3": [SHEET_2],
+  "Fig. 3a": [SHEET_2],
+  "Fig. 4": [SHEET_2],
+  "Fig. 5": [SHEET_2],
+  "Fig. 6": [SHEET_2],
+  "Fig. 7": [SHEET_2],
+  "Fig. 8": [SHEET_2],
+  "Fig. 9": [SHEET_2],
+  "Fig. 10": [SHEET_1],
+  "Fig. 11": [SHEET_1],
+  "Fig. 12": [SHEET_1],
+  "Fig. 13": [SHEET_3],
+  "Fig. 14": [SHEET_3],
+  "Fig. 15": [SHEET_3],
+  "Fig. 16": [SHEET_3],
 } as const;
 
 const figure = (

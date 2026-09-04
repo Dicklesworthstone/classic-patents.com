@@ -19,6 +19,11 @@ const claim = (number: number, value: string): CuratedSpecificationBlock => ({
 
 type SourceFigureNumber = number | "40A";
 
+/**
+ * Figure-to-pinned-PDF-sheet map. The historical `sheet-…-source-crop` files
+ * remain preserved alongside the record, while active edition previews use
+ * the complete direct render of the mapped source page below.
+ */
 const sourceSheetByFigure: Readonly<Record<SourceFigureNumber, string>> = {
   1: "sheet-01-source-crop-v1.png",
   2: "sheet-02-source-crop-v1.png",
@@ -73,6 +78,17 @@ const sourceSheetByFigure: Readonly<Record<SourceFigureNumber, string>> = {
   50: "sheet-17-source-crop-v1.png",
 };
 
+function sourceSheetForFigure(number: SourceFigureNumber): string {
+  const historicalSheetAsset = sourceSheetByFigure[number];
+  const sourcePdfPage = Number(
+    /^sheet-(\d{2})-source-crop-v1\.png$/.exec(historicalSheetAsset)?.[1],
+  );
+  if (!Number.isSafeInteger(sourcePdfPage) || sourcePdfPage < 1 || sourcePdfPage > 17) {
+    throw new Error(`US 3,212,649 has no pinned drawing sheet for Fig. ${String(number)}.`);
+  }
+  return `source-sheet-${String(sourcePdfPage)}-v1.png`;
+}
+
 function sourceFigure(
   sourceNumbers: SourceFigureNumber | readonly SourceFigureNumber[],
   sourceText: string,
@@ -80,8 +96,6 @@ function sourceFigure(
   const numbers = Array.isArray(sourceNumbers) ? sourceNumbers : [sourceNumbers];
   const number = numbers[0];
   if (!number) throw new Error("US 3,212,649 figure reference has no figure number.");
-  const sheet = sourceSheetByFigure[number];
-  if (!sheet) throw new Error(`US 3,212,649 has no source sheet for Fig. ${String(number)}.`);
   return {
     kind: "reference",
     text: sourceText,
@@ -89,10 +103,10 @@ function sourceFigure(
     referenceType: "figure",
     label: `Pinned source crop for ${sourceText}`,
     figurePreviews: numbers.map((sourceFigureNumber) => ({
-      src: `${SOURCE_FIGURE_DIRECTORY}/${sourceSheetByFigure[sourceFigureNumber]}`,
+      src: `${SOURCE_FIGURE_DIRECTORY}/${sourceSheetForFigure(sourceFigureNumber)}`,
       alt: `${sourceText} on its pinned US 3,212,649 drawing sheet for Fig. ${String(sourceFigureNumber)}.`,
-      width: 1634,
-      height: 2400,
+      width: 2320,
+      height: 3408,
     })),
   };
 }

@@ -110,6 +110,107 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
       },
     },
   },
+  "us-120057-gramme-dynamo": {
+    sourcePdfSha256: "b7ffe0d2354ea69f50616261005f1265fcbab643824f0293b91fc3d2b6523895",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 180 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 31,
+    assets: {
+      "/patents/figures/us-120057-gramme-dynamo/drawing-sheet-1.png": {
+        sha256: "a7c2380f83a93fcdebba8c39ada3833984d845aad829898b1ac22f4d9c304bd2",
+        width: 1392,
+        height: 2045,
+      },
+      "/patents/figures/us-120057-gramme-dynamo/drawing-sheet-2.png": {
+        sha256: "9f047812267a5e0f7d02f4e43f66b21936bd408e9fe29321fadea91050750e27",
+        width: 1392,
+        height: 2045,
+      },
+      "/patents/figures/us-120057-gramme-dynamo/drawing-sheet-3.png": {
+        sha256: "9c58685c61fbaa91e460b7542cde68d37b39a1dd0d61cf14e2a0517478dc72ea",
+        width: 1392,
+        height: 2045,
+      },
+      "/patents/figures/us-120057-gramme-dynamo/drawing-sheet-4.png": {
+        sha256: "d2a63bed87918eeb58eb9b2447a034fc5cc959bba92c9edd149a8efc04021512",
+        width: 1392,
+        height: 2045,
+      },
+    },
+  },
+  "us-1773980-farnsworth-tv": {
+    sourcePdfSha256: "b1ca00feb8a6212894a3ac6fd8aed229493b929b2469a7fe710e9ee53c046538",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 32,
+    assets: {
+      "/patents/figures/us-1773980-farnsworth-tv/source-sheet-1-v1.png": {
+        sha256: "eb27560b188bd56be680648d130de208b2504ee1da54dd6498110f97e6e9c400",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-1773980-farnsworth-tv/source-sheet-2-v1.png": {
+        sha256: "792aeed0d8422ae01f2647bddcd685ddbe6f3dee7daf35a83c464681bae5d8c9",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-1773980-farnsworth-tv/source-sheet-3-v1.png": {
+        sha256: "19ba9574fca6e379d7834a0a39e2768dd4231e9f1f62bcef04fdcfa6f8100b34",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-1773980-farnsworth-tv/source-sheet-4-v1.png": {
+        sha256: "3be324ceffb5ddc27c6feaa94bd6577aeb2d4939b3986c0871282b83ffc1d04e",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
+  "us-2292387-lamarr-frequency-hopping": {
+    sourcePdfSha256: "8204e975e2ea96f34973b87f3cab20d28604e52596c116af367facb74e319292",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 35,
+    assets: {
+      "/patents/figures/us-2292387-lamarr-frequency-hopping/source-sheet-1-v1.png": {
+        sha256: "9a53787fc9b2315de7d6bec159b9de1a696e08926098bb6649e18ddafd945591",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-2292387-lamarr-frequency-hopping/source-sheet-2-v1.png": {
+        sha256: "5c9297937ebcc0fb659118588069ac494485d1a4e9fc51bf6c9fe8048d3669c7",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
+  "us-4750-howe-sewing-machine": {
+    sourcePdfSha256: "8f7449b3d54c2652dd74bab62fd079fdf76bd7216d8f15dd32c6af5def57b053",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 36,
+    assets: {
+      "/patents/figures/us-4750-howe-sewing-machine/source-sheet-1-v1.png": {
+        sha256: "d91899bccbce2eaedeea23fddff2137cadaf0fac1ef2c011e6a64a421ea03cf7",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-4750-howe-sewing-machine/source-sheet-2-v1.png": {
+        sha256: "74dfb5350fd16740b2bfeb0d153da87bca795bcd004797feef38d40dc59ac58b",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-4750-howe-sewing-machine/source-sheet-3-v1.png": {
+        sha256: "df84b4e87e3ca2b5261e82e3b2dc1e7baae677ab654cf055fabd62d47a7b79d2",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
   "us-1219881-sundback-zipper": {
     sourcePdfSha256: "8b73a4db400d449ec6349a07c05b38df6f5bed609562a2c96ba893890a41a3b9",
     reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
@@ -832,95 +933,95 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
   },
   "us-3212649-amf-versatran": {
     sourcePdfSha256: "9a985a6bf91770914a5049c3f03e0cee2dc4bfe8711633891df68cc0b894ccbd",
-    reviewer: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-09-01",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct full-resolution source-pixel review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
     acceptedOccurrenceCount: 234,
     assets: {
-      "/patents/figures/us-3212649-amf-versatran/sheet-01-source-crop-v1.png": {
-        sha256: "74088a8815c7ab772e4d4f746e85452cd23d7c3ad14346b76d9bc00c1237b852",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-1-v1.png": {
+        sha256: "537c38d3f5b9f574ea37af6e7e8798a86e3995bfd07f6cdd721a11bf60b713bf",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-02-source-crop-v1.png": {
-        sha256: "fd9777eff0baa8623d07352006da54f35026860513b65a61c7c51e757d3bee8b",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-2-v1.png": {
+        sha256: "242ab1b7d8898b4c902ed8d9f50031fa07cc1f196e4d4637c1a71fa8707da4bc",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-03-source-crop-v1.png": {
-        sha256: "8be58c67f5d7cacae809e57b166888b617d890d34f694007e086587f478c6dc2",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-3-v1.png": {
+        sha256: "4ea41c2b9aae229b27b7bdaeabe502be8d804645b1b3e76f2ddc9fa441716872",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-04-source-crop-v1.png": {
-        sha256: "ba71351bda186d6106dfd4ea51e4fa917f392f175bc67ddd56a0ee33352795fb",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-4-v1.png": {
+        sha256: "84f7223ddb48136a2566499eb80490172cc88921f741692381a1fdec310376b9",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-05-source-crop-v1.png": {
-        sha256: "961c6e17c84344d615d9621324f2278b445cfd58c5b6c547f01d2ee278d949cb",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-5-v1.png": {
+        sha256: "6e1e26be74911f15bffbba08d20f04ef827102eed9a823f4683b478c761f0b5b",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-06-source-crop-v1.png": {
-        sha256: "84290a8499eb4a8184c15aeffeb1680a39e1b200c63d21d3dfd0b8cba90431a9",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-6-v1.png": {
+        sha256: "53e14f83ff37855aae0e17acf663371b95a63944eaa7bd3c349f5b3d12654507",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-07-source-crop-v1.png": {
-        sha256: "42b1f142a39dcbacb821f98178a104ae18efdd526d0c03d6031afe1cd826d9cb",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-7-v1.png": {
+        sha256: "d06ead5d84a76af5af19e6ecb92657dbbc8880987817f2c92d2a9b8b0cb365e5",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-08-source-crop-v1.png": {
-        sha256: "97c533b27eaf623765b83b84aafe31dffd72cb1442740df9724127c75583e9a9",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-8-v1.png": {
+        sha256: "32ec4fa1f91d114ec489e273ef5b67b06bfca1181e037a24ddad60b8f53ec004",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-09-source-crop-v1.png": {
-        sha256: "d7b5eb6225281a2fad57f38150d4d911ccfc6f08788cf1c114ff9726d7dd92fc",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-9-v1.png": {
+        sha256: "e7bcf63768fbc860be9effc3b698d018979b95a5ae7c5d601db1e62d8b85746d",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-10-source-crop-v1.png": {
-        sha256: "7af8ce926a23572376295ce1803021412b93a83c8f196df3dedef6f56e988a81",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-10-v1.png": {
+        sha256: "48bf047dc6d9c2866756a282fd3b037d3525ace947faaa65d5939330b159712b",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-11-source-crop-v1.png": {
-        sha256: "436038fd605b87bc296338145be2644f30a54b4ebb2da19f53975e060453ed8b",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-11-v1.png": {
+        sha256: "2aeb3e6315b0b64d1b63d99678175682b8dfaf0bed5667a87ccfad21d46a1947",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-12-source-crop-v1.png": {
-        sha256: "24a8b9fbc2a06978748c9382ac99bcc0f34da32801c5da25d1bf92d28993723a",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-12-v1.png": {
+        sha256: "c90efd44ebf0f63efd254d4323dac6aae8fe376f4b355e3a9d5db7ae8dd3f03c",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-13-source-crop-v1.png": {
-        sha256: "0215af72cd91ac176a99d7695b93cbbe1ee1e0d533b1c590b16dad3096c97736",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-13-v1.png": {
+        sha256: "ab6d702f07a28ecaf11a709029c1d4f43d5991f742e9f6fdff606d08640259f6",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-14-source-crop-v1.png": {
-        sha256: "3867c80479e217a4720d27f9a2972565e11d313d7ca3cb7ea1add49000af6497",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-14-v1.png": {
+        sha256: "4c2b5a3c0d8728f51caf0b8ed987a96edb1fd0d5344abb707cd3dd16d0a42c85",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-15-source-crop-v1.png": {
-        sha256: "07ecd005bcbc49c54315ff09e28cd26f28d91f29fe365250b2d740912379e0da",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-15-v1.png": {
+        sha256: "398ff0479027df64c7aa6a95ce806937e0b3aeaaa57271196817a4c4462ef6d5",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-16-source-crop-v1.png": {
-        sha256: "2b262207a7804e6ea4d47f1066db89c55736ad428e51a9b6b900f29677ec745f",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-16-v1.png": {
+        sha256: "6c79cf1ab61307a0a77099036ce44886ff1b9d77c35650612310474e62d4ea19",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-3212649-amf-versatran/sheet-17-source-crop-v1.png": {
-        sha256: "07ac301d4d0223fe815990cc9cff29fa861a18c6e8394dc36c0a72fc96a4c4c0",
-        width: 1634,
-        height: 2400,
+      "/patents/figures/us-3212649-amf-versatran/source-sheet-17-v1.png": {
+        sha256: "e4fa3cdd274018d8d395fcb2d43319c16fb89fe3fbb71a50b28e3e829f86ceab",
+        width: 2320,
+        height: 3408,
       },
     },
   },

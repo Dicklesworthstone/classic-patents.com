@@ -31,8 +31,9 @@
     "scripts/**/*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
+    "tmp/classic-patents-next-audit-cort-20260904/types/**/*.ts",
     "tmp/classic-patents-next-audit-current/types/**/*.ts",
-    "tmp/classic-patents-next-audit-cort-20260904/types/**/*.ts"
+    "tmp/classic-patents-next-audit-cort-20260904b/types/**/*.ts"
   ],
   "exclude": ["node_modules", ".next", ".next-isolated-build", "doctor.config.ts"]
 }

@@ -6,74 +6,54 @@ import type {
 
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 
-const FIGURES = {
-  1: {
-    src: "/patents/figures/us-4750-howe-sewing-machine-fig-1-preview.png",
-    alt: "Figure 1 from US 4,750: front elevation of Howe's sewing machine.",
-    width: 1900,
-    height: 1700,
-  },
-  2: {
-    src: "/patents/figures/us-4750-howe-sewing-machine-fig-2-preview.png",
-    alt: "Figure 2 from US 4,750: end elevation of the sewing machine.",
-    width: 1900,
-    height: 1900,
-  },
-  3: {
-    src: "/patents/figures/us-4750-howe-sewing-machine-fig-3-preview.png",
-    alt: "Figure 3 from US 4,750: top view of the sewing machine and baster-plate.",
-    width: 1900,
-    height: 1750,
-  },
-  4: {
-    src: "/patents/figures/us-4750-howe-sewing-machine-fig-4-detail-preview.png",
-    alt: "Figure 4 from US 4,750: needle and cloth section with the needle arm down.",
-    width: 900,
-    height: 800,
-  },
-  5: {
-    src: "/patents/figures/us-4750-howe-sewing-machine-fig-5-preview.png",
-    alt: "Figure 5 from US 4,750: top view of the shuttle-box and sliding pieces.",
-    width: 1700,
-    height: 700,
-  },
-  6: {
-    src: "/patents/figures/us-4750-howe-sewing-machine-fig-6-preview.png",
-    alt: "Figure 6 from US 4,750: feeding apparatus with claw and ratchet-wheel.",
-    width: 950,
-    height: 1350,
-  },
-  7: {
-    src: "/patents/figures/us-4750-howe-sewing-machine-fig-7-preview.png",
-    alt: "Figure 7 from US 4,750: shuttle with thread hole and slot.",
-    width: 1100,
-    height: 420,
-  },
-  8: {
-    src: "/patents/figures/us-4750-howe-sewing-machine-fig-8-preview.png",
-    alt: "Figure 8 from US 4,750: small shuttle-thread retaining lever.",
-    width: 620,
-    height: 500,
-  },
-  9: {
-    src: "/patents/figures/us-4750-howe-sewing-machine-fig-9-preview.png",
-    alt: "Figure 9 from US 4,750: lever detail for the sliding box.",
-    width: 740,
-    height: 620,
-  },
+const PATENT_ID = "us-4750-howe-sewing-machine";
+const SOURCE_FIGURE_DIRECTORY = `/patents/figures/${PATENT_ID}`;
+const SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+
+/**
+ * Complete, unmodified 300-DPI renders of the three drawing pages in the
+ * pinned facsimile. The earlier figure-specific previews remain on disk as
+ * preservation material; active archival references keep the complete sheet
+ * so a reader can inspect its historical context and every printed label.
+ */
+const sourceSheetByFigure = {
+  1: { fileName: "source-sheet-1-v1.png", pdfPage: 1 },
+  2: { fileName: "source-sheet-2-v1.png", pdfPage: 2 },
+  3: { fileName: "source-sheet-3-v1.png", pdfPage: 3 },
+  4: { fileName: "source-sheet-1-v1.png", pdfPage: 1 },
+  5: { fileName: "source-sheet-2-v1.png", pdfPage: 2 },
+  6: { fileName: "source-sheet-3-v1.png", pdfPage: 3 },
+  7: { fileName: "source-sheet-1-v1.png", pdfPage: 1 },
+  8: { fileName: "source-sheet-3-v1.png", pdfPage: 3 },
+  9: { fileName: "source-sheet-3-v1.png", pdfPage: 3 },
 } as const;
 
 const figure = (
   label: string,
-  numbers: readonly (keyof typeof FIGURES)[],
-): CuratedSpecificationInline => ({
-  kind: "reference",
-  text: label,
-  href: "#",
-  referenceType: "figure",
-  label: `Preview ${label} from the US 4,750 source facsimile`,
-  figurePreviews: numbers.map((number) => FIGURES[number]),
-});
+  numbers: readonly (keyof typeof sourceSheetByFigure)[],
+): CuratedSpecificationInline => {
+  const sheets = [
+    ...new Map(
+      numbers.map((number) => {
+        const sourceSheet = sourceSheetByFigure[number];
+        return [sourceSheet.pdfPage, sourceSheet] as const;
+      }),
+    ).values(),
+  ];
+
+  return {
+    kind: "reference",
+    text: label,
+    href: "#",
+    referenceType: "figure",
+    label: `Open the complete pinned drawing sheet for ${label} from US 4,750`,
+    figurePreviews: sheets.map((sheet) => ({
+      src: `${SOURCE_FIGURE_DIRECTORY}/${sheet.fileName}`,
+      alt: `Complete unmodified drawing sheet on pinned US 4,750 PDF page ${sheet.pdfPage}, including ${label}.`,
+      ...SOURCE_RASTER,
+    })),
+  };
+};
 
 /**
  * A continuous, hand-prepared reading edition of US 4,750. The three drawing
