@@ -326,45 +326,20 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
   },
   "us-174465-bell-telephone": {
     sourcePdfSha256: "cb1a0fa7bd871937575e240adf904fa3ea8f462b3bfceb4e7cbbb0811909a8e9",
-    reviewer: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-08-18",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
     acceptedOccurrenceCount: 24,
     assets: {
-      "/patents/figures/us-174465-bell-telephone/fig-1-source-crop.png": {
-        sha256: "bc1a67f3ab084bc9beaf990b6ec1178ccd55a5c2fc291a9b6218701cecdf0908",
-        width: 980,
-        height: 210,
+      "/patents/figures/us-174465-bell-telephone/source-sheet-1-v1.png": {
+        sha256: "45d1b67692b9ae812b48c261fa60a103a6b3e2e736b65506f4b521de21bb695f",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-174465-bell-telephone/fig-2-source-crop-v2.png": {
-        sha256: "94cdc83126139c8c94e8b24a037ea7f914b02e1935b3a46482e1f332ce2f341c",
-        width: 1200,
-        height: 180,
-      },
-      "/patents/figures/us-174465-bell-telephone/fig-3-source-crop-v2.png": {
-        sha256: "cd9f8adb9edaeb3c19db06c40c66dd51a19d36d5b9a5fe7a84029c7c0763178d",
-        width: 1200,
-        height: 250,
-      },
-      "/patents/figures/us-174465-bell-telephone/fig-4-source-crop.png": {
-        sha256: "c57ea1b8829bb2fb293619563a238b9d5e5273af2a83c998aaa4bc9b6c56825b",
-        width: 1050,
-        height: 430,
-      },
-      "/patents/figures/us-174465-bell-telephone/fig-5-source-crop.png": {
-        sha256: "e9c4c8c790daa22097c8c365630e4f400f8413e3a6ca8dcee28b5373c63c9b69",
-        width: 1000,
-        height: 400,
-      },
-      "/patents/figures/us-174465-bell-telephone/fig-6-source-crop.png": {
-        sha256: "ffa167fa8b8d3dd6fbd1aefa932955f97f93b1bfb9dc2ce26097a03521b2e4ee",
-        width: 1120,
-        height: 900,
-      },
-      "/patents/figures/us-174465-bell-telephone/fig-7-source-crop.png": {
-        sha256: "6fe1b789d29b6dc4f0db4472e058e79ccae7a979ca3f2cc1d9bb80c4983d4abd",
-        width: 1030,
-        height: 650,
+      "/patents/figures/us-174465-bell-telephone/source-sheet-2-v1.png": {
+        sha256: "656aa9872a2cb51d71b30c5ef87a3e731f5510aee9e3ae82cb8d472aa653d465",
+        width: 2320,
+        height: 3408,
       },
     },
   },

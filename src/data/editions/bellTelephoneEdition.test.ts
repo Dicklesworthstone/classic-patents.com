@@ -86,7 +86,19 @@ describe("US 174,465 manual source edition", () => {
     }
   });
 
-  test("pairs every source paragraph with a non-lossy explanation and every figure with a local crop", () => {
+  test("pairs every source paragraph with a non-lossy explanation and every figure with its complete primary sheet", () => {
+    const sourceSheets = {
+      "/patents/figures/us-174465-bell-telephone/source-sheet-1-v1.png": {
+        sha256: "45d1b67692b9ae812b48c261fa60a103a6b3e2e736b65506f4b521de21bb695f",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-174465-bell-telephone/source-sheet-2-v1.png": {
+        sha256: "656aa9872a2cb51d71b30c5ef87a3e731f5510aee9e3ae82cb8d472aa653d465",
+        width: 2320,
+        height: 3408,
+      },
+    } as const;
     const paragraphIndexes = bellTelephoneArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
     );
@@ -113,7 +125,16 @@ describe("US 174,465 manual source edition", () => {
     for (const reference of figureReferences) {
       for (const preview of reference.figurePreviews ?? []) {
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+        expect(preview.src in sourceSheets).toBe(true);
+        expect(preview.width).toBe(2320);
+        expect(preview.height).toBe(3408);
       }
+    }
+    for (const [src, expected] of Object.entries(sourceSheets)) {
+      const bytes = readFileSync(resolve(process.cwd(), "public", src.slice(1)));
+      expect(createHash("sha256").update(bytes).digest("hex")).toBe(expected.sha256);
+      expect(bytes.readUInt32BE(16)).toBe(expected.width);
+      expect(bytes.readUInt32BE(20)).toBe(expected.height);
     }
 
     const fig3References = figureReferences.filter((reference) => reference.text === "Fig. 3");
@@ -121,9 +142,9 @@ describe("US 174,465 manual source edition", () => {
     for (const reference of fig3References) {
       expect(reference.figurePreviews).toContainEqual(
         expect.objectContaining({
-          src: "/patents/figures/us-174465-bell-telephone/fig-3-source-crop-v2.png",
-          width: 1200,
-          height: 250,
+          src: "/patents/figures/us-174465-bell-telephone/source-sheet-1-v1.png",
+          width: 2320,
+          height: 3408,
         }),
       );
     }
@@ -133,9 +154,21 @@ describe("US 174,465 manual source edition", () => {
     for (const reference of fig2References) {
       expect(reference.figurePreviews).toContainEqual(
         expect.objectContaining({
-          src: "/patents/figures/us-174465-bell-telephone/fig-2-source-crop-v2.png",
-          width: 1200,
-          height: 180,
+          src: "/patents/figures/us-174465-bell-telephone/source-sheet-1-v1.png",
+          width: 2320,
+          height: 3408,
+        }),
+      );
+    }
+
+    const fig6References = figureReferences.filter((reference) => reference.text === "Fig. 6");
+    expect(fig6References.length).toBeGreaterThan(0);
+    for (const reference of fig6References) {
+      expect(reference.figurePreviews).toContainEqual(
+        expect.objectContaining({
+          src: "/patents/figures/us-174465-bell-telephone/source-sheet-2-v1.png",
+          width: 2320,
+          height: 3408,
         }),
       );
     }

@@ -24,8 +24,8 @@ Fig. 7 to vocal or musical sound.
 
 | PDF locator | Source material | Editorial treatment |
 | --- | --- | --- |
-| p. 1 | Fig. 1 through Fig. 5, inventor and witness signatures | Direct visual review; local crops for Figs. 1-5 are selected from this source sheet |
-| p. 2 | Fig. 6 and Fig. 7, inventor and witness signatures | Direct visual review; local crops for Figs. 6-7 are selected from this source sheet |
+| p. 1 | Fig. 1 through Fig. 5, inventor and witness signatures | Direct visual review; the complete source sheet is the active evidence for Figs. 1-5 |
+| p. 2 | Fig. 6 and Fig. 7, inventor and witness signatures | Direct visual review; the complete source sheet is the active evidence for Figs. 6-7 |
 | p. 3 | Masthead, opening, earlier harmonic-telegraph work, intermittent versus undulatory current, induction | Direct visual and text-layer comparison |
 | p. 4 | 4:5 example, Figs. 1-4 waveform discussion, induction, resistance and battery examples | Direct visual and text-layer comparison |
 | p. 5 | Fig. 5 transmitter/receiver, Fig. 6 harmonic groups, Fig. 7 voice apparatus, terminology, claim introduction | Direct visual and text-layer comparison |
@@ -48,7 +48,7 @@ inductive and resistance/power methods; Claim 5 covers the stated
 sound-corresponding electrical undulations. The canonical record and manual
 edition retain that printed sequence and wording.
 
-## Published edition, ledger, and figure crops
+## Published edition, ledger, and source sheets
 
 `bellTelephoneArchivalEdition` in
 `src/data/editions/bellTelephoneEdition.ts` is an explicit, manually authored
@@ -56,7 +56,7 @@ React/TypeScript edition. It is a continuous reader's document and performs no
 OCR cleanup, HTML interpretation, text parsing, or scan-page reconstruction.
 Each source paragraph has an authored technical companion reading, each claim
 uses the canonical claim decoder, and every printed figure reference is an
-explicit local preview node.
+explicit local source-sheet node.
 
 `public/patents/transcripts/us-174465-bell-telephone-reviewed.txt` is the
 separate audit ledger. It contains six source-page markers solely for review;
@@ -64,19 +64,28 @@ the visitor-facing edition does not display them. The legacy source text layer
 at `public/patents/transcripts/us-174465-bell-telephone.txt` remains research
 evidence and is not a public complete-source edition.
 
-| Source figure | Local selected crop |
+| Source drawing sheet | Active local evidence |
 | --- | --- |
-| Fig. 1 | `public/patents/figures/us-174465-bell-telephone/fig-1-source-crop.png` |
-| Fig. 2 | `public/patents/figures/us-174465-bell-telephone/fig-2-source-crop.png` |
-| Fig. 3 | `public/patents/figures/us-174465-bell-telephone/fig-3-source-crop.png` |
-| Fig. 4 | `public/patents/figures/us-174465-bell-telephone/fig-4-source-crop.png` |
-| Fig. 5 | `public/patents/figures/us-174465-bell-telephone/fig-5-source-crop.png` |
-| Fig. 6 | `public/patents/figures/us-174465-bell-telephone/fig-6-source-crop.png` |
-| Fig. 7 | `public/patents/figures/us-174465-bell-telephone/fig-7-source-crop.png` |
+| PDF p. 1: Figs. 1-5 | `public/patents/figures/us-174465-bell-telephone/source-sheet-1-v1.png` |
+| PDF p. 2: Figs. 6-7 | `public/patents/figures/us-174465-bell-telephone/source-sheet-2-v1.png` |
 
-The local crop files are unmodified selections from the pinned drawing sheets.
-They add no reconstructed lines, labels, or source claims. They aid figure
-references but never replace the complete source PDF.
+Both active assets are unmodified 300 DPI renders of their entire pinned
+drawing sheets. They add no reconstructed lines, labels, or source claims. The
+older isolated crops remain preserved comparison artifacts; neither form of
+preview replaces the complete source PDF.
+
+### Complete source-sheet acceptance (2026-09-04)
+
+Direct visual review confirms that PDF page 1 contains all five printed
+waveform and apparatus figures (Figs. 1-5), while PDF page 2 contains the two
+remaining apparatus diagrams (Figs. 6-7). Both sheets retain their title
+furniture, figure labels, source lettering, inventor signatures, and witness
+signatures. The active source-sheet assets are 2320 × 3408 pixels: page 1 has
+SHA-256 `45d1b67692b9ae812b48c261fa60a103a6b3e2e736b65506f4b521de21bb695f`
+and page 2 has SHA-256
+`656aa9872a2cb51d71b30c5ef87a3e731f5510aee9e3ae82cb8d472aa653d465`.
+All 24 active figure-reference occurrences use the full source-sheet rectangle
+on their respective PDF pages; no source content was reconstructed.
 
 ## Review boundary
 

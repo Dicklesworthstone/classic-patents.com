@@ -17,23 +17,24 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
-const crop = (number: number, width: number, height: number, revision = "") => ({
-  src: `/patents/figures/us-174465-bell-telephone/fig-${number}-source-crop${revision}.png`,
-  alt: `Source-facsimile crop of Fig. ${number} from US 174,465.`,
-  width,
-  height,
+const sourceSheet = (number: number, sourcePdfPage: 1 | 2) => ({
+  src: `/patents/figures/us-174465-bell-telephone/source-sheet-${sourcePdfPage}-v1.png`,
+  alt:
+    sourcePdfPage === 1
+      ? `Complete source drawing sheet containing Figs. 1 through 5, highlighting Fig. ${number}, from US 174,465.`
+      : `Complete source drawing sheet containing Figs. 6 and 7, highlighting Fig. ${number}, from US 174,465.`,
+  width: 2320,
+  height: 3408,
 });
 
 const FIGURES = {
-  "Fig. 1": crop(1, 980, 210),
-  "Fig. 2": crop(2, 1200, 180, "-v2"),
-  // The original v1 selection leaked the adjacent “Fig. 4” label into the
-  // Fig. 3 preview. This tighter source-sheet crop contains only Fig. 3.
-  "Fig. 3": crop(3, 1200, 250, "-v2"),
-  "Fig. 4": crop(4, 1050, 430),
-  "Fig. 5": crop(5, 1000, 400),
-  "Fig. 6": crop(6, 1120, 900),
-  "Fig. 7": crop(7, 1030, 650),
+  "Fig. 1": sourceSheet(1, 1),
+  "Fig. 2": sourceSheet(2, 1),
+  "Fig. 3": sourceSheet(3, 1),
+  "Fig. 4": sourceSheet(4, 1),
+  "Fig. 5": sourceSheet(5, 1),
+  "Fig. 6": sourceSheet(6, 2),
+  "Fig. 7": sourceSheet(7, 2),
 } as const;
 
 const figure = (
@@ -44,7 +45,7 @@ const figure = (
   text: sourceText,
   href: "#",
   referenceType: "figure",
-  label: `Open the source-facsimile crop for ${label} in US 174,465`,
+  label: `Open the complete source drawing sheet for ${label} in US 174,465`,
   figurePreviews: [FIGURES[label]],
 });
 
@@ -97,7 +98,7 @@ export const bellTelephoneArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 7"),
         {
           kind: "text",
-          text: ". Each reference opens a crop made directly from the pinned facsimile.",
+          text: ". Each reference opens its complete primary drawing sheet.",
         },
       ],
     },
