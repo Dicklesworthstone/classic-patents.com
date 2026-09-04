@@ -23,19 +23,19 @@ layer was used only as a secondary comparison aid.
 
 | PDF locator | Source material | Editorial treatment |
 | --- | --- | --- |
-| p. 1 | Drawing sheet with Figs. 1-3 | Direct visual review; direct local crops selected for each printed figure |
+| p. 1 | Drawing sheet with Figs. 1-3 | Direct visual review; the active preview retains the complete upright source sheet |
 | p. 2 | Masthead, complete specification, one claim, signature, witnesses | Direct visual and text-layer comparison; continuous manual transcription |
 
-## Cloud source review and held figure-crop plan
+## Superseded cloud figure-crop research plan
 
 The authoritative cloud facsimile used for this review is the official Google
 Patents image derived from the public patent record:
 
 - Drawing-sheet image: <https://patentimages.storage.googleapis.com/2c/55/5c/a19dadfbcdf4e7/US157124-drawings-page-1.png>
 - Source image dimensions: `2320 x 3408` pixels, portrait, upright (`0°` rotation).
-- Review result: all three currently served local previews are held as
-  sideways and are not accepted as source-face evidence. Existing files are
-  preserved byte-for-byte.
+- Review result: the narrow legacy previews were held as sideways or otherwise
+  insufficiently bounded source-face evidence. Existing files are preserved
+  byte-for-byte; the active evidence is now the complete first drawing sheet.
 
 The following are bounded source coordinates in that upright cloud image. The
 coordinates intentionally exclude the drawing-sheet masthead, the neighboring
@@ -50,12 +50,30 @@ generated on this host.
 | `fig-2-source-crop-v1.png` | `(1500, 1780, 520, 520)` | `0°` | Fig. II sectional detail with its printed `D`, `a`, `z`, `E`, and `s` labels; excludes Fig. III |
 | `fig-3-source-crop-v1.png` | `(1360, 700, 700, 900)` | `0°` | Fig. III perspective detail with its printed `D`, `a`, `z`, `E`, and `s` labels; excludes the masthead, Fig. II, signatures, and footer |
 
-The crop worker must preserve the cloud image's portrait orientation and must
-not rotate the extracted rectangles from the source image. The versioned names
-above are intentionally not referenced by the edition until the files exist
-and an independent reviewer confirms labels, leaders, and boundaries. The
-edition continues to point at the preserved legacy previews while publication
-is held.
+This candidate crop plan remains preservation evidence only. It does not
+authorize the old assets or replace the direct local source-sheet review below.
+
+## Source-sheet acceptance (2026-09-03)
+
+The pinned drawing sheet (PDF p. 1) was rendered directly at 300 DPI for
+source-pixel inspection only; no OCR, text extraction, masking, compositing,
+reconstruction, rotation, or selective redrawing was used. It contains all
+three complete printed figures and the genuine drawing-sheet furniture. The
+active preview is therefore the complete, upright sheet rather than a claimed
+isolated crop.
+
+| Active asset | Pinned PDF page / source rectangle | Output pixels / SHA-256 | Accepted coverage |
+| --- | --- | --- | --- |
+| `public/patents/figures/us-157124-glidden-barbed-wire/source-sheet-1-v1.png` | p. 1; `x=0, y=0, width=2320, height=3408` | 2320×3408; `4002c9b8311556cb861bc5f2eaaf63a404ce01c1b0cac77d76a8a684169d0083` | Complete Sheet 1, including Figs. 1–3 and its original title, signature, witness, and printer furniture. |
+
+The active asset was compared with a fresh 300-DPI render of pinned PDF p. 1:
+both are 2320×3408 pixels and the absolute pixel error is zero. All six
+authored Figure 1/Fig. 2/Fig. 3 citations bind to that one source sheet. Exact
+page, source-raster, and source-rectangle records are in
+`src/data/editions/figureOccurrenceSourceLocators.ts`; the byte digest,
+dimensions, reviewer, and occurrence count are pinned in
+`src/data/editions/archivalFigureAcceptance.ts`. This internal evidence repair
+does not alter the legal text or the visitor's source-reader delivery.
 
 ## Corrected source facts
 
@@ -86,12 +104,13 @@ evidence, not the public complete-source edition.
 
 | Source figure | Local selected crop |
 | --- | --- |
-| Fig. 1 | `public/patents/figures/us-157124-glidden-barbed-wire/fig-1-source-crop.png` |
-| Fig. 2 | `public/patents/figures/us-157124-glidden-barbed-wire/fig-2-source-crop.png` |
-| Fig. 3 | `public/patents/figures/us-157124-glidden-barbed-wire/fig-3-source-crop.png` |
+| Fig. 1 | `public/patents/figures/us-157124-glidden-barbed-wire/source-sheet-1-v1.png` (complete Sheet 1) |
+| Fig. 2 | `public/patents/figures/us-157124-glidden-barbed-wire/source-sheet-1-v1.png` (complete Sheet 1) |
+| Fig. 3 | `public/patents/figures/us-157124-glidden-barbed-wire/source-sheet-1-v1.png` (complete Sheet 1) |
 
-The local crop files are unmodified selections from the pinned drawing sheet.
-They add no reconstructed linework, labels, or historical claims.
+The preserved local crop files remain research selections from the pinned
+drawing sheet. They add no reconstructed linework, labels, or historical
+claims, but they are no longer the active archival previews.
 
 ## Review boundary
 

@@ -24,10 +24,10 @@ describe("Publication Approval State Machine", () => {
   });
 
   it("withholds a crop-attested edition until every occurrence has a source locator", () => {
-    const teslaMotor = allPatents.find((p) => p.id === "us-381968-tesla-motor");
-    if (!teslaMotor) throw new Error("Tesla motor patent not found");
+    const renoEscalator = allPatents.find((p) => p.id === "us-470918-reno-escalator");
+    if (!renoEscalator) throw new Error("Reno escalator patent not found");
 
-    const decision = evaluateArchivalPublicationState(teslaMotor);
+    const decision = evaluateArchivalPublicationState(renoEscalator);
     expect(decision.status).toBe("withheld-pending-review");
     expect(decision.isPublished).toBe(false);
     expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
@@ -39,17 +39,33 @@ describe("Publication Approval State Machine", () => {
     });
   });
 
-  it("fail-closes and isolates quarantined patents (e.g. GB 931 Arkwright)", () => {
+  it("fail-closes and isolates quarantined patents (GB 931 Arkwright, GB 1306 Watt, US 4,068,536 Stackhouse)", () => {
     const arkwright = allPatents.find((p) => p.id === "gb-931-arkwright-water-frame");
     if (!arkwright) throw new Error("Arkwright patent not found");
-    expect(arkwright).toBeDefined();
-
     expect(isArchivalEditionExplicitlyWithheld("gb-931-arkwright-water-frame")).toBe(true);
-    const decision = evaluateArchivalPublicationState(arkwright);
-    expect(decision.status).toBe("withheld-reconstruction-quarantine");
-    expect(decision.isPublished).toBe(false);
-    expect(decision.reasonCode).toBe("FABRICATION_OR_RECONSTRUCTION_QUARANTINE");
+    const arkwrightDecision = evaluateArchivalPublicationState(arkwright);
+    expect(arkwrightDecision.status).toBe("withheld-reconstruction-quarantine");
+    expect(arkwrightDecision.isPublished).toBe(false);
+    expect(arkwrightDecision.reasonCode).toBe("FABRICATION_OR_RECONSTRUCTION_QUARANTINE");
     expect(archivalEditionForPublication(arkwright)).toBeUndefined();
+
+    const watt = allPatents.find((p) => p.id === "gb-1306-watt-rotary-engine");
+    if (!watt) throw new Error("Watt rotary patent not found");
+    expect(isArchivalEditionExplicitlyWithheld("gb-1306-watt-rotary-engine")).toBe(true);
+    const wattDecision = evaluateArchivalPublicationState(watt);
+    expect(wattDecision.status).toBe("withheld-reconstruction-quarantine");
+    expect(wattDecision.isPublished).toBe(false);
+    expect(wattDecision.reasonCode).toBe("AUDIT_RECONSTRUCTION_QUARANTINE");
+    expect(archivalEditionForPublication(watt)).toBeUndefined();
+
+    const stackhouse = allPatents.find((p) => p.id === "us-4068536-stackhouse-manipulator");
+    if (!stackhouse) throw new Error("Stackhouse patent not found");
+    expect(isArchivalEditionExplicitlyWithheld("us-4068536-stackhouse-manipulator")).toBe(true);
+    const stackhouseDecision = evaluateArchivalPublicationState(stackhouse);
+    expect(stackhouseDecision.status).toBe("withheld-reconstruction-quarantine");
+    expect(stackhouseDecision.isPublished).toBe(false);
+    expect(stackhouseDecision.reasonCode).toBe("FABRICATION_OR_RECONSTRUCTION_QUARANTINE");
+    expect(archivalEditionForPublication(stackhouse)).toBeUndefined();
   });
 
   it("identifies facsimile-only records without bound editions", () => {

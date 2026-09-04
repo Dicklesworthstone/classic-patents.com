@@ -27,58 +27,34 @@ export interface ArchivalFigureAcceptanceAttestation {
   assets: Readonly<Record<string, AcceptedFigureAssetEvidence>>;
 }
 
-export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
+export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
+  Record<string, ArchivalFigureAcceptanceAttestation>
+> = {
+  "us-233692-pelton-water-wheel": {
+    sourcePdfSha256: "b81019c0239af3ab932bd477970c1a414a91f765a68b28f9b22444e4f95c597c",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 8,
+    assets: {
+      "/patents/figures/us-233692-pelton-water-wheel/source-sheet-1-v1.png": {
+        sha256: "a1766af4b2a4d72bef0a3578fda56c8c5949060ec8a0fa4554d227db9546c512",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
   "us-1219881-sundback-zipper": {
     sourcePdfSha256: "8b73a4db400d449ec6349a07c05b38df6f5bed609562a2c96ba893890a41a3b9",
-    reviewer: "Classic Patents editorial agent (Gemini 3.7 Flash)",
-    reviewedAt: "2026-09-02",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
     acceptanceBasis: "independent-figure-review",
     acceptedOccurrenceCount: 25,
     assets: {
-      "/patents/figures/us-1219881-sundback-zipper/fig-1-source-crop-v1.png": {
-        sha256: "c6aeea22fa10393aa0beafb4113eac7f3a7846b8ab0f3715359f1df15167bf8d",
-        width: 1166,
-        height: 1699,
-      },
-      "/patents/figures/us-1219881-sundback-zipper/fig-2-source-crop-v1.png": {
-        sha256: "b1d8d051ab76e87ad36e4b1d6e3420b0dae3ac26aca0be002261a528c383ede0",
-        width: 872,
-        height: 1078,
-      },
-      "/patents/figures/us-1219881-sundback-zipper/fig-3-source-crop-v1.png": {
-        sha256: "284b3efba38b72b1b9d641454d785e126638ac3c19020a7d386fa865c66fd621",
-        width: 833,
-        height: 649,
-      },
-      "/patents/figures/us-1219881-sundback-zipper/fig-4-source-crop-v1.png": {
-        sha256: "3c4ff14f263b7dbfd7d39aae7ca16b381f99e1a5bb21becc9971d74c6d46cd0b",
-        width: 495,
-        height: 729,
-      },
-      "/patents/figures/us-1219881-sundback-zipper/fig-5-source-crop-v1.png": {
-        sha256: "033a4bd565f202a520cff634be31e7f32c0d85150192312aef287e2ff919e674",
-        width: 549,
-        height: 701,
-      },
-      "/patents/figures/us-1219881-sundback-zipper/fig-6-source-crop-v1.png": {
-        sha256: "2c9f4b74bb807ddecc37b10c889bb9971add34647d31a7553645e69e9f972e9a",
-        width: 554,
-        height: 729,
-      },
-      "/patents/figures/us-1219881-sundback-zipper/fig-7-source-crop-v1.png": {
-        sha256: "589ae499112201de22814bda1f500a233dd12d6fff8bbb8a4d25b9b04172a9ad",
-        width: 427,
-        height: 660,
-      },
-      "/patents/figures/us-1219881-sundback-zipper/fig-8-source-crop-v1.png": {
-        sha256: "b884819637089ae69e8534b8c21fd9780f9589511441c699ed830205b5c408f1",
-        width: 1044,
-        height: 451,
-      },
-      "/patents/figures/us-1219881-sundback-zipper/fig-9-source-crop-v1.png": {
-        sha256: "0e8785cd62e665ade77d2d8cfc20732f9df9ab6462b9a5abc2cb351cbdcfdd62",
-        width: 852,
-        height: 412,
+      "/patents/figures/us-1219881-sundback-zipper/source-sheet-1-v1.png": {
+        sha256: "d2c2c475fb2fe63d493c6cb15377af95b8b4fcbc0f76fa695c98a4c2bde44fc6",
+        width: 2320,
+        height: 3408,
       },
     },
   },
@@ -118,6 +94,34 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
         sha256: "e2b259b40adf4f92c30e75d43c9716f03890b9c2dba39af4adb40b7799fa1f1c",
         width: 900,
         height: 400,
+      },
+    },
+  },
+  "us-132-davenport-electric-motor": {
+    sourcePdfSha256: "9147fc5c9d6565aa765198b42e900c90c5c0fe550b9162fe62727f86a5071960",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 1,
+    assets: {
+      "/patents/figures/us-132-davenport-electric-motor/drawing-sheet-source-v1.png": {
+        sha256: "f47bf13c2da1b30cb022f54021b375e3a21bf05ff2726246c054374b22e8f09f",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
+  "us-157124-glidden-barbed-wire": {
+    sourcePdfSha256: "19c3874222e125ad1be8df9b1e4e59df4d7ff6452876588666a3c9ddf2cb0cc1",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 6,
+    assets: {
+      "/patents/figures/us-157124-glidden-barbed-wire/source-sheet-1-v1.png": {
+        sha256: "4002c9b8311556cb861bc5f2eaaf63a404ce01c1b0cac77d76a8a684169d0083",
+        width: 2320,
+        height: 3408,
       },
     },
   },
@@ -291,15 +295,15 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
   },
   "us-1781541-einstein-refrigerator": {
     sourcePdfSha256: "5b67c380be742776b9509862e68e1fc68478a7b1cc92f215ba422efbd76b96e4",
-    reviewer: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-08-18",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "direct-facsimile-crop-review",
     acceptedOccurrenceCount: 2,
     assets: {
-      "/patents/figures/us-1781541-einstein-refrigerator/fig-1-source-crop-v1.png": {
-        sha256: "22d451b153876701f7e16ecb4b6eabb32e5f5f182e412cfed9cc859ba1b017bb",
-        width: 2040,
-        height: 2840,
+      "/patents/figures/us-1781541-einstein-refrigerator/source-sheet-1-v1.png": {
+        sha256: "8ad5c0284168c3bc123b82b79693f49e1774dcb16c93b8b90c708bf0e2483a05",
+        width: 2320,
+        height: 3408,
       },
     },
   },
@@ -379,54 +383,29 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
   },
   "us-200521-edison-phonograph": {
     sourcePdfSha256: "6ed4354f12dc944b49ac2a2a3dd8d0aaa3f263d0c5f2017b2237a37ffde00ccd",
-    reviewer: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-08-18",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "direct-facsimile-crop-review",
     acceptedOccurrenceCount: 8,
     assets: {
-      "/patents/figures/us-200521-edison-phonograph-fig-1-source-crop.png": {
-        sha256: "82041278881c564efaf8ce951758d318eab9746a15d109654197088a25075bb6",
-        width: 1700,
-        height: 820,
-      },
-      "/patents/figures/us-200521-edison-phonograph-fig-2-tight-source-crop.png": {
-        sha256: "aeb6549043eb847624e036a1e6bcd9deb31d4de3b764c5e962389644cf78e2c4",
-        width: 1400,
-        height: 800,
-      },
-      "/patents/figures/us-200521-edison-phonograph-fig-3-complete-source-crop-v2.png": {
-        sha256: "c6ff4298cec166acf3cabf36a9de6b00497d374fd679895bf11a122c694c901a",
-        width: 700,
-        height: 620,
-      },
-      "/patents/figures/us-200521-edison-phonograph-fig-4-source-crop.png": {
-        sha256: "18538c956dc846240febd7652ae6891fd829071235499a0a40839b89e404dc60",
-        width: 700,
-        height: 550,
+      "/patents/figures/us-200521-edison-phonograph/drawing-sheet-source-v1.png": {
+        sha256: "6f4ffdaea7781497dad758b3bcf20d3467e13cc1384c85c17be9a03ae32c51b8",
+        width: 2320,
+        height: 3408,
       },
     },
   },
   "us-223898-edison-lightbulb": {
     sourcePdfSha256: "70c46d7c8624b1e471dffd1175b0f34e70b4b05b6a9adede43c198fe71abc054",
-    reviewer: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-08-18",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "direct-facsimile-crop-review",
     acceptedOccurrenceCount: 6,
     assets: {
-      "/patents/figures/us-223898-edison-lightbulb/fig-1-source-crop-v4.png": {
-        sha256: "5c791742c2c6c49b5cf6339bfe89cc346c2ce6463724298a4931bf99a8d75209",
-        width: 600,
-        height: 900,
-      },
-      "/patents/figures/us-223898-edison-lightbulb/fig-2-source-crop-v6.png": {
-        sha256: "045df0a1340e8ff18c5c91a2d172163e7d6c225ecd59e1ef6643812af3238435",
-        width: 430,
-        height: 1450,
-      },
-      "/patents/figures/us-223898-edison-lightbulb/fig-3-source-crop-v3.png": {
-        sha256: "f119b44c01bd7198f2cf4f753be8b10e0af7323c74676a83b77445fead819c02",
-        width: 650,
-        height: 900,
+      "/patents/figures/us-223898-edison-lightbulb/source-sheet-1-v1.png": {
+        sha256: "6a6bb2965a4b3b68d964cf7ebe6885e2037876e80661bdd7d99b7f0398e0053c",
+        width: 2320,
+        height: 3408,
       },
     },
   },
@@ -476,34 +455,29 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
   },
   "us-247804-delaval-separator": {
     sourcePdfSha256: "aa9e284bf20a53467a36a3ae648c7ce5bc4b9599837af32281e04b316b5ef187",
-    reviewer: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-08-18",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "direct-facsimile-crop-review",
     acceptedOccurrenceCount: 4,
     assets: {
-      "/patents/figures/us-247804-delaval-separator/fig-1-source-crop-v2.png": {
-        sha256: "b0e39a9b0485752b79507a9ff9d0d201a4f4751c66ee3d72e7b6e87c24eac5dc",
-        width: 1220,
-        height: 1550,
-      },
-      "/patents/figures/us-247804-delaval-separator/fig-2-source-crop-v2.png": {
-        sha256: "13d5bfbb919f372ae2edd11c264b7c9f599a985b16498e214a922a4cbc1bb910",
-        width: 1380,
-        height: 2460,
+      "/patents/figures/us-247804-delaval-separator/drawing-sheet-source-v1.png": {
+        sha256: "33ae416685348135a7a286d9ceb16dc4ccf3fc3d1056afb878f2dec5a69a94d6",
+        width: 2320,
+        height: 3408,
       },
     },
   },
   "us-2495429-spencer-microwave": {
     sourcePdfSha256: "c5affa57d71dd79a431c8a87427672d9d04579cab911b1b6b5eec9a16ad00aca",
-    reviewer: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-08-18",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "direct-facsimile-crop-review",
     acceptedOccurrenceCount: 1,
     assets: {
-      "/patents/figures/us-2495429-spencer-microwave/fig-1-source-crop-v1.png": {
-        sha256: "2489b0fa0f47a0dce59c4b8b5f99e3d4ca0acd515ef87f12d6c4aaa527501647",
-        width: 2040,
-        height: 1550,
+      "/patents/figures/us-2495429-spencer-microwave/drawing-sheet-source-v1.png": {
+        sha256: "ab3aef1cd0afe66a2fa7f728bfedd51f0caaa7d1c80da36932e0a897841bd826",
+        width: 2320,
+        height: 3408,
       },
     },
   },
@@ -750,25 +724,20 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
   },
   "us-319596-maxim-machine-gun": {
     sourcePdfSha256: "ca385c254e2e390451a2eecd28273fee662afd0179451bcbf9f48bf8fde63dcb",
-    reviewer: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-08-18",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "direct-facsimile-crop-review",
     acceptedOccurrenceCount: 8,
     assets: {
-      "/patents/figures/us-319596-maxim-machine-gun/fig-1-source-crop-v1.png": {
-        sha256: "0bf92e538c1b8614407dab6270a8ea12b08d2b47be3bdacae7657e0168798a76",
-        width: 1070,
-        height: 2640,
+      "/patents/figures/us-319596-maxim-machine-gun/source-sheet-1-v1.png": {
+        sha256: "da088da6e81eb36d878819c392f766edd3733e93e9df78f6fca1258c51bdc048",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-319596-maxim-machine-gun/fig-2-source-crop-v1.png": {
-        sha256: "bac8669aec19d0859628430cd2f6a4b186f09b0b5466c578dc63a41ea1f46972",
-        width: 1030,
-        height: 2640,
-      },
-      "/patents/figures/us-319596-maxim-machine-gun/fig-3-source-crop-v1.png": {
-        sha256: "2bb3e9b5443807ca000f15ad43933b0c13c0321e8ac7064a49cb068d8034aa69",
-        width: 1210,
-        height: 1450,
+      "/patents/figures/us-319596-maxim-machine-gun/source-sheet-2-v1.png": {
+        sha256: "c2c0c2421227d1b1fc246a3331b88f7c47300b82d610c8e83882727fed939b93",
+        width: 2320,
+        height: 3408,
       },
     },
   },
@@ -931,45 +900,25 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
   },
   "us-361931-daimler-engine": {
     sourcePdfSha256: "1c20cb38fad97fe6658cd711d7009dcb70da74af4cf22aec380882e055407159",
-    reviewer: "Classic Patents editorial agent (codex-hotel)",
-    reviewedAt: "2026-08-17",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "direct-facsimile-crop-review",
     acceptedOccurrenceCount: 12,
     assets: {
-      "/patents/figures/us-361931-daimler-engine/fig-1-source-crop-v1.png": {
-        sha256: "a8c860b152b80bce30b2110546925e947ef2b7c0aac0a1e974c5be99348b3253",
-        width: 1280,
-        height: 1570,
+      "/patents/figures/us-361931-daimler-engine/source-sheet-1-v1.png": {
+        sha256: "1ac9ceb6eb1164d00298d671dc7100af8c75291f3072decf3accabbd809918ab",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-361931-daimler-engine/fig-2-source-crop-v2.png": {
-        sha256: "e2909f21355cfb97e64cde709f6e1a8b887d438ad1ed6ed04b95cba6f7f73324",
-        width: 1050,
-        height: 700,
+      "/patents/figures/us-361931-daimler-engine/source-sheet-2-v1.png": {
+        sha256: "653a2dfd70d4633a3d0a73b427e37b100fdcb6e0d213e85e372291c9131d574b",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-361931-daimler-engine/fig-3-source-crop-v1.png": {
-        sha256: "ff72d7288639f3463a5d7d27aa84fbb701eafa3e15f39c71076c7691d55ffb2e",
-        width: 1280,
-        height: 1650,
-      },
-      "/patents/figures/us-361931-daimler-engine/fig-4-source-crop-v1.png": {
-        sha256: "cb911c1f20b0f53422432bd142f0e3200f81b891a715c53db96675df4b75fd1d",
-        width: 420,
-        height: 420,
-      },
-      "/patents/figures/us-361931-daimler-engine/fig-4a-source-crop-v1.png": {
-        sha256: "5d19cc135962bedbfbc0939caebbc962f69858ef578bda4e4908e1c6af7172d1",
-        width: 350,
-        height: 160,
-      },
-      "/patents/figures/us-361931-daimler-engine/fig-5-source-crop-v2.png": {
-        sha256: "9c665bf3b7dff55070d8fe272b0868d843536d200391f8611c786afb83cd219a",
-        width: 820,
-        height: 290,
-      },
-      "/patents/figures/us-361931-daimler-engine/fig-6-source-crop-v1.png": {
-        sha256: "7ea14e6ca6aa95760229dcadfb2160cdbb2b2aba3ab314e40bf9b6a036a802c6",
-        width: 800,
-        height: 450,
+      "/patents/figures/us-361931-daimler-engine/source-sheet-3-v1.png": {
+        sha256: "4f83f9b64fd482f9f43c013d7719aed5b3f1da861f2cd0c9e738b0a781d1d00d",
+        width: 2320,
+        height: 3408,
       },
     },
   },
@@ -1058,140 +1007,30 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
   },
   "us-381968-tesla-motor": {
     sourcePdfSha256: "cffd7ff061b05feef92c2d6ef4d767c7b7e8c6b4e0d10cc9be3fbd51841dce12",
-    reviewer: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-08-18",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 dpi source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "direct-facsimile-crop-review",
     acceptedOccurrenceCount: 57,
     assets: {
-      "/patents/figures/us-381968-tesla-motor/fig-1-source-crop-v2.png": {
-        sha256: "6326d98c642f0803b7ed7677d5de339e72bba1ea13b1c1548b472a89338ff8e0",
-        width: 700,
-        height: 230,
+      "/patents/figures/us-381968-tesla-motor/figs-1-to-8-and-1a-to-8a-source-sheet-v2.png": {
+        sha256: "60b4c9f65579fec9da739ef948cdaadc82c2cfa52c114c30bdbad97be14850df",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-381968-tesla-motor/fig-10-source-crop-v2.png": {
-        sha256: "146feed32dbab65a4a3e3fe5bd76fb8c622c09fa448da34bec50e7de6f59951e",
-        width: 930,
-        height: 650,
+      "/patents/figures/us-381968-tesla-motor/figs-9-to-12-source-sheet-v2.png": {
+        sha256: "1d0fa15c195fd3e187d44573424dcf8752685a7b465a9fe50244665d526e3e90",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-381968-tesla-motor/fig-11-source-crop-v2.png": {
-        sha256: "0e4412ed4a7c5eb6c436b7599d64f7d7dd573be4355c9d7eb6139b8c1ca81811",
-        width: 900,
-        height: 600,
+      "/patents/figures/us-381968-tesla-motor/figs-13-to-16-source-sheet-v2.png": {
+        sha256: "b104b6cd2484534abda7bc39267c1c49155de3944ede61c898231235176018ae",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-381968-tesla-motor/fig-12-source-crop-v2.png": {
-        sha256: "9e96d4cc52b7bc30e1d0b29c2cfeb7c7dd1a30c346e7a68d789b0acd4b162d13",
-        width: 1950,
-        height: 600,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-13-source-crop-v2.png": {
-        sha256: "fc847bccfea2249320a1dd5327aaae872ab54e8c5e8a55c9f43aa59d7b20914e",
-        width: 1800,
-        height: 650,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-14-source-crop-v2.png": {
-        sha256: "e6c750cb4bfe93b83385c4207093ac4ba85e9f7f3fb98cabcf0833903f707f5f",
-        width: 650,
-        height: 550,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-15-source-crop-v2.png": {
-        sha256: "97b3ff2dea950fdfe2f78c3c637ab552684240cd9a61123b66a10983ea0ed657",
-        width: 1850,
-        height: 830,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-16-source-crop-v2.png": {
-        sha256: "be528efdf4f6c1fd194b9a3c007bf6507c03133276fa57b9bd22f5e2880c7c79",
-        width: 700,
-        height: 350,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-17-source-crop-v1.png": {
-        sha256: "6666db6039a51216aaf8cbca1eb7fe9d0cede2df7bed594d7b95181aeb42fbfc",
-        width: 650,
-        height: 750,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-18-source-crop-v1.png": {
-        sha256: "d70f72540e501f5fac0fe60d4a72aec2094eb758b69c642e9b51e987f1e6d54b",
-        width: 570,
-        height: 500,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-19-source-crop-v1.png": {
-        sha256: "9dd09effc10e72085dada94788e1c485834d61364bd876889f11a4c3db29c6af",
-        width: 1060,
-        height: 700,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-1a-source-crop-v2.png": {
-        sha256: "e1ab5ccfbcfd15aeb46e0733e127f958041c4c7b383ece859d8f66a5663df4ce",
-        width: 900,
-        height: 220,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-2-source-crop-v2.png": {
-        sha256: "9e19385a06278f17a697b6edfd82c8c18de9e056bc9e2f8cc6a7c5295b34f114",
-        width: 700,
-        height: 230,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-3-source-crop-v3.png": {
-        sha256: "54a7e35d848769b6e94bb96a50a463c0e99c3a0cad6bcc7c05faf81e3e3b428c",
-        width: 650,
-        height: 210,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-3a-source-crop-v2.png": {
-        sha256: "74aad771177619783fba59a4a3907d8422ff162fea4afe3c8758784e13c8e934",
-        width: 900,
-        height: 220,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-4-source-crop-v2.png": {
-        sha256: "e1c78069e613c9eaacc871dd9b8f88948c8e42d4a6e3408e1a1d5c31b8dbdaff",
-        width: 700,
-        height: 230,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-4a-source-crop-v3.png": {
-        sha256: "164b35c82924d87fd9818e167150f867e6b3eaddd9bf5207ca5a5b589e8f62ec",
-        width: 800,
-        height: 190,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-5-source-crop-v2.png": {
-        sha256: "06b81b7d41c0e92fbf1d79e4b1116055e2679c49b3b5d7ff32af03bb5b7c2e84",
-        width: 700,
-        height: 230,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-5a-source-crop-v3.png": {
-        sha256: "67a354d4479f45cb60add4c37a6d3f75bc3d805417b7481dcfbd1cfc5c600b4e",
-        width: 800,
-        height: 180,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-6-source-crop-v2.png": {
-        sha256: "6abcc7f1b99424d7cfd0e41d6ef9e52d0240f36dde2288bc66f64b46cee1ef50",
-        width: 700,
-        height: 200,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-6a-source-crop-v3.png": {
-        sha256: "ed9bc948235ffe36bc2d2bcb13d761c9e416106708e8fc008cd76641e47353e4",
-        width: 800,
-        height: 180,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-7-source-crop-v2.png": {
-        sha256: "b57d72c55b8acef5dc7a7dfee4a392636632d1262fc0a8e075a0fd6e72fbc460",
-        width: 700,
-        height: 230,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-7a-source-crop-v2.png": {
-        sha256: "78ebbb6dfa9ce107e3608ac456412de447dc9ce48e257edbbdf5a24f382a3842",
-        width: 900,
-        height: 190,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-8-source-crop-v2.png": {
-        sha256: "e60c300eb12d80283d2e65cc196fdd3f258f3c742b111c3c8552e1c827ad4f11",
-        width: 700,
-        height: 230,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-8a-source-crop-v2.png": {
-        sha256: "f50d0fabdd08f7e16bda1c4beec99d5c34f1f79ee32aafc8e439ae06854b4c20",
-        width: 900,
-        height: 160,
-      },
-      "/patents/figures/us-381968-tesla-motor/fig-9-source-crop-v1.png": {
-        sha256: "f2bf787cf33ed151caaceb939db9bcca1913d3453b46c1994a4e7d7032f341a0",
-        width: 1120,
-        height: 800,
+      "/patents/figures/us-381968-tesla-motor/figs-17-to-19-source-sheet-v2.png": {
+        sha256: "162a8c2598287359f654b6a757af0aa190a601c5f0ee83191853e3fd40b38c67",
+        width: 2320,
+        height: 3408,
       },
     },
   },
@@ -1911,25 +1750,20 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
   },
   "us-593138-tesla-coil": {
     sourcePdfSha256: "393b0a9cee0baa191c5cf8fac0f65738b9d77ce5318e74324b4792aaf17ddf44",
-    reviewer: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-08-18",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "direct-facsimile-crop-review",
     acceptedOccurrenceCount: 11,
     assets: {
-      "/patents/figures/us-593138-tesla-coil/fig-1-source-crop-v2.png": {
-        sha256: "317b9967292d75421b7d97f166d2bf1a7301a4c78eea7f6a4f759743f5d773ef",
-        width: 1100,
-        height: 1450,
+      "/patents/figures/us-593138-tesla-coil/source-sheet-1.png": {
+        sha256: "1cd9e455b7277744b52865ac27aba4b43180494bb608c2c33d69c59bc371004a",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-593138-tesla-coil/fig-2-source-crop-v2.png": {
-        sha256: "699631f099f5a7b49ec57b41679fab81899653f9e5f47606369fdd7a76d27b24",
-        width: 1100,
-        height: 700,
-      },
-      "/patents/figures/us-593138-tesla-coil/fig-3-source-crop-v3.png": {
-        sha256: "4fce377003e88f96b6a1ae5ec400ff5f449f3136c8e5fb57e37c02748b3c3603",
-        width: 900,
-        height: 500,
+      "/patents/figures/us-593138-tesla-coil/source-sheet-2.png": {
+        sha256: "a7112e2d25055cb226c93504977020e5322e68005a61744b6506e3bb282b49d7",
+        width: 2320,
+        height: 3408,
       },
     },
   },
@@ -2080,22 +1914,55 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
       },
     },
   },
+  "us-821393-wright-flyer": {
+    sourcePdfSha256: "678bea5d81cb4e90a15c998bc932d2cf01bc87cfc3fcc53f0ecbdbdc70097966",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 15,
+    assets: {
+      "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png": {
+        sha256: "b09b55b78fd5fd0e321b6e939e665d0981b1724d2fc2b50b8721cac657f79390",
+        width: 3408,
+        height: 2320,
+      },
+      "/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png": {
+        sha256: "cedeeaf0931143da7b82a2979be8213470118535eb90e3907c586b51fecb98d4",
+        width: 3408,
+        height: 2320,
+      },
+      "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png": {
+        sha256: "c223b62ec6fb80e1a58bc958af129c34f54be685814883e4e9b4b87ba13e60cc",
+        width: 3408,
+        height: 2320,
+      },
+    },
+  },
   "us-879532-de-forest-audion": {
     sourcePdfSha256: "3a37d70051d784a5a086d53b8d2d09f372b8bb14d40179b68b62a5c166e7876e",
-    reviewer: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-19",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "independent-figure-review",
     acceptedOccurrenceCount: 6,
     assets: {
-      "/patents/figures/us-879532-de-forest-audion/fig-1-source-crop-v2.png": {
-        sha256: "690f8315d30bc286aa585ecc88fdfa6a485edf7dd9498eef0151195d7b324eff",
-        width: 1200,
-        height: 800,
+      "/patents/figures/us-879532-de-forest-audion/source-sheet-1-v1.png": {
+        sha256: "27c094b22bc5ca46c4e6c664e5c986c51d4076c2f49818b23055e6f60cff7182",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-879532-de-forest-audion/fig-2-source-crop-v2.png": {
-        sha256: "9beb6eec9deaa452144ce2f606f2ab8bb8e63514c1781d3ba7c3f1914a3caf3c",
-        width: 1100,
-        height: 700,
+    },
+  },
+  "us-x8277-mccormick-reaper": {
+    sourcePdfSha256: "24712ca3e966994d72716ccca6df6ef9a1fb3751b30fe34bfeb549ab6ba7f400",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 1,
+    assets: {
+      "/patents/figures/us-x8277-mccormick-reaper/source-sheet-1-v1.png": {
+        sha256: "ccaf8f0f56d335c1a980cc81e8c336066eb43a33af00f4e0522376b0b034e4d5",
+        width: 2320,
+        height: 3408,
       },
     },
   },

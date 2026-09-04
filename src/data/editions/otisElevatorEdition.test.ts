@@ -114,4 +114,13 @@ describe("otisElevatorArchivalEdition", () => {
   test("passes the catalogue schema with its reviewed transcript metadata", () => {
     expect(parsePatentCatalog([otisElevatorPatent])).toHaveLength(1);
   });
+
+  test("enforces figure acceptance pending hold while ledger is verified", () => {
+    const { evaluateArchivalPublicationState } = require("./publicationApproval");
+    const decision = evaluateArchivalPublicationState(otisElevatorPatent);
+    expect(decision.isPublished).toBe(false);
+    expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+    expect(decision.state.evidence.ledgerContent.valid).toBe(true);
+    expect(decision.state.evidence.ledgerContent.status).toBe("verified");
+  });
 });

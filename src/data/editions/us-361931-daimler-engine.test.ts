@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { evaluateArchivalPublicationState } from "@/data/editions/publicationApproval";
 import { daimlerEnginePatent } from "@/data/patents/daimler-engine";
 import {
   DAIMLER_MARINE_ENGINE_PARALLEL_READINGS,
@@ -46,16 +47,16 @@ describe("US 361,931 Daimler manual marine-engine edition", () => {
     expect(daimlerEnginePatent.stats).toMatchObject({ totalClaims: 10, independentClaims: 10 });
   });
 
-  test("maps every cited figure to its own source-faithful crop, never a whole drawing sheet", () => {
-    const expectedCropByFigure = {
-      1: "/patents/figures/us-361931-daimler-engine/fig-1-source-crop-v1.png",
-      2: "/patents/figures/us-361931-daimler-engine/fig-2-source-crop-v2.png",
-      3: "/patents/figures/us-361931-daimler-engine/fig-3-source-crop-v1.png",
-      4: "/patents/figures/us-361931-daimler-engine/fig-4-source-crop-v1.png",
-      "4a": "/patents/figures/us-361931-daimler-engine/fig-4a-source-crop-v1.png",
-      "4b": "/patents/figures/us-361931-daimler-engine/fig-4b-source-crop-v1.png",
-      5: "/patents/figures/us-361931-daimler-engine/fig-5-source-crop-v2.png",
-      6: "/patents/figures/us-361931-daimler-engine/fig-6-source-crop-v1.png",
+  test("maps each figure citation to its complete, exact source drawing sheet", () => {
+    const expectedSheetByFigure = {
+      1: "/patents/figures/us-361931-daimler-engine/source-sheet-1-v1.png",
+      2: "/patents/figures/us-361931-daimler-engine/source-sheet-2-v1.png",
+      3: "/patents/figures/us-361931-daimler-engine/source-sheet-3-v1.png",
+      4: "/patents/figures/us-361931-daimler-engine/source-sheet-2-v1.png",
+      "4a": "/patents/figures/us-361931-daimler-engine/source-sheet-2-v1.png",
+      "4b": "/patents/figures/us-361931-daimler-engine/source-sheet-2-v1.png",
+      5: "/patents/figures/us-361931-daimler-engine/source-sheet-2-v1.png",
+      6: "/patents/figures/us-361931-daimler-engine/source-sheet-2-v1.png",
     } as const;
     const previewSources = new Set<string>();
     for (const block of daimlerMarineEngineArchivalEdition.blocks) {
@@ -72,17 +73,55 @@ describe("US 361,931 Daimler manual marine-engine edition", () => {
           const citedPreviewSources = new Set(inline.figurePreviews?.map((preview) => preview.src));
           for (const figureNumber of sourceFigures) {
             expect(citedPreviewSources).toContain(
-              expectedCropByFigure[figureNumber.toLowerCase() as keyof typeof expectedCropByFigure],
+              expectedSheetByFigure[
+                figureNumber.toLowerCase() as keyof typeof expectedSheetByFigure
+              ],
             );
           }
           for (const preview of inline.figurePreviews ?? []) {
             previewSources.add(preview.src);
             expect(existsSync(join(process.cwd(), "public", preview.src))).toBe(true);
+            expect(preview).toMatchObject({ width: 2320, height: 3408 });
+            expect(preview.alt).toContain("Complete unmodified source drawing sheet");
           }
         }
       }
     }
-    expect([...previewSources].sort()).toEqual([...Object.values(expectedCropByFigure)].sort());
+    expect([...previewSources].sort()).toEqual(
+      [...new Set(Object.values(expectedSheetByFigure))].sort(),
+    );
+
+    for (const legacyCrop of [
+      "fig-1-source-crop-v1.png",
+      "fig-2-source-crop-v1.png",
+      "fig-2-source-crop-v2.png",
+      "fig-3-source-crop-v1.png",
+      "fig-4-source-crop-v1.png",
+      "fig-4a-source-crop-v1.png",
+      "fig-4b-source-crop-v1.png",
+      "fig-5-source-crop-v1.png",
+      "fig-5-source-crop-v2.png",
+      "fig-6-source-crop-v1.png",
+    ]) {
+      expect(
+        existsSync(
+          join(process.cwd(), "public/patents/figures/us-361931-daimler-engine", legacyCrop),
+        ),
+      ).toBe(true);
+    }
+  });
+
+  test("accepts all twelve source citations against full-sheet source-pixel evidence", () => {
+    const decision = evaluateArchivalPublicationState(daimlerEnginePatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 12,
+      acceptedFigureCount: 12,
+    });
+    expect(decision.figureManifest.figures.every((figure) => figure.status === "accepted")).toBe(
+      true,
+    );
   });
 
   test("keeps every source figure citation as an authored preview node", () => {

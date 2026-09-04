@@ -266,22 +266,14 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "classic-patentscom-q9h",
     "The research edition is held pending full source-face review.",
   ),
-  "us-3858232-boyle-smith-ccd": auditHold(
-    "AUDIT_LEDGER_ACCEPTANCE_PENDING",
-    "classic-patentscom-aj7",
-    "The page ledger needs repair and independent acceptance before publication.",
-  ),
+
   "us-3671542-kwolek-kevlar": auditHold(
     "AUDIT_PRIMARY_FACSIMILE_PENDING",
     "classic-patentscom-0io",
     "Facsimile recovery remains incomplete; the source face is therefore not accepted.",
     "facsimile-only",
   ),
-  "us-3541541-engelbart-mouse": auditHold(
-    "AUDIT_LEDGER_ACCEPTANCE_PENDING",
-    "classic-patentscom-7ea",
-    "The source ledger and source-bounded presentation require repair before archival release.",
-  ),
+
   "us-3353115-maiman-ruby-laser": auditHold(
     "AUDIT_FIGURE_ACCEPTANCE_PENDING",
     "classic-patentscom-ug8",
@@ -357,11 +349,7 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "classic-patentscom-z99",
     "Independent archival acceptance is pending.",
   ),
-  "us-621195-zeppelin-airship": auditHold(
-    "AUDIT_LEDGER_ACCEPTANCE_PENDING",
-    "classic-patentscom-gmx",
-    "Ledger and claim-source correction is pending.",
-  ),
+
   "us-613809-tesla-teleautomaton": auditHold(
     "AUDIT_FACSIMILE_REVIEW_PENDING",
     "classic-patentscom-a4b",
@@ -388,12 +376,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "classic-patentscom-8vw",
     "The crop hold remains in force.",
   ),
-  "us-233692-pelton-water-wheel": auditHold(
-    "AUDIT_FACSIMILE_REVIEW_PENDING",
-    "classic-patentscom-uuv",
-    "The facsimile publication packet remains incomplete.",
-    "source-bounded",
-  ),
   "us-542846-diesel-engine": auditHold(
     "AUDIT_FACSIMILE_REVIEW_PENDING",
     "classic-patentscom-87z",
@@ -409,11 +391,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "AUDIT_FIGURE_ACCEPTANCE_PENDING",
     "classic-patentscom-jks",
     "All 17 figure previews require QA acceptance.",
-  ),
-  "us-157124-glidden-barbed-wire": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-kk6",
-    "Held source crops require replacement and acceptance.",
   ),
   "us-120057-gramme-dynamo": auditHold(
     "AUDIT_FIGURE_ACCEPTANCE_PENDING",
@@ -470,36 +447,12 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "A primary facsimile has not yet been independently published.",
     "facsimile-only",
   ),
-  "us-821393-wright-flyer": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-971",
-    "The held preview set requires complete source-crop acceptance.",
-  ),
   "us-727650-linde-air-liquefaction": auditHold(
     "AUDIT_FIGURE_ACCEPTANCE_PENDING",
     "classic-patentscom-0tc",
     "The Figure 3 crop requires acceptance.",
   ),
-  "us-31128-otis-elevator": auditHold(
-    "AUDIT_LEDGER_ACCEPTANCE_PENDING",
-    "classic-patentscom-1np",
-    "Ledger and claim-source contract completion is pending.",
-  ),
-  "us-6469-lincoln-buoy": auditHold(
-    "AUDIT_LEDGER_ACCEPTANCE_PENDING",
-    "classic-patentscom-n57",
-    "The reviewed ledger must be restored before archival release.",
-  ),
-  "us-132-davenport-electric-motor": auditHold(
-    "AUDIT_LEDGER_ACCEPTANCE_PENDING",
-    "classic-patentscom-d10",
-    "The reviewed ledger must be restored before archival release.",
-  ),
-  "us-x8277-mccormick-reaper": auditHold(
-    "AUDIT_CLAIM_PARITY_PENDING",
-    "classic-patentscom-phm",
-    "Publication remains held while the legal-text contract is repaired.",
-  ),
+
   "us-347140-thomson-welding": auditHold(
     "AUDIT_FACSIMILE_REVIEW_PENDING",
     "classic-patentscom-qm2",

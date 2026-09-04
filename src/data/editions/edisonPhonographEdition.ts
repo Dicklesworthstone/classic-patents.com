@@ -16,18 +16,18 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
-const crop = (file: string, width: number, height: number, label: string) => ({
-  src: `/patents/figures/us-200521-edison-phonograph-${file}.png`,
-  alt: `Source-facsimile crop of ${label} from US 200,521.`,
-  width,
-  height,
+const sourceSheetPreview = (figure: string, description: string) => ({
+  src: "/patents/figures/us-200521-edison-phonograph/drawing-sheet-source-v1.png",
+  alt: `Complete unmodified source drawing sheet from US 200,521, including ${figure}: ${description}`,
+  width: 2320,
+  height: 3408,
 });
 
 const FIGURES = {
-  "Fig. 1": crop("fig-1-source-crop", 1700, 820, "Fig. 1"),
-  "Fig. 2": crop("fig-2-tight-source-crop", 1400, 800, "Fig. 2"),
-  "Fig. 3": crop("fig-3-complete-source-crop-v2", 700, 620, "Fig. 3"),
-  "Fig. 4": crop("fig-4-source-crop", 700, 550, "Fig. 4"),
+  "Fig. 1": sourceSheetPreview("Fig. 1", "the principal phonograph apparatus"),
+  "Fig. 2": sourceSheetPreview("Fig. 2", "the cylinder and diaphragm arrangement"),
+  "Fig. 3": sourceSheetPreview("Fig. 3", "the alternative tracing mechanism"),
+  "Fig. 4": sourceSheetPreview("Fig. 4", "the alternative recording mechanism"),
 } as const;
 
 const figure = (
@@ -38,7 +38,7 @@ const figure = (
   text: sourceText,
   href: "#",
   referenceType: "figure",
-  label: `Open the source-facsimile crop for ${label} in US 200,521`,
+  label: `Open the complete source drawing sheet containing ${label} in US 200,521`,
   figurePreviews: [FIGURES[label]],
 });
 

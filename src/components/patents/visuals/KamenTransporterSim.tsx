@@ -17,7 +17,6 @@ import {
   ensureKamenTransporterWasm,
   type KamenTransporterKernelSource,
   kamenTransporterKernelSource,
-  kamenTransporterRuntimeLabel,
   stepKamenTransporterPhysics,
 } from "@/physics/kamenTransporterWasm";
 import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -70,7 +69,7 @@ export function KamenTransporterSim({
   const height = 460;
   const groundY = 400;
   const originX = 260;
-  const pixelsPerMeter = 260;
+  const pixelsPerMeter = 400;
   const worldX = (xM: number) => originX + xM * pixelsPerMeter;
   const worldY = (yM: number) => groundY - yM * pixelsPerMeter;
   const wheelRadiusPx = KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.wheelRadiusM * pixelsPerMeter;
@@ -87,10 +86,20 @@ export function KamenTransporterSim({
       data-kamen-contact-wheels={topology.displayPose.contactWheelIds.join(",")}
       data-kamen-contact-count={topology.displayPose.contactCount}
       data-kamen-minimum-gap-m={topology.displayPose.minimumGapM.toFixed(12)}
+      data-kamen-riser-contact-wheels={topology.displayPose.riserContactWheelIds.join(",")}
+      data-kamen-riser-contact-count={topology.displayPose.riserContactCount}
+      data-kamen-minimum-riser-clearance-m={
+        topology.displayPose.minimumRiserClearanceM?.toFixed(12) ?? "not-applicable"
+      }
       data-kamen-runtime-source={topology.runtimeSource}
       data-kamen-owner={topology.genericOwner}
       data-kamen-boundary={topology.runtimeBoundary}
       data-kamen-source-figure={topology.displayPose.sourceFigure}
+      data-kamen-axle-x-m={topology.displayPose.axleXM.toFixed(12)}
+      data-kamen-axle-y-m={topology.displayPose.axleYM.toFixed(12)}
+      data-kamen-carrier-rotation-rad={topology.displayPose.carrierRotationRad.toFixed(12)}
+      data-kamen-chassis-pitch-rad={topology.displayPose.chassisPitchRad.toFixed(12)}
+      data-kamen-stair-active={topology.displayPose.stairActive ? "true" : "false"}
       data-kamen-cluster-topology={topology.clusterTopologyActive ? "present" : "withheld"}
       data-kamen-balance-loop={topology.balanceLoopActive ? "active" : "withheld"}
       data-kamen-wheel-count="three-per-lateral-cluster"
@@ -113,7 +122,6 @@ export function KamenTransporterSim({
             Source-Dimensioned Balance, Transfer &amp; Climb Contact Geometry
           </h3>
         </div>
-        <PhysicsTelemetryBadge patentId={patentId} equations={equations} />
       </div>
 
       <div className="relative aspect-[4/3] w-full max-w-[640px] select-none overflow-hidden rounded-xl border border-parchment-300 bg-parchment-100 dark:border-ink-800 dark:bg-ink-900">
@@ -180,14 +188,6 @@ export function KamenTransporterSim({
             strokeDasharray="4 4"
             strokeWidth="1.5"
           />
-          <text
-            x={hubX + 10}
-            y={Math.max(116, hubY - 128)}
-            className="fill-ink-600 font-mono text-[10px] dark:fill-parchment-300"
-          >
-            TABLE 1 CENTRE OFFSET: 21.0 IN
-          </text>
-
           {topology.clusterTopologyActive ? (
             <g data-kamen-svg-cluster="three-equal-wheels">
               {topology.displayPose.wheelContacts.map((wheel) => (
@@ -277,41 +277,11 @@ export function KamenTransporterSim({
               strokeWidth="2"
             />
           </g>
-
-          <text
-            x="20"
-            y="35"
-            className="fill-ink-700 font-mono text-[11px] font-bold dark:fill-parchment-200"
-          >
-            STATE: {topology.stateLabel.toUpperCase()}
-          </text>
-          <text
-            x="20"
-            y="53"
-            className="fill-ink-700 font-mono text-[11px] font-bold dark:fill-parchment-200"
-          >
-            WHEEL CONTROL: {topology.wheelControlMode.replaceAll("-", " ").toUpperCase()}
-          </text>
-          <text
-            x="20"
-            y="71"
-            className="fill-ink-700 font-mono text-[11px] font-bold dark:fill-parchment-200"
-          >
-            CLAIMS: {topology.sourceClaimNumbers.join(", ")}
-          </text>
-          <text x="20" y="94" className="fill-ink-500 font-mono text-[9px] dark:fill-parchment-400">
-            CONTACT: {topology.displayPose.contactWheelIds.join(" + ").toUpperCase()} —{" "}
-            {topology.displayPose.sourceFigure.toUpperCase()}
-          </text>
-          <text
-            x="20"
-            y="108"
-            className="fill-ink-500 font-mono text-[9px] dark:fill-parchment-400"
-          >
-            {kamenTransporterRuntimeLabel(topology.runtimeSource).toUpperCase()} — FORCE, FRICTION,
-            IMPACT &amp; CONTROL RESPONSE WITHHELD.
-          </text>
         </svg>
+      </div>
+
+      <div data-mobile-layout="telemetry-after-canvas" className="w-full">
+        <PhysicsTelemetryBadge patentId={patentId} equations={equations} />
       </div>
 
       <div className="grid w-full grid-cols-1 gap-4 font-mono text-xs md:grid-cols-2">
@@ -345,9 +315,9 @@ export function KamenTransporterSim({
           <p className="font-bold">Source boundary</p>
           <p className="mt-1 leading-relaxed text-[11px] text-ink-600 dark:text-ink-400">
             Table 1 prints the nominal 3.81-inch wheel radius, 5.581-inch carrier radius, 6.85-inch
-            rise, and 10.9-inch tread. The generic fs-mbd owner checks those rigid horizontal
-            contacts; force, friction, impact, compliance, motor, sensor, and controller results
-            remain withheld.
+            rise, 10.9-inch tread, and 3.011-inch upper-contact offset. The generic fs-mbd owner
+            checks rigid tread support and both finite riser faces; force, friction, impact,
+            compliance, motor, sensor, and controller results remain withheld.
           </p>
         </div>
 

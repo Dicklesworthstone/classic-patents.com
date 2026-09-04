@@ -10,7 +10,6 @@ import {
 
 const EXPECTED_ROOT_QA_WITHHOLDS = [
   "us-2297691-carlson-electrophotography",
-  "us-233692-pelton-water-wheel",
   "us-2543181-land-polaroid",
   "us-2708656-fermi-reactor",
   "us-313224-mergenthaler-linotype",
@@ -85,7 +84,7 @@ describe("Wright archival parallel reading", () => {
           expect(inline.figurePreviews).toBeArray();
           expect(inline.figurePreviews?.length).toBeGreaterThan(0);
           for (const preview of inline.figurePreviews ?? []) {
-            expect(preview.src).toStartWith("/patents/figures/us-821393-wright-flyer-");
+            expect(preview.src).toStartWith("/patents/figures/us-821393-wright-flyer/");
             expect(preview.alt.trim().length).toBeGreaterThan(0);
           }
         }

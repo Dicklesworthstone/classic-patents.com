@@ -6,10 +6,13 @@ import { applyClaimConstraintModifications } from "@/physics/claimConstraints";
 import {
   DEFAULT_SIKORSKY_CONTROLS,
   INITIAL_SIKORSKY_STATE,
+  readSikorskyControls,
   SIKORSKY_SOURCE_BOUNDARY,
   stepSikorskyHelicopterSi,
 } from "@/physics/sikorskyHelicopterKernel";
 import {
+  SIKORSKY_DESKTOP_OVERVIEW_SAFE_ZONE,
+  SIKORSKY_HELICOPTER_CAMERA_VIEWS,
   SIKORSKY_HELICOPTER_VIEW_LABELS,
   sikorskyViewForViewport,
 } from "./sikorskyHelicopterCamera";
@@ -122,6 +125,96 @@ function projectedPhoneOverviewBounds(viewportWidth: number, viewportHeight: num
   }
 }
 
+function projectedDesktopOverviewBounds(controls: typeof DEFAULT_SIKORSKY_CONTROLS) {
+  const model = buildSikorskyHelicopterModel();
+  try {
+    const { viewportWidth, viewportHeight } = SIKORSKY_DESKTOP_OVERVIEW_SAFE_ZONE;
+    const view = sikorskyViewForViewport(
+      "overview",
+      viewportWidth,
+      INITIAL_SIKORSKY_STATE.altitudeMeters,
+    );
+    const camera = new THREE.PerspectiveCamera(42, viewportWidth / viewportHeight, 0.1, 1000);
+    camera.position.set(...view.position);
+    camera.lookAt(...view.target);
+    camera.updateProjectionMatrix();
+    camera.updateMatrixWorld();
+
+    // The screenshot audit gives the model enough ticks to articulate after
+    // each input action.  Preserve that stateful pose, then sample all rotor
+    // phases so a blade which happens to be edge-on in one frame cannot make a
+    // too-tight overview look safe.
+    let result = stepSikorskyHelicopterSi(INITIAL_SIKORSKY_STATE, controls, 1 / 60);
+    for (let tick = 1; tick < 50; tick++) {
+      result = stepSikorskyHelicopterSi(result.state, controls, 1 / 60);
+    }
+
+    const allAirframe: ProjectedBounds = {
+      minX: Number.POSITIVE_INFINITY,
+      maxX: Number.NEGATIVE_INFINITY,
+      minY: Number.POSITIVE_INFINITY,
+      maxY: Number.NEGATIVE_INFINITY,
+    };
+    const openFrameAndControlCore: ProjectedBounds = { ...allAirframe };
+
+    for (let phaseIndex = 0; phaseIndex < 36; phaseIndex++) {
+      const phase = (phaseIndex / 36) * Math.PI * 2;
+      model.updateState(result.metrics, controls, {
+        ...result.state,
+        rotorPhaseRad: phase,
+        tailRotorPhaseRad: phase * 5,
+      });
+      model.root.updateMatrixWorld(true);
+      const airframe = model.root.getObjectByName("HelicopterAirframe");
+      if (!airframe) throw new Error("Sikorsky airframe is missing from desktop overview test.");
+
+      model.root.traverse((part) => {
+        if (!(part instanceof THREE.Mesh)) return;
+        const positions = part.geometry.getAttribute("position");
+        for (let index = 0; index < positions.count; index++) {
+          const world = new THREE.Vector3()
+            .fromBufferAttribute(positions, index)
+            .applyMatrix4(part.matrixWorld);
+          const projected = world.clone().project(camera);
+          expandProjectedBounds(allAirframe, projected);
+
+          // This central local volume deliberately contains the exposed truss,
+          // main mast, swashplate, pitch links, and landing-gear relationship.
+          // It is the part a visitor must be able to inspect before choosing a
+          // dedicated close view.
+          const airframeLocal = airframe.worldToLocal(world.clone());
+          if (
+            airframeLocal.x ** 2 + airframeLocal.z ** 2 < 2.25 &&
+            airframeLocal.y > -0.3 &&
+            airframeLocal.y < 2.15
+          ) {
+            expandProjectedBounds(openFrameAndControlCore, projected);
+          }
+        }
+      });
+    }
+    return { allAirframe, openFrameAndControlCore };
+  } finally {
+    model.dispose();
+  }
+}
+
+function projectedWidthPx(bounds: ProjectedBounds, viewportWidth: number) {
+  return ((bounds.maxX - bounds.minX) * viewportWidth) / 2;
+}
+
+function projectedHeightPx(bounds: ProjectedBounds, viewportHeight: number) {
+  return ((bounds.maxY - bounds.minY) * viewportHeight) / 2;
+}
+
+function projectedTopPx(bounds: ProjectedBounds, viewportHeight: number) {
+  return ((1 - bounds.maxY) * viewportHeight) / 2;
+}
+
+function projectedBottomPx(bounds: ProjectedBounds, viewportHeight: number) {
+  return ((1 - bounds.minY) * viewportHeight) / 2;
+}
+
 describe("US 2,318,259 Sikorsky Helicopter 3D Procedural Model", () => {
   test("instantiates full procedural 3D hierarchy: fuselage truss, engine, rotor mast, swashplate, tail boom, tail rotor", () => {
     const model = buildSikorskyHelicopterModel();
@@ -200,7 +293,7 @@ describe("US 2,318,259 Sikorsky Helicopter 3D Procedural Model", () => {
     );
     expect(studioSource).toContain("sikorskyViewForViewport");
     expect(cameraSource).toContain("sikorskyStudioAltitude(altitudeMeters)");
-    expect(cameraSource).toContain("position: [5.9, 4.5, 7.2]");
+    expect(cameraSource).toContain("position: [4.5, 3.8, 5.5]");
   });
 
   test("keeps long-running climbs inside the inspection volume without corrupting SI altitude", () => {
@@ -252,12 +345,84 @@ describe("US 2,318,259 Sikorsky Helicopter 3D Procedural Model", () => {
       768,
       INITIAL_SIKORSKY_STATE.altitudeMeters,
     );
+    expect(desktopOverview).toEqual({
+      position: [4.5, 3.8, 5.5],
+      target: [-1, 2.15, -1.25],
+    });
     expect(mobileOverview.position).not.toEqual(desktopOverview.position);
     expect(mobileOverview.position).toEqual([5.63, 6.85, 5.57]);
     expect(mobileOverview.target).toEqual([0.18, 2.4, 0.12]);
     expect(tabletOverview.position).toEqual([6.15, 4.58, 7.56]);
     expect(tabletOverview.target).toEqual([-0.35, 1.65, -1.3]);
     expect(tabletOverview.position).not.toEqual(desktopOverview.position);
+
+    // The desktop overview is the only camera adjusted by this framing repair.
+    // Dedicated close inspection views stay exactly on their articulated
+    // mechanisms instead of inheriting the wider overview composition.
+    for (const closeView of ["rotorHead", "tailRotor", "cockpit"] as const) {
+      expect(
+        sikorskyViewForViewport(closeView, 1200, INITIAL_SIKORSKY_STATE.altitudeMeters),
+      ).toEqual(SIKORSKY_HELICOPTER_CAMERA_VIEWS[closeView]);
+    }
+  });
+
+  test("keeps a full-size, UI-clear desktop airframe overview in default, maximum-collective, and Claim 1-inverted audit poses", () => {
+    const primaryControlMaximum = {
+      ...DEFAULT_SIKORSKY_CONTROLS,
+      collectivePitchDeg: 16,
+    };
+    // The audit first drives the first range (collective) to its maximum, then
+    // inverts the first Claim toggle.  Materialize that exact shared-kernel
+    // control path rather than treating the claim state as an art-only pose.
+    const claimOneInverted = readSikorskyControls(
+      applyClaimConstraintModifications("us-2318259-sikorsky-helicopter", primaryControlMaximum, {
+        1: false,
+        2: true,
+      }).modifiedParams,
+    );
+    const { viewportWidth, viewportHeight } = SIKORSKY_DESKTOP_OVERVIEW_SAFE_ZONE;
+    const desktopAuditPoses = [
+      ["default", DEFAULT_SIKORSKY_CONTROLS],
+      ["primary-control-max", primaryControlMaximum],
+      ["claim-1-inverted", claimOneInverted],
+    ] as const;
+
+    for (const [name, controls] of desktopAuditPoses) {
+      const { allAirframe, openFrameAndControlCore } = projectedDesktopOverviewBounds(controls);
+      const allAirframeWidth = projectedWidthPx(allAirframe, viewportWidth);
+      const coreWidth = projectedWidthPx(openFrameAndControlCore, viewportWidth);
+      const coreHeight = projectedHeightPx(openFrameAndControlCore, viewportHeight);
+
+      // Every mesh vertex, across all rotor phases, participates in this
+      // envelope: main rotor, tail boom/rotor, exposed truss, and landing gear.
+      expect(allAirframe.minX, `${name} left edge`).toBeGreaterThan(
+        -SIKORSKY_DESKTOP_OVERVIEW_SAFE_ZONE.horizontalNdcEdge,
+      );
+      expect(allAirframe.maxX, `${name} right edge`).toBeLessThan(
+        SIKORSKY_DESKTOP_OVERVIEW_SAFE_ZONE.horizontalNdcEdge,
+      );
+      expect(
+        projectedTopPx(allAirframe, viewportHeight),
+        `${name} view/source rail clearance`,
+      ).toBeGreaterThan(SIKORSKY_DESKTOP_OVERVIEW_SAFE_ZONE.topPx);
+      expect(
+        projectedBottomPx(allAirframe, viewportHeight),
+        `${name} reader-control clearance`,
+      ).toBeLessThan(SIKORSKY_DESKTOP_OVERVIEW_SAFE_ZONE.bottomPx);
+
+      // The old desktop composition left most of the 1214 × 680 instrument
+      // empty.  These lower bounds keep the full mechanism and the meaningful
+      // open-frame/swashplate region at an exhibit-legible overview scale.
+      expect(allAirframeWidth, `${name} full-airframe coverage`).toBeGreaterThan(
+        SIKORSKY_DESKTOP_OVERVIEW_SAFE_ZONE.minimumAirframeWidthPx,
+      );
+      expect(coreWidth, `${name} open-frame/control coverage`).toBeGreaterThan(
+        SIKORSKY_DESKTOP_OVERVIEW_SAFE_ZONE.minimumOpenFrameWidthPx,
+      );
+      expect(coreHeight, `${name} open-frame/control height`).toBeGreaterThan(
+        SIKORSKY_DESKTOP_OVERVIEW_SAFE_ZONE.minimumOpenFrameHeightPx,
+      );
+    }
   });
 
   test("keeps the complete main-rotor envelope inside a rendered tablet card", () => {

@@ -15,18 +15,23 @@ const claim = (number: number, value: string) => ({
   inlines: text(value),
 });
 
-const sourceCrop = (figure: 1 | 2 | 3, width: number, height: number, version: 2 | 3 = 2) => ({
-  src: `/patents/figures/us-593138-tesla-coil/fig-${figure}-source-crop-v${version}.png`,
-  alt: `Source-facsimile crop of Figure ${figure} from US 593,138.`,
-  width,
-  height,
+/**
+ * Fig. 1 fills source sheet 1; Figs. 2 and 3 share source sheet 2. The
+ * individual historical crops remain on disk, while active previews preserve
+ * the complete upright source pages without asserting artificial boundaries.
+ */
+const sourceSheet = (figure: 1 | 2 | 3, sourcePdfPage: 1 | 2) => ({
+  src: `/patents/figures/us-593138-tesla-coil/source-sheet-${sourcePdfPage}.png`,
+  alt: `Complete upright source drawing sheet ${sourcePdfPage} of 2 containing Fig. ${figure} from US 593,138.`,
+  width: 2320,
+  height: 3408,
 });
 
 const figures = {
-  "Figure 1": [sourceCrop(1, 1100, 1450)],
-  "Fig. 1": [sourceCrop(1, 1100, 1450)],
-  "Fig. 2": [sourceCrop(2, 1100, 700)],
-  "Fig. 3": [sourceCrop(3, 900, 500, 3)],
+  "Figure 1": [sourceSheet(1, 1)],
+  "Fig. 1": [sourceSheet(1, 1)],
+  "Fig. 2": [sourceSheet(2, 2)],
+  "Fig. 3": [sourceSheet(3, 2)],
 } as const;
 
 const figure = (
@@ -37,7 +42,7 @@ const figure = (
   text: sourceText,
   href: "#",
   referenceType: "figure",
-  label: `Open the source-facsimile crop for ${label} in US 593,138`,
+  label: `Open the complete source drawing sheet containing ${label} in US 593,138`,
   figurePreviews: figures[label],
 });
 
@@ -49,7 +54,7 @@ const term = (text: string, definition: string): CuratedSpecificationInline => (
 
 /**
  * Continuous, manually prepared reading of the four-page US 593,138
- * facsimile. The two drawing sheets are represented by source-derived crops;
+ * facsimile. The two drawing sheets are represented by complete source pages;
  * the specification, claims, signature, and witnesses follow as one reading.
  */
 export const teslaCoil593138ArchivalEdition: CuratedSpecificationEdition = {

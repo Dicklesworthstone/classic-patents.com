@@ -9,10 +9,14 @@
  * - Pinned facsimile PDF and reviewed ledger digests match the provenance receipt.
  */
 
-import { manualWattRotaryClaimText } from "@/data/editions/wattRotaryEngineEdition";
 import type { Patent } from "@/types/patent";
 
-import { wattRotaryEngineArchivalEdition } from "../editions/wattRotaryEngineEdition";
+/**
+ * The pinned PDF is a modern reconstruction. Its complete page-marked text
+ * remains readable on the source face, but this catalogue does not treat it
+ * as evidence for legal claims, source drawings, filing dates, or quotations
+ * until a primary Chancery facsimile is pinned and reviewed.
+ */
 export const wattRotaryEnginePatent: Patent = {
   id: "gb-1306-watt-rotary-engine",
   patentNumber: "GB 1306",
@@ -34,20 +38,13 @@ export const wattRotaryEnginePatent: Patent = {
     "Because the planet wheel is firmly fixed to the connecting rod and does not rotate independently about its own center, it causes the sun wheel, and the main axle and fly-wheel attached thereto, to perform two complete revolutions for every double stroke.",
   originalPdfUrl: "/patents/pdfs/gb-1306-watt-rotary-engine.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/GB178101306A/en",
-  originalTextAsset: {
-    url: "/patents/transcripts/gb-1306-watt-rotary-engine-reviewed.txt",
-    pageCount: 2,
-    kind: "reviewed-transcription",
-    reviewedBy:
-      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
-    reviewedAt: "2026-08-22",
-    sourcePdfSha256: "339921eba26299f65c60e0d9d283deb09419fed3260ba6dc7208ecd55d2471f1",
-  },
-  archivalEdition: wattRotaryEngineArchivalEdition,
   usptoClassification: "GB Class 122 (Steam Engines & Gearing)",
-
+  stats: {
+    totalClaims: 0,
+    independentClaims: 0,
+  },
   originalText:
-    "TO ALL TO WHOM THESE PRESENTS SHALL COME, I, JAMES WATT, of Birmingham, in the County of Warwick, Engineer, send greeting:\n\nWHEREAS His most Excellent Majesty King George the Third, by His Letters Patent under the Great Seal of Great Britain, bearing date at Westminster, the Twenty-fifth day of October, in the twenty-first year of His reign, did give and grant unto me, the said James Watt, His especial licence, full power, sole privilege and authority, that I, the said James Watt, my executors, administrators, and assigns, should and lawfully might make, use, exercise, and vend, within England, Wales, and the Town of Berwick-upon-Tweed, my new Invented 'Certain New Methods of Producing a Continued Rotative Motion Around an Axis or Center, and for other Purposes, to be Applied to the Steam or Fire Engines;' in which said Letters Patent there is contained a proviso obliging me, the said James Watt, by an instrument in writing under my hand and seal, to cause a particular description of the nature of my said Invention, and the manner in which the same is to be performed, to be inrolled in His Majesty's High Court of Chancery within four calendar months next and immediately after the date of the said Letters Patent...\n\nMy Invention consists in certain new methods or apparatus for applying the reciprocating motion of the working beams or pistons of steam or fire engines to turn large wheels, axles, or shafts, and to produce a continued circular or rotative motion round an axis or center, without employing a simple revolving crank; which circular motion may be applied to drive mills of all kinds, forge hammers, rolling mills, spinning and weaving machinery, and other mechanical apparatus requiring continuous rotation.",
+    "The Original Patent Text face contains the complete page-marked transcript of the pinned reconstruction. Because the facsimile is a modern research reconstruction rather than an original 1781 Chancery grant record, this catalogue does not use it as evidence for formal legal claims, source drawings, or quotations until an authentic primary facsimile is pinned and reviewed.",
 
   plainEnglishExplanation: {
     overview:
@@ -128,147 +125,8 @@ export const wattRotaryEnginePatent: Patent = {
       "Watt's Sun and Planet patent was the catalyst that unshackled the Industrial Revolution from riverbanks. By turning steam into continuous rotation, factories no longer needed to be built alongside rushing streams in remote valleys. Textile mills, flour mills, and ironworks could now be located anywhere in cities near labor and transport.",
   },
 
-  claims: [
-    {
-      number: 1,
-      isIndependent: true,
-      originalText: manualWattRotaryClaimText(1),
-      plainEnglish:
-        "Protects the fundamental method of converting the reciprocating up-and-down motion of a steam engine beam or piston into continuous rotary shaft motion using a toothed planet gear rigidly fixed to the connecting rod that orbits around a central toothed sun gear keyed to the output shaft.",
-      keyInnovations: [
-        "Rigid planet gear attachment to connecting rod",
-        "Epicyclic orbital conversion of reciprocating beam motion",
-        "Elimination of simple single-piece crankshaft",
-      ],
-      legalSignificance:
-        "The core broad claim of GB 1306, legally protecting Boulton & Watt's rotary steam engines against infringement while successfully circumventing Pickard's crank patent.",
-    },
-    {
-      number: 2,
-      isIndependent: true,
-      originalText: manualWattRotaryClaimText(2),
-      plainEnglish:
-        "Protects the epicyclic gearing mechanism and geometry that causes the driven sun gear and flywheel shaft to make exactly two complete revolutions for every single double-stroke or cycle of the engine walking beam.",
-      keyInnovations: [
-        "2:1 speed doubling without auxiliary speed-increasing gears",
-        "Halving required engine stroke rate for given shaft RPM",
-        "Quadrupled flywheel kinetic energy density per stroke",
-      ],
-      legalSignificance:
-        "Established exclusive rights over the 2:1 velocity multiplication effect, giving Boulton & Watt engines a huge technological edge in cotton spinning mills.",
-    },
-    {
-      number: 3,
-      isIndependent: true,
-      originalText: manualWattRotaryClaimText(3),
-      plainEnglish:
-        "Protects the mechanical retaining link, guide arm, or circular groove that connects the centers of the sun and planet gears to maintain constant pitch-circle meshing and prevent the orbiting planet gear from disengaging under load.",
-      keyInnovations: [
-        "Center-distance retention radius link",
-        "Separating tooth force containment",
-        "Continuous pitch-circle alignment during full 360° orbit",
-      ],
-      legalSignificance:
-        "Protected the physical kinematic constraint mechanism essential for safe, reliable operation of heavy industrial epicyclic gearing.",
-    },
-    {
-      number: 4,
-      isIndependent: true,
-      originalText: manualWattRotaryClaimText(4),
-      plainEnglish:
-        "Protects four alternative mechanical conversion systems disclosed in the specification, including internal planetary ring gearing, crown-wheel ratchet escapements, double reciprocating rack-and-pinions, and helical spiral shaft cams.",
-      keyInnovations: [
-        "Internal epicyclic ring gear drive (Method 2)",
-        "Crown wheel push-pull ratchet escapement (Method 3)",
-        "Double rack with alternating sector pinions (Method 4)",
-        "Helical cam groove rotary conversion (Method 5)",
-      ],
-      legalSignificance:
-        "Comprehensive defensive patent claiming that prevented competing engine builders from circumventing Watt using alternative non-crank rotary conversion designs.",
-    },
-  ],
-
-  drawings: [
-    {
-      figureNumber: "1",
-      title: "Fig. 1 — Elevation of Rotary Steam Engine & Fig. 2 — Sun and Planet Pitch Mesh",
-      caption:
-        "Technical drawing plate showing the walking beam (A), connecting spear (B), planet gear wheel (C), sun gear wheel (D), flywheel shaft (E), steam cylinder (F), and radius guide link (G).",
-      svgType: "watt-rotary-engine",
-      callouts: [
-        {
-          id: "A",
-          figureRef: "1",
-          label: "A",
-          element: "Great Walking Beam",
-          description:
-            "Heavy timber or cast-iron beam rocking on central masonry trunnions to transmit reciprocating motion from the piston to the connecting rod.",
-          x: 24,
-          y: 24,
-        },
-        {
-          id: "B",
-          figureRef: "1",
-          label: "B",
-          element: "Connecting Spear / Rod",
-          description:
-            "Long vertical iron rod suspended from the outer beam head, carrying the rigidly bolted planet gear at its lower end.",
-          x: 40,
-          y: 46,
-        },
-        {
-          id: "C",
-          figureRef: "1",
-          label: "C",
-          element: "Planet Gear Wheel",
-          description:
-            "Orbiting spur gear wheel bolted solidly to the connecting rod, prevented from spinning independently on its own center.",
-          x: 48,
-          y: 66,
-        },
-        {
-          id: "D",
-          figureRef: "1",
-          label: "D",
-          element: "Sun Gear Wheel",
-          description:
-            "Central spur gear wheel keyed fast to the output driveshaft and flywheel, rotating at twice the engine cycle frequency.",
-          x: 31,
-          y: 74,
-        },
-        {
-          id: "E",
-          figureRef: "1",
-          label: "E",
-          element: "Flywheel & Shaft",
-          description:
-            "Heavy cast-iron flywheel equalizing rotational velocity and storing kinetic energy across engine dead centers.",
-          x: 51,
-          y: 80,
-        },
-        {
-          id: "F",
-          figureRef: "1",
-          label: "F",
-          element: "Steam Cylinder",
-          description:
-            "Single-acting condensing steam cylinder with reciprocating piston driving the left end of the walking beam.",
-          x: 13,
-          y: 52,
-        },
-        {
-          id: "G",
-          figureRef: "1",
-          label: "G",
-          element: "Radius Guide Link",
-          description:
-            "Pivoted brass link connecting the centers of the sun and planet wheels to maintain pitch-line tooth engagement.",
-          x: 42,
-          y: 74,
-        },
-      ],
-    },
-  ],
+  claims: [],
+  drawings: [],
 
   historicalContext: {
     problemStatement:
@@ -306,11 +164,6 @@ export const wattRotaryEnginePatent: Patent = {
     ],
     civilizationalImpact:
       "The Sun and Planet rotary engine established Boulton & Watt as the unrivaled global leader in industrial steam power. In 1786, Boulton & Watt erected the celebrated Albion Flour Mills in London, powered by two 50-horsepower Sun and Planet rotary engines driving 20 pairs of millstones, grinding 16,000 bushels of wheat per week. By 1800, Boulton & Watt had built over 300 rotary engines across Britain, powering cotton spinning mills, iron rolling mills, breweries, and canal boatyards, fundamentally creating modern urban industrial civilization.",
-  },
-
-  stats: {
-    totalClaims: 4,
-    independentClaims: 4,
   },
 
   tags: [

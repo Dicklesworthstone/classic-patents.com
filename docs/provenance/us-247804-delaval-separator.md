@@ -22,7 +22,7 @@ The PDF text layer was comparison evidence only.
 
 | PDF locator | Source material | Editorial treatment |
 | --- | --- | --- |
-| p. 1 | Fig. 1 perspective; Fig. 2 vertical section; source labels, witness names, signature | Direct visual review; direct local crops for each labelled figure |
+| p. 1 | Fig. 1 perspective; Fig. 2 vertical section; source labels, witness names, signature | Direct visual review; complete unmodified source sheet retained for each cited figure |
 | p. 2 | Masthead, foreign patent notices, specification and construction through the beginning of operation | Direct visual review and manual transcription |
 | p. 3 | Completion of operation, four claims, signature, witnesses | Direct visual review and manual transcription |
 
@@ -63,13 +63,34 @@ separate source ledger. Its page markers establish ordered review coverage but
 are never shown in the visitor reader. The older source-text layer remains
 research evidence only.
 
-| Source figure label | Local selected crop |
+| Source figure label | Active local source sheet |
 | --- | --- |
-| Fig. 1 (perspective) | `public/patents/figures/us-247804-delaval-separator/fig-1-source-crop-v2.png` |
-| Fig. 2 (vertical section) | `public/patents/figures/us-247804-delaval-separator/fig-2-source-crop-v2.png` |
+| Fig. 1 (perspective) | `public/patents/figures/us-247804-delaval-separator/drawing-sheet-source-v1.png` |
+| Fig. 2 (vertical section) | `public/patents/figures/us-247804-delaval-separator/drawing-sheet-source-v1.png` |
 
-The selected crops are direct, unmodified selections from the pinned drawing
-sheet. They add no reconstructed linework, labels, or historical claims.
+The active source sheet is a direct, unmodified 300-DPI rendering of pinned PDF
+page 1. It adds no reconstructed linework, labels, or historical claims.
+
+## Source-sheet acceptance (2026-09-03)
+
+The legacy Fig. 1 and Fig. 2 crops are preserved in
+`public/patents/figures/us-247804-delaval-separator/`, but direct visual review
+showed that each includes material from the other labelled view. They are not
+used as evidence for an isolated-figure boundary.
+
+The active asset is the complete first source sheet:
+
+- Path: `public/patents/figures/us-247804-delaval-separator/drawing-sheet-source-v1.png`
+- Source locator: pinned PDF page 1, full raster rectangle `(x=0, y=0, width=2320, height=3408)`
+- Raster dimensions: `2320 x 3408` pixels (upright, 300 DPI rendering)
+- SHA-256: `33ae416685348135a7a286d9ceb16dc4ccf3fc3d1056afb878f2dec5a69a94d6`
+
+A separately rendered 300-DPI page-1 comparison yielded zero differing pixels
+(ImageMagick absolute error metric `AE=0`). The complete sheet visibly retains
+both source-labelled views, the printed patent furniture, witnesses, and
+signatures. All four active Fig. 1/Fig. 2 citations use that same full-sheet
+asset and explicit page-1 source rectangle. This evidentiary repair does not
+alter or gate the complete patent-text reader.
 
 ## Review boundary
 

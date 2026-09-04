@@ -37,7 +37,6 @@ export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
   "us-3541541-engelbart-mouse",
   "us-313224-mergenthaler-linotype",
   "us-2297691-carlson-electrophotography",
-  "us-233692-pelton-water-wheel",
   "us-2543181-land-polaroid",
   "us-3138743-kilby-integrated-circuit",
   "us-3353115-maiman-ruby-laser",
@@ -55,7 +54,10 @@ export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
 
 export function isArchivalEditionExplicitlyWithheld(patentId: string): boolean {
   const override = ARCHIVAL_PUBLICATION_STATE_OVERRIDES[patentId];
-  return override?.reasonCode === "FABRICATION_OR_RECONSTRUCTION_QUARANTINE";
+  return (
+    override?.reasonCode === "FABRICATION_OR_RECONSTRUCTION_QUARANTINE" ||
+    override?.reasonCode === "AUDIT_RECONSTRUCTION_QUARANTINE"
+  );
 }
 
 export function evaluateArchivalPublicationState(
@@ -125,13 +127,18 @@ export function completeArchivalEditionForViewer(
  * supplies its complete reviewed ledger instead. Raw ledger metadata stays
  * server-side.
  */
-export function patentForPublicationViewer(
+export function patentForSourceReader(
   patent: Patent,
-  decision: ArchivalPublicationDecision,
+  _decision?: ArchivalPublicationDecision,
 ): Patent {
   return {
     ...patent,
-    archivalEdition: completeArchivalEditionForViewer(patent, decision),
+    archivalEdition: completeArchivalEditionForViewer(patent, _decision),
     originalTextAsset: undefined,
   };
 }
+
+/**
+ * Backwards-compatible alias for patentForSourceReader.
+ */
+export const patentForPublicationViewer = patentForSourceReader;

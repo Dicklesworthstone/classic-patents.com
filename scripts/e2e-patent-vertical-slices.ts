@@ -10,7 +10,6 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { isDeepStrictEqual } from "node:util";
 import {
   type BrowserContext,
   type ConsoleMessage,
@@ -138,8 +137,7 @@ async function main() {
   try {
     scenarios = buildPatentE2EScenarios(allPatents, {
       rendersEdition: (patent) => {
-        const decision = evaluateArchivalPublicationState(patent);
-        return Boolean(completeArchivalEditionForViewer(patent, decision));
+        return Boolean(completeArchivalEditionForViewer(patent));
       },
       hasCompleteTranscript: (patent) => Boolean(reviewedLedgerTextForViewer(patent)),
       publicationDecision: evaluateArchivalPublicationState,
@@ -654,39 +652,30 @@ async function verifySourceFace(
   });
   await checked(
     recorder,
-    meta(scenario, viewport, "original-spec", "publication-state"),
+    meta(scenario, viewport, "original-spec", "complete-source-delivery"),
     {
       sourceState: scenario.sourceState,
-      publicationState: scenario.sourcePublicationState,
-      reasonCode: scenario.sourceReasonCode,
-      decision: scenario.sourceDecision,
     },
     async () => {
-      const root = page.locator("[data-archival-edition]").first();
-      const archivalKind = await root.getAttribute("data-archival-edition");
-      const publicationState = await root.getAttribute("data-archival-publication-state");
-      const reasonCode = await root.getAttribute("data-archival-publication-reason");
-      const serializedDecision = await root.getAttribute("data-archival-publication-evidence");
-      if (!serializedDecision) {
-        throw new Error("The route did not render typed archival publication evidence.");
-      }
-      let renderedDecision: unknown;
-      try {
-        renderedDecision = JSON.parse(serializedDecision);
-      } catch {
-        throw new Error("The route rendered malformed archival publication evidence JSON.");
-      }
-      if (scenario.sourceState === "edition" && archivalKind === "withheld") {
+      const root = page.getByTestId("dual-projection-viewer");
+      const sourceDelivery = await root.getAttribute("data-source-delivery");
+      if (sourceDelivery !== scenario.sourceState) {
         throw new Error(
-          "Expected a rendered manual edition, but the route has no archival edition.",
+          `Expected source delivery ${scenario.sourceState}, received ${sourceDelivery ?? "missing"}.`,
         );
       }
-      if (scenario.sourceState === "transcript") {
-        if (archivalKind !== "withheld") {
+      for (const forbiddenAuditAttribute of [
+        "data-archival-publication-state",
+        "data-archival-publication-reason",
+        "data-archival-publication-evidence",
+      ]) {
+        if (await root.getAttribute(forbiddenAuditAttribute)) {
           throw new Error(
-            `Expected no archival edition for transcript mode, received ${archivalKind}.`,
+            `Visitor source reader leaked internal audit attribute ${forbiddenAuditAttribute}.`,
           );
         }
+      }
+      if (scenario.sourceState === "transcript") {
         const transcript = page.getByTestId("reviewed-transcript-fallback");
         await transcript.waitFor({ state: "visible" });
         const transcriptText = await transcript.locator("pre").textContent();
@@ -695,32 +684,20 @@ async function verifySourceFace(
             "Transcript mode did not render a complete page-marked patent transcript.",
           );
         }
+      } else if (scenario.sourceState === "facsimile") {
+        const facsimile = page.getByTestId("source-facsimile-fallback");
+        await facsimile.waitFor({ state: "visible" });
+        if ((await facsimile.locator('object[type="application/pdf"]').count()) !== 1) {
+          throw new Error("Facsimile source fallback did not render the pinned patent PDF inline.");
+        }
       } else {
         await page
           .getByRole("heading", { name: /Specification of Letters Patent/ })
           .waitFor({ state: "visible" });
       }
-      if (publicationState !== scenario.sourcePublicationState) {
-        throw new Error(
-          `Expected typed publication state ${scenario.sourcePublicationState}, received ${publicationState}.`,
-        );
-      }
-      if (reasonCode !== scenario.sourceReasonCode) {
-        throw new Error(
-          `Expected typed publication reason ${scenario.sourceReasonCode}, received ${reasonCode}.`,
-        );
-      }
-      if (!isDeepStrictEqual(renderedDecision, scenario.sourceDecision)) {
-        throw new Error(
-          `Rendered archival evidence differs from the executable catalogue decision. expected=${JSON.stringify(scenario.sourceDecision)} actual=${JSON.stringify(renderedDecision)}`,
-        );
-      }
       return {
         sourceState: scenario.sourceState,
-        archivalKind,
-        publicationState,
-        reasonCode,
-        decision: renderedDecision,
+        sourceDelivery,
         hasStoredEdition: scenario.hasStoredEdition,
         hasReviewedLedger: scenario.hasReviewedLedger,
         hasCompleteTranscript: scenario.hasCompleteTranscript,
@@ -735,7 +712,11 @@ async function verifySourceFace(
     async () => {
       const references = page.getByTestId("source-figure-reference");
       const referenceCount = await references.count();
-      if (scenario.sourceState === "transcript" || scenario.figurePreviewUrls.length === 0) {
+      if (
+        scenario.sourceState === "transcript" ||
+        scenario.sourceState === "facsimile" ||
+        scenario.figurePreviewUrls.length === 0
+      ) {
         if (referenceCount !== 0) {
           throw new Error(
             `Rendered ${referenceCount} archival figure reference(s) without a structured-edition preview contract.`,

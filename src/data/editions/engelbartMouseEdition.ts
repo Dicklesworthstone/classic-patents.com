@@ -255,11 +255,7 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
       text(
         "The indications of X and Y position given by the voltages at terminals X and Y are presented in analog form. A digital computer requires digital inputs and therefore, an analog-to-digital converter must be used between the X and Y terminals and the computer inputs. Two types of digital output devices for use with the indicator control are shown in ",
       ),
-      figure("FIG. 5", 5),
-      text(", "),
-      figure("FIG. 6", 6),
-      text(", and "),
-      figure("FIG. 7", 7),
+      figure("FIGS. 5, 6 and 7", 5, { previewFigures: [5, 6, 7] }),
       text("."),
     ]),
     p([
@@ -290,11 +286,7 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
       text(
         ", a disc 100 is provided which has three rows of electrical contacts, designated 102, 104 and 106. The disc 100 has its axes fixed to the X wheel of the device shown in ",
       ),
-      figure("FIG. 1", 1),
-      text(", "),
-      figure("FIG. 2", 2),
-      text(", and "),
-      figure("FIG. 3", 3),
+      figure("FIGS. 1, 2 and 3", 1, { previewFigures: [1, 2, 3] }),
       text(" in place of the potentiometer. The device of "),
       figure("FIG. 6", 6),
       text(
@@ -366,9 +358,7 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
     ),
     p([
       text("The particular mechanical construction shown in "),
-      figure("FIG. 2", 2),
-      text(" and "),
-      figure("FIG. 3", 3),
+      figure("FIGS. 2 and 3", 2, { previewFigures: [2, 3] }),
       text(
         " are especially well adapted for maintaining accuracy of output and ease of use. The use of only three points of contact, comprising the two wheels and the ball bearing support, help to assure that both wheels will constantly remain in firm contact with the surface on which the position indicator control rests. The location of the various buttons for indicating areas of the display to be operated on, or for other purposes, on the indicator which is moved by the hand allows a human operator to maintain control over both position of changes and the type of changes on the display with only one hand. The use of an indicator control which rests firmly on a surface enables the operator to accurately maintain position with a minimum of muscle effort, since the indicator control remains stationary unless some force is applied to it. The use of relatively large position wheels having appreciable, even if small, moments of inertia, reduces jittering of the indicator control and promotes smooth movement which is helpful in accurate positioning where the displayed characters are small or where accurate tracing of a pattern is required.",
       ),

@@ -8,6 +8,8 @@ import {
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimParams";
 import {
+  DA_VINCI_INTERFACE_KERNEL_SOURCE,
+  DA_VINCI_INTERFACE_SOURCE_BOUNDARY,
   readDaVinciInterfaceControls,
   resolveDaVinciInterfaceTopology,
 } from "@/physics/daVinciInterfaceTopology";
@@ -72,8 +74,7 @@ export function DaVinciInterface3D() {
     domain: "solid_mechanics",
     refusal: {
       isRefused: true,
-      reason:
-        "US 6,331,181 supplies tool-interface topology and calibration data, not quantitative arm, contact, force, or speed data.",
+      reason: DA_VINCI_INTERFACE_SOURCE_BOUNDARY,
     },
     machine: {
       poseXMeters: 0,
@@ -144,7 +145,18 @@ export function DaVinciInterface3D() {
   ] as const;
 
   return (
-    <section className="flex h-full flex-col overflow-hidden rounded-2xl border border-parchment-300 bg-parchment-50/60 shadow-patent dark:border-ink-800 dark:bg-ink-950/80">
+    <section
+      className="flex h-full flex-col overflow-hidden rounded-2xl border border-parchment-300 bg-parchment-50/60 shadow-patent dark:border-ink-800 dark:bg-ink-950/80"
+      data-testid="davinci-interface-three"
+      data-interface-status={topology.status}
+      data-compatibility-signal={String(topology.compatibilitySignalPresent)}
+      data-calibration-record={String(topology.calibrationRecordAvailable)}
+      data-engagement-signal={String(topology.engagementSignalPresent)}
+      data-processor-can-configure={String(topology.processorCanConfigureTool)}
+      data-kernel-source={DA_VINCI_INTERFACE_KERNEL_SOURCE}
+      data-quantitative-mechanics="refused"
+      data-connected-topology="processor-data-path-holder-engagement-tool"
+    >
       <div className="sr-only">US 6,331,181 source-bounded tool interface topology</div>
       <div className="relative min-h-[380px] flex-1 cursor-grab active:cursor-grabbing sm:min-h-[460px]">
         <div ref={containerRef} className="absolute inset-0 h-full w-full" />

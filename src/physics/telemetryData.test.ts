@@ -385,15 +385,16 @@ describe("Physics Telemetry Data Registry", () => {
   test("keeps Spencer telemetry on the apparatus and quantities printed by US 2,495,429", () => {
     const spencer = PATENT_PHYSICS_REGISTRY["us-2495429-spencer-microwave"];
     expect(spencer.engineMethod).toBe(
-      "Source-bounded TypeScript apparatus state; no quantitative tube model",
+      "stepSpencerMicrowaveSource (source topology + exact c = lambda f reference)",
     );
     expect(spencer.controls.map((control) => control.id)).toEqual(["rfPowerSetting"]);
     expect(spencer.controls[0]).toMatchObject({ min: 0, max: 1, step: 1, unit: "on/off" });
     expect(spencer.computeMetrics({ rfPowerSetting: 1 })).toMatchObject([
       { label: "Energy Path", value: "active" },
-      { label: "Oscillators", value: "10 and 11" },
-      { label: "Common Guide", value: "23" },
-      { label: "Conveyor", value: "28" },
+      { label: "Wavelength Region", value: "about 10 cm or less" },
+      { label: "Vacuum f at 10 cm", value: "2.998" },
+      { label: "Printed Path", value: "10/11 → 24/25 → 23 → 28" },
+      { label: "Tube & Cooking SI", value: "refused" },
     ]);
 
     const publicCopy = JSON.stringify(spencer).toLowerCase();

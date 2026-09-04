@@ -7,7 +7,10 @@ import {
   readClavelDeltaRobotClaimStates,
   stepClavelDeltaRobotTopology,
 } from "@/physics/clavelDeltaRobotKernel";
-import { clavelDeltaRobotViewForViewport } from "./clavelDeltaRobotCamera";
+import {
+  CLAVEL_DELTA_ROBOT_CAMERA_VIEWS,
+  clavelDeltaRobotViewForViewport,
+} from "./clavelDeltaRobotCamera";
 import { buildClavelDeltaRobotModel, CLAVEL_EXHIBIT_FLOOR_Y } from "./clavelDeltaRobotModel";
 
 const ROOT = process.cwd();
@@ -52,12 +55,85 @@ function projectedModelBounds(
   return result;
 }
 
+function isEffectivelyVisible(candidate: THREE.Object3D) {
+  let current: THREE.Object3D | null = candidate;
+  while (current) {
+    if (!current.visible) return false;
+    current = current.parent;
+  }
+  return true;
+}
+
+/**
+ * Bounding-box corners can combine an exhibit foot with a distant platform
+ * corner that no visitor can see at once. Frame the actual rendered vertices
+ * instead, including every instance of the six named articulated parts.
+ */
+function projectedMeshBounds(
+  cameraView: ReturnType<typeof clavelDeltaRobotViewForViewport>,
+  viewportWidth: number,
+  viewportHeight: number,
+  root: THREE.Object3D,
+) {
+  root.updateWorldMatrix(true, true);
+  const camera = new THREE.PerspectiveCamera(42, viewportWidth / viewportHeight, 0.1, 1000);
+  camera.position.set(...cameraView.position);
+  camera.lookAt(...cameraView.target);
+  camera.updateProjectionMatrix();
+  camera.updateWorldMatrix(true, false);
+
+  const points: THREE.Vector3[] = [];
+  root.traverse((candidate) => {
+    if (!isEffectivelyVisible(candidate) || !(candidate instanceof THREE.Mesh)) return;
+    const positions = candidate.geometry.getAttribute("position");
+    if (!positions) return;
+
+    const matrices: readonly THREE.Matrix4[] =
+      candidate instanceof THREE.InstancedMesh
+        ? Array.from({ length: candidate.count }, (_, index) => {
+            const instance = new THREE.Matrix4();
+            candidate.getMatrixAt(index, instance);
+            return new THREE.Matrix4().multiplyMatrices(candidate.matrixWorld, instance);
+          })
+        : [candidate.matrixWorld];
+
+    for (const matrix of matrices) {
+      for (let index = 0; index < positions.count; index += 1) {
+        points.push(
+          new THREE.Vector3(positions.getX(index), positions.getY(index), positions.getZ(index))
+            .applyMatrix4(matrix)
+            .project(camera),
+        );
+      }
+    }
+  });
+
+  if (points.length === 0) {
+    throw new Error("Expected a visible Clavel mesh while measuring its overview frame.");
+  }
+
+  const minX = Math.min(...points.map((point) => point.x));
+  const maxX = Math.max(...points.map((point) => point.x));
+  const minY = Math.min(...points.map((point) => point.y));
+  const maxY = Math.max(...points.map((point) => point.y));
+  return {
+    minX,
+    maxX,
+    minY,
+    maxY,
+    widthPx: ((maxX - minX) * viewportWidth) / 2,
+    heightPx: ((maxY - minY) * viewportHeight) / 2,
+  };
+}
+
 describe("US 4,976,582 Clavel Delta procedural visual boundary", () => {
-  test("keeps the complete Arm 1 endpoint inside the overview frame at every target viewport", () => {
+  test("uses a closer desktop overview without changing compact or detail camera paths", () => {
     const desktop = clavelDeltaRobotViewForViewport("overview", 1200);
     const tablet = clavelDeltaRobotViewForViewport("overview", 720);
     const phone = clavelDeltaRobotViewForViewport("overview", 320);
     const narrowPhone = clavelDeltaRobotViewForViewport("overview", 288);
+    const desktopPlatform = clavelDeltaRobotViewForViewport("platform", 1200);
+    const compactPlatform = clavelDeltaRobotViewForViewport("platform", 320);
     const distance = (camera: typeof desktop) =>
       Math.hypot(
         camera.position[0] - camera.target[0],
@@ -65,21 +141,78 @@ describe("US 4,976,582 Clavel Delta procedural visual boundary", () => {
         camera.position[2] - camera.target[2],
       );
 
-    // The overview is intentionally wider than the old close crop: its fixed
-    // gantry and Arm 1=1 closure remain legible rather than touching an edge.
-    expect(distance(desktop)).toBeLessThan(9);
-    expect(desktop.target).toEqual([0, -0.35, 0]);
-    expect(distance(tablet) / distance(desktop)).toBeCloseTo(1, 8);
-    expect(distance(phone) / distance(desktop)).toBeCloseTo(1.28 / 1.15, 8);
-    expect(distance(narrowPhone) / distance(desktop)).toBeCloseTo(1.48 / 1.15, 8);
+    expect(desktop).toEqual({ position: [1.48, 1.84, 5.1], target: [0, 0, 0] });
+    expect(distance(desktop)).toBeLessThan(distance(tablet));
+    // Preserve the prior conservative tablet and phone multipliers exactly.
+    expect(tablet.target).toEqual([0, -0.35, 0]);
+    expect(distance(phone) / distance(tablet)).toBeCloseTo(1.28 / 1.15, 8);
+    expect(distance(narrowPhone) / distance(tablet)).toBeCloseTo(1.48 / 1.15, 8);
+    expect(desktopPlatform.target).toEqual(CLAVEL_DELTA_ROBOT_CAMERA_VIEWS.platform.target);
+    desktopPlatform.position.forEach((coordinate, index) => {
+      expect(coordinate).toBeCloseTo(CLAVEL_DELTA_ROBOT_CAMERA_VIEWS.platform.position[index], 12);
+    });
+    expect(distance(compactPlatform) / distance(desktopPlatform)).toBeCloseTo(1.15, 8);
     expect(source("src/components/patents/visuals/three/ClavelDeltaRobot3D.tsx")).toContain(
       "useResponsiveStudioHud(true)",
     );
   });
 
-  test("leaves a visible edge margin around the supported exhibit at Arm 1 extremes", () => {
+  test("makes the desktop source topology materially legible while keeping its UI lane clear", () => {
+    const viewport = [1214, 540] as const;
+    const cameraView = clavelDeltaRobotViewForViewport("overview", viewport[0]);
+    const model = buildClavelDeltaRobotModel();
+    try {
+      const topology = model.root.getObjectByName("Claim 1 three-actuator parallel topology");
+      const base = model.root.getObjectByName("Base member 1");
+      expect(topology).toBeDefined();
+      expect(base).toBeDefined();
+      if (!topology || !base) throw new Error("Clavel source topology is missing.");
+
+      // These cover the relaxed display, the V24 primary-control maximum, and
+      // the Claim 2 inversion that deliberately removes one lower bar per leg.
+      for (const params of [
+        {},
+        { armOneInput: 1 },
+        { armOneInput: 1, toolAxisInput: 1, claim2PairedBarsEnabled: 0 },
+      ]) {
+        model.updatePose(stepClavelDeltaRobotTopology(params));
+        const bounds = projectedMeshBounds(cameraView, ...viewport, topology);
+        // The cards end above NDC +0.70; retain a real gap rather than merely
+        // avoiding clip-space loss. The opposite endpoint is kept 19px above
+        // the lower edge, while the active source topology grows well beyond
+        // the old roughly 185 px-wide desktop rendering.
+        expect(bounds.minX).toBeGreaterThan(-0.36);
+        expect(bounds.maxX).toBeLessThan(0.32);
+        expect(bounds.minY).toBeGreaterThan(-0.93);
+        expect(bounds.maxY).toBeLessThan(0.67);
+        expect(bounds.widthPx).toBeGreaterThan(340);
+        expect(bounds.heightPx).toBeGreaterThan(365);
+      }
+
+      // The generic ClaimConstraintToggle inverts Claim 1. That intentionally
+      // withholds the articulated topology but must leave the fixed source base
+      // clear and prominent rather than replacing it with a blank canvas.
+      model.updatePose(
+        stepClavelDeltaRobotTopology({
+          armOneInput: 1,
+          toolAxisInput: 1,
+          claim1TopologyEnabled: 0,
+        }),
+      );
+      expect(topology.visible).toBe(false);
+      const baseBounds = projectedMeshBounds(cameraView, ...viewport, base);
+      expect(baseBounds.minX).toBeGreaterThan(-0.36);
+      expect(baseBounds.maxX).toBeLessThan(0.3);
+      expect(baseBounds.minY).toBeGreaterThan(0.1);
+      expect(baseBounds.maxY).toBeLessThan(0.5);
+      expect(baseBounds.widthPx).toBeGreaterThan(360);
+    } finally {
+      model.dispose();
+    }
+  });
+
+  test("preserves a conservative full-exhibit edge margin on tablet and phone", () => {
     const viewports = [
-      [1216, 540],
       [720, 540],
       [343, 440],
       [288, 440],

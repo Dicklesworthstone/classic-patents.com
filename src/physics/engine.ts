@@ -711,12 +711,9 @@ export const FrankenSimEngine = {
     };
   },
 
-  /**
-   * Percy L. Spencer Cavity Magnetron (US 2,495,429)
-   * Hull Cutoff & Microwave Dipole Radiation
-   */
-  stepSpencerMicrowave(anodeKv: number, magneticGauss: number, rfWatts: number) {
-    return stepSpencerMicrowaveCatalog(anodeKv, magneticGauss, rfWatts);
+  /** Percy L. Spencer source-bounded food-treatment apparatus (US 2,495,429). */
+  stepSpencerMicrowave(rfPowerSetting = 1) {
+    return stepSpencerMicrowaveCatalog(rfPowerSetting);
   },
 
   /**

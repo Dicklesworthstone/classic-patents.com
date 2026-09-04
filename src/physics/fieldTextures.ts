@@ -312,21 +312,26 @@ export function computeFarnsworthRasterField(
   return grid;
 }
 
-/** Spencer cavity standing-wave envelope from live RF amplitude. */
-export function computeSpencerCavityField(
-  rfWatts: number,
-  oscillating: boolean,
-  timeSec: number,
+/**
+ * Normalized Spencer treatment-region field display.
+ *
+ * This is deliberately not an electric-field or power solve. The source
+ * supplies a guided field region but no guide section, field magnitude, or RF
+ * wattage. `pathActivity` is therefore a dimensionless reader state in [0, 1].
+ */
+export function computeSpencerPathFieldDisplay(
+  pathActivity: number,
+  displayPhaseRad: number,
   gridSize = 32,
 ): Float32Array {
   const grid = new Float32Array(gridSize * gridSize);
-  const amp = oscillating ? Math.max(0, Math.min(1, rfWatts / 800)) : 0;
+  const amp = Math.max(0, Math.min(1, pathActivity));
   for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++) {
       const u = x / (gridSize - 1);
       const v = y / (gridSize - 1);
-      const mode = Math.sin(Math.PI * u) * Math.sin(2 * Math.PI * v + timeSec * 4);
-      grid[y * gridSize + x] = Math.max(0, Math.min(1, 0.5 + 0.5 * amp * mode));
+      const mode = Math.sin(Math.PI * u) * Math.sin(2 * Math.PI * v + displayPhaseRad);
+      grid[y * gridSize + x] = amp * Math.max(0, Math.min(1, 0.5 + 0.5 * mode));
     }
   }
   return grid;

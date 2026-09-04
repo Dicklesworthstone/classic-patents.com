@@ -14,22 +14,10 @@ const drawingSheet: CuratedSpecificationInline = {
   label: "Preview the Davenport motor drawing sheet from the pinned US 132 facsimile",
   figurePreviews: [
     {
-      src: "/patents/figures/us-132-davenport-electric-motor/drawing-view-1-source-crop-v2.png",
-      alt: "Upper perspective view from the US 132 source drawing, showing the frame, battery, stationary magnets, rotor, and shaft.",
-      width: 1080,
-      height: 560,
-    },
-    {
-      src: "/patents/figures/us-132-davenport-electric-motor/drawing-view-2-source-crop-v2.png",
-      alt: "Middle plan view from the US 132 source drawing, showing the four rotating galvanic magnets inside the stationary poles.",
-      width: 730,
-      height: 500,
-    },
-    {
-      src: "/patents/figures/us-132-davenport-electric-motor/drawing-view-3-source-crop-v2.png",
-      alt: "Lower plan view from the US 132 source drawing, showing the commutator contact, circular plate, and shaft connection.",
-      width: 630,
-      height: 500,
+      src: "/patents/figures/us-132-davenport-electric-motor/drawing-sheet-source-v1.png",
+      alt: "Complete US 132 source drawing sheet, including the upper motor perspective, middle rotor plan, lower commutator plan, patent furniture, and signatures.",
+      width: 2320,
+      height: 3408,
     },
   ],
 };

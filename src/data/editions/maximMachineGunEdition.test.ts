@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { evaluateArchivalPublicationState } from "@/data/editions/publicationApproval";
 import { maximMachineGunPatent } from "@/data/patents/maxim-machine-gun";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import {
@@ -55,7 +56,7 @@ describe("US 319,596 manual source edition", () => {
     }
   });
 
-  test("pairs every source paragraph with a companion and every source figure with a local crop", () => {
+  test("pairs every source paragraph with a companion and every source figure with a complete local sheet", () => {
     const paragraphIndexes = maximMachineGunArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
     );
@@ -82,8 +83,44 @@ describe("US 319,596 manual source edition", () => {
     for (const reference of references) {
       for (const preview of reference.figurePreviews ?? []) {
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+        expect(preview).toMatchObject({ width: 2320, height: 3408 });
+        expect(preview.alt).toContain("Complete unmodified source drawing sheet");
+        if (preview.alt.includes("Fig. 3")) {
+          expect(preview.src).toBe(
+            "/patents/figures/us-319596-maxim-machine-gun/source-sheet-2-v1.png",
+          );
+        } else {
+          expect(preview.src).toBe(
+            "/patents/figures/us-319596-maxim-machine-gun/source-sheet-1-v1.png",
+          );
+        }
       }
     }
+
+    for (const legacyCrop of [
+      "fig-1-source-crop-v1.png",
+      "fig-2-source-crop-v1.png",
+      "fig-3-source-crop-v1.png",
+    ]) {
+      expect(
+        existsSync(
+          resolve(process.cwd(), "public/patents/figures/us-319596-maxim-machine-gun", legacyCrop),
+        ),
+      ).toBe(true);
+    }
+  });
+
+  test("accepts all eight source citations against full-sheet source-pixel evidence", () => {
+    const decision = evaluateArchivalPublicationState(maximMachineGunPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 8,
+      acceptedFigureCount: 8,
+    });
+    expect(decision.figureManifest.figures.every((figure) => figure.status === "accepted")).toBe(
+      true,
+    );
   });
 
   test("removes unsupported recoil, cooling, rate, and claim assertions from public data", () => {

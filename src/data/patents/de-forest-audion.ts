@@ -53,21 +53,20 @@ export const deForestAudionPatent: Patent = {
         page: 2,
         sourceRelationship:
           "Specification Column 1 & 2: Patent-office masthead, Serial No. 354,662, Preamble, and physical description of vessel D, filament F, grid a, and plate b",
-        exactSourceText:
-          "To all whom it may concern: Be it known that I, LEE DE FOREST, a citizen of the United States...",
+        exactSourceText: "Be it known that I, LEE DE FOREST, a citizen of the United States",
       },
       {
         page: 3,
         sourceRelationship:
           "Specification Conclusion & Claims 1–13 (Apparatus and method claims for three-electrode oscillation detectors)",
-        exactSourceText: "I claim: 1. An oscillation detector comprising an evacuated vessel...",
+        exactSourceText: "1. An oscillation detector comprising an evacuated vessel",
       },
       {
         page: 4,
         sourceRelationship:
           "Claims 14–21, Formal execution, and Witnesses Thomas I. Gallagher and Hans W. Goetze",
         exactSourceText:
-          "In testimony whereof, I have hereunto subscribed my name this 21st day of Dec., 1906. LEE DE FOREST.",
+          "In testimony whereof, I have hereunto subscribed my name this 21st day of Dec., 1906.",
       },
     ],
   },

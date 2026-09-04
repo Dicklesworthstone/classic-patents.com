@@ -151,9 +151,17 @@ function diagnosticsFor(page: Page): RuntimeDiagnostics {
   });
   page.on("pageerror", (error) => diagnostics.pageErrors.push(error.message));
   page.on("requestfailed", (request) => {
-    diagnostics.networkErrors.push(
-      `${request.method()} ${request.url()} :: ${request.failure()?.errorText ?? "unknown failure"}`,
-    );
+    const failureText = request.failure()?.errorText ?? "unknown failure";
+    // Next's App Router may cancel a superseded React Server Component
+    // navigation after the destination is already committed. Chromium reports
+    // that intentional cancellation as ERR_ABORTED; treating it as a product
+    // network failure makes an otherwise complete visual audit nondeterministic.
+    const isSupersededRscNavigation =
+      request.method() === "GET" &&
+      request.url().includes("_rsc=") &&
+      failureText === "net::ERR_ABORTED";
+    if (isSupersededRscNavigation) return;
+    diagnostics.networkErrors.push(`${request.method()} ${request.url()} :: ${failureText}`);
   });
   page.on("response", (response) => {
     if (response.status() >= 400) {
@@ -381,7 +389,7 @@ async function verifyOriginalPatentTextFace(args: {
       const sourceViewer = document.querySelector('[data-testid="dual-projection-viewer"]');
       return Boolean(
         sourceViewer?.querySelector(
-          'article[data-edition-kind], [data-testid="reviewed-transcript-fallback"], [data-testid="source-text-excerpt"]',
+          'article[data-edition-kind], [data-testid="reviewed-transcript-fallback"], [data-testid="source-facsimile-fallback"]',
         ),
       );
     },
@@ -391,26 +399,33 @@ async function verifyOriginalPatentTextFace(args: {
 
   const edition = viewer.locator("article[data-edition-kind]");
   const transcript = viewer.getByTestId("reviewed-transcript-fallback");
-  const excerptFallback = viewer.getByTestId("source-text-excerpt");
+  const facsimileFallback = viewer.getByTestId("source-facsimile-fallback");
   const transcriptCount = await transcript.count();
   const editionCount = await edition.count();
-  const excerptFallbackCount = await excerptFallback.count();
+  const facsimileFallbackCount = await facsimileFallback.count();
   const pdfEmbedCount = await viewer.locator('object[type="application/pdf"]').count();
   const transcriptText = transcriptCount > 0 ? await transcript.locator("pre").textContent() : null;
   const editionText = editionCount > 0 ? await edition.first().textContent() : null;
   const sourceDelivery =
-    transcriptCount > 0 ? "page-marked-transcript" : editionCount > 0 ? "archival-edition" : "none";
+    transcriptCount > 0
+      ? "page-marked-transcript"
+      : editionCount > 0
+        ? "archival-edition"
+        : facsimileFallbackCount > 0
+          ? "pinned-facsimile"
+          : "none";
   const errors =
     args.diagnostics.consoleErrors.length +
     args.diagnostics.pageErrors.length +
     args.diagnostics.networkErrors.length;
   const valid =
     sourceDelivery !== "none" &&
-    excerptFallbackCount === 0 &&
-    pdfEmbedCount === 0 &&
+    (sourceDelivery !== "pinned-facsimile" || pdfEmbedCount >= 1) &&
     (sourceDelivery === "page-marked-transcript"
       ? /^--- REVIEWED TRANSCRIPTION PAGE 1 OF \d+ ---/.test(transcriptText ?? "")
-      : Boolean(editionText?.trim().length)) &&
+      : sourceDelivery === "pinned-facsimile"
+        ? facsimileFallbackCount === 1
+        : Boolean(editionText?.trim().length)) &&
     errors === 0;
 
   emit({
@@ -421,9 +436,7 @@ async function verifyOriginalPatentTextFace(args: {
     status: valid ? "pass" : "fail",
     durationMs: Math.round(performance.now() - args.startedAt),
     expected: {
-      completeSourceDelivery: "archival edition or page-marked transcript",
-      excerptFallbacks: 0,
-      inlinePdfSubstitutes: 0,
+      completeSourceDelivery: "archival edition, page-marked transcript, or pinned facsimile",
       runtimeErrors: 0,
     },
     actual: {
@@ -435,7 +448,7 @@ async function verifyOriginalPatentTextFace(args: {
       transcriptStartsWithPageOne: /^--- REVIEWED TRANSCRIPTION PAGE 1 OF \d+ ---/.test(
         transcriptText ?? "",
       ),
-      excerptFallbackCount,
+      facsimileFallbackCount,
       pdfEmbedCount,
     },
     screenshotPath: null,
@@ -1410,6 +1423,16 @@ async function auditPatent(
 
     if (patentId === "us-4098001-watson-rcc") {
       const watsonSurface = surface.getByTestId("watson-rcc-three");
+      const watsonCanvas = watsonSurface.locator("canvas").first();
+      const settleWatsonCanvasForScreenshot = async () => {
+        await watsonCanvas.scrollIntoViewIfNeeded();
+        await page.evaluate(
+          () =>
+            new Promise<void>((resolve) => {
+              requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+            }),
+        );
+      };
       const readWatsonState = () =>
         watsonSurface.evaluate((element) => ({
           tipContactGap: Number(element.getAttribute("data-tip-contact-gap")),
@@ -1447,6 +1470,7 @@ async function auditPatent(
         SCREENSHOT_DIRECTORY,
         `${patentId}.${viewport}.local-wrist-contrast.png`,
       );
+      await settleWatsonCanvasForScreenshot();
       await dispatcher.screenshot({ path: localScreenshotPath });
 
       await topologySelect.selectOption("1");
@@ -1459,6 +1483,7 @@ async function auditPatent(
         SCREENSHOT_DIRECTORY,
         `${patentId}.${viewport}.figure-4-approach.png`,
       );
+      await settleWatsonCanvasForScreenshot();
       await dispatcher.screenshot({ path: approachScreenshotPath });
       await surface.getByRole("button", { name: "Reset" }).click();
 
@@ -2784,6 +2809,408 @@ async function auditPatent(
       };
       mechanismInteractionValid =
         sourceOwnersHonest && physicalSequenceCompleted && crossFaceParity;
+    }
+
+    if (patentId === "us-5701965-kamen-transporter") {
+      const readKamenState = (testId: string) =>
+        dispatcher.getByTestId(testId).evaluate((element) => ({
+          state: element.getAttribute("data-kamen-state"),
+          contactWheels: element.getAttribute("data-kamen-contact-wheels"),
+          contactCount: Number(element.getAttribute("data-kamen-contact-count")),
+          minimumGapM: Number(element.getAttribute("data-kamen-minimum-gap-m")),
+          riserContactWheels: element.getAttribute("data-kamen-riser-contact-wheels"),
+          riserContactCount: Number(element.getAttribute("data-kamen-riser-contact-count")),
+          minimumRiserClearanceM:
+            element.getAttribute("data-kamen-minimum-riser-clearance-m") === "not-applicable"
+              ? null
+              : Number(element.getAttribute("data-kamen-minimum-riser-clearance-m")),
+          runtimeSource: element.getAttribute("data-kamen-runtime-source"),
+          owner: element.getAttribute("data-kamen-owner"),
+          boundary: element.getAttribute("data-kamen-boundary"),
+          sourceFigure: element.getAttribute("data-kamen-source-figure"),
+          axleXM: Number(element.getAttribute("data-kamen-axle-x-m")),
+          axleYM: Number(element.getAttribute("data-kamen-axle-y-m")),
+          carrierRotationRad: Number(element.getAttribute("data-kamen-carrier-rotation-rad")),
+          chassisPitchRad: Number(element.getAttribute("data-kamen-chassis-pitch-rad")),
+          stairActive: element.getAttribute("data-kamen-stair-active"),
+          clusterTopology: element.getAttribute("data-kamen-cluster-topology"),
+          balanceLoop: element.getAttribute("data-kamen-balance-loop"),
+          wheelCount: element.getAttribute("data-kamen-wheel-count"),
+          wheelRadiusM: Number(element.getAttribute("data-kamen-wheel-radius-m")),
+          clusterRadiusM: Number(element.getAttribute("data-kamen-cluster-radius-m")),
+          stairRiseM: Number(element.getAttribute("data-kamen-stair-rise-m")),
+          stairTreadM: Number(element.getAttribute("data-kamen-stair-tread-m")),
+        }));
+      const threeDimensional = dispatcher.getByTestId("kamen-transporter-three");
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      let claimToggle = dispatcher.getByTestId("claim-constraint-toggle");
+      for (const claimNumber of [1, 16]) {
+        const toggle = claimToggle.locator(`[data-claim-number="${claimNumber}"]`);
+        if ((await toggle.getAttribute("data-claim-active")) !== "true") await toggle.click();
+      }
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="kamen-transporter-three"]')
+            ?.getAttribute("data-kamen-runtime-source") === "wasm",
+        undefined,
+        { timeout: 15_000 },
+      );
+
+      const stateNames = [
+        "ground_support",
+        "balance",
+        "stair_start",
+        "weight_transfer",
+        "climb",
+        "transition",
+      ] as const;
+      const expectedContacts = ["a,b", "a", "a,b", "a,b", "b,c", "c"] as const;
+      const expectedRiserContacts = ["", "", "a", "a", "b", ""] as const;
+      const stateSnapshots: Awaited<ReturnType<typeof readKamenState>>[] = [];
+      const stateScreenshotPaths: string[] = [];
+      const kamenCanvas = threeDimensional.locator("canvas").first();
+      const settleKamenCanvasForScreenshot = async () => {
+        await kamenCanvas.scrollIntoViewIfNeeded();
+        await page.evaluate(
+          () =>
+            new Promise<void>((resolve) => {
+              requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+            }),
+        );
+      };
+      for (const [index, stateName] of stateNames.entries()) {
+        await dispatcher.locator("#kamen-3d-topology-state button").nth(index).click();
+        await page.waitForFunction(
+          ({ state }) =>
+            document
+              .querySelector('[data-testid="kamen-transporter-three"]')
+              ?.getAttribute("data-kamen-state") === state,
+          { state: stateName },
+          { timeout: 3_000 },
+        );
+        const stateSnapshot = await readKamenState("kamen-transporter-three");
+        stateSnapshots.push(stateSnapshot);
+        if (index >= 2) {
+          const stateScreenshotPath = path.join(
+            SCREENSHOT_DIRECTORY,
+            `${patentId}.${viewport}.${stateName.replaceAll("_", "-")}.png`,
+          );
+          // The shared Three.js studio intentionally skips rendering while it
+          // is offscreen. Buttons below the canvas scroll it away, so put the
+          // canvas back in view and allow two frames before preserving visual
+          // evidence; otherwise Playwright can capture an unpainted buffer.
+          await settleKamenCanvasForScreenshot();
+          await dispatcher.screenshot({ path: stateScreenshotPath });
+          stateScreenshotPaths.push(stateScreenshotPath);
+        }
+      }
+
+      await dispatcher.locator("#kamen-3d-topology-state button").nth(4).click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="kamen-transporter-three"]')
+            ?.getAttribute("data-kamen-state") === "climb",
+        undefined,
+        { timeout: 3_000 },
+      );
+      await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
+      const twoDimensional = dispatcher.getByTestId("kamen-transporter-two");
+      await twoDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="kamen-transporter-two"]')
+            ?.getAttribute("data-kamen-runtime-source") === "wasm",
+        undefined,
+        { timeout: 15_000 },
+      );
+      const twoDimensionalClimbState = await readKamenState("kamen-transporter-two");
+      const twoDimensionalScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.shared-two-dimensional-climb.png`,
+      );
+      await dispatcher.screenshot({ path: twoDimensionalScreenshotPath });
+
+      await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      claimToggle = dispatcher.getByTestId("claim-constraint-toggle");
+      const claim16Toggle = claimToggle.locator('[data-claim-number="16"]');
+      await claim16Toggle.click();
+      await page.waitForFunction(
+        () => {
+          const element = document.querySelector('[data-testid="kamen-transporter-three"]');
+          return (
+            element?.getAttribute("data-kamen-cluster-topology") === "withheld" &&
+            element.getAttribute("data-kamen-contact-wheels") === "direct"
+          );
+        },
+        undefined,
+        { timeout: 3_000 },
+      );
+      const clusterWithheldState = await readKamenState("kamen-transporter-three");
+      const clusterWithheldScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.claim-16-cluster-withheld-direct-support.png`,
+      );
+      await settleKamenCanvasForScreenshot();
+      await dispatcher.screenshot({ path: clusterWithheldScreenshotPath });
+      await claim16Toggle.click();
+
+      await dispatcher.locator("#kamen-3d-topology-state button").nth(1).click();
+      const claim1Toggle = claimToggle.locator('[data-claim-number="1"]');
+      await claim1Toggle.click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="kamen-transporter-three"]')
+            ?.getAttribute("data-kamen-balance-loop") === "withheld",
+        undefined,
+        { timeout: 3_000 },
+      );
+      const balanceWithheldState = await readKamenState("kamen-transporter-three");
+      const balanceWithheldScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.claim-1-balance-loop-withheld.png`,
+      );
+      await settleKamenCanvasForScreenshot();
+      await dispatcher.screenshot({ path: balanceWithheldScreenshotPath });
+      await claim1Toggle.click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="kamen-transporter-three"]')
+            ?.getAttribute("data-kamen-balance-loop") === "active",
+        undefined,
+        { timeout: 3_000 },
+      );
+      const restoredState = await readKamenState("kamen-transporter-three");
+
+      const sourceOwner = "fs-mbd::tri_wheel_cluster::step_tri_wheel_stair_contact";
+      const sourceBoundary =
+        "rigid-planar-three-equal-wheels-horizontal-support-and-finite-riser-clearance-no-force-friction-compliance-impact-motor-controller-or-sensor";
+      const near = (value: number, target: number, tolerance = 1e-9) =>
+        Math.abs(value - target) <= tolerance;
+      const sourceOwnersHonest = stateSnapshots.every(
+        (state) =>
+          state.runtimeSource === "wasm" &&
+          state.owner === sourceOwner &&
+          state.boundary === sourceBoundary,
+      );
+      const physicalSequenceCompleted = stateSnapshots.every(
+        (state, index) =>
+          state.state === stateNames[index] &&
+          state.contactWheels === expectedContacts[index] &&
+          state.contactCount === expectedContacts[index]?.split(",").length &&
+          state.minimumGapM >= -1e-8 &&
+          state.riserContactWheels === expectedRiserContacts[index] &&
+          state.riserContactCount ===
+            (expectedRiserContacts[index] ? expectedRiserContacts[index]?.split(",").length : 0) &&
+          (index >= 2
+            ? state.minimumRiserClearanceM !== null && state.minimumRiserClearanceM >= -1e-8
+            : state.minimumRiserClearanceM === null) &&
+          state.clusterTopology === "present" &&
+          state.wheelCount === "three-per-lateral-cluster" &&
+          state.stairActive === (index >= 2 ? "true" : "false") &&
+          near(state.wheelRadiusM, 0.096774, 1e-12) &&
+          near(state.clusterRadiusM, 0.1417574, 1e-12) &&
+          near(state.stairRiseM, 0.17399, 1e-12) &&
+          near(state.stairTreadM, 0.27686, 1e-12),
+      );
+      const startState = stateSnapshots[2];
+      const transferState = stateSnapshots[3];
+      const transferChangesOnlyChassisPitch = Boolean(
+        startState &&
+          transferState &&
+          near(startState.axleXM, transferState.axleXM) &&
+          near(startState.axleYM, transferState.axleYM) &&
+          near(startState.carrierRotationRad, transferState.carrierRotationRad) &&
+          Math.abs(startState.chassisPitchRad - transferState.chassisPitchRad) > 1e-3,
+      );
+      const climbState = stateSnapshots[4];
+      const crossFaceParity = Boolean(
+        climbState &&
+          twoDimensionalClimbState.state === climbState.state &&
+          twoDimensionalClimbState.contactWheels === climbState.contactWheels &&
+          twoDimensionalClimbState.contactCount === climbState.contactCount &&
+          near(twoDimensionalClimbState.minimumGapM, climbState.minimumGapM) &&
+          twoDimensionalClimbState.riserContactWheels === climbState.riserContactWheels &&
+          twoDimensionalClimbState.riserContactCount === climbState.riserContactCount &&
+          twoDimensionalClimbState.minimumRiserClearanceM !== null &&
+          climbState.minimumRiserClearanceM !== null &&
+          near(
+            twoDimensionalClimbState.minimumRiserClearanceM,
+            climbState.minimumRiserClearanceM,
+          ) &&
+          near(twoDimensionalClimbState.axleXM, climbState.axleXM) &&
+          near(twoDimensionalClimbState.axleYM, climbState.axleYM) &&
+          near(twoDimensionalClimbState.carrierRotationRad, climbState.carrierRotationRad) &&
+          near(twoDimensionalClimbState.chassisPitchRad, climbState.chassisPitchRad) &&
+          twoDimensionalClimbState.owner === climbState.owner &&
+          twoDimensionalClimbState.boundary === climbState.boundary &&
+          twoDimensionalClimbState.runtimeSource === "wasm",
+      );
+      const claimRefusalsRemainSupported =
+        clusterWithheldState.clusterTopology === "withheld" &&
+        clusterWithheldState.contactWheels === "direct" &&
+        clusterWithheldState.contactCount === 1 &&
+        clusterWithheldState.minimumGapM >= -1e-8 &&
+        clusterWithheldState.minimumRiserClearanceM === null &&
+        clusterWithheldState.riserContactCount === 0 &&
+        clusterWithheldState.runtimeSource === "ts-fallback" &&
+        balanceWithheldState.state === "balance" &&
+        balanceWithheldState.clusterTopology === "present" &&
+        balanceWithheldState.balanceLoop === "withheld" &&
+        balanceWithheldState.contactWheels === "a" &&
+        balanceWithheldState.minimumGapM >= -1e-8 &&
+        balanceWithheldState.minimumRiserClearanceM === null &&
+        balanceWithheldState.riserContactCount === 0 &&
+        restoredState.balanceLoop === "active" &&
+        restoredState.contactWheels === "a";
+      mechanismInteraction = {
+        available: true,
+        kind: "source-dimensioned-three-wheel-fs-mbd-tread-and-riser-contact-sequence-claim-refusals-and-cross-face-parity",
+        stateSnapshots,
+        twoDimensionalClimbState,
+        clusterWithheldState,
+        balanceWithheldState,
+        restoredState,
+        sourceOwnersHonest,
+        physicalSequenceCompleted,
+        transferChangesOnlyChassisPitch,
+        crossFaceParity,
+        claimRefusalsRemainSupported,
+        stateScreenshotPaths,
+        twoDimensionalScreenshotPath,
+        clusterWithheldScreenshotPath,
+        balanceWithheldScreenshotPath,
+      };
+      mechanismInteractionValid =
+        sourceOwnersHonest &&
+        physicalSequenceCompleted &&
+        transferChangesOnlyChassisPitch &&
+        crossFaceParity &&
+        claimRefusalsRemainSupported;
+    }
+
+    if (patentId === "us-2495429-spencer-microwave") {
+      const readSpencerState = (testId: string) =>
+        dispatcher.getByTestId(testId).evaluate((element) => ({
+          sourcePath: element.getAttribute("data-source-path"),
+          sourcePathContinuous: element.getAttribute("data-source-path-continuous"),
+          wavelengthReferenceM: Number(element.getAttribute("data-source-wavelength-reference-m")),
+          vacuumFrequencyHz: Number(
+            element.getAttribute("data-vacuum-frequency-at-ten-centimeters-hz"),
+          ),
+          kernelSource: element.getAttribute("data-kernel-source"),
+          quantitativeTubeModel: element.getAttribute("data-quantitative-tube-model"),
+          quantitativeCookingModel: element.getAttribute("data-quantitative-cooking-model"),
+          displayRateKind: element.getAttribute("data-display-rate-kind"),
+        }));
+      const threeDimensional = dispatcher.getByTestId("spencer-microwave-three");
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      const defaultState = await readSpencerState("spencer-microwave-three");
+      const energyToggle = threeDimensional.getByRole("button", {
+        name: "Energy path enabled",
+      });
+      await energyToggle.click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="spencer-microwave-three"]')
+            ?.getAttribute("data-source-path") === "disabled",
+        undefined,
+        { timeout: 3_000 },
+      );
+      const disabledState = await readSpencerState("spencer-microwave-three");
+      const disabledScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.source-path-disabled.png`,
+      );
+      const spencerCanvas = threeDimensional.locator("canvas").first();
+      await spencerCanvas.scrollIntoViewIfNeeded();
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) => {
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+          }),
+      );
+      await dispatcher.screenshot({ path: disabledScreenshotPath });
+
+      await threeDimensional.getByRole("button", { name: "Energy path disabled" }).click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="spencer-microwave-three"]')
+            ?.getAttribute("data-source-path") === "active",
+        undefined,
+        { timeout: 3_000 },
+      );
+      const restoredState = await readSpencerState("spencer-microwave-three");
+
+      await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
+      const twoDimensional = dispatcher.getByTestId("spencer-microwave-two");
+      await twoDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      const twoDimensionalState = await readSpencerState("spencer-microwave-two");
+      const twoDimensionalScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.source-bounded-two-dimensional.png`,
+      );
+      await dispatcher.screenshot({ path: twoDimensionalScreenshotPath });
+
+      await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      await spencerCanvas.scrollIntoViewIfNeeded();
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) => {
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+          }),
+      );
+      const restoredScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.source-path-restored.png`,
+      );
+      await dispatcher.screenshot({ path: restoredScreenshotPath });
+
+      const near = (value: number, target: number, tolerance = 1e-9) =>
+        Math.abs(value - target) <= tolerance;
+      const sourceBoundaryHonest =
+        defaultState.sourcePath === "active" &&
+        defaultState.sourcePathContinuous === "true" &&
+        near(defaultState.wavelengthReferenceM, 0.1) &&
+        near(defaultState.vacuumFrequencyHz, 2_997_924_580, 1e-3) &&
+        defaultState.kernelSource === "source-bounded-ts" &&
+        defaultState.quantitativeTubeModel === "refused" &&
+        defaultState.quantitativeCookingModel === "refused" &&
+        defaultState.displayRateKind === "normalized";
+      const toggleSequenceCompleted =
+        disabledState.sourcePath === "disabled" && restoredState.sourcePath === "active";
+      const crossFaceParity =
+        twoDimensionalState.sourcePath === restoredState.sourcePath &&
+        twoDimensionalState.sourcePathContinuous === restoredState.sourcePathContinuous &&
+        near(twoDimensionalState.wavelengthReferenceM, restoredState.wavelengthReferenceM) &&
+        near(twoDimensionalState.vacuumFrequencyHz, restoredState.vacuumFrequencyHz, 1e-3) &&
+        twoDimensionalState.kernelSource === restoredState.kernelSource &&
+        twoDimensionalState.quantitativeTubeModel === restoredState.quantitativeTubeModel &&
+        twoDimensionalState.quantitativeCookingModel === restoredState.quantitativeCookingModel;
+      mechanismInteraction = {
+        available: true,
+        kind: "source-bounded-push-pull-guide-path-refusal-toggle-and-cross-face-parity",
+        defaultState,
+        disabledState,
+        restoredState,
+        twoDimensionalState,
+        sourceBoundaryHonest,
+        toggleSequenceCompleted,
+        crossFaceParity,
+        disabledScreenshotPath,
+        twoDimensionalScreenshotPath,
+        restoredScreenshotPath,
+      };
+      mechanismInteractionValid =
+        sourceBoundaryHonest && toggleSequenceCompleted && crossFaceParity;
     }
 
     if (patentId === "us-586193-marconi-radio") {

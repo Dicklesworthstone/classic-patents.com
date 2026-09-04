@@ -13,7 +13,7 @@
  */
 
 import * as THREE from "three";
-import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
+import { SPENCER_NORMALIZED_CONVEYOR_SPEED } from "@/physics/spencerMicrowaveKernel";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -43,9 +43,9 @@ export interface SpencerMicrowaveModel {
   };
   updateKinematics: (
     delta: number,
-    isOscillating: boolean,
-    microwaveFreqMhz: number,
-    dielectricLoss: number,
+    pathActive: boolean,
+    displayPhaseRateRadPerS: number,
+    displayOpacity: number,
     showSpokeWheel: boolean,
     isCutaway?: boolean,
   ) => void;
@@ -61,7 +61,10 @@ function deterministicUnit(index: number, channel: number): number {
 }
 
 /**
- * Procedural OFHC Lathe-Machined Copper Texture
+ * Procedural copper-colored machined texture.
+ *
+ * The source suggests highly conductive material "such as copper"; it does
+ * not identify an alloy or purity grade.
  */
 function createMachinedCopperTexture(): THREE.CanvasTexture | undefined {
   if (typeof document === "undefined") return undefined;
@@ -137,7 +140,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   const sourceMetalTex = createSourceMetalTexture();
   if (sourceMetalTex) disposables.push(sourceMetalTex);
 
-  // --- AUTHENTIC MATERIALS ---
+  // --- SOURCE-BOUNDED MATERIAL PALETTE ---
   const copperAnodeMat = new THREE.MeshStandardMaterial({
     ...(copperTex ? { map: copperTex } : {}),
     transparent: true,
@@ -377,7 +380,10 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   const foodLoad = new THREE.Mesh(foodGeo, foodMat);
   foodLoad.name = "Food load in treatment region";
   foodLoad.scale.set(1.15, 0.82, 0.9);
-  foodLoad.position.set(0, 0.45, 0);
+  // The scaled sphere's underside meets the belt top at y ~= 0.08. Keeping
+  // this contact explicit prevents the food load from hovering over conveyor 28.
+  foodLoad.position.set(0, 0.392, 0);
+  foodLoad.userData.normalizedDisplayTravel = 2.5;
   conveyorAssembly.add(foodLoad);
   for (const z of [-2.35, 2.35]) {
     for (const x of [-0.68, 0.68]) {
@@ -554,18 +560,18 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
 
   const updateKinematics = (
     delta: number,
-    isOscillating: boolean,
-    spokeDisplayOmegaRadPerS: number,
-    spokeOpacity: number,
+    pathActive: boolean,
+    displayPhaseRateRadPerS: number,
+    displayOpacity: number,
     showSpokeWheel: boolean,
     isCutaway = false,
   ) => {
     updateSpencerMicrowaveKinematics(
       model,
       delta,
-      isOscillating,
-      spokeDisplayOmegaRadPerS,
-      spokeOpacity,
+      pathActive,
+      displayPhaseRateRadPerS,
+      displayOpacity,
       showSpokeWheel,
       isCutaway,
     );
@@ -609,34 +615,45 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
 }
 
 /**
- * Updates Percy Spencer cavity magnetron electron spoke wheel rotation, RF dielectric loss glow, and anode block cutaway.
+ * Updates the normalized push-pull teaching display, conveyor motion, and cutaway.
+ * No angular rate or conveyor distance returned by this function is an SI result.
  */
 export function updateSpencerMicrowaveKinematics(
   model: SpencerMicrowaveModel,
   delta: number,
-  isOscillating: boolean,
-  spokeDisplayOmegaRadPerS: number,
-  spokeOpacity: number,
+  pathActive: boolean,
+  displayPhaseRateRadPerS: number,
+  displayOpacity: number,
   showSpokeWheel: boolean,
   isCutaway = false,
 ): void {
-  if (isOscillating) {
-    const heat = heatFrames(12, 16, 2);
-    const local = 1 + Math.abs(sampleHeatAt(heat, 12, 16, 8, 0.3, 0.3));
-    for (const spokeLayer of model.spokePointSets) {
-      spokeLayer.visible = showSpokeWheel;
-      spokeLayer.rotation.y += delta * spokeDisplayOmegaRadPerS * local;
+  const finiteDelta = Number.isFinite(delta) ? Math.max(0, delta) : 0;
+  const displayRate = Number.isFinite(displayPhaseRateRadPerS)
+    ? Math.max(0, displayPhaseRateRadPerS)
+    : 0;
+  if (pathActive) {
+    const priorPhase = Number.isFinite(model.root.userData.pushPullDisplayPhaseRad)
+      ? (model.root.userData.pushPullDisplayPhaseRad as number)
+      : 0;
+    const nextPhase = (priorPhase + finiteDelta * displayRate) % (Math.PI * 2);
+    const activeOscillatorIndex = nextPhase < Math.PI ? 0 : 1;
+    model.root.userData.pushPullDisplayPhaseRad = nextPhase;
+    model.root.userData.activeOscillatorNumeral = activeOscillatorIndex === 0 ? 10 : 11;
+    for (const [index, spokeLayer] of model.spokePointSets.entries()) {
+      spokeLayer.visible = showSpokeWheel && index === activeOscillatorIndex;
+      spokeLayer.rotation.y = nextPhase;
     }
-    model.materials.spokeMat.opacity = Math.min(1, spokeOpacity * local);
+    model.materials.spokeMat.opacity = Math.max(0, Math.min(1, displayOpacity));
   } else {
     for (const spokeLayer of model.spokePointSets) spokeLayer.visible = false;
+    model.root.userData.activeOscillatorNumeral = null;
   }
 
-  const priorTravel = Number.isFinite(model.foodLoad.userData.travelMeters)
-    ? (model.foodLoad.userData.travelMeters as number)
+  const priorTravel = Number.isFinite(model.foodLoad.userData.normalizedDisplayTravel)
+    ? (model.foodLoad.userData.normalizedDisplayTravel as number)
     : 0;
-  const nextTravel = (priorTravel + Math.max(0, delta) * 0.55) % 5;
-  model.foodLoad.userData.travelMeters = nextTravel;
+  const nextTravel = (priorTravel + finiteDelta * SPENCER_NORMALIZED_CONVEYOR_SPEED) % 5;
+  model.foodLoad.userData.normalizedDisplayTravel = nextTravel;
   model.foodLoad.position.z = -2.5 + nextTravel;
 
   // Cutaway mode affects only the source-described conductive envelopes and

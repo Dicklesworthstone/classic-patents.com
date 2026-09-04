@@ -75,8 +75,6 @@ import {
   pistonSvgDisplacement,
   rpmToOmega,
   sliderStrokeSvg,
-  spencerPopcornSvg,
-  spencerSchematicCavity,
   stepBaekelandBakelite,
   stepBardeenTransistor,
   stepBellTelephone,
@@ -682,17 +680,15 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(wozniakIsVideoPacket(1, res.videoPhaseDivisor, res.videoPacketParity)).toBe(false);
   });
 
-  test("Spencer microwave cavity computes magnetron relativistic gyro-frequency and Poynting vector", () => {
-    const res = stepSpencerMicrowave(2.2, 1450, 800);
-    expect(res.microwaveFreqMhz).toBe(2450);
-    expect(res.isOscillating).toBe(true);
-    expect(res.popcornKernelCount).toBe(12);
-    expect(spencerPopcornSvg(0, false, res.popcornKernelCount).px).toBeCloseTo(8, 0);
-    expect(res.schematicCavityCount).toBe(8);
-    expect(res.schematicAnodeR).toBe(42);
-    expect(res.schematicOvenW).toBe(300);
-    expect(spencerSchematicCavity(0).cx).toBe(136);
-    expect(spencerSchematicCavity(2).cy).toBe(176);
+  test("Spencer compatibility step exposes only source topology and a bounded wavelength reference", () => {
+    const res = stepSpencerMicrowave(1);
+    expect(res.energyPathActive).toBe(true);
+    expect(res.sourcePathContinuous).toBe(true);
+    expect(res.sourceNumerals.oscillators).toEqual([10, 11]);
+    expect(res.vacuumFrequencyAtTenCentimetersHz / 1e9).toBeCloseTo(2.99792458, 8);
+    expect(res.quantitativeTubeModelAvailable).toBe(false);
+    expect(res.quantitativeCookingModelAvailable).toBe(false);
+    expect(res.refusal.refused).toBe(true);
   });
 
   test("Kwolek Kevlar continuum computes anisotropic liquid crystal alignment and bullet arrest", () => {

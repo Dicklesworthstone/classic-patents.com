@@ -107,12 +107,11 @@ test("US 621,195 registers explicit energy channel omission reason", () => {
   expect(energyChannelsFor("us-621195-zeppelin-airship", {})).toEqual([]);
 });
 
-test("US 621,195 enforces ledger acceptance audit hold in publication state registry", () => {
-  const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-  const decision = evaluateTypedArchivalPublicationState(zeppelinAirshipPatent, {
-    hasCompanionReadings: true,
-  });
+test("US 621,195 enforces figure acceptance pending hold while ledger is verified", () => {
+  const { evaluateArchivalPublicationState } = require("./publicationApproval");
+  const decision = evaluateArchivalPublicationState(zeppelinAirshipPatent);
   expect(decision.isPublished).toBe(false);
-  expect(decision.state.kind).toBe("held");
-  expect(decision.reasonCode).toBe("AUDIT_LEDGER_ACCEPTANCE_PENDING");
+  expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+  expect(decision.state.evidence.ledgerContent.valid).toBe(true);
+  expect(decision.state.evidence.ledgerContent.status).toBe("verified");
 });

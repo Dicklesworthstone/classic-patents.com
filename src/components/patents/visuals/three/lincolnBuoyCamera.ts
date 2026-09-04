@@ -18,9 +18,25 @@ const CAMERA_PRESETS: Record<
   top: { pos: [0, 13.0, 0.1], target: [0, 0, 0] },
 };
 
+// The 320 px audit route yields a 286 px interior studio canvas. At that
+// aspect ratio, the previous 1.2× isometric distance projected the source-named
+// stern paddlewheel beyond the right canvas edge. The 375 px route has a 341 px
+// canvas and keeps its closer established composition.
+const COMPACT_PHONE_MAX_CANVAS_WIDTH_PX = 320;
+const COMPACT_PHONE_ISO_MULTIPLIER = 1.5;
+const PHONE_ISO_MULTIPLIER = 1.2;
+const PHONE_DETAIL_MULTIPLIER = 1.12;
+
 export function lincolnBuoyViewForViewport(preset: LincolnBuoyCameraPreset, viewportWidth: number) {
   const config = CAMERA_PRESETS[preset];
-  const multiplier = viewportWidth < 480 ? (preset === "iso" ? 1.2 : 1.12) : 1;
+  const multiplier =
+    viewportWidth <= COMPACT_PHONE_MAX_CANVAS_WIDTH_PX && preset === "iso"
+      ? COMPACT_PHONE_ISO_MULTIPLIER
+      : viewportWidth < 480
+        ? preset === "iso"
+          ? PHONE_ISO_MULTIPLIER
+          : PHONE_DETAIL_MULTIPLIER
+        : 1;
   return {
     pos: config.pos.map(
       (coordinate, index) =>

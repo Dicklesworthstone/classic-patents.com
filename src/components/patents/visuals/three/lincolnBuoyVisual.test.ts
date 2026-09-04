@@ -8,9 +8,16 @@ import { buildLincolnBuoyModel, updateLincolnBuoyKinematics } from "./lincolnBuo
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 const DESKTOP_AUDIT_VIEWPORT = { width: 1214, height: 460 };
+const PHONE_375_AUDIT_VIEWPORT = { width: 341, height: 380 };
+const COMPACT_PHONE_AUDIT_VIEWPORT = { width: 286, height: 380 };
 const DESKTOP_TELEMETRY_INSET_PX = 16;
 const COMPACT_TELEMETRY_WIDTH_PX = 17 * 16;
 const MIN_TELEMETRY_CLEARANCE_PX = 48;
+const COMPACT_PHONE_MODEL_EDGE_CLEARANCE_PX = 8;
+const COMPACT_PHONE_MIN_MODEL_WIDTH_PX = 230;
+const COMPACT_PHONE_MIN_MODEL_HEIGHT_PX = 170;
+const COMPACT_PHONE_TOP_CONTROL_CLEARANCE_PX = 72;
+const COMPACT_PHONE_LOWER_CONTROL_CLEARANCE_PX = 70;
 
 function projectedGeometryBounds(
   root: THREE.Object3D,
@@ -33,13 +40,16 @@ function projectedGeometryBounds(
     count: projected.length,
     minX: Math.min(...projected.map((point) => ((point.x + 1) * viewport.width) / 2)),
     maxX: Math.max(...projected.map((point) => ((point.x + 1) * viewport.width) / 2)),
+    minY: Math.min(...projected.map((point) => ((1 - point.y) * viewport.height) / 2)),
+    maxY: Math.max(...projected.map((point) => ((1 - point.y) * viewport.height) / 2)),
   };
 }
 
 describe("US 6,469 Abraham Lincoln Buoying Vessels Over Shoals visual & hydrostatics boundary", () => {
   test("frames the complete hull and seven-unit smokestack envelope", () => {
     const desktop = lincolnBuoyViewForViewport("iso", 1200);
-    const phone = lincolnBuoyViewForViewport("iso", 320);
+    const phone375 = lincolnBuoyViewForViewport("iso", PHONE_375_AUDIT_VIEWPORT.width);
+    const phone = lincolnBuoyViewForViewport("iso", COMPACT_PHONE_AUDIT_VIEWPORT.width);
     const distance = (camera: typeof desktop) =>
       Math.hypot(
         camera.pos[0] - camera.target[0],
@@ -48,7 +58,99 @@ describe("US 6,469 Abraham Lincoln Buoying Vessels Over Shoals visual & hydrosta
       );
 
     expect(desktop.target).toEqual([0, 2.2, 0]);
-    expect(distance(phone) / distance(desktop)).toBeCloseTo(1.2, 8);
+    // V24 receipts: the outer 320 px route has a 286 px canvas; the outer
+    // 375 px route has a 341 px canvas. The compact fix must not perturb the
+    // already-good 375 px framing.
+    expect(phone375).toEqual({ pos: [16.8, 14.2, 19.2], target: [0, 2.2, 0] });
+    expect(phone).toEqual({ pos: [21, 17.2, 24], target: [0, 2.2, 0] });
+    expect(distance(phone375) / distance(desktop)).toBeCloseTo(1.2, 8);
+    expect(distance(phone) / distance(desktop)).toBeCloseTo(1.5, 8);
+  });
+
+  test("keeps the complete hull and stern paddlewheel inside the compact phone canvas", () => {
+    const view = lincolnBuoyViewForViewport("iso", COMPACT_PHONE_AUDIT_VIEWPORT.width);
+
+    // The claim toggle changes the legal-state presentation, not the physical
+    // vessel inputs. Its V24 screenshot follows the primary control at 100%,
+    // so exercise the actual default, primary-max, and claim-inverted envelopes.
+    for (const [state, inflationPct] of [
+      ["default", 75],
+      ["primary-control maximum", 100],
+      ["claim inverted", 100],
+    ] as const) {
+      const model = buildLincolnBuoyModel();
+      try {
+        const hydrostatics = stepLincolnBuoy({
+          inflationPct,
+          shoalDepth: 3.5,
+          weightTons: 380,
+        });
+        updateLincolnBuoyKinematics(
+          model,
+          0,
+          inflationPct,
+          3.5,
+          hydrostatics.baseDraftFt,
+          hydrostatics.hullDraftFt,
+          hydrostatics.paddleDisplayOmegaRadPerS,
+          false,
+          380,
+        );
+        model.rootGroup.updateMatrixWorld(true);
+
+        const camera = new THREE.PerspectiveCamera(
+          42,
+          COMPACT_PHONE_AUDIT_VIEWPORT.width / COMPACT_PHONE_AUDIT_VIEWPORT.height,
+          0.1,
+          1000,
+        );
+        camera.position.set(...view.pos);
+        camera.lookAt(...view.target);
+        camera.updateProjectionMatrix();
+        camera.updateMatrixWorld();
+
+        const vessel = projectedGeometryBounds(
+          model.boatGroup,
+          camera,
+          COMPACT_PHONE_AUDIT_VIEWPORT,
+        );
+        const paddlewheel = projectedGeometryBounds(
+          model.paddlewheelGroup,
+          camera,
+          COMPACT_PHONE_AUDIT_VIEWPORT,
+        );
+        const stateName = `${state} at ${inflationPct}% inflation`;
+
+        expect(vessel.count, `${stateName} vessel geometry`).toBeGreaterThan(0);
+        expect(paddlewheel.count, `${stateName} paddlewheel geometry`).toBeGreaterThan(0);
+        expect(vessel.minX, `${stateName} hull left edge`).toBeGreaterThanOrEqual(
+          COMPACT_PHONE_MODEL_EDGE_CLEARANCE_PX,
+        );
+        expect(vessel.maxX, `${stateName} hull right edge`).toBeLessThanOrEqual(
+          COMPACT_PHONE_AUDIT_VIEWPORT.width - COMPACT_PHONE_MODEL_EDGE_CLEARANCE_PX,
+        );
+        expect(paddlewheel.minX, `${stateName} paddlewheel left edge`).toBeGreaterThanOrEqual(
+          COMPACT_PHONE_MODEL_EDGE_CLEARANCE_PX,
+        );
+        expect(paddlewheel.maxX, `${stateName} paddlewheel right edge`).toBeLessThanOrEqual(
+          COMPACT_PHONE_AUDIT_VIEWPORT.width - COMPACT_PHONE_MODEL_EDGE_CLEARANCE_PX,
+        );
+        expect(vessel.minY, `${stateName} top-control clearance`).toBeGreaterThanOrEqual(
+          COMPACT_PHONE_TOP_CONTROL_CLEARANCE_PX,
+        );
+        expect(vessel.maxY, `${stateName} lower-control clearance`).toBeLessThanOrEqual(
+          COMPACT_PHONE_AUDIT_VIEWPORT.height - COMPACT_PHONE_LOWER_CONTROL_CLEARANCE_PX,
+        );
+        expect(vessel.maxX - vessel.minX, `${stateName} readable model width`).toBeGreaterThan(
+          COMPACT_PHONE_MIN_MODEL_WIDTH_PX,
+        );
+        expect(vessel.maxY - vessel.minY, `${stateName} readable model height`).toBeGreaterThan(
+          COMPACT_PHONE_MIN_MODEL_HEIGHT_PX,
+        );
+      } finally {
+        model.dispose();
+      }
+    }
   });
 
   test("keeps the source-named stern paddlewheel clear of desktop telemetry", () => {

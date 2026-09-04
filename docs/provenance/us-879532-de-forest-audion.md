@@ -13,9 +13,10 @@
 ## Facsimile review boundary
 
 The pinned PDF identity, four-page sequence, and page roles were checked against
-the authoritative served facsimile on 2026-08-19. A cloud Luna visual review is
-required before publication acceptance; OCR and prior text layers are comparison
-aids only and are not the basis of the published reading.
+the authoritative served facsimile on 2026-08-19. OCR and prior text layers are
+comparison aids only and are not the basis of the published reading. The drawing
+sheet was independently rendered and visually reviewed at 300 DPI on 2026-09-03;
+the resulting source-sheet acceptance is recorded below.
 
 | PDF pages | Source matter checked |
 | --- | --- |
@@ -30,20 +31,42 @@ aids only and are not the basis of the published reading.
   `src/data/editions/deForestAudionEdition.ts`; it deliberately has no source-page pagination.
 - The page ledger is a reviewed supporting asset at
   `public/patents/transcripts/us-879532-de-forest-audion-reviewed.txt`.
-- Figure previews are local crops from the pinned source: Sheet 1 supplies Figs. 1–2.
+- Every figure citation displays a complete local source sheet from the pinned
+  facsimile: Sheet 1 supplies both printed figures without asserting a
+  speculative isolated-crop boundary.
 - The printed grant contains 21 distinct claims, each rigorously transcribed and decoded.
 
 ## Exact figure locators
 
 | Printed figures | PDF page | Local preview asset |
 | --- | --- | --- |
-| 1 | 1 | `fig-1-source-crop-v2.png` |
-| 2 | 1 | `fig-2-source-crop-v2.png` |
-| Complete Sheet 1 | 1 | `sheet-1.png` |
+| 1 | 1 | `source-sheet-1-v1.png` (complete Sheet 1) |
+| 2 | 1 | `source-sheet-1-v1.png` (complete Sheet 1) |
 
 The earlier files named `fig-3` through `fig-6` were subdivisions of the two
 printed circuit diagrams, not printed patent figures. They remain preserved as
 superseded research assets and are not referenced by the edition. The v2 Fig. 1
-and Fig. 2 crops were visually checked against the full drawing sheet on
-2026-08-20 and include each complete circuit without the patent header,
-witnesses, inventor signature, or the other printed figure.
+and Fig. 2 crops also remain preserved as prior research assets. A 2026-09-03
+source-pixel review found that the active Fig. 2 crop retained part of the Fig. 1
+label, so neither legacy crop remains the archival preview.
+
+## Source-sheet acceptance (2026-09-03)
+
+PDF p. 1 was rendered directly at 300 DPI for source-pixel inspection only; no
+OCR, text extraction, masking, compositing, reconstruction, or selective
+redrawing was used. The page contains both complete printed diagrams and the
+genuine patent furniture. The active source preview therefore keeps the full
+upright sheet rather than claiming that the legacy crops are uniformly isolated.
+
+| Active asset | Pinned PDF page / source rectangle | Output pixels / SHA-256 | Accepted coverage |
+| --- | --- | --- | --- |
+| `public/patents/figures/us-879532-de-forest-audion/source-sheet-1-v1.png` | p. 1; `x=0, y=0, width=2320, height=3408` | 2320×3408; `27c094b22bc5ca46c4e6c664e5c986c51d4076c2f49818b23055e6f60cff7182` | Complete printed Sheet 1, including Figs. 1–2 and its original patent furniture. |
+
+The active asset was compared with a fresh 300-DPI render of the pinned first
+page: both are 2320×3408 pixels and the absolute pixel error is zero. All six
+authored Figure 1/Fig. 2 citations now bind to that source sheet. Exact page,
+source-raster, and source-rectangle records are in
+`src/data/editions/figureOccurrenceSourceLocators.ts`; its byte digest,
+dimensions, reviewer, and occurrence count are pinned in
+`src/data/editions/archivalFigureAcceptance.ts`. This internal evidence repair
+does not alter the legal text or the visitor's source-reader delivery.

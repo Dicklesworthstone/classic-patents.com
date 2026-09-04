@@ -46,7 +46,7 @@ export const haberAmmoniaPatent: Patent = {
         page: 1,
         sourceRelationship: "Complete specification, operating parameters, and Claims 1–6",
         exactSourceText:
-          "To all whom it may concern: Be it known that we, FRITZ HABER, Ph. D., professor of chemistry, and ROBERT LE ROSSIGNOL, bachelor of science...",
+          "To all whom it may concern: Be it known that we, FRITZ HABER, Ph. D., professor of chemistry, and ROBERT LE ROSSIGNOL, bachelor of science",
       },
     ],
   },

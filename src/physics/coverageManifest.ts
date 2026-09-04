@@ -213,18 +213,9 @@ export const DEDICATED_WASM_SURFACES = {
     loaderFunction: "ensureKamenTransporterWasm",
     exportName: "kamen_cluster_step",
     artifactUrl: "/wasm/fs-kamen/fs_kamen_wasm_bg.wasm",
-    artifactSha256: "fa16c3aab661b0ac9be831f7590966a5c938c33b12d0189bf2f8d81896c12fec",
+    artifactSha256: "07394e63a9541cf85f9d32138b874d3898a9ccedbf552fd931e06bf271a6ca16",
     refusalBoundary: "typed-wasm",
     provesSharedBusSource: true,
-  },
-  "us-6331181-davinci": {
-    kind: "generic-wasm",
-    sourceCrate: "fs-davinci-wasm",
-    loaderFunction: "ensureDaVinciTopologyWasm",
-    exportName: "davinci_topology_step",
-    artifactUrl: "/wasm/fs-davinci/fs_davinci_wasm_bg.wasm",
-    artifactSha256: "f09c2a0718c927247a56f84b10037ac21318f89d8a4e27c53b030fa43b14816d",
-    refusalBoundary: "typed-wasm",
   },
   "us-6594844-roomba": {
     kind: "generic-wasm",
@@ -265,7 +256,6 @@ const GENERIC_WASM_PATENT_IDS = new Set([
   "us-608969-parsons-turbine",
   "us-1773980-farnsworth-tv",
   "us-1781541-einstein-refrigerator",
-  "us-2495429-spencer-microwave",
   "us-2708656-fermi-reactor",
   "us-4136359-wozniak-apple",
 ]);

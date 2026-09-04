@@ -18,19 +18,16 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
+const sourceSheetPreview = (figure: string, description: string) => ({
+  src: "/patents/figures/us-247804-delaval-separator/drawing-sheet-source-v1.png",
+  alt: `Complete unmodified source drawing sheet from US 247,804, including ${figure}: ${description}`,
+  width: 2320,
+  height: 3408,
+});
+
 const FIGURES = {
-  "Fig. 1": {
-    src: "/patents/figures/us-247804-delaval-separator/fig-1-source-crop-v2.png",
-    alt: "Source-facsimile crop of Fig. 1, the perspective view, from US 247,804.",
-    width: 1220,
-    height: 1550,
-  },
-  "Fig. 2": {
-    src: "/patents/figures/us-247804-delaval-separator/fig-2-source-crop-v2.png",
-    alt: "Source-facsimile crop of Fig. 2, the vertical section, from US 247,804.",
-    width: 1380,
-    height: 2460,
-  },
+  "Fig. 1": sourceSheetPreview("Fig. 1", "the printed perspective view on the smaller scale"),
+  "Fig. 2": sourceSheetPreview("Fig. 2", "the printed vertical-section view of the apparatus"),
 } as const;
 
 const figure = (

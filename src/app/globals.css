@@ -78,15 +78,52 @@
   }
 
   /* Obsidian Dark Mode — surfaces on the ink ramp so panels, HUDs, and the
-     page background share one navy family. */
+     page background share one navy family with an ultra-subtle technical drafting grid. */
   .dark body {
     background-color: #0f1113;
     color: #f1f5f9;
     background-image:
       radial-gradient(circle at 15% 15%, rgba(245, 158, 11, 0.04), transparent 45%),
-      radial-gradient(circle at 85% 25%, rgba(59, 130, 246, 0.03), transparent 45%);
+      radial-gradient(circle at 85% 25%, rgba(59, 130, 246, 0.03), transparent 45%),
+      linear-gradient(to right, rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+    background-size:
+      auto,
+      auto,
+      48px 48px,
+      48px 48px;
   }
 }
+
+/* Technical Blueprint Grid Utilities */
+.blueprint-grid {
+  background-image:
+    linear-gradient(to right, rgba(59, 130, 246, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(59, 130, 246, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.dark .blueprint-grid {
+  background-image:
+    linear-gradient(to right, rgba(56, 189, 248, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.1) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.blueprint-grid-subtle {
+  background-image:
+    linear-gradient(to right, rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.dark .blueprint-grid-subtle {
+  background-image:
+    linear-gradient(to right, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
 /* Glassmorphism Surface Token */
 .glass-panel {
   backdrop-filter: blur(12px) saturate(120%);

@@ -5,7 +5,7 @@ import {
   archivalEditionForPublication,
   completeArchivalEditionForViewer,
   evaluateArchivalPublicationState,
-  patentForPublicationViewer,
+  patentForSourceReader,
 } from "@/data/editions/publicationApproval";
 import { allPatents } from "@/data/patents";
 import { whitneyCottonGinPatent } from "@/data/patents/whitney-cotton-gin";
@@ -73,18 +73,14 @@ describe("patent view URL state", () => {
       /const setViewMode = \(mode: PatentViewMode\) => \{\s*setViewModeState\(mode\);\s*\};/,
     );
     expect(PATENT_PAGE_SOURCE).toContain("patent={viewerPatent}");
-    expect(PATENT_PAGE_SOURCE).toContain("archivalPublication={archivalPublicationView}");
-    expect(PATENT_PAGE_SOURCE).toContain(
-      "data-archival-publication-evidence={JSON.stringify(archivalDiagnostics)}",
-    );
+    expect(PATENT_PAGE_SOURCE).toContain("patentForSourceReader(patent)");
+    expect(PATENT_PAGE_SOURCE).not.toContain("evaluateArchivalPublicationState(patent)");
+    expect(PATENT_PAGE_SOURCE).not.toContain("archivalPublicationDiagnostics");
     expect(VIEWER_SOURCE).toContain("const archivalSource =");
-    expect(VIEWER_SOURCE).toContain("const archivalSource = patent.archivalEdition");
-    expect(VIEWER_SOURCE).toContain("archivalParallelReadings ?? {}");
-    expect(VIEWER_SOURCE).toContain("reviewedTranscript");
-    expect(VIEWER_SOURCE).toContain('data-testid="reviewed-transcript-fallback"');
-    expect(VIEWER_SOURCE).not.toContain(
-      "archivalPublication.isPublished && patent.archivalEdition",
-    );
+    expect(VIEWER_SOURCE).toContain("data-source-delivery=");
+    expect(VIEWER_SOURCE).toContain('archivalSource ? "edition"');
+    expect(VIEWER_SOURCE).not.toContain("archivalPublication");
+    expect(VIEWER_SOURCE).not.toContain("data-archival-publication-");
     expect(VIEWER_SOURCE).not.toContain("evaluateArchivalPublicationState(patent)");
     expect(VIEWER_SOURCE).not.toContain("archivalParallelReadingsFor");
     expect(PATENT_PAGE_SOURCE).not.toContain("searchParams");
@@ -170,9 +166,9 @@ describe("archival publication boundary", () => {
     { timeout: 30000 },
   );
 
-  test("keeps existing held editions readable while retaining ledger metadata server-side", () => {
+  test("keeps existing held editions readable without accepting audit state as a client prop", () => {
     const heldDecision = evaluateArchivalPublicationState(whitneyCottonGinPatent);
-    const heldProjection = patentForPublicationViewer(whitneyCottonGinPatent, heldDecision);
+    const heldProjection = patentForSourceReader(whitneyCottonGinPatent);
     expect(heldDecision.isPublished).toBe(false);
     expect(heldProjection.archivalEdition).toBe(whitneyCottonGinPatent.archivalEdition);
     expect(heldProjection.originalTextAsset).toBeUndefined();
@@ -180,7 +176,7 @@ describe("archival publication boundary", () => {
     const acceptedPatent = allPatents.find((patent) => patent.id === "us-78317-nobel-dynamite");
     if (!acceptedPatent) throw new Error("Nobel dynamite patent not found");
     const acceptedDecision = evaluateArchivalPublicationState(acceptedPatent);
-    const acceptedProjection = patentForPublicationViewer(acceptedPatent, acceptedDecision);
+    const acceptedProjection = patentForSourceReader(acceptedPatent);
     expect(acceptedDecision.isPublished).toBe(true);
     expect(acceptedProjection.archivalEdition).toBe(acceptedPatent.archivalEdition);
     expect(acceptedProjection.originalTextAsset).toBeUndefined();
@@ -191,9 +187,10 @@ describe("archival publication boundary", () => {
     if (!fermi) throw new Error("Fermi reactor patent not found");
 
     const decision = evaluateArchivalPublicationState(fermi);
+    expect(decision.isPublished).toBe(false);
     expect(fermi.archivalEdition).toBeDefined();
     expect(fermi.archivalEdition?.completeFacsimileReviewed).toBe(false);
-    expect(completeArchivalEditionForViewer(fermi, decision)).toBeUndefined();
-    expect(patentForPublicationViewer(fermi, decision).archivalEdition).toBeUndefined();
+    expect(completeArchivalEditionForViewer(fermi)).toBeUndefined();
+    expect(patentForSourceReader(fermi).archivalEdition).toBeUndefined();
   });
 });

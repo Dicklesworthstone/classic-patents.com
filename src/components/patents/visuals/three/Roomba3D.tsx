@@ -28,41 +28,18 @@ import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSi
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { buildRoombaModel, ROOMBA_STUDIO_FLOOR_Y } from "./RoombaModel";
+import { buildRoombaModel } from "./RoombaModel";
+import { type RoombaCameraPreset, roombaCameraViewForViewport } from "./roombaCamera";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { usePatentAudio } from "./usePatentAudio";
 
 const EXHIBIT_ID = "us-6594844-roomba";
 
-type CameraPreset = "iso" | "robot_chassis" | "cleaning_path" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: {
-    pos: [0, 3.2 + ROOMBA_STUDIO_FLOOR_Y, 3.2],
-    target: [0, ROOMBA_STUDIO_FLOOR_Y, 0],
-  },
-  robot_chassis: {
-    pos: [0, 1.2 + ROOMBA_STUDIO_FLOOR_Y, 1.5],
-    target: [0, ROOMBA_STUDIO_FLOOR_Y, 0],
-  },
-  cleaning_path: {
-    pos: [2.5, 3.5 + ROOMBA_STUDIO_FLOOR_Y, 2.5],
-    target: [0, ROOMBA_STUDIO_FLOOR_Y, 0],
-  },
-  top: {
-    pos: [0, 5.5 + ROOMBA_STUDIO_FLOOR_Y, 0.01],
-    target: [0, ROOMBA_STUDIO_FLOOR_Y, 0],
-  },
-};
-
 export function Roomba3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<RoombaCameraPreset>("iso");
   const [hud, setHud] = useState<{
     mode: string;
     speed: number;
@@ -124,16 +101,26 @@ export function Roomba3D() {
 
   const studioRef = useRef<StudioContext | null>(null);
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const cameraForContainer = (preset: RoombaCameraPreset) =>
+    roombaCameraViewForViewport(
+      preset,
+      containerRef.current?.clientWidth ||
+        (typeof window === "undefined" ? 1000 : window.innerWidth),
+    );
+
+  const applyCameraPreset = (preset: RoombaCameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = cameraForContainer(preset);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const iso = CAMERA_PRESETS.iso;
+    const iso = roombaCameraViewForViewport(
+      "iso",
+      container.clientWidth || (typeof window === "undefined" ? 1000 : window.innerWidth),
+    );
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -210,7 +197,7 @@ export function Roomba3D() {
                 ["robot_chassis", "Chassis Cutaway"],
                 ["cleaning_path", "Cleaning Spiral"],
                 ["top", "Plan View"],
-              ] as [CameraPreset, string][]
+              ] as [RoombaCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}

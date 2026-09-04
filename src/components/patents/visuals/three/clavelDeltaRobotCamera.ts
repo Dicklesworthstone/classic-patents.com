@@ -20,10 +20,30 @@ export const CLAVEL_DELTA_ROBOT_CAMERA_VIEWS = {
 
 export type ClavelDeltaRobotCameraView = keyof typeof CLAVEL_DELTA_ROBOT_CAMERA_VIEWS;
 
+const DESKTOP_STUDIO_MIN_WIDTH_PX = 900;
+
+// The desktop canvas is wide but only 540 px tall. Looking mainly across the
+// Figure 1 base (rather than from the old far diagonal) makes the triangular
+// base, three paired-bar legs, and fixed-attitude platform legible together.
+// Its target keeps the complete source topology below the two top notice cards
+// at both Arm 1 endpoints; the neutral exhibit gantry may continue below the
+// frame, but it is not a claimed part.
+const DESKTOP_OVERVIEW = {
+  position: [1.48, 1.84, 5.1] as [number, number, number],
+  target: [0, 0, 0] as [number, number, number],
+} as const;
+
 export function clavelDeltaRobotViewForViewport(
   view: ClavelDeltaRobotCameraView,
   viewportWidth: number,
 ) {
+  if (view === "overview" && viewportWidth >= DESKTOP_STUDIO_MIN_WIDTH_PX) {
+    return {
+      position: [...DESKTOP_OVERVIEW.position] as [number, number, number],
+      target: [...DESKTOP_OVERVIEW.target] as [number, number, number],
+    };
+  }
+
   const config = CLAVEL_DELTA_ROBOT_CAMERA_VIEWS[view];
   // The procedural exhibit includes the fixed-world gantry as well as the
   // source-labelled linkage. The overview must contain that whole connected

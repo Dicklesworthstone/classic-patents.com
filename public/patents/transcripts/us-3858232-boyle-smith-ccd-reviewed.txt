@@ -5,7 +5,7 @@ Boyle et al.                                                 [45]   Dec. 31, 197
 
 BURRIED CHANNEL CHARGE COUPLED DEVICES
 
-[Drawing Sheet 1: Semiconductor substrate energy band diagrams and multi-phase electrode clocking layouts.]
+FIG. 1
 
 Inventors: Willard S. Boyle, Berkeley Heights; George E. Smith, Murray Hill, both of N.J.
 Assignee: Bell Telephone Laboratories, Incorporated, Murray Hill, N.J.
@@ -17,7 +17,7 @@ Boyle et al.                                                 [45]   Dec. 31, 197
 
 BURRIED CHANNEL CHARGE COUPLED DEVICES
 
-[Drawing Sheet 2: Semiconductor substrate energy band diagrams and multi-phase electrode clocking layouts.]
+Sheet 1 of 8: FIG. 2, FIG. 3, FIG. 4
 
 Inventors: Willard S. Boyle, Berkeley Heights; George E. Smith, Murray Hill, both of N.J.
 Assignee: Bell Telephone Laboratories, Incorporated, Murray Hill, N.J.
@@ -29,7 +29,7 @@ Boyle et al.                                                 [45]   Dec. 31, 197
 
 BURRIED CHANNEL CHARGE COUPLED DEVICES
 
-[Drawing Sheet 3: Semiconductor substrate energy band diagrams and multi-phase electrode clocking layouts.]
+Sheet 2 of 8: FIG. 5, FIG. 6
 
 Inventors: Willard S. Boyle, Berkeley Heights; George E. Smith, Murray Hill, both of N.J.
 Assignee: Bell Telephone Laboratories, Incorporated, Murray Hill, N.J.
@@ -41,7 +41,7 @@ Boyle et al.                                                 [45]   Dec. 31, 197
 
 BURRIED CHANNEL CHARGE COUPLED DEVICES
 
-[Drawing Sheet 4: Semiconductor substrate energy band diagrams and multi-phase electrode clocking layouts.]
+Sheet 3 of 8: FIG. 7A, FIG. 7B, FIG. 7C, FIG. 8
 
 Inventors: Willard S. Boyle, Berkeley Heights; George E. Smith, Murray Hill, both of N.J.
 Assignee: Bell Telephone Laboratories, Incorporated, Murray Hill, N.J.
@@ -53,7 +53,7 @@ Boyle et al.                                                 [45]   Dec. 31, 197
 
 BURRIED CHANNEL CHARGE COUPLED DEVICES
 
-[Drawing Sheet 5: Semiconductor substrate energy band diagrams and multi-phase electrode clocking layouts.]
+Sheet 4 of 8: FIG. 9A, FIG. 9B, FIG. 10
 
 Inventors: Willard S. Boyle, Berkeley Heights; George E. Smith, Murray Hill, both of N.J.
 Assignee: Bell Telephone Laboratories, Incorporated, Murray Hill, N.J.
@@ -65,7 +65,7 @@ Boyle et al.                                                 [45]   Dec. 31, 197
 
 BURRIED CHANNEL CHARGE COUPLED DEVICES
 
-[Drawing Sheet 6: Semiconductor substrate energy band diagrams and multi-phase electrode clocking layouts.]
+Sheet 5 of 8: FIG. 11, FIG. 12, FIG. 13
 
 Inventors: Willard S. Boyle, Berkeley Heights; George E. Smith, Murray Hill, both of N.J.
 Assignee: Bell Telephone Laboratories, Incorporated, Murray Hill, N.J.
@@ -77,7 +77,7 @@ Boyle et al.                                                 [45]   Dec. 31, 197
 
 BURRIED CHANNEL CHARGE COUPLED DEVICES
 
-[Drawing Sheet 7: Semiconductor substrate energy band diagrams and multi-phase electrode clocking layouts.]
+Sheet 6 of 8: FIG. 14, FIG. 15, FIG. 16
 
 Inventors: Willard S. Boyle, Berkeley Heights; George E. Smith, Murray Hill, both of N.J.
 Assignee: Bell Telephone Laboratories, Incorporated, Murray Hill, N.J.

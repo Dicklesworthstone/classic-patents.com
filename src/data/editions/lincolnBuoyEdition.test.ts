@@ -92,4 +92,13 @@ describe("lincolnBuoyArchivalEdition", () => {
       expect(lincolnBuoyParallelReadings[index]?.join(" ").trim().length).toBeGreaterThan(40);
     }
   });
+
+  test("enforces figure acceptance pending hold while ledger is verified", () => {
+    const { evaluateArchivalPublicationState } = require("./publicationApproval");
+    const decision = evaluateArchivalPublicationState(lincolnBuoyPatent);
+    expect(decision.isPublished).toBe(false);
+    expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+    expect(decision.state.evidence.ledgerContent.valid).toBe(true);
+    expect(decision.state.evidence.ledgerContent.status).toBe("verified");
+  });
 });

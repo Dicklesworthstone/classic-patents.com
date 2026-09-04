@@ -18,61 +18,50 @@ const term = (value: string, definition: string, label?: string): CuratedSpecifi
   label,
 });
 
+const sourceSheetPreview = (figure: string, description: string) => ({
+  src: "/patents/figures/us-1219881-sundback-zipper/source-sheet-1-v1.png",
+  alt: `Complete source drawing sheet 1 of 1 from US 1,219,881, including ${figure}: ${description}`,
+  width: 2320,
+  height: 3408,
+});
+
 const FIGURES = {
-  1: {
-    src: "/patents/figures/us-1219881-sundback-zipper/fig-1-source-crop-v1.png",
-    alt: "Figure 1 from US 1,219,881: perspective view on an enlarged scale of a separable fastener with slider, stringers, and interlocking members.",
-    width: 1166,
-    height: 1699,
-  },
-  2: {
-    src: "/patents/figures/us-1219881-sundback-zipper/fig-2-source-crop-v1.png",
-    alt: "Figure 2 from US 1,219,881: detail view showing the manner of locking and unlocking teeth through the Y-slider cam channels.",
-    width: 872,
-    height: 1078,
-  },
-  3: {
-    src: "/patents/figures/us-1219881-sundback-zipper/fig-3-source-crop-v1.png",
-    alt: "Figure 3 from US 1,219,881: transverse cross section on line 3-3 of Fig. 1 showing jaws clamped around the corded tape edge.",
-    width: 833,
-    height: 649,
-  },
-  4: {
-    src: "/patents/figures/us-1219881-sundback-zipper/fig-4-source-crop-v1.png",
-    alt: "Figure 4 from US 1,219,881: detail plan view of a single interlocking member showing the clamping jaws, base, and internal nesting recess.",
-    width: 495,
-    height: 729,
-  },
-  5: {
-    src: "/patents/figures/us-1219881-sundback-zipper/fig-5-source-crop-v1.png",
-    alt: "Figure 5 from US 1,219,881: cross section on line 5-5 of Fig. 4 showing the cup-shaped projection on one face and recess on the reverse.",
-    width: 549,
-    height: 701,
-  },
-  6: {
-    src: "/patents/figures/us-1219881-sundback-zipper/fig-6-source-crop-v1.png",
-    alt: "Figure 6 from US 1,219,881: detail view of one of the fabric stringer tapes with corded edge reinforcing lines.",
-    width: 554,
-    height: 729,
-  },
-  7: {
-    src: "/patents/figures/us-1219881-sundback-zipper/fig-7-source-crop-v1.png",
-    alt: "Figure 7 from US 1,219,881: transverse cross section on line 7-7 of Fig. 6 showing cords stitched to opposite faces of the tape.",
-    width: 427,
-    height: 660,
-  },
-  8: {
-    src: "/patents/figures/us-1219881-sundback-zipper/fig-8-source-crop-v1.png",
-    alt: "Figure 8 from US 1,219,881: cross section of the Y-shaped slider showing converging cam channels and central guiding wedge tongue.",
-    width: 1044,
-    height: 451,
-  },
-  9: {
-    src: "/patents/figures/us-1219881-sundback-zipper/fig-9-source-crop-v1.png",
-    alt: "Figure 9 from US 1,219,881: enlarged longitudinal section showing nested engagement of alternating cup-shaped scoops under transverse flexion.",
-    width: 852,
-    height: 412,
-  },
+  1: sourceSheetPreview(
+    "Figure 1",
+    "perspective view on an enlarged scale of a separable fastener with slider, stringers, and interlocking members",
+  ),
+  2: sourceSheetPreview(
+    "Figure 2",
+    "detail view showing the manner of locking and unlocking teeth through the Y-slider cam channels",
+  ),
+  3: sourceSheetPreview(
+    "Figure 3",
+    "transverse cross section on line 3-3 of Figure 1 showing jaws clamped around the corded tape edge",
+  ),
+  4: sourceSheetPreview(
+    "Figure 4",
+    "detail plan view of a single interlocking member showing the clamping jaws, base, and internal nesting recess",
+  ),
+  5: sourceSheetPreview(
+    "Figure 5",
+    "cross section on line 5-5 of Figure 4 showing the cup-shaped projection on one face and recess on the reverse",
+  ),
+  6: sourceSheetPreview(
+    "Figure 6",
+    "detail view of one of the fabric stringer tapes with corded edge reinforcing lines",
+  ),
+  7: sourceSheetPreview(
+    "Figure 7",
+    "transverse cross section on line 7-7 of Figure 6 showing cords stitched to opposite faces of the tape",
+  ),
+  8: sourceSheetPreview(
+    "Figure 8",
+    "cross section of the Y-shaped slider showing converging cam channels and central guiding wedge tongue",
+  ),
+  9: sourceSheetPreview(
+    "Figure 9",
+    "enlarged longitudinal section showing nested engagement of alternating cup-shaped scoops under transverse flexion",
+  ),
 } as const;
 
 const figure = (

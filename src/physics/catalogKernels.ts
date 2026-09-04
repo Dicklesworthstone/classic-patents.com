@@ -11,7 +11,6 @@ import {
   haberCatalystField,
   noyceJunctionPotential,
   peltonCavityFlow,
-  spencerCavityWave,
 } from "./deepWasm";
 import {
   EDISON_DECLARED_FILAMENT_LENGTH_CM,
@@ -41,6 +40,7 @@ import {
   shockWaveCrate,
   wakeFluidCrate,
 } from "./genericWasm";
+import { stepSpencerMicrowaveSource } from "./spencerMicrowaveKernel";
 import { vulcanKinetics } from "./thermochem";
 
 export function rpmToOmega(rpm: number) {
@@ -2494,60 +2494,9 @@ export function wozniakIsVideoPacket(index: number, divisor = 2, videoParity = 0
   return index % Math.max(1, divisor) === videoParity;
 }
 
-export function stepSpencerMicrowave(anodeKv?: number, magneticGauss?: number, rfWatts?: number) {
-  const kv = anodeKv ?? 2.2;
-  const b = magneticGauss ?? 1450;
-  const rf = rfWatts ?? 800;
-  const hullCutoffGauss = Math.round(1180 * Math.sqrt(kv / 4.2));
-  const isOscillating = b > hullCutoffGauss;
-  return {
-    hullCutoffGauss,
-    isOscillating,
-    microwaveFreqMhz: 2450,
-    wavelengthCm: 12.24,
-    rfCyclePs: 408,
-    dielectricLossWattsPerDm3: isOscillating ? Math.round(rf * 1.8) : 0,
-    popcornHeatStepC: isOscillating ? Number(((rf * 1.8) / 450).toFixed(3)) : 0,
-    heatTickMs: 200,
-    spokeDisplayOmegaRadPerS: isOscillating ? Number(((2450 / 2450) * 4.5).toFixed(3)) : 0,
-    anodeKv: kv,
-    microwaveFreqHz: 2450e6,
-    magneticFluxDensityTesla: Number((b * 1e-4).toFixed(6)),
-    electricFieldVpm: Number(((kv * 1000) / 0.01).toFixed(1)),
-    voltageVolts: Number((kv * 1000).toFixed(1)),
-    spokeOpacity: isOscillating
-      ? Number(Math.min(0.95, 0.25 + (Math.round(rf * 1.8) / 2000) * 0.7).toFixed(3))
-      : 0,
-    // 250 g water, c = 4180 J/(kg·K): t = mcΔT / P for one kelvin.
-    waterHeatSecondsPerK: isOscillating ? Number(((4180 * 0.25) / Math.max(1, rf)).toFixed(2)) : 0,
-    popcornThresholdC: 100,
-    popcornKernelCount: 12,
-    initialTempC: 20,
-    dryIceHeatStepC: 0,
-    timeToPopS: isOscillating
-      ? Number((((4180 * 0.25) / Math.max(1, rf)) * (100 - 20)).toFixed(1))
-      : 0,
-    popcornEllipseY: 0.6,
-    popcornUnpoppedR: 8,
-    popcornPoppedBaseR: 18,
-    popcornPoppedStepR: 6,
-    popcornOffsetY: -15,
-    schematicCavityCount: 8,
-    schematicAnodeCx: 110,
-    schematicAnodeCy: 150,
-    schematicCavityR: 26,
-    schematicOvenX: 50,
-    schematicOvenY: 55,
-    schematicOvenW: 300,
-    schematicOvenH: 190,
-    schematicAnodeR: 42,
-    schematicCavityDotR: 7,
-    ...spencerCavityWave(rf, isOscillating),
-    schematicWaveguideD: "M 152 150 L 200 130 L 330 130 L 330 170 L 200 170 Z",
-    schematicLoadCx: 265,
-    schematicLoadCy: 150,
-    schematicLoadR: 16,
-  };
+/** Compatibility entry point for the source-bounded Spencer apparatus state. */
+export function stepSpencerMicrowave(rfPowerSetting = 1) {
+  return stepSpencerMicrowaveSource({ rfPowerSetting });
 }
 
 /** Magnetron cavity seat on the schematic. Shared by the schematic. */

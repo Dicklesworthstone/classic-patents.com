@@ -12,6 +12,7 @@ describe("PatentHeader component", () => {
     expect(html).toContain("May 22, 1906");
     expect(html).toContain("Dayton, Ohio");
     expect(html).toContain("Archaic Glossary &amp; Cite");
+    expect(html).toContain("Print Broadside");
     expect(html).toContain("Aeronautics &amp; Aerodynamics");
   });
 });

@@ -532,7 +532,553 @@ function hullStereolithographyLocator(options: {
   };
 }
 
-export const FIGURE_OCCURRENCE_SOURCE_LOCATORS = {
+const WRIGHT_FLYER_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const WRIGHT_FLYER_EVIDENCE_REFERENCE =
+  "docs/provenance/us-821393-wright-flyer.md#source-sheet-acceptance-2026-09-03";
+
+/**
+ * The active Wright assets are complete upright source sheets. Figures 1 and
+ * 2 cannot be cleanly isolated without cutting printed drawing content or
+ * including a clipped witness/header band, so their full source sheets are
+ * intentionally the reviewable archival preview.
+ */
+function wrightFlyerSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  activeAsset: string;
+  sourcePdfPage: 1 | 2 | 3;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: WRIGHT_FLYER_SOURCE_RASTER.width,
+    height: WRIGHT_FLYER_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    sourceRaster: WRIGHT_FLYER_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, WRIGHT_FLYER_SOURCE_RASTER),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: WRIGHT_FLYER_EVIDENCE_REFERENCE,
+  };
+}
+
+const SUNDBACK_ZIPPER_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const SUNDBACK_ZIPPER_EVIDENCE_REFERENCE =
+  "docs/provenance/us-1219881-sundback-zipper.md#source-sheet-acceptance-2026-09-03";
+
+const PELTON_WATER_WHEEL_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const PELTON_WATER_WHEEL_EVIDENCE_REFERENCE =
+  "docs/provenance/us-233692-pelton-water-wheel.md#source-sheet-acceptance-2026-09-03";
+
+/**
+ * The page-one drawing sheet interleaves all four figures with title and
+ * execution furniture. The active preview deliberately keeps its full,
+ * upright primary-source extent instead of treating speculative crop bounds as
+ * archival evidence.
+ */
+function peltonWaterWheelSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: PELTON_WATER_WHEEL_SOURCE_RASTER.width,
+    height: PELTON_WATER_WHEEL_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-233692-pelton-water-wheel/source-sheet-1-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: PELTON_WATER_WHEEL_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      PELTON_WATER_WHEEL_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: PELTON_WATER_WHEEL_EVIDENCE_REFERENCE,
+  };
+}
+
+/**
+ * The original one-sheet layout interleaves the nine figures and its printed
+ * patent furniture. The active source preview deliberately retains that
+ * complete primary sheet rather than presenting a clipped or composite crop.
+ */
+function sundbackZipperSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: SUNDBACK_ZIPPER_SOURCE_RASTER.width,
+    height: SUNDBACK_ZIPPER_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-1219881-sundback-zipper/source-sheet-1-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: SUNDBACK_ZIPPER_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, SUNDBACK_ZIPPER_SOURCE_RASTER),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: SUNDBACK_ZIPPER_EVIDENCE_REFERENCE,
+  };
+}
+
+const DE_FOREST_AUDION_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const DE_FOREST_AUDION_EVIDENCE_REFERENCE =
+  "docs/provenance/us-879532-de-forest-audion.md#source-sheet-acceptance-2026-09-03";
+
+/**
+ * The two printed Audion diagrams share one source sheet. The active preview
+ * preserves the whole, unmodified sheet so both figures and its patent
+ * furniture stay visible instead of relying on a crop boundary that leaves
+ * another figure's printed label in the result.
+ */
+function deForestAudionSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: DE_FOREST_AUDION_SOURCE_RASTER.width,
+    height: DE_FOREST_AUDION_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-879532-de-forest-audion/source-sheet-1-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: DE_FOREST_AUDION_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      DE_FOREST_AUDION_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: DE_FOREST_AUDION_EVIDENCE_REFERENCE,
+  };
+}
+
+const GLIDDEN_BARBED_WIRE_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const GLIDDEN_BARBED_WIRE_EVIDENCE_REFERENCE =
+  "docs/provenance/us-157124-glidden-barbed-wire.md#source-sheet-acceptance-2026-09-03";
+
+/**
+ * All three printed Glidden figures occupy the first drawing sheet. The active
+ * preview retains the complete upright sheet and its genuine execution
+ * furniture rather than presenting a rotated or partially isolated crop as
+ * archival evidence.
+ */
+function gliddenBarbedWireSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: GLIDDEN_BARBED_WIRE_SOURCE_RASTER.width,
+    height: GLIDDEN_BARBED_WIRE_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-157124-glidden-barbed-wire/source-sheet-1-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: GLIDDEN_BARBED_WIRE_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      GLIDDEN_BARBED_WIRE_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: GLIDDEN_BARBED_WIRE_EVIDENCE_REFERENCE,
+  };
+}
+
+const SPENCER_MICROWAVE_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const SPENCER_MICROWAVE_EVIDENCE_REFERENCE =
+  "docs/provenance/us-2495429-spencer-microwave.md#source-sheet-acceptance-2026-09-03";
+
+const EINSTEIN_REFRIGERATOR_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const EINSTEIN_REFRIGERATOR_EVIDENCE_REFERENCE =
+  "docs/provenance/us-1781541-einstein-refrigerator.md#source-sheet-acceptance-2026-09-03";
+
+/**
+ * The refrigerator has one complete apparatus drawing on the first PDF page.
+ * Its active preview deliberately keeps the entire upright source sheet, which
+ * retains both the apparatus and its printed patent furniture without a
+ * reconstructed or inferred crop boundary.
+ */
+function einsteinRefrigeratorSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: EINSTEIN_REFRIGERATOR_SOURCE_RASTER.width,
+    height: EINSTEIN_REFRIGERATOR_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-1781541-einstein-refrigerator/source-sheet-1-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: EINSTEIN_REFRIGERATOR_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      EINSTEIN_REFRIGERATOR_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: EINSTEIN_REFRIGERATOR_EVIDENCE_REFERENCE,
+  };
+}
+
+/**
+ * The one active Spencer preview is the complete, unmodified first PDF page.
+ * Its full raster avoids treating a legacy isolated-crop boundary as evidence
+ * without a repeatable source-pixel receipt.
+ */
+function spencerMicrowaveSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: SPENCER_MICROWAVE_SOURCE_RASTER.width,
+    height: SPENCER_MICROWAVE_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-2495429-spencer-microwave/drawing-sheet-source-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: SPENCER_MICROWAVE_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      SPENCER_MICROWAVE_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: SPENCER_MICROWAVE_EVIDENCE_REFERENCE,
+  };
+}
+
+const TESLA_MOTOR_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const TESLA_MOTOR_EVIDENCE_REFERENCE =
+  "docs/provenance/us-381968-tesla-motor.md#source-sheet-crop-review-2026-09-03";
+const TESLA_MOTOR_SOURCE_SHEETS = {
+  1: "/patents/figures/us-381968-tesla-motor/figs-1-to-8-and-1a-to-8a-source-sheet-v2.png",
+  2: "/patents/figures/us-381968-tesla-motor/figs-9-to-12-source-sheet-v2.png",
+  3: "/patents/figures/us-381968-tesla-motor/figs-13-to-16-source-sheet-v2.png",
+  4: "/patents/figures/us-381968-tesla-motor/figs-17-to-19-source-sheet-v2.png",
+} as const;
+
+/** Full upright source sheets avoid inventing individual crop boundaries. */
+function teslaMotorSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  sourcePdfPage: keyof typeof TESLA_MOTOR_SOURCE_SHEETS;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: TESLA_MOTOR_SOURCE_RASTER.width,
+    height: TESLA_MOTOR_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: TESLA_MOTOR_SOURCE_SHEETS[args.sourcePdfPage],
+    sourceRaster: TESLA_MOTOR_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, TESLA_MOTOR_SOURCE_RASTER),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 dpi source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: TESLA_MOTOR_EVIDENCE_REFERENCE,
+  };
+}
+
+function teslaMotorSourceSheetLocators(
+  sourcePdfPage: keyof typeof TESLA_MOTOR_SOURCE_SHEETS,
+  occurrenceKeys: readonly FigureOccurrenceKey[],
+): FigureOccurrenceSourceLocator[] {
+  return occurrenceKeys.map((occurrenceKey) =>
+    teslaMotorSourceSheetLocator({ occurrenceKey, sourcePdfPage }),
+  );
+}
+
+const DAVENPORT_ELECTRIC_MOTOR_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const DAVENPORT_ELECTRIC_MOTOR_EVIDENCE_REFERENCE =
+  "docs/provenance/us-132-davenport-electric-motor.md#source-sheet-acceptance-2026-09-03";
+
+/** The sole authored citation names the complete, unmodified drawing sheet. */
+function davenportElectricMotorSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: DAVENPORT_ELECTRIC_MOTOR_SOURCE_RASTER.width,
+    height: DAVENPORT_ELECTRIC_MOTOR_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-132-davenport-electric-motor/drawing-sheet-source-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: DAVENPORT_ELECTRIC_MOTOR_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      DAVENPORT_ELECTRIC_MOTOR_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: DAVENPORT_ELECTRIC_MOTOR_EVIDENCE_REFERENCE,
+  };
+}
+
+const DELAVAL_SEPARATOR_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const DELAVAL_SEPARATOR_EVIDENCE_REFERENCE =
+  "docs/provenance/us-247804-delaval-separator.md#source-sheet-acceptance-2026-09-03";
+
+/**
+ * The labelled De Laval views overlap in the historic one-sheet layout. The
+ * active preview deliberately preserves that complete source sheet instead of
+ * asserting artificial individual-crop boundaries.
+ */
+function delavalSeparatorSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: DELAVAL_SEPARATOR_SOURCE_RASTER.width,
+    height: DELAVAL_SEPARATOR_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-247804-delaval-separator/drawing-sheet-source-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: DELAVAL_SEPARATOR_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      DELAVAL_SEPARATOR_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: DELAVAL_SEPARATOR_EVIDENCE_REFERENCE,
+  };
+}
+
+const EDISON_PHONOGRAPH_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const EDISON_PHONOGRAPH_EVIDENCE_REFERENCE =
+  "docs/provenance/us-200521-edison-phonograph.md#source-sheet-acceptance-2026-09-03";
+
+/**
+ * Edison placed the four labelled phonograph figures on one continuous source
+ * sheet. The active preview retains the whole sheet rather than asserting
+ * isolated boundaries where the historic layout interleaves the views.
+ */
+function edisonPhonographSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: EDISON_PHONOGRAPH_SOURCE_RASTER.width,
+    height: EDISON_PHONOGRAPH_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-200521-edison-phonograph/drawing-sheet-source-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: EDISON_PHONOGRAPH_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      EDISON_PHONOGRAPH_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: EDISON_PHONOGRAPH_EVIDENCE_REFERENCE,
+  };
+}
+
+const MAXIM_MACHINE_GUN_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const MAXIM_MACHINE_GUN_EVIDENCE_REFERENCE =
+  "docs/provenance/us-319596-maxim-machine-gun.md#source-sheet-acceptance-2026-09-03";
+
+/**
+ * Figs. 1 and 2 share the first historic drawing sheet; Fig. 3 is on the
+ * second. The active previews retain complete sheets, including printed
+ * identities and signatures, rather than asserting crop boundaries.
+ */
+function maximMachineGunSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  sourcePdfPage: 1 | 2;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: MAXIM_MACHINE_GUN_SOURCE_RASTER.width,
+    height: MAXIM_MACHINE_GUN_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: `/patents/figures/us-319596-maxim-machine-gun/source-sheet-${args.sourcePdfPage}-v1.png`,
+    sourceRaster: MAXIM_MACHINE_GUN_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      MAXIM_MACHINE_GUN_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: MAXIM_MACHINE_GUN_EVIDENCE_REFERENCE,
+  };
+}
+
+const DAIMLER_MARINE_ENGINE_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const DAIMLER_MARINE_ENGINE_EVIDENCE_REFERENCE =
+  "docs/provenance/us-361931-daimler-engine.md#source-sheet-acceptance-2026-09-03";
+
+/**
+ * Sheet 2 combines six labelled details, while sheets 1 and 3 carry the
+ * longitudinal and plan views. Each active preview remains the intact source
+ * sheet instead of inferring separate crop boundaries.
+ */
+function daimlerMarineEngineSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  sourcePdfPage: 1 | 2 | 3;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: DAIMLER_MARINE_ENGINE_SOURCE_RASTER.width,
+    height: DAIMLER_MARINE_ENGINE_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: `/patents/figures/us-361931-daimler-engine/source-sheet-${args.sourcePdfPage}-v1.png`,
+    sourceRaster: DAIMLER_MARINE_ENGINE_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      DAIMLER_MARINE_ENGINE_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: DAIMLER_MARINE_ENGINE_EVIDENCE_REFERENCE,
+  };
+}
+
+const MCCORMICK_REAPER_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const MCCORMICK_REAPER_EVIDENCE_REFERENCE =
+  "docs/provenance/us-x8277-mccormick-reaper.md#source-sheet-acceptance-2026-09-03";
+
+/** The single active preview is the complete, unmodified first source sheet. */
+function mccormickReaperSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: MCCORMICK_REAPER_SOURCE_RASTER.width,
+    height: MCCORMICK_REAPER_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-x8277-mccormick-reaper/source-sheet-1-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: MCCORMICK_REAPER_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      MCCORMICK_REAPER_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: MCCORMICK_REAPER_EVIDENCE_REFERENCE,
+  };
+}
+
+const EDISON_LIGHTBULB_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const EDISON_LIGHTBULB_EVIDENCE_REFERENCE =
+  "docs/provenance/us-223898-edison-lightbulb.md#source-sheet-acceptance-2026-09-03";
+
+/**
+ * Figs. 1–3 share and visually overlap the same historic drawing sheet. Each
+ * citation intentionally names that complete, unmodified source sheet rather
+ * than manufacture an artificial boundary around one figure.
+ */
+function edisonLightbulbSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: EDISON_LIGHTBULB_SOURCE_RASTER.width,
+    height: EDISON_LIGHTBULB_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-223898-edison-lightbulb/source-sheet-1-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: EDISON_LIGHTBULB_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      EDISON_LIGHTBULB_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: EDISON_LIGHTBULB_EVIDENCE_REFERENCE,
+  };
+}
+
+const TESLA_COIL_593138_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const TESLA_COIL_593138_EVIDENCE_REFERENCE =
+  "docs/provenance/us-593138-tesla-coil.md#source-sheet-acceptance-2026-09-03";
+const TESLA_COIL_593138_SOURCE_SHEETS = {
+  1: "/patents/figures/us-593138-tesla-coil/source-sheet-1.png",
+  2: "/patents/figures/us-593138-tesla-coil/source-sheet-2.png",
+} as const;
+
+/**
+ * Fig. 1 occupies source sheet 1; Figs. 2 and 3 share source sheet 2. The
+ * active evidence intentionally keeps each whole historic page intact.
+ */
+function teslaCoil593138SourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  sourcePdfPage: keyof typeof TESLA_COIL_593138_SOURCE_SHEETS;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: TESLA_COIL_593138_SOURCE_RASTER.width,
+    height: TESLA_COIL_593138_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: TESLA_COIL_593138_SOURCE_SHEETS[args.sourcePdfPage],
+    sourceRaster: TESLA_COIL_593138_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      TESLA_COIL_593138_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: TESLA_COIL_593138_EVIDENCE_REFERENCE,
+  };
+}
+
+export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorRegistry = {
   "us-4575330-hull-stereolithography": [
     hullStereolithographyLocator({
       occurrenceKey: "edition-block-1-group-0-inline-1",
@@ -1725,5 +2271,369 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS = {
       activeAsset: "/patents/figures/us-6285999-pagerank/fig-3-source-crop-v1.png",
       sourcePdfPage: 5,
     }),
+  ],
+  "us-821393-wright-flyer": [
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-1",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+      sourcePdfPage: 1,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-3",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png",
+      sourcePdfPage: 2,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-5",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+      sourcePdfPage: 3,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-7",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+      sourcePdfPage: 3,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-13-group-0-inline-3",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png",
+      sourcePdfPage: 2,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-14-group-0-inline-1",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+      sourcePdfPage: 3,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-17-group-0-inline-1",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+      sourcePdfPage: 1,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-17-group-0-inline-3",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+      sourcePdfPage: 1,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-17-group-0-inline-5",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png",
+      sourcePdfPage: 2,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-17-group-0-inline-7",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+      sourcePdfPage: 1,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-17-group-0-inline-9",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+      sourcePdfPage: 1,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-19-group-0-inline-1",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+      sourcePdfPage: 1,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-20-group-0-inline-1",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+      sourcePdfPage: 3,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-20-group-0-inline-5",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+      sourcePdfPage: 3,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-24-group-0-inline-3",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+      sourcePdfPage: 3,
+    }),
+  ],
+  "us-879532-de-forest-audion": [
+    deForestAudionSourceSheetLocator({ occurrenceKey: "edition-block-5-group-0-inline-1" }),
+    deForestAudionSourceSheetLocator({ occurrenceKey: "edition-block-5-group-0-inline-3" }),
+    deForestAudionSourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-3" }),
+    deForestAudionSourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-5" }),
+    deForestAudionSourceSheetLocator({ occurrenceKey: "edition-block-9-group-0-inline-3" }),
+    deForestAudionSourceSheetLocator({ occurrenceKey: "edition-block-9-group-0-inline-5" }),
+  ],
+  "us-157124-glidden-barbed-wire": [
+    gliddenBarbedWireSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-1" }),
+    gliddenBarbedWireSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-2" }),
+    gliddenBarbedWireSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-3" }),
+    gliddenBarbedWireSourceSheetLocator({ occurrenceKey: "edition-block-4-group-0-inline-0" }),
+    gliddenBarbedWireSourceSheetLocator({ occurrenceKey: "edition-block-4-group-0-inline-2" }),
+    gliddenBarbedWireSourceSheetLocator({ occurrenceKey: "edition-block-4-group-0-inline-4" }),
+  ],
+  "us-1219881-sundback-zipper": [
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-2-group-0-inline-1" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-2-group-0-inline-3" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-2-group-0-inline-5" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-2-group-0-inline-7" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-2-group-0-inline-9" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-2-group-0-inline-11" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-2-group-0-inline-13" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-2-group-0-inline-15" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-2-group-0-inline-17" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-1" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-3" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-5" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-7" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-9" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-11" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-13" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-15" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-17" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-19" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-21" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-23" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-11-group-0-inline-0" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-11-group-0-inline-2" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-11-group-0-inline-4" }),
+    sundbackZipperSourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-1" }),
+  ],
+  "us-233692-pelton-water-wheel": [
+    peltonWaterWheelSourceSheetLocator({ occurrenceKey: "edition-block-2-group-0-inline-1" }),
+    peltonWaterWheelSourceSheetLocator({ occurrenceKey: "edition-block-2-group-0-inline-3" }),
+    peltonWaterWheelSourceSheetLocator({ occurrenceKey: "edition-block-2-group-0-inline-5" }),
+    peltonWaterWheelSourceSheetLocator({ occurrenceKey: "edition-block-2-group-0-inline-7" }),
+    peltonWaterWheelSourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-1" }),
+    peltonWaterWheelSourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-3" }),
+    peltonWaterWheelSourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-5" }),
+    peltonWaterWheelSourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-7" }),
+  ],
+  "us-1781541-einstein-refrigerator": [
+    einsteinRefrigeratorSourceSheetLocator({ occurrenceKey: "edition-block-2-group-0-inline-1" }),
+    einsteinRefrigeratorSourceSheetLocator({ occurrenceKey: "edition-block-3-group-0-inline-1" }),
+  ],
+  "us-2495429-spencer-microwave": [
+    spencerMicrowaveSourceSheetLocator({ occurrenceKey: "edition-block-6-group-0-inline-1" }),
+  ],
+  "us-381968-tesla-motor": [
+    ...teslaMotorSourceSheetLocators(1, [
+      "edition-block-1-group-0-inline-1",
+      "edition-block-1-group-0-inline-3",
+      "edition-block-11-group-0-inline-1",
+      "edition-block-11-group-0-inline-3",
+      "edition-block-12-group-0-inline-1",
+      "edition-block-12-group-0-inline-5",
+      "edition-block-12-group-0-inline-7",
+      "edition-block-13-group-0-inline-1",
+      "edition-block-13-group-0-inline-3",
+      "edition-block-13-group-0-inline-5",
+      "edition-block-14-group-0-inline-0",
+      "edition-block-14-group-0-inline-2",
+      "edition-block-14-group-0-inline-4",
+      "edition-block-14-group-0-inline-6",
+      "edition-block-14-group-0-inline-8",
+      "edition-block-14-group-0-inline-10",
+      "edition-block-14-group-0-inline-12",
+      "edition-block-15-group-0-inline-0",
+      "edition-block-15-group-0-inline-2",
+      "edition-block-15-group-0-inline-4",
+      "edition-block-15-group-0-inline-6",
+    ]),
+    ...teslaMotorSourceSheetLocators(2, [
+      "edition-block-2-group-0-inline-0",
+      "edition-block-2-group-0-inline-4",
+      "edition-block-9-group-0-inline-1",
+      "edition-block-12-group-0-inline-3",
+      "edition-block-15-group-0-inline-8",
+      "edition-block-16-group-0-inline-1",
+      "edition-block-17-group-0-inline-1",
+      "edition-block-17-group-0-inline-3",
+      "edition-block-17-group-0-inline-5",
+      "edition-block-19-group-0-inline-1",
+      "edition-block-19-group-0-inline-3",
+      "edition-block-28-group-0-inline-1",
+      "edition-block-30-group-0-inline-1",
+    ]),
+    ...teslaMotorSourceSheetLocators(3, [
+      "edition-block-3-group-0-inline-0",
+      "edition-block-3-group-0-inline-2",
+      "edition-block-21-group-0-inline-0",
+      "edition-block-21-group-0-inline-2",
+      "edition-block-22-group-0-inline-1",
+      "edition-block-22-group-0-inline-3",
+      "edition-block-22-group-0-inline-5",
+      "edition-block-22-group-0-inline-7",
+      "edition-block-29-group-0-inline-1",
+    ]),
+    ...teslaMotorSourceSheetLocators(4, [
+      "edition-block-4-group-0-inline-0",
+      "edition-block-4-group-0-inline-2",
+      "edition-block-4-group-0-inline-4",
+      "edition-block-23-group-0-inline-1",
+      "edition-block-23-group-0-inline-3",
+      "edition-block-23-group-0-inline-5",
+      "edition-block-23-group-0-inline-7",
+      "edition-block-23-group-0-inline-9",
+      "edition-block-23-group-0-inline-11",
+      "edition-block-24-group-0-inline-1",
+      "edition-block-24-group-0-inline-3",
+      "edition-block-25-group-0-inline-1",
+      "edition-block-25-group-0-inline-3",
+      "edition-block-29-group-0-inline-3",
+    ]),
+  ],
+  "us-593138-tesla-coil": [
+    teslaCoil593138SourceSheetLocator({
+      occurrenceKey: "edition-block-1-group-0-inline-0",
+      sourcePdfPage: 1,
+    }),
+    teslaCoil593138SourceSheetLocator({
+      occurrenceKey: "edition-block-2-group-0-inline-0",
+      sourcePdfPage: 2,
+    }),
+    teslaCoil593138SourceSheetLocator({
+      occurrenceKey: "edition-block-2-group-0-inline-2",
+      sourcePdfPage: 2,
+    }),
+    teslaCoil593138SourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-1",
+      sourcePdfPage: 1,
+    }),
+    teslaCoil593138SourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-3",
+      sourcePdfPage: 2,
+    }),
+    teslaCoil593138SourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-5",
+      sourcePdfPage: 2,
+    }),
+    teslaCoil593138SourceSheetLocator({
+      occurrenceKey: "edition-block-13-group-0-inline-3",
+      sourcePdfPage: 1,
+    }),
+    teslaCoil593138SourceSheetLocator({
+      occurrenceKey: "edition-block-14-group-0-inline-1",
+      sourcePdfPage: 2,
+    }),
+    teslaCoil593138SourceSheetLocator({
+      occurrenceKey: "edition-block-15-group-0-inline-1",
+      sourcePdfPage: 2,
+    }),
+    teslaCoil593138SourceSheetLocator({
+      occurrenceKey: "edition-block-15-group-0-inline-3",
+      sourcePdfPage: 2,
+    }),
+    teslaCoil593138SourceSheetLocator({
+      occurrenceKey: "edition-block-17-group-0-inline-1",
+      sourcePdfPage: 2,
+    }),
+  ],
+  "us-132-davenport-electric-motor": [
+    davenportElectricMotorSourceSheetLocator({ occurrenceKey: "edition-block-3-group-0-inline-1" }),
+  ],
+  "us-247804-delaval-separator": [
+    delavalSeparatorSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-1" }),
+    delavalSeparatorSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-3" }),
+    delavalSeparatorSourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-1" }),
+    delavalSeparatorSourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-3" }),
+  ],
+  "us-223898-edison-lightbulb": [
+    edisonLightbulbSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-1" }),
+    edisonLightbulbSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-3" }),
+    edisonLightbulbSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-5" }),
+    edisonLightbulbSourceSheetLocator({ occurrenceKey: "edition-block-19-group-0-inline-1" }),
+    edisonLightbulbSourceSheetLocator({ occurrenceKey: "edition-block-19-group-0-inline-3" }),
+    edisonLightbulbSourceSheetLocator({ occurrenceKey: "edition-block-19-group-0-inline-5" }),
+  ],
+  "us-200521-edison-phonograph": [
+    edisonPhonographSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-5" }),
+    edisonPhonographSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-7" }),
+    edisonPhonographSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-9" }),
+    edisonPhonographSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-11" }),
+    edisonPhonographSourceSheetLocator({ occurrenceKey: "edition-block-9-group-0-inline-1" }),
+    edisonPhonographSourceSheetLocator({ occurrenceKey: "edition-block-9-group-0-inline-3" }),
+    edisonPhonographSourceSheetLocator({ occurrenceKey: "edition-block-26-group-0-inline-5" }),
+    edisonPhonographSourceSheetLocator({ occurrenceKey: "edition-block-26-group-0-inline-7" }),
+  ],
+  "us-319596-maxim-machine-gun": [
+    maximMachineGunSourceSheetLocator({
+      occurrenceKey: "edition-block-1-group-0-inline-1",
+      sourcePdfPage: 1,
+    }),
+    maximMachineGunSourceSheetLocator({
+      occurrenceKey: "edition-block-1-group-0-inline-3",
+      sourcePdfPage: 1,
+    }),
+    maximMachineGunSourceSheetLocator({
+      occurrenceKey: "edition-block-1-group-0-inline-5",
+      sourcePdfPage: 2,
+    }),
+    maximMachineGunSourceSheetLocator({
+      occurrenceKey: "edition-block-6-group-0-inline-1",
+      sourcePdfPage: 1,
+    }),
+    maximMachineGunSourceSheetLocator({
+      occurrenceKey: "edition-block-6-group-0-inline-3",
+      sourcePdfPage: 1,
+    }),
+    maximMachineGunSourceSheetLocator({
+      occurrenceKey: "edition-block-6-group-0-inline-5",
+      sourcePdfPage: 1,
+    }),
+    maximMachineGunSourceSheetLocator({
+      occurrenceKey: "edition-block-6-group-0-inline-7",
+      sourcePdfPage: 2,
+    }),
+    maximMachineGunSourceSheetLocator({
+      occurrenceKey: "edition-block-10-group-0-inline-1",
+      sourcePdfPage: 1,
+    }),
+  ],
+  "us-361931-daimler-engine": [
+    daimlerMarineEngineSourceSheetLocator({
+      occurrenceKey: "edition-block-1-group-0-inline-1",
+      sourcePdfPage: 1,
+    }),
+    daimlerMarineEngineSourceSheetLocator({
+      occurrenceKey: "edition-block-2-group-0-inline-1",
+      sourcePdfPage: 2,
+    }),
+    daimlerMarineEngineSourceSheetLocator({
+      occurrenceKey: "edition-block-3-group-0-inline-1",
+      sourcePdfPage: 3,
+    }),
+    daimlerMarineEngineSourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-1",
+      sourcePdfPage: 1,
+    }),
+    daimlerMarineEngineSourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-3",
+      sourcePdfPage: 2,
+    }),
+    daimlerMarineEngineSourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-5",
+      sourcePdfPage: 3,
+    }),
+    daimlerMarineEngineSourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-7",
+      sourcePdfPage: 2,
+    }),
+    daimlerMarineEngineSourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-9",
+      sourcePdfPage: 2,
+    }),
+    daimlerMarineEngineSourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-11",
+      sourcePdfPage: 2,
+    }),
+    daimlerMarineEngineSourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-13",
+      sourcePdfPage: 2,
+    }),
+    daimlerMarineEngineSourceSheetLocator({
+      occurrenceKey: "edition-block-18-group-0-inline-1",
+      sourcePdfPage: 2,
+    }),
+    daimlerMarineEngineSourceSheetLocator({
+      occurrenceKey: "edition-block-18-group-0-inline-3",
+      sourcePdfPage: 2,
+    }),
+  ],
+  "us-x8277-mccormick-reaper": [
+    mccormickReaperSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-1" }),
   ],
 } as const satisfies FigureOccurrenceSourceLocatorRegistry;

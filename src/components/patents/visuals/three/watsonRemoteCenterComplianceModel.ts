@@ -132,6 +132,10 @@ export function buildWatsonRemoteCenterComplianceModel(): WatsonRemoteCenterComp
       color: 0x06b6d4,
       emissive: 0x075985,
       emissiveIntensity: 0.85,
+      transparent: true,
+      opacity: 0.82,
+      wireframe: true,
+      depthWrite: false,
     }),
   );
   const twistMat = material(

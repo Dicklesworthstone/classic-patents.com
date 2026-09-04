@@ -18,17 +18,23 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
-const crop = (number: number, width: number, height: number, revision = "-v3") => ({
-  src: `/patents/figures/us-223898-edison-lightbulb/fig-${number}-source-crop${revision}.png`,
-  alt: `Source-facsimile crop of Fig. ${number} from US 223,898.`,
-  width,
-  height,
+/**
+ * Figs. 1–3 share one historic drawing sheet. The previously served
+ * individual crops are preserved on disk, but their boundaries overlap the
+ * neighboring drawings and sheet furniture. The active preview therefore
+ * keeps the complete, upright source sheet intact.
+ */
+const sourceSheet = (number: number) => ({
+  src: "/patents/figures/us-223898-edison-lightbulb/source-sheet-1-v1.png",
+  alt: `Complete upright source drawing sheet 1 of 1 containing Fig. ${number} from US 223,898.`,
+  width: 2320,
+  height: 3408,
 });
 
 const FIGURES = {
-  "Fig. 1": crop(1, 600, 900, "-v4"),
-  "Fig. 2": crop(2, 430, 1450, "-v6"),
-  "Fig. 3": crop(3, 650, 900),
+  "Fig. 1": sourceSheet(1),
+  "Fig. 2": sourceSheet(2),
+  "Fig. 3": sourceSheet(3),
 } as const;
 
 const figure = (
@@ -39,7 +45,7 @@ const figure = (
   text: sourceText,
   href: "#",
   referenceType: "figure",
-  label: `Open the source-facsimile crop for ${label} in US 223,898`,
+  label: `Open the complete source drawing sheet containing ${label} in US 223,898`,
   figurePreviews: [FIGURES[label]],
 });
 
@@ -90,7 +96,10 @@ export const edisonLightbulbArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 2"),
         { kind: "text", text: ", and " },
         figure("Fig. 3"),
-        { kind: "text", text: ". Each preview is a direct crop from the pinned facsimile." },
+        {
+          kind: "text",
+          text: ". Each preview preserves the complete, unmodified source drawing sheet.",
+        },
       ],
     },
     p("To all whom it may concern:"),

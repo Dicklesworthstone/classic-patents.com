@@ -73,15 +73,18 @@ describe("typed archival publication state", () => {
     }
   }, 30000);
 
-  test("a restrictive audit override wins over otherwise accepted metadata", () => {
+  test("accepts Wright after its complete source-sheet evidence is pinned", () => {
     const wright = allPatents.find((patent) => patent.id === "us-821393-wright-flyer");
     if (!wright) throw new Error("Wright flyer patent not found");
 
     const decision = evaluateArchivalPublicationState(wright);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
-    expect(decision.figureManifest.requiredFigureCount).toBeGreaterThan(0);
-    expect(decision.state.evidence.evidenceReferences).toContain("beads:classic-patentscom-971");
+    expect(decision.state.kind).toBe("accepted");
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest.requiredFigureCount).toBe(15);
+    expect(decision.figureManifest.acceptedFigureCount).toBe(15);
+    expect(decision.figureManifest.figures.every((figure) => figure.status === "accepted")).toBe(
+      true,
+    );
   });
 
   test("does not mistake a no-claims/no-drawings primary record for an incomplete modern claim set", () => {

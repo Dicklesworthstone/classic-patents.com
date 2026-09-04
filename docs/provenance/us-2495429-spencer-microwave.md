@@ -31,7 +31,7 @@ was not made visible as a complete edition and was not used as published text.
 
 | PDF locator | Source material | Published editorial locator |
 | --- | --- | --- |
-| p. 1 | Sole schematic: magnetrons 10 and 11; transformer 18; wave guide 23; coaxial lines 24 and 25; loops 26 and 27; conveyor 28 | `public/patents/figures/us-2495429-spencer-microwave/fig-1-source-crop-v1.png`; inline preview in source-edition block 6 |
+| p. 1 | Sole schematic: magnetrons 10 and 11; transformer 18; wave guide 23; coaxial lines 24 and 25; loops 26 and 27; conveyor 28 | `public/patents/figures/us-2495429-spencer-microwave/drawing-sheet-source-v1.png`; inline preview in source-edition block 6 |
 | p. 2 | Masthead; opening; prior 50-megacycle comparison; ten-centimetre condition; objectives; drawing description; magnetrons, cavities, cathodes, magnetic field, transformer circuit, push-pull wave-guide feed; conveyor | transcript page 2; source-edition blocks 0 and 2–12 |
 | p. 3 | Energy examples; closing paragraphs; claims 1–6; signature; references-cited table | transcript page 3; source-edition blocks 13–25 |
 
@@ -61,5 +61,27 @@ The published edition retains the source terms “megacycles,” “wave lengths
 “electron-discharge devices,” “cavity resonator,” “thermionic emission,”
 “push-pull operation,” and “wave guide.” Each modern definition is an
 explicitly authored annotation and is not presented as historical wording.
-The selected local figure crop is an unmodified crop from the pinned drawing
+The preserved local figure crop is an unmodified crop from the pinned drawing
 sheet, with no reconstructed linework or labels.
+
+## Source-sheet acceptance (2026-09-03)
+
+The prior `fig-1-source-crop-v1.png` remains preserved as a historical local
+asset, but it no longer supplies the active figure evidence. Its original
+extraction rectangle was not documented in a repeatable source-pixel receipt.
+The active preview is therefore the complete, unmodified first source sheet:
+
+- Asset: `public/patents/figures/us-2495429-spencer-microwave/drawing-sheet-source-v1.png`
+- Source: PDF page 1, freshly rendered at 300 DPI; 2320 by 3408 pixels.
+- Asset SHA-256: `ab3aef1cd0afe66a2fa7f728bfedd51f0caaa7d1c80da36932e0a897841bd826`.
+- Source-PDF SHA-256: `c5affa57d71dd79a431c8a87427672d9d04579cab911b1b6b5eec9a16ad00aca`.
+- Verification: a separately fresh 300-DPI render compared to the active
+  asset with ImageMagick absolute error `AE = 0`.
+
+The source page was visually checked for the complete single schematic: both
+magnetron oscillators, transformer, common wave guide, coaxial paths, coupling
+loops, conveyor, drawing header, and inventor signature are present and
+legible. The evidence rectangle is intentionally the full page (`x=0`,
+`y=0`, `width=2320`, `height=3408`), with no masking, reconstruction,
+compositing, or OCR. This narrow archival-evidence repair does not change the
+source-reader selection or gate access to the complete patent text.

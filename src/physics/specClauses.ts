@@ -60,6 +60,7 @@ import {
   readSikorskyControls,
   stepSikorskyHelicopterSi,
 } from "./sikorskyHelicopterKernel";
+import { stepSpencerMicrowaveSource } from "./spencerMicrowaveKernel";
 import { stepStackhouseSourceTopology } from "./stackhouseSourceKernel";
 import { readSundbackZipperControls, stepSundbackZipperSi } from "./sundbackZipperKernel";
 import { stepTeslaMotorFig9, teslaMotorPhaseHz } from "./teslaKernel";
@@ -1203,8 +1204,9 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === SPENCER_MICROWAVE_ID) {
-    const power = params.rfPowerSetting ?? 1;
-    const isRadiating = power > 0;
+    const source = stepSpencerMicrowaveSource(params);
+    const isRadiating = source.energyPathActive;
+    const referenceFrequencyGhz = source.vacuumFrequencyAtTenCentimetersHz / 1e9;
 
     return [
       {
@@ -1212,8 +1214,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         phrase: "microwave region",
         active: isRadiating,
         tone: "live",
-        caption:
-          "Wavelength λ ≈ 10 cm (f ≈ 2.45 GHz): Penetrates dielectric food volume, exciting dipolar water molecules.",
+        caption: `The source says wavelengths of the order of 10 cm or less. At exactly 10 cm, c = λf gives ${referenceFrequencyGhz.toFixed(3)} GHz in vacuum; this is a derived reference, not a fixed tube setting.`,
       },
       {
         id: "push-pull",
@@ -1221,7 +1222,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: isRadiating,
         tone: "held",
         caption:
-          "Dual magnetrons alternate on opposite AC cycles to continuously energize the common waveguide.",
+          "The source-connected devices 10 and 11 alternately deliver hyper-frequency energy to common wave guide 23; output magnitude and tube operating point remain refused.",
       },
       {
         id: "wave-guide",
@@ -1229,7 +1230,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: isRadiating,
         tone: "held",
         caption:
-          "Hollow conductive duct channels microwave power from cavity resonators directly into food treatment zone.",
+          "Coaxial lines 24/25 and loops 26/27 connect both oscillators to hollow guide 23, whose outlet meets conveyor 28 at the treatment region.",
       },
       {
         id: "cavity-resonator",
@@ -1237,7 +1238,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: isRadiating,
         tone: "live",
         caption:
-          "Radial anode vanes form resonant microwave cavities whose geometry dictates operating wavelength.",
+          "Adjacent radial anode vanes 13 and envelope 12 form resonators whose geometry sets natural frequency. The grant does not print the dimensions needed to solve that frequency.",
       },
     ];
   }
@@ -2452,7 +2453,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: topology.balanceLoopActive,
         tone: topology.balanceLoopActive ? "held" : "broken",
         caption: topology.balanceLoopActive
-          ? `Claim 22 names a balance mode in which the ground-contacting wheels are controlled to maintain fore-and-aft balance. The ${topology.displayPose.sourceFigure} pose has rigid horizontal contact at wheel ${topology.displayPose.contactWheelIds.join(" + ").toUpperCase()}; torque, gain, speed, sensor response, and recovery margin remain withheld.`
+          ? `Claim 22 names a balance mode in which the ground-contacting wheels are controlled to maintain fore-and-aft balance. The ${topology.displayPose.sourceFigure} pose has rigid tread contact at wheel ${topology.displayPose.contactWheelIds.join(" + ").toUpperCase()}${topology.displayPose.riserContactCount > 0 ? ` and finite-riser tangency at wheel ${topology.displayPose.riserContactWheelIds.join(" + ").toUpperCase()}` : ""}; torque, gain, speed, sensor response, and recovery margin remain withheld.`
           : "The balance-loop topology is withheld for this claim comparison; the exhibit does not predict a fall or a stability limit.",
       },
       {
@@ -2465,7 +2466,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
             : "held"
           : "broken",
         caption: topology.clusterTopologyActive
-          ? `Claims ${topology.sourceClaimNumbers.join(", ")} show three equal wheels around each cluster axis with separately controlled ground-contacting wheels; no gear train is asserted. ${topology.stairSequenceActive ? `The selected state uses the nominal Table 1 stair profile and touches wheel ${topology.displayPose.contactWheelIds.join(" + ").toUpperCase()} without predicting force, friction, impact, or traversal time.` : `The source-dimensioned level-ground pose touches wheel ${topology.displayPose.contactWheelIds.join(" + ").toUpperCase()} without a climbing-performance prediction.`}`
+          ? `Claims ${topology.sourceClaimNumbers.join(", ")} show three equal wheels around each cluster axis with separately controlled ground-contacting wheels; no gear train is asserted. ${topology.stairSequenceActive ? `The selected state uses the nominal Table 1 stair profile, touches tread-support wheel ${topology.displayPose.contactWheelIds.join(" + ").toUpperCase()}, and ${topology.displayPose.riserContactCount > 0 ? `holds wheel ${topology.displayPose.riserContactWheelIds.join(" + ").toUpperCase()} tangent to a finite riser` : "clears both finite risers"} without predicting force, friction, impact, or traversal time.` : `The source-dimensioned level-ground pose touches wheel ${topology.displayPose.contactWheelIds.join(" + ").toUpperCase()} without a climbing-performance prediction.`}`
           : "The cluster-wheel topology is withheld for this claim comparison; no obstacle-traversal prediction is inferred.",
       },
       {
@@ -2475,7 +2476,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         tone: topology.clusterTopologyActive && topology.stairSequenceActive ? "live" : "broken",
         caption:
           topology.clusterTopologyActive && topology.stairSequenceActive
-            ? `Claim 26 orders start, next-pair placement, weight transfer, climb, and return toward balance. ${topology.displayPose.sourceFigure} is resolved as rigid contact geometry, not a timed path, force history, or drive calculation.`
+            ? `Claim 26 orders start, next-pair placement, weight transfer, climb, and return toward balance. ${topology.displayPose.sourceFigure} is resolved with both horizontal support and finite-riser clearance, not a timed path, force history, or drive calculation.`
             : "The coordination-control sequence is not represented in the selected claim-reading state.",
       },
     ];

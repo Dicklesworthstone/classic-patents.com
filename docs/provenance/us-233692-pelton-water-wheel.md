@@ -6,6 +6,7 @@
 - Local immutable facsimile: `public/patents/pdfs/us-233692-pelton-water-wheel.pdf`
 - Stable public record: https://patents.google.com/patent/US233692A/en
 - Retrieved for source review: 2026-08-18
+- Complete direct facsimile review: 2026-09-03
 - SHA-256: `b81019c0239af3ab932bd477970c1a414a91f765a68b28f9b22444e4f95c597c`
 - PDF pages: 3
 - Rights basis: United States Patent No. 233,692 was granted in 1880. Its
@@ -17,12 +18,13 @@ The pinned document has three source sheets. Page 1 is the drawing sheet with
 Figs. 1 through 4, the printed title block, witness/inventor signatures, and
 the N. Peters photo-lithographer line. Page 2 contains the masthead and the
 complete specification through the transition to the claim. Page 3 contains
-the one printed claim, execution, signature, and witnesses. The specification
-and claim sheets were read in the cloud. The drawing sheet was independently
-inspected against the pinned facsimile, and its printed title block, four figure
-labels, reference letters, witness/inventor lines, and photo-lithographer line
-are entered in the reviewed ledger. The raw PDF text layer was comparison
-evidence only.
+the one printed claim, execution, signature, and witnesses. On 2026-09-03 all
+three sheets were rendered from the pinned local PDF and visually checked
+against the edition and reviewed ledger. The claim transition is retained at
+its actual sheet boundary: “Having thus described my invention, what” ends
+page 2 and “I claim as new, and desire to secure by Letters Patent, is—” begins
+page 3. The raw PDF text layer was comparison evidence only; no local OCR was
+run.
 
 | PDF locator | Source material | Editorial treatment |
 | --- | --- | --- |
@@ -51,32 +53,53 @@ front face. The specification permits separately fastened or integral buckets
 and one or more nozzles, but it does not turn those optional details into a
 second claim.
 
-## Candidate edition, ledger, and figure crops
+## Archival edition, ledger, and source-sheet evidence
 
 `peltonWaterWheelArchivalEdition` in
 `src/data/editions/peltonWaterWheelEdition.ts` is a manually authored typed
 React/TypeScript edition. It is continuous reading content, not OCR cleanup,
 HTML, Markdown, a PDF text dump, or scan-page reconstruction. Its
-`completeFacsimileReviewed` attestation remains false while the drawing-sheet
-ledger and clean preview crops are unfinished.
+`completeFacsimileReviewed` is true after the 2026-09-03 direct three-sheet
+review. The source-text review and the drawing-sheet review use distinct,
+explicit evidence records.
 
 `public/patents/transcripts/us-233692-pelton-water-wheel-reviewed.txt` is the
 separate source ledger. Its page markers establish ordered review coverage but
 are never shown in the visitor reader. The older source-text layer remains
 research evidence only.
 
-| Source figure | Crop status and next source-coordinate plan |
-| --- | --- |
-| Fig. 1 | Hold: source coordinates x=10–70%, y=21–69%; include the full wheel/nozzle arrangement, exclude the title header and Fig. 2 overlap. |
-| Fig. 2 | Hold: source coordinates x=11–77%, y=53–84%; isolate the side elevation/distributing box, exclude Fig. 1, Fig. 4, and signature matter. |
-| Fig. 3 | Hold: source coordinates x=69–85%, y=23–40%; regenerate a bounded bucket-only crop after the load gate permits image work. |
-| Fig. 4 | Hold: source coordinates x=70–83%, y=63–77%; include both `e` labels and the bucket section, exclude neighboring drawing matter. |
+## Source-sheet acceptance (2026-09-03)
 
-Versioned crop files remain on disk as prior research artifacts but are not
-bound by the archival edition: the current Fig. 1, Fig. 2, and Fig. 4 files
-include neighboring source matter, and the crop pass is load-gated. No crop
-is currently attested as a clean public figure preview. No reconstructed
-linework, labels, or historical claims may be added.
+The page-one drawing sheet is a single 2320 × 3408-pixel, upright 300-DPI
+render of the pinned facsimile. It contains Figs. 1–4, their printed labels,
+the title block, witnesses, inventor signature, and photo-lithographer line in
+one interleaved historical layout. An isolated crop would require asserting
+boundaries between neighboring printed figures and formal source matter, so the
+edition deliberately uses the complete source sheet for each of its eight
+figure occurrences.
+
+| Active evidence | Value |
+| --- | --- |
+| Asset | `public/patents/figures/us-233692-pelton-water-wheel/source-sheet-1-v1.png` |
+| Source extent | PDF p. 1; x=0, y=0, width=2320, height=3408 pixels; normalized extent x=0, y=0, width=1, height=1 |
+| Render / dimensions | Direct 300-DPI PNG render; 2320 × 3408 pixels |
+| Asset SHA-256 | `a1766af4b2a4d72bef0a3578fda56c8c5949060ec8a0fa4554d227db9546c512` |
+| Pinned-PDF SHA-256 | `b81019c0239af3ab932bd477970c1a414a91f765a68b28f9b22444e4f95c597c` |
+| Reviewer / date | Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review; 2026-09-03 |
+| Bound occurrences | Fig. 1–4 in the figure-sheet schedule and Fig. 1–4 in the explanatory paragraph (eight total) |
+
+The active asset was rendered directly from p. 1 of the pinned PDF, without
+OCR, masking, compositing, reconstruction, clipping, or added labels. A fresh
+same-resolution render compared pixel-for-pixel with the active asset has an
+absolute-error count of zero. The active preview is therefore an honest,
+complete source sheet, not a claim that one individual figure was cleanly
+isolated.
+
+All prior versioned `fig-*-source-crop-v*.png` files remain preserved on disk
+as research artifacts and are no longer bound to the archival edition. This
+evidence improvement does not control source-reader availability: the complete
+edition, reviewed ledger, and pinned PDF remain available independently.
+No reconstructed linework, labels, or historical claims may be added.
 
 ## Review boundary
 

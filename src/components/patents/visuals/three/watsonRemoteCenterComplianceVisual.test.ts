@@ -118,11 +118,19 @@ describe("US 4,098,001 remote-center compliance visual", () => {
       const plateGroup = model.root.getObjectByName("second member plate 20 and operator rod 16");
       const plate = model.root.getObjectByName("operator plate 20");
       const rod = model.root.getObjectByName("operator rod 16");
+      const remoteCenter = model.root.getObjectByName("remote center 50 virtual marker");
       expect(fixedLip).toBeInstanceOf(THREE.Mesh);
       expect(ring).toBeInstanceOf(THREE.Group);
       expect(plateGroup).toBeInstanceOf(THREE.Group);
       expect(plate).toBeInstanceOf(THREE.Mesh);
       expect(rod?.parent).toBe(plateGroup);
+      expect(remoteCenter).toBeInstanceOf(THREE.Mesh);
+      if (remoteCenter instanceof THREE.Mesh) {
+        const markerMaterial = remoteCenter.material as THREE.MeshStandardMaterial;
+        expect(markerMaterial.wireframe).toBe(true);
+        expect(markerMaterial.transparent).toBe(true);
+        expect(markerMaterial.depthWrite).toBe(false);
+      }
       if (!fixedLip || !ring || !plate) throw new Error("Watson member chain is incomplete.");
 
       const lipBounds = new THREE.Box3().setFromObject(fixedLip).expandByScalar(0.035);

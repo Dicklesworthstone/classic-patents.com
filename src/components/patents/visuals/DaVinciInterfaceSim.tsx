@@ -3,6 +3,7 @@
 import { CheckCircle2, RotateCcw, XCircle } from "lucide-react";
 import { useState } from "react";
 import {
+  DA_VINCI_INTERFACE_KERNEL_SOURCE,
   readDaVinciInterfaceControls,
   resolveDaVinciInterfaceTopology,
 } from "@/physics/daVinciInterfaceTopology";
@@ -45,7 +46,18 @@ export function DaVinciInterfaceSim() {
   const ready = state.processorCanConfigureTool;
 
   return (
-    <section className="rounded-2xl border border-parchment-300 bg-parchment-50 p-4 shadow-md dark:border-ink-800 dark:bg-ink-950 sm:p-6">
+    <section
+      className="rounded-2xl border border-parchment-300 bg-parchment-50 p-4 shadow-md dark:border-ink-800 dark:bg-ink-950 sm:p-6"
+      data-testid="davinci-interface-two"
+      data-interface-status={state.status}
+      data-compatibility-signal={String(state.compatibilitySignalPresent)}
+      data-calibration-record={String(state.calibrationRecordAvailable)}
+      data-engagement-signal={String(state.engagementSignalPresent)}
+      data-processor-can-configure={String(state.processorCanConfigureTool)}
+      data-kernel-source={DA_VINCI_INTERFACE_KERNEL_SOURCE}
+      data-quantitative-mechanics="refused"
+      data-connected-topology="processor-data-path-holder-engagement-tool"
+    >
       <header className="border-b border-parchment-200 pb-3 dark:border-ink-800">
         <p className="font-mono text-[10px] uppercase tracking-[0.17em] text-cyan-700 dark:text-cyan-300">
           US 6,331,181 · source-bound topology

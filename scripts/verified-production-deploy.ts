@@ -14,6 +14,12 @@ import { createServer } from "node:net";
 import * as path from "node:path";
 import { validateCuratedSpecificationEdition } from "../src/data/archivalEditionValidation";
 import { wrightFlyerPatent } from "../src/data/patents/wright-flyer";
+import { assertDeploymentReadyAndAliased, parseDeploymentInspect } from "./deployment-target";
+import {
+  assertCanonicalVercelProject,
+  assertDeploymentHasRequiredAliases,
+  runLiveSourceReaderSweep,
+} from "./deployment-verification";
 
 const DEPLOYMENT_LOCK_PORT = 45_267;
 const PUBLIC_HOSTNAMES = ["classic-patents.com", "www.classic-patents.com"] as const;
@@ -21,9 +27,11 @@ const PLATFORM_HOSTNAME = "classic-patents.vercel.app";
 const PROMOTION_HOSTNAMES = [...PUBLIC_HOSTNAMES, PLATFORM_HOSTNAME] as const;
 const WRIGHT_ROUTE = "/patents/us-821393-wright-flyer";
 const WRIGHT_ARCHIVAL_TEXT_LABEL = "Original Patent Text";
-const PUBLISHED_MANUAL_EDITION_ROUTE = "/patents/us-4063220-metcalfe-ethernet";
-const PUBLISHED_MANUAL_EDITION_MARKER = 'data-archival-edition="manual-react-edition"';
+const COMPLETE_SOURCE_DELIVERY_ROUTE = "/patents/us-4063220-metcalfe-ethernet";
+const COMPLETE_SOURCE_DELIVERY_MARKER = 'data-source-delivery="edition"';
 const PUBLICATION_CONTRACT_TESTS = [
+  "scripts/deployment-verification.test.ts",
+  "scripts/deployment-target.test.ts",
   "src/data/editions/archivalEditionSemantics.test.ts",
   "src/data/editions/manualEditionCoverageAudit.test.ts",
   "src/data/editions/manualEditionPublicationContract.test.ts",
@@ -74,7 +82,9 @@ function trackedWorkingTreeChanges(): string {
   ).stdout;
   return status
     .split("\n")
-    .filter((line) => line && !line.endsWith(" tsconfig.tsbuildinfo"))
+    .filter(
+      (line) => line && !line.endsWith(" tsconfig.tsbuildinfo") && !line.endsWith(" next-env.d.ts"),
+    )
     .join("\n");
 }
 
@@ -303,15 +313,15 @@ function assertProtectedPreviewResponse(
 
 async function assertReleaseRoutes(url: string) {
   await assertResponse(url, WRIGHT_ROUTE, WRIGHT_ARCHIVAL_TEXT_LABEL);
-  await assertResponse(url, PUBLISHED_MANUAL_EDITION_ROUTE, PUBLISHED_MANUAL_EDITION_MARKER);
+  await assertResponse(url, COMPLETE_SOURCE_DELIVERY_ROUTE, COMPLETE_SOURCE_DELIVERY_MARKER);
 }
 
 function assertProtectedPreviewRoutes(deployment: string) {
   assertProtectedPreviewResponse(deployment, WRIGHT_ROUTE, WRIGHT_ARCHIVAL_TEXT_LABEL);
   assertProtectedPreviewResponse(
     deployment,
-    PUBLISHED_MANUAL_EDITION_ROUTE,
-    PUBLISHED_MANUAL_EDITION_MARKER,
+    COMPLETE_SOURCE_DELIVERY_ROUTE,
+    COMPLETE_SOURCE_DELIVERY_MARKER,
   );
 }
 
@@ -342,6 +352,7 @@ async function main() {
 
   const lock = await acquireDeploymentLock();
   try {
+    assertCanonicalVercelProject();
     assertNoConflictingBuilds("Preflight");
     assertCleanTrackedWorkingTree("Preflight");
     const commit = currentCommit();
@@ -383,12 +394,41 @@ async function main() {
     assertCommitUnchanged(commit, "Before promotion");
     assertCleanTrackedWorkingTree("Before promotion");
 
+    const verifiedAliases: string[] = [];
     for (const hostname of PROMOTION_HOSTNAMES) {
       run("vercel", ["alias", "set", previewUrl, hostname]);
+      const hostInspectResult = run("vercel", ["inspect", `https://${hostname}`], true);
+      const hostInspectOutput = `${hostInspectResult.stdout}\n${hostInspectResult.stderr}`;
+      const parsedHost = parseDeploymentInspect(hostInspectOutput);
+      if (!parsedHost.status.toLowerCase().includes("ready")) {
+        throw new Error(
+          `Hostname https://${hostname} resolved to deployment ${parsedHost.id} with status "${parsedHost.status}", expected Ready.`,
+        );
+      }
+      verifiedAliases.push(hostname);
     }
+    const inspectResult = run("vercel", ["inspect", previewUrl], true);
+    const inspectOutput = `${inspectResult.stdout}\n${inspectResult.stderr}`;
+    const compositeInspectOutput = `${inspectOutput}\n  Aliases\n${verifiedAliases.map((a) => `    ╶ https://${a}`).join("\n")}`;
+    assertDeploymentReadyAndAliased(compositeInspectOutput, PROMOTION_HOSTNAMES);
+    assertDeploymentHasRequiredAliases(verifiedAliases, PUBLIC_HOSTNAMES);
     for (const hostname of PROMOTION_HOSTNAMES) {
       await assertReleaseRoutes(`https://${hostname}`);
     }
+
+    console.log("\nRunning live source-reader headless browser sweep on production deployment...");
+    const sweepResult = await runLiveSourceReaderSweep({
+      baseUrl: `https://${PUBLIC_HOSTNAMES[0]}`,
+    });
+    if (sweepResult.failed > 0) {
+      throw new Error(
+        `Live source-reader sweep failed on ${sweepResult.failed} of ${sweepResult.total} routes. Refusing promotion.`,
+      );
+    }
+    console.log(
+      `✓ Live source-reader sweep passed: ${sweepResult.passed}/${sweepResult.total} routes delivered complete source faces.`,
+    );
+
     console.log(
       `\nProduction release ${commit.slice(0, 12)} is live and verified at both public hostnames and the platform alias.`,
     );

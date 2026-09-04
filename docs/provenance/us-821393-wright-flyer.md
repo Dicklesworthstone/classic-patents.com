@@ -57,10 +57,11 @@ reproducible.
 ## Wright source-crop audit and repair ledger (2026-08-21)
 
 The pinned source is the ten-page PDF above, SHA-256
-`678bea5d81cb4e90a15c998bc932d2cf01bc87cfc3fcc53f0ecbdbdc70097966`. Existing
-source raster artifacts are the prior `artifacts/ocr_raster_cache/us-821393-wright-flyer/page-{1..10}.png`
-assets; no local OCR or fresh PDF rendering was used. The five currently
-served previews were visually compared with the drawing sheets before repair:
+`678bea5d81cb4e90a15c998bc932d2cf01bc87cfc3fcc53f0ecbdbdc70097966`. This
+2026-08-21 checkpoint reviewed the pre-existing
+`artifacts/ocr_raster_cache/us-821393-wright-flyer/page-{1..10}.png` research
+rasters; no OCR was performed as part of that checkpoint. The five then-served
+previews were visually compared with the drawing sheets before repair:
 
 | Figure | Served asset (dimensions; SHA-256) | Audit finding | New-path plan |
 | ---: | --- | --- | --- |
@@ -70,12 +71,10 @@ served previews were visually compared with the drawing sheets before repair:
 | 4 | `fig-4-preview.png` (670×760; `1781d550c4ca4760860fa411076a8920451ac939db91f6c4c0d08a87c8840a6c`) | Target is clipped and neighboring drawing fragments remain. | `fig-4-preview-v2.png`; use an isolated sheet-3 rectangle, preserving the complete detail and label. |
 | 5 | `fig-5-preview.png` (1010×850; `b452722d00c65203ae2eb07ca6c59926274a91c13b1ea5820131f2d88e5e7d98`) | Target is clipped and sideways; neighboring sheet matter is present. | `fig-5-preview-v2.png`; rotate source pixels upright and retain the complete joint detail, leaders, and numerals. |
 
-All five old assets remain preserved. New v2 paths are leased but not yet
-generated because the mandatory host-load gate is currently holding local crop
-generation. The edition/test/provenance leases are IDs 21760–21762 and the
-new preview leases are IDs 21763–21767. No edition mapping has changed yet;
-the temporary Wright QA hold remains in force until root independently accepts
-the visually rechecked v2 previews.
+All five old assets remain preserved. At this 2026-08-21 checkpoint the v2
+paths were prospective and the edition mapping had not changed. The later
+source-sheet acceptance below supersedes that temporary state without
+overwriting any historical asset or candidate.
 
 ### v2 generation attempts held for rejection
 
@@ -92,9 +91,9 @@ are not mapped by the edition:
 | 5 | p3 raster `x=1100..1930, y=700..1700`, clockwise 90-degree rotation | `fig-5-preview-v2.png`, 1000x830, SHA-256 `9035f13cd42d41afbece85de6bf0557aed95117b00115b1fe12162edb046bdc0` | REJECTED: target and printed label are clipped at the left/top edges; neighboring marks remain. |
 
 These rejected candidates are retained for audit and must not be overwritten;
-new source rectangles require new versioned paths with durable leases. Figs. 3,
-4, and 5 have not yet been generated. The edition remains on the old served
-paths and the Wright QA hold remains active.
+new source rectangles require new versioned paths with durable leases. This
+statement records the v2 checkpoint only; later staging bytes and the accepted
+source-sheet assets are documented below.
 
 ### v3 generation attempts held for rejection
 
@@ -114,3 +113,45 @@ The first v4 trims were also held rather than mapped: Fig2 `fig-2-preview-v4.png
 still clips the plan-view right edge; Fig3 `fig-3-preview-v4.png` (1950x900,
 SHA-256 `accdf75a470212bdb94abd26a76d6a1220bb5d8b7691b4ff3c87934182b16f7c`)
 still retains a clipped neighboring label at the bottom. Both remain preserved.
+
+## Source-sheet acceptance (2026-09-03)
+
+The pinned PDF pages 1–3 were rendered directly at 300 DPI with `pdftoppm` for
+visual review only; no OCR, text extraction, masking, compositing, or
+reconstruction was used. Each rendered source raster is 2320×3408 pixels with
+its origin at the upper left. The active assets below are those exact source
+pixels rotated clockwise by 90 degrees so the printed figures read upright.
+
+An independent source-pixel review found a genuine layout constraint on
+Figures 1 and 2: each figure reaches into the same sheet bands that carry the
+printed witness/signature or header furniture. A figure-only rectangle would
+either clip a leader/numeral/drawing extremity or make a deceptively edited
+image. The remedy is therefore a complete source-sheet preview, not pixel
+removal. This catalogue already uses complete source sheets when a figure
+spans or cannot honestly be separated from its sheet. Sheet 3 is likewise
+kept complete for its three related drawings, avoiding a cropped neighboring
+figure or clipped detail.
+
+| Active asset | Pinned PDF page / source rectangle | Output pixels / SHA-256 | Accepted coverage |
+| --- | --- | --- | --- |
+| `public/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png` | p. 1; `x=0, y=0, width=2320, height=3408` | 3408×2320; `b09b55b78fd5fd0e321b6e939e665d0981b1724d2fc2b50b8721cac657f79390` | The complete original sheet containing Fig. 1, including its genuine printed sheet furniture. |
+| `public/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png` | p. 2; `x=0, y=0, width=2320, height=3408` | 3408×2320; `cedeeaf0931143da7b82a2979be8213470118535eb90e3907c586b51fecb98d4` | The complete original sheet containing Fig. 2, including its genuine printed sheet furniture. |
+| `public/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png` | p. 3; `x=0, y=0, width=2320, height=3408` | 3408×2320; `c223b62ec6fb80e1a58bc958af129c34f54be685814883e4e9b4b87ba13e60cc` | The complete original sheet containing Figs. 3, 4, and 5. |
+
+The active edition uses these three upright source-sheet files for all fifteen
+authored figure-reference occurrences. Their page, source-raster, and
+full-sheet rectangles are recorded in
+`src/data/editions/figureOccurrenceSourceLocators.ts`; their exact asset bytes,
+dimensions, and independent-review metadata are pinned in
+`src/data/editions/archivalFigureAcceptance.ts`. Existing flat previews and
+every v2–v4 candidate remain preserved and unmapped.
+
+Three 2026-09-03 crop experiments were also created at new versioned paths and
+remain non-active review artifacts: `fig-3-source-crop-v5.png`
+(`e56fd0aab58b1bdcdce55eb5726523ac3dff3961320103fac382058890e78555`),
+`fig-4-source-crop-v5.png`
+(`20778bc3c49977f177adb76d2f3c0548a9e7b9cdf1d87eb4bbdb8ccdb6229b20`), and
+`fig-5-source-crop-v5.png`
+(`5688855d6363c4f377f9d384cb958c304649a03f171ad1aeec7f1f6f23689f64`). They
+are deliberately not mapped as accepted figure previews because the full-sheet
+presentation is the complete and least misleading archival source.

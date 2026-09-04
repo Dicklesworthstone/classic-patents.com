@@ -17,22 +17,17 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
-const crop = (number: number, width: number, height: number) => ({
-  src: `/patents/figures/us-157124-glidden-barbed-wire/fig-${number}-source-crop.png`,
-  alt: `Source-facsimile crop of Fig. ${number} from US 157,124.`,
-  width,
-  height,
-});
+const SOURCE_SHEET_PREVIEW = {
+  src: "/patents/figures/us-157124-glidden-barbed-wire/source-sheet-1-v1.png",
+  alt: "Complete upright source drawing sheet 1 of 1, containing Figs. 1-3 from US 157,124.",
+  width: 2320,
+  height: 3408,
+} as const;
 
 const FIGURES = {
-  "Fig. 1": crop(1, 700, 1470),
-  "Fig. 2": {
-    src: "/patents/figures/us-157124-glidden-barbed-wire/fig-2-source-crop-v2.png",
-    alt: "Source-facsimile crop of Fig. 2 from US 157,124.",
-    width: 350,
-    height: 190,
-  },
-  "Fig. 3": crop(3, 700, 800),
+  "Fig. 1": SOURCE_SHEET_PREVIEW,
+  "Fig. 2": SOURCE_SHEET_PREVIEW,
+  "Fig. 3": SOURCE_SHEET_PREVIEW,
 } as const;
 
 const figure = (
@@ -43,7 +38,7 @@ const figure = (
   text: sourceText,
   href: "#",
   referenceType: "figure",
-  label: `Open the source-facsimile crop for ${label} in US 157,124`,
+  label: `Open complete source drawing sheet 1 of 1 for ${label} in US 157,124`,
   figurePreviews: [FIGURES[label]],
 });
 

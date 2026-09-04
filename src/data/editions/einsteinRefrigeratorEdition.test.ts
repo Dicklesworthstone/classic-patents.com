@@ -3,7 +3,13 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS } from "@/data/editions/archivalFigureAcceptance";
+import { FIGURE_OCCURRENCE_SOURCE_LOCATORS } from "@/data/editions/figureOccurrenceSourceLocators";
 import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
+import {
+  completeArchivalEditionForViewer,
+  evaluateArchivalPublicationState,
+} from "@/data/editions/publicationApproval";
 import { einsteinRefrigeratorPatent } from "@/data/patents/einstein-refrigerator";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import {
@@ -31,7 +37,7 @@ describe("einsteinRefrigeratorArchivalEdition", () => {
     ).toEqual([1, 2, 3, 4, 5]);
   });
 
-  test("uses a local facsimile preview for every explicit source-drawing reference", () => {
+  test("uses a complete local source sheet for every explicit source-drawing reference", () => {
     const references = einsteinRefrigeratorArchivalEdition.blocks.flatMap((block) => {
       if (!("inlines" in block)) return [];
       return block.inlines.filter(
@@ -45,10 +51,65 @@ describe("einsteinRefrigeratorArchivalEdition", () => {
       expect(reference.figurePreviews).toHaveLength(1);
       const [preview] = reference.figurePreviews ?? [];
       expect(preview?.src).toBe(
-        "/patents/figures/us-1781541-einstein-refrigerator/fig-1-source-crop-v1.png",
+        "/patents/figures/us-1781541-einstein-refrigerator/source-sheet-1-v1.png",
       );
+      expect(preview?.width).toBe(2320);
+      expect(preview?.height).toBe(3408);
+      expect(preview?.alt).toContain("Complete upright source drawing sheet 1 of 1");
       expect(existsSync(resolve(process.cwd(), "public", preview?.src.slice(1) ?? ""))).toBe(true);
     }
+    expect(
+      existsSync(
+        resolve(
+          process.cwd(),
+          "public/patents/figures/us-1781541-einstein-refrigerator/fig-1-source-crop-v1.png",
+        ),
+      ),
+    ).toBe(true);
+  });
+
+  test("internally accepts complete source-sheet evidence without gating the source edition", () => {
+    const patentId = einsteinRefrigeratorPatent.id;
+    const decision = evaluateArchivalPublicationState(einsteinRefrigeratorPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 2,
+      acceptedFigureCount: 2,
+    });
+    expect(completeArchivalEditionForViewer(einsteinRefrigeratorPatent)).toBe(
+      einsteinRefrigeratorArchivalEdition,
+    );
+    expect(
+      (ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS as Record<string, any>)[patentId],
+    ).toMatchObject({
+      sourcePdfSha256: einsteinRefrigeratorArchivalEdition.sourcePdfSha256,
+      reviewedAt: "2026-09-03",
+      acceptedOccurrenceCount: 2,
+      assets: {
+        "/patents/figures/us-1781541-einstein-refrigerator/source-sheet-1-v1.png": {
+          sha256: "8ad5c0284168c3bc123b82b79693f49e1774dcb16c93b8b90c708bf0e2483a05",
+          width: 2320,
+          height: 3408,
+        },
+      },
+    });
+    expect((FIGURE_OCCURRENCE_SOURCE_LOCATORS as Record<string, any>)[patentId]).toEqual([
+      expect.objectContaining({
+        occurrenceKey: "edition-block-2-group-0-inline-1",
+        activeAsset: "/patents/figures/us-1781541-einstein-refrigerator/source-sheet-1-v1.png",
+        sourcePdfPage: 1,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 0, y: 0, width: 2320, height: 3408 },
+      }),
+      expect.objectContaining({
+        occurrenceKey: "edition-block-3-group-0-inline-1",
+        activeAsset: "/patents/figures/us-1781541-einstein-refrigerator/source-sheet-1-v1.png",
+        sourcePdfPage: 1,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 0, y: 0, width: 2320, height: 3408 },
+      }),
+    ]);
   });
 
   test("presents the source as continuous prose rather than a scan-sheet card", () => {

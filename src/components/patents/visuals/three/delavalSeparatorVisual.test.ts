@@ -52,6 +52,19 @@ describe("US 247,804 Gustaf de Laval Centrifugal Cream Separator visual & fluid 
     expect(threeSource).toContain("De Laval Separator 3D");
   });
 
+  test("offers exactly one live bowl-speed control alongside the raw-milk feed control", () => {
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "DeLavalSeparator3D.tsx"),
+      "utf8",
+    );
+
+    expect((threeSource.match(/Centrifuge Bowl Speed/g) ?? []).length).toBe(1);
+    expect(threeSource).toContain('aria-label="Centrifuge bowl speed"');
+    expect(threeSource).toContain('updateParam("bowlRpm", Number.parseInt(e.target.value, 10))');
+    expect(threeSource).toContain('aria-label="Raw milk feed rate"');
+    expect(threeSource).not.toContain("<SensitivitySlider");
+  });
+
   test("computes genuine centrifugal acceleration and fat yield percentage in SI units", () => {
     const result = stepDeLavalSeparator({ bowlRpm: 6500, rawMilkFlowLph: 300 });
     expect(result.gForce).toBeGreaterThan(3000);

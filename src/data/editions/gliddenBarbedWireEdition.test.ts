@@ -8,10 +8,16 @@ import {
   validateReviewedTranscription,
   validateReviewedTranscriptionPageAnchors,
 } from "@/data/patents/sourceTextValidation";
+import { ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS } from "./archivalFigureAcceptance";
+import { FIGURE_OCCURRENCE_SOURCE_LOCATORS } from "./figureOccurrenceSourceLocators";
 import {
   gliddenBarbedWireArchivalEdition,
   gliddenBarbedWireParallelReadings,
 } from "./gliddenBarbedWireEdition";
+import {
+  completeArchivalEditionForViewer,
+  evaluateArchivalPublicationState,
+} from "./publicationApproval";
 
 const normalized = (value: string) => value.replace(/\s+/g, " ").trim();
 
@@ -73,7 +79,7 @@ describe("US 157,124 manual source edition", () => {
     );
   });
 
-  test("pairs each source paragraph with a non-lossy reading and every figure with a local crop", () => {
+  test("pairs each source paragraph with a non-lossy reading and every figure with the complete local source sheet", () => {
     const paragraphIndexes = gliddenBarbedWireArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
     );
@@ -90,46 +96,32 @@ describe("US 157,124 manual source edition", () => {
           inline.kind === "reference" && inline.referenceType === "figure",
       );
     });
-    for (const number of [1, 2, 3]) {
-      expect(
-        figureReferences.some((reference) =>
-          reference.figurePreviews?.some((preview) => preview.alt.includes(`Fig. ${number}`)),
-        ),
-      ).toBe(true);
-    }
-    expect(
-      figureReferences
-        .flatMap((reference) => reference.figurePreviews ?? [])
-        .find((preview) => preview.alt.includes("Fig. 2")),
-    ).toMatchObject({
-      src: "/patents/figures/us-157124-glidden-barbed-wire/fig-2-source-crop-v2.png",
-      width: 350,
-      height: 190,
-    });
+    expect(figureReferences).toHaveLength(3);
     for (const reference of figureReferences) {
-      for (const preview of reference.figurePreviews ?? []) {
-        expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
-      }
+      expect(reference.figurePreviews).toEqual([
+        expect.objectContaining({
+          src: "/patents/figures/us-157124-glidden-barbed-wire/source-sheet-1-v1.png",
+          width: 2320,
+          height: 3408,
+        }),
+      ]);
+      const [preview] = reference.figurePreviews ?? [];
+      expect(preview?.alt).toContain("Complete upright source drawing sheet 1 of 1");
+      expect(existsSync(resolve(process.cwd(), "public", preview?.src.slice(1) ?? ""))).toBe(true);
     }
   });
 
-  test("records the cloud-reviewed upright crop contract while preserving the held legacy previews", () => {
+  test("records source-sheet acceptance while preserving all legacy figure assets", () => {
     const provenance = readFileSync(
       resolve(process.cwd(), "docs/provenance/us-157124-glidden-barbed-wire.md"),
       "utf8",
     );
+    expect(provenance).toContain("## Source-sheet acceptance (2026-09-03)");
+    expect(provenance).toContain("2320×3408");
     expect(provenance).toContain(
-      "https://patentimages.storage.googleapis.com/2c/55/5c/a19dadfbcdf4e7/US157124-drawings-page-1.png",
+      "4002c9b8311556cb861bc5f2eaaf63a404ce01c1b0cac77d76a8a684169d0083",
     );
-    expect(provenance).toContain("2320 x 3408");
-    expect(provenance).toContain("all three currently served local previews are held as");
-    expect(provenance).toContain("fig-1-source-crop-v1.png");
-    expect(provenance).toContain("(430, 900, 720, 1900)");
-    expect(provenance).toContain("fig-2-source-crop-v1.png");
-    expect(provenance).toContain("(1500, 1780, 520, 520)");
-    expect(provenance).toContain("fig-3-source-crop-v1.png");
-    expect(provenance).toContain("(1360, 700, 700, 900)");
-    expect(provenance).toContain("must preserve the cloud image's portrait orientation");
+    expect(provenance).toContain("absolute pixel error is zero");
 
     const previewSources = gliddenBarbedWireArchivalEdition.blocks.flatMap((block) => {
       if (!("inlines" in block)) return [];
@@ -139,16 +131,82 @@ describe("US 157,124 manual source edition", () => {
           : [],
       );
     });
-    expect(previewSources).toContain(
-      "/patents/figures/us-157124-glidden-barbed-wire/fig-1-source-crop.png",
+    expect(previewSources).toEqual(
+      Array.from(
+        { length: 3 },
+        () => "/patents/figures/us-157124-glidden-barbed-wire/source-sheet-1-v1.png",
+      ),
     );
-    expect(previewSources).toContain(
-      "/patents/figures/us-157124-glidden-barbed-wire/fig-2-source-crop-v2.png",
+    for (const legacyAsset of [
+      "fig-1-source-crop.png",
+      "fig-2-source-crop.png",
+      "fig-2-source-crop-v2.png",
+      "fig-3-source-crop.png",
+    ]) {
+      expect(
+        existsSync(
+          resolve(
+            process.cwd(),
+            "public/patents/figures/us-157124-glidden-barbed-wire",
+            legacyAsset,
+          ),
+        ),
+      ).toBe(true);
+    }
+
+    const patentId = gliddenBarbedWirePatent.id;
+    const sourceSheet = "/patents/figures/us-157124-glidden-barbed-wire/source-sheet-1-v1.png";
+    const attestation = ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[patentId];
+    expect(attestation).toMatchObject({
+      sourcePdfSha256: gliddenBarbedWireArchivalEdition.sourcePdfSha256,
+      reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+      reviewedAt: "2026-09-03",
+      acceptanceBasis: "independent-figure-review",
+      acceptedOccurrenceCount: 6,
+      assets: {
+        [sourceSheet]: {
+          sha256: "4002c9b8311556cb861bc5f2eaaf63a404ce01c1b0cac77d76a8a684169d0083",
+          width: 2320,
+          height: 3408,
+        },
+      },
+    });
+    const sheetPath = resolve(process.cwd(), "public", sourceSheet.slice(1));
+    expect(createHash("sha256").update(readFileSync(sheetPath)).digest("hex")).toBe(
+      attestation.assets[sourceSheet]?.sha256,
     );
-    expect(previewSources).toContain(
-      "/patents/figures/us-157124-glidden-barbed-wire/fig-3-source-crop.png",
+    const locators = FIGURE_OCCURRENCE_SOURCE_LOCATORS[patentId];
+    expect(locators.map((locator) => locator.occurrenceKey)).toEqual([
+      "edition-block-1-group-0-inline-1",
+      "edition-block-1-group-0-inline-2",
+      "edition-block-1-group-0-inline-3",
+      "edition-block-4-group-0-inline-0",
+      "edition-block-4-group-0-inline-2",
+      "edition-block-4-group-0-inline-4",
+    ]);
+    for (const locator of locators) {
+      expect(locator).toMatchObject({
+        activeAsset: sourceSheet,
+        sourcePdfPage: 1,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 0, y: 0, width: 2320, height: 3408 },
+        normalizedSourceRect: { x: 0, y: 0, width: 1, height: 1 },
+        reviewer: attestation.reviewer,
+        reviewedAt: attestation.reviewedAt,
+        evidenceReference:
+          "docs/provenance/us-157124-glidden-barbed-wire.md#source-sheet-acceptance-2026-09-03",
+      });
+    }
+    const decision = evaluateArchivalPublicationState(gliddenBarbedWirePatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 6,
+      acceptedFigureCount: 6,
+    });
+    expect(completeArchivalEditionForViewer(gliddenBarbedWirePatent)).toBe(
+      gliddenBarbedWireArchivalEdition,
     );
-    expect(previewSources.every((src) => !src.endsWith("-v1.png"))).toBe(true);
   });
 
   test("keeps the source drawing-sheet header and printed z strand instead of editorial replacements", () => {

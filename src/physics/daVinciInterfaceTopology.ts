@@ -7,6 +7,11 @@
  * a tool trajectory, contact material data, or force/speed limits. This module
  * therefore deliberately models only those disclosed logical relations.
  */
+export const DA_VINCI_INTERFACE_KERNEL_SOURCE = "source-bounded-ts";
+
+export const DA_VINCI_INTERFACE_SOURCE_BOUNDARY =
+  "US 6,331,181 supplies compatibility, measured calibration, and engagement-reporting topology at a releasable tool interface. It does not supply a dimensioned arm, tool trajectory, contact material card, force law, speed limit, or clinical-performance card; quantitative mechanics are therefore refused.";
+
 export interface DaVinciInterfaceControls {
   compatibilitySignalPresent: boolean;
   calibrationRecordAvailable: boolean;

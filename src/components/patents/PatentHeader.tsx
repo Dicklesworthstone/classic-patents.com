@@ -1,12 +1,13 @@
 "use client";
 
-import { BookOpen, Calendar, Check, FileDown, MapPin, Share2, User } from "lucide-react";
+import { BookOpen, Calendar, Check, FileDown, MapPin, Printer, Share2, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import type { Patent } from "@/types/patent";
 import { formatPatentDate } from "@/utils/patentDate";
 import { ArchaicGlossaryModal } from "./ArchaicGlossaryModal";
+import { PrintBroadsideModal } from "./PrintBroadsideModal";
 
 interface PatentHeaderProps {
   patent: Patent;
@@ -15,6 +16,7 @@ interface PatentHeaderProps {
 export function PatentHeader({ patent }: PatentHeaderProps) {
   const [copied, setCopied] = useState(false);
   const [glossaryOpen, setGlossaryOpen] = useState(false);
+  const [broadsideOpen, setBroadsideOpen] = useState(false);
 
   const handleShare = async () => {
     if (typeof window === "undefined") return;
@@ -46,6 +48,13 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
         patent={patent}
       />
 
+      {/* Museum Broadside & Archival Print Edition Modal */}
+      <PrintBroadsideModal
+        isOpen={broadsideOpen}
+        onClose={() => setBroadsideOpen(false)}
+        patent={patent}
+      />
+
       {/* Breadcrumb & Era badge */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm font-mono text-ink-500">
@@ -69,6 +78,16 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
           >
             <BookOpen className="w-4 h-4" />
             <span>Archaic Glossary &amp; Cite</span>
+          </button>
+
+          <button
+            type="button"
+            data-testid="print-broadside-btn"
+            onClick={() => setBroadsideOpen(true)}
+            className="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-mono font-bold bg-amber-500/10 text-amber-900 dark:text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
+          >
+            <Printer className="w-4 h-4" />
+            <span>Print Broadside</span>
           </button>
 
           <span className="px-3 py-1 rounded-lg text-xs sm:text-sm font-mono font-semibold bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-800 shadow-2xs">
@@ -140,11 +159,21 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
           <TextWithLatex text={patent.summary} />
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            type="button"
+            data-testid="action-broadside-btn"
+            onClick={() => setBroadsideOpen(true)}
+            className="px-4 py-2 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-300 hover:bg-amber-500/20 text-sm font-mono font-semibold flex items-center gap-2 transition-colors shadow-xs cursor-pointer"
+          >
+            <Printer className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+            <span>Print Broadside</span>
+          </button>
+
           <button
             type="button"
             onClick={handleShare}
-            className="px-4 py-2 rounded-xl border border-parchment-300 dark:border-ink-700 bg-parchment-100 dark:bg-ink-900 text-sm font-mono font-semibold flex items-center gap-2 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-900 dark:text-parchment-100 transition-colors shadow-xs"
+            className="px-4 py-2 rounded-xl border border-parchment-300 dark:border-ink-700 bg-parchment-100 dark:bg-ink-900 text-sm font-mono font-semibold flex items-center gap-2 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-900 dark:text-parchment-100 transition-colors shadow-xs cursor-pointer"
           >
             {copied ? (
               <Check className="w-4 h-4 text-emerald-600" />

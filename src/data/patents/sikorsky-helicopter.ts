@@ -38,39 +38,81 @@ export const sikorskyHelicopterPatent: Patent = {
     pageAnchors: [
       {
         page: 1,
-        exactSourceText:
-          "May 4, 1943. I. I. SIKORSKY 2,318,259 DIRECT-LIFT AIRCRAFT 10 Sheets-Sheet 1",
         sourceRelationship: "Sheet 1 FIG. 1 side elevation view",
+        exactSourceText: "10 Sheets-Sheet 1",
       },
       {
         page: 2,
-        exactSourceText: "Sheet 2 FIG. 3 plan view",
         sourceRelationship: "Sheet 2 FIG. 3 top plan view",
+        exactSourceText: "10 Sheets-Sheet 2",
       },
       {
         page: 3,
-        exactSourceText: "Sheet 3 FIG. 4 perspective rotor hub",
         sourceRelationship: "Sheet 3 FIG. 4 main rotor hub cutaway",
+        exactSourceText: "10 Sheets-Sheet 3",
+      },
+      {
+        page: 4,
+        sourceRelationship: "Sheet 4 FIG. 5 blade mounting",
+        exactSourceText: "10 Sheets-Sheet 4",
       },
       {
         page: 5,
-        exactSourceText: "Sheet 5 FIG. 8 gearbox transmission",
         sourceRelationship: "Sheet 5 FIG. 8 transmission and autorotation clutch",
+        exactSourceText: "10 Sheets-Sheet 5",
+      },
+      {
+        page: 6,
+        sourceRelationship: "Sheet 6 FIGS. 9-10 auxiliary rotor and direct control",
+        exactSourceText: "10 Sheets-Sheet 6",
+      },
+      {
+        page: 7,
+        sourceRelationship: "Sheet 7 FIGS. 11-12 auxiliary rotor and gear drive",
+        exactSourceText: "10 Sheets-Sheet 7",
       },
       {
         page: 8,
-        exactSourceText: "Sheet 8 FIG. 13 flight controls",
         sourceRelationship: "Sheet 8 FIG. 13 pilot cockpit controls",
+        exactSourceText: "10 Sheets-Sheet 8",
+      },
+      {
+        page: 9,
+        sourceRelationship: "Sheet 9 FIGS. 14-16 control details",
+        exactSourceText: "10 Sheets-Sheet 9",
+      },
+      {
+        page: 10,
+        sourceRelationship: "Sheet 10 FIGS. 17-18 tail rotor details",
+        exactSourceText: "10 Sheets-Sheet 10",
       },
       {
         page: 11,
-        exactSourceText: "UNITED STATES PATENT OFFICE 2,318,259 DIRECT-LIFT AIRCRAFT",
         sourceRelationship: "Specification column 1 opening",
+        exactSourceText: "UNITED STATES PATENT OFFICE 2,318,259 DIRECT-LIFT AIRCRAFT",
+      },
+      {
+        page: 12,
+        sourceRelationship: "Specification columns 3-4 description of drive and main rotor",
+        exactSourceText: "Fig. 11 is a plan view of a somewhat different form of auxiliary rotor",
+      },
+      {
+        page: 13,
+        sourceRelationship: "Specification columns 5-6 pitch control and throttle link",
+        exactSourceText:
+          "cludes the pivoted link member 126 which slidably extends through a sleeve 128",
+      },
+      {
+        page: 14,
+        sourceRelationship: "Specification columns 7-8 cyclic control and auxiliary rotor",
+        exactSourceText:
+          "stantially parallel to the shaft 222 is pivoted to the control column 220",
       },
       {
         page: 15,
-        exactSourceText: "1. In an aircraft having a direct lift rotor and an engine",
-        sourceRelationship: "Specification column 9 claims",
+        sourceRelationship: "Specification columns 9-10 claims 1-10",
+        exactSourceText:
+          "may be controlled by suitable means such as the sleeve 358 slidable on the shaft 342",
       },
     ],
   },

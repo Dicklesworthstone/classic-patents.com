@@ -13,7 +13,6 @@ import {
  */
 const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-2297691-carlson-electrophotography",
-  "us-233692-pelton-water-wheel",
   "us-2543181-land-polaroid",
   "us-2708656-fermi-reactor",
   "us-313224-mergenthaler-linotype",
@@ -47,6 +46,7 @@ const SOURCE_QA_RELEASED_EDITIONS = [
   "us-200521-edison-phonograph",
   "us-223898-edison-lightbulb",
   "us-2292387-lamarr-frequency-hopping",
+  "us-233692-pelton-water-wheel",
   "us-235199-bell-photophone",
   "us-247804-delaval-separator",
   "us-2495429-spencer-microwave",

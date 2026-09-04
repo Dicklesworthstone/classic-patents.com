@@ -65,14 +65,37 @@ separate source ledger. Its page markers establish ordered review coverage but
 are never shown in the visitor reader. The older source-text layer remains
 research evidence only.
 
-| Source figure label | Local selected crop |
+| Source figure label | Active local source sheet |
 | --- | --- |
-| Fig. 1, vertical central longitudinal section | `public/patents/figures/us-319596-maxim-machine-gun/fig-1-source-crop-v1.png` |
-| Fig. 2, partly sectional plan | `public/patents/figures/us-319596-maxim-machine-gun/fig-2-source-crop-v1.png` |
-| Fig. 3, breech-case side view | `public/patents/figures/us-319596-maxim-machine-gun/fig-3-source-crop-v1.png` |
+| Fig. 1, vertical central longitudinal section | `public/patents/figures/us-319596-maxim-machine-gun/source-sheet-1-v1.png` |
+| Fig. 2, partly sectional plan | `public/patents/figures/us-319596-maxim-machine-gun/source-sheet-1-v1.png` |
+| Fig. 3, breech-case side view | `public/patents/figures/us-319596-maxim-machine-gun/source-sheet-2-v1.png` |
 
-The selected crops are direct, unmodified selections from the pinned drawing
-sheets. They add no reconstructed linework, labels, or historical claims.
+The active source sheets are direct, unmodified 300-DPI renderings of the
+pinned drawing sheets. They add no reconstructed linework, labels, or
+historical claims.
+
+## Source-sheet acceptance (2026-09-03)
+
+The former Fig. 1, Fig. 2, and Fig. 3 crops remain preserved in
+`public/patents/figures/us-319596-maxim-machine-gun/` as research derivatives.
+Figures 1 and 2 share the first historical drawing sheet and Fig. 3 is on the
+second; the active archival previews therefore retain the complete source-sheet
+context rather than asserting isolated crop boundaries.
+
+The active assets are direct renders of the pinned source:
+
+| Asset | Source locator | Raster dimensions | SHA-256 |
+| --- | --- | --- | --- |
+| `source-sheet-1-v1.png` | PDF page 1; full raster rectangle `(x=0, y=0, width=2320, height=3408)` | `2320 x 3408` pixels | `da088da6e81eb36d878819c392f766edd3733e93e9df78f6fca1258c51bdc048` |
+| `source-sheet-2-v1.png` | PDF page 2; full raster rectangle `(x=0, y=0, width=2320, height=3408)` | `2320 x 3408` pixels | `c2c0c2421227d1b1fc246a3331b88f7c47300b82d610c8e83882727fed939b93` |
+
+Independently rendered 300-DPI comparisons yielded zero differing pixels for
+both pages (ImageMagick absolute error metric `AE=0`). The sheets retain the
+printed figure labels, patent identity, witnesses, inventor/attorney signature
+blocks, and all labelled source geometry. All eight active citations use those
+two full-sheet assets with explicit page and raster locators. This internal
+evidence repair does not alter or gate the complete patent-text reader.
 
 ## Review boundary
 

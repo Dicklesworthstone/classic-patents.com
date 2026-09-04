@@ -27,9 +27,9 @@ about any third-party website's terms or scan-specific rights.
 
 | PDF page | Source-facing material reviewed | Used in the edition |
 | --- | --- | --- |
-| 1 | Drawing sheet 1 of 3: title header, Figure 1, `(No Model.)`, witness names, inventor/attorney line, and N. Peters imprint | Figure-sheet block; `/patents/figures/us-361931-daimler-engine/fig-1-source-crop-v1.png` |
-| 2 | Drawing sheet 2 of 3: title header, Figures 2, 4, 4a, 4b, 5, and 6, `(No Model.)`, witness names, inventor/attorney line, and N. Peters imprint | Figure-sheet block; `/patents/figures/us-361931-daimler-engine/fig-2-source-crop-v2.png`, `fig-4-source-crop-v1.png`, `fig-4a-source-crop-v1.png`, `fig-4b-source-crop-v1.png`, `fig-5-source-crop-v2.png`, `fig-6-source-crop-v1.png` |
-| 3 | Drawing sheet 3 of 3: title header, Figure 3 plan, `(No Model.)`, witness names, inventor/attorney line, and N. Peters imprint | Figure-sheet block; `/patents/figures/us-361931-daimler-engine/fig-3-source-crop-v1.png` |
+| 1 | Drawing sheet 1 of 3: title header, Figure 1, `(No Model.)`, witness names, inventor/attorney line, and N. Peters imprint | Complete active source sheet: `/patents/figures/us-361931-daimler-engine/source-sheet-1-v1.png` |
+| 2 | Drawing sheet 2 of 3: title header, Figures 2, 4, 4a, 4b, 5, and 6, `(No Model.)`, witness names, inventor/attorney line, and N. Peters imprint | Complete active source sheet: `/patents/figures/us-361931-daimler-engine/source-sheet-2-v1.png` |
+| 3 | Drawing sheet 3 of 3: title header, Figure 3 plan, `(No Model.)`, witness names, inventor/attorney line, and N. Peters imprint | Complete active source sheet: `/patents/figures/us-361931-daimler-engine/source-sheet-3-v1.png` |
 | 4 | Patent Office heading, title, grant and application data, inventor declaration, object, improvement list, figure key, and forward/reverse coupling description | Manual-edition masthead and paragraphs through the reverse coupling introduction |
 | 5 | Continuation of reverse coupling, springs and controls, steering, thrust-bearing starter, cooling, bilge-water and gas-storage descriptions; start of claim 1 | Manual-edition paragraphs and claims 1–10 source text |
 | 6 | Completion of claim 1, claims 2–10, execution statement, Daimler signature, and Maybach/Keppler witness names | Claim blocks 1–10 and final execution paragraphs |
@@ -63,6 +63,30 @@ It is preserved for audit and is not evidence for the new transcription.
 - **Claims 1–10 and execution/witness text:** PDF pp. 5–6; claim 1 begins at
   the foot of p. 5 and continues at the top of p. 6, while claims 2–10 and
   execution are on p. 6.
+
+## Source-sheet acceptance (2026-09-03)
+
+Direct visual review of the pinned PDF at 300 DPI confirmed that the first
+three PDF pages are the printed drawing sheets: page 1 contains Fig. 1, page 2
+contains Figs. 2, 4, 4a, 4b, 5, and 6, and page 3 contains Fig. 3. The active
+previews are complete, unmodified renders of those exact source pages. This
+retains the sheet headers, formal matter, signatures, and the surrounding
+layout rather than asserting independently defensible crop boundaries around
+the closely arranged page-2 details.
+
+| Source PDF page | Active intact source sheet | 300 DPI raster | SHA-256 | Citation occurrences |
+| --- | --- | --- | --- | --- |
+| 1 | `source-sheet-1-v1.png` | 2320 × 3408 | `1ac9ceb6eb1164d00298d671dc7100af8c75291f3072decf3accabbd809918ab` | `edition-block-1-group-0-inline-1`; `edition-block-9-group-0-inline-1` |
+| 2 | `source-sheet-2-v1.png` | 2320 × 3408 | `653a2dfd70d4633a3d0a73b427e37b100fdcb6e0d213e85e372291c9131d574b` | `edition-block-2-group-0-inline-1`; `edition-block-9-group-0-inline-3`; `edition-block-9-group-0-inline-7`; `edition-block-9-group-0-inline-9`; `edition-block-9-group-0-inline-11`; `edition-block-9-group-0-inline-13`; `edition-block-18-group-0-inline-1`; `edition-block-18-group-0-inline-3` |
+| 3 | `source-sheet-3-v1.png` | 2320 × 3408 | `4f83f9b64fd482f9f43c013d7719aed5b3f1da861f2cd0c9e738b0a781d1d00d` | `edition-block-3-group-0-inline-1`; `edition-block-9-group-0-inline-5` |
+
+Each raster was freshly rendered from the pinned PDF and compared
+pixel-for-pixel with its review render (absolute error 0). Each locator uses
+the full 2320 × 3408 source rectangle, normalized mechanically to
+`{ x: 0, y: 0, width: 1, height: 1 }`. All twelve active figure occurrences
+are accepted against the pinned PDF digest. Earlier per-figure crops are
+preserved as legacy research assets and are not active evidence. This
+provenance remediation does not alter source-text delivery or visitor access.
 
 ## Deliberate exclusions
 

@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { evaluateArchivalPublicationState } from "@/data/editions/publicationApproval";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import { sundbackZipperPatent } from "@/data/patents/sundback-zipper";
 import {
@@ -50,7 +51,7 @@ describe("US 1,219,881 Gideon Sundback Separable Fastener manual source edition"
     }
   });
 
-  test("uses an authored local source crop for every printed figure citation", () => {
+  test("uses a complete local source sheet for every printed figure citation", () => {
     const references = sundbackZipperArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
         ? block.inlines.filter(
@@ -65,8 +66,39 @@ describe("US 1,219,881 Gideon Sundback Separable Fastener manual source edition"
       for (const preview of reference.figurePreviews ?? []) {
         expect(preview.src).toStartWith("/patents/figures/us-1219881-sundback-zipper/");
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+        expect(preview).toMatchObject({
+          src: "/patents/figures/us-1219881-sundback-zipper/source-sheet-1-v1.png",
+          width: 2320,
+          height: 3408,
+        });
+        expect(preview.alt).toContain("Complete source drawing sheet 1 of 1");
       }
     }
+
+    for (let figure = 1; figure <= 9; figure += 1) {
+      expect(
+        existsSync(
+          resolve(
+            process.cwd(),
+            "public",
+            `patents/figures/us-1219881-sundback-zipper/fig-${figure}-source-crop-v1.png`,
+          ),
+        ),
+      ).toBe(true);
+    }
+  });
+
+  test("accepts every citation against the source-sheet evidence without withholding text", () => {
+    const decision = evaluateArchivalPublicationState(sundbackZipperPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 25,
+      acceptedFigureCount: 25,
+    });
+    expect(decision.figureManifest.figures.every((figure) => figure.status === "accepted")).toBe(
+      true,
+    );
   });
 
   test("contains parallel readings for every paragraph index", () => {

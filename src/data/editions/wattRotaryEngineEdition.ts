@@ -23,24 +23,12 @@ const term = (termText: string, definition: string): CuratedSpecificationInline 
   definition,
 });
 
-const figure = (
-  figureLabel: string,
-  displayText: string,
-  cropSrc = "/patents/figures/gb-1306-watt-rotary-engine/fig-1-source-crop-v1.png",
-): CuratedSpecificationInline => ({
+const figure = (figureLabel: string, displayText: string): CuratedSpecificationInline => ({
   kind: "reference",
   text: displayText,
-  href: cropSrc,
+  href: "?view=pdf-facsimile",
   referenceType: "figure",
-  label: figureLabel,
-  figurePreviews: [
-    {
-      src: cropSrc,
-      alt: `${figureLabel} — James Watt Rotary Engine & Sun and Planet Gearing technical plate`,
-      width: 2000,
-      height: 2000,
-    },
-  ],
+  label: `${figureLabel} preview unavailable: the pinned PDF is a 2026 Typst reconstruction, not an original Chancery drawing sheet. Open the pinned research artifact instead.`,
 });
 
 const p = (...inlines: CuratedSpecificationInline[]): CuratedSpecificationBlock => ({
@@ -91,7 +79,7 @@ export const wattRotaryEngineArchivalEdition: CuratedSpecificationEdition = {
   sourcePdfSha256: "339921eba26299f65c60e0d9d283deb09419fed3260ba6dc7208ecd55d2471f1",
   preparedBy: "Classic Patents editorial agent (Antigravity)",
   preparedAt: "2026-08-19",
-  completeFacsimileReviewed: true,
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",

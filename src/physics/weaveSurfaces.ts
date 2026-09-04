@@ -47,6 +47,7 @@ import {
 import { readNoycePlanarLeadControls, stepNoycePlanarLeadTopology } from "./noycePlanarLeadKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
+import { stepSpencerMicrowaveSource } from "./spencerMicrowaveKernel";
 import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "./teslaKernel";
 import { readTeslaTransformerControls, stepTeslaTransformerSi } from "./teslaTransformerKernel";
 
@@ -833,14 +834,14 @@ export function materialProbe(
     };
   }
   if (patentId === "us-2495429-spencer-microwave") {
-    const energyPathActive = (params.rfPowerSetting ?? 1) > 0;
+    const source = stepSpencerMicrowaveSource(params);
     return {
       part: calloutLabel,
       material: "Two magnetron oscillators feeding one common wave guide",
       qty: "path",
-      value: energyPathActive ? "1" : "0",
+      value: source.energyPathActive ? "1" : "0",
       unit: "on/off",
-      note: energyPathActive
+      note: source.energyPathActive
         ? "Source path 10/11 → 24/25 → 26/27 → 23 → conveyor 28 is highlighted."
         : "The illustrative source path is disabled; no unstated electrical rating is inferred.",
     };
@@ -1273,12 +1274,13 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     return [{ label: "Φ2", min: 200, max: 800, live: apple.dramWindowNs, unit: "ns" }];
   }
   if (patentId === "us-2495429-spencer-microwave") {
+    const source = stepSpencerMicrowaveSource(params);
     return [
       {
         label: "Source path",
         min: 0,
         max: 1,
-        live: (params.rfPowerSetting ?? 1) > 0 ? 1 : 0,
+        live: source.energyPathActive ? 1 : 0,
         unit: "on/off",
       },
     ];

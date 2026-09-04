@@ -15,10 +15,6 @@ import {
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
-import type {
-  ArchivalPublicationReasonCode,
-  ArchivalPublicationStateKind,
-} from "@/data/editions/archivalPublicationState";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
 import type { Patent } from "@/types/patent";
@@ -40,9 +36,6 @@ import { WeaveInstrument } from "./WeaveInstrument";
 
 interface DualProjectionViewerProps {
   patent: Patent;
-  /** Evaluated on the server so the complete cross-catalogue acceptance
-   * registry and asset digests never enter the client bundle. */
-  archivalPublication: ArchivalPublicationViewState;
   /** One server-resolved companion map; never import the all-patent registry here. */
   archivalParallelReadings?: Readonly<Record<number, readonly string[]>>;
   /** A server-read, page-complete reviewed transcript used only when this record
@@ -52,13 +45,6 @@ interface DualProjectionViewerProps {
   /** Per-patent colorized equations, resolved on the server (colorizedEquations.ts is
    * a 976KB all-patents record that must never enter the client bundle wholesale). */
   colorizedEquations: ColorizedEquationType[];
-}
-
-interface ArchivalPublicationViewState {
-  isPublished: boolean;
-  reasonCode: ArchivalPublicationReasonCode;
-  explanation: string;
-  state: { kind: ArchivalPublicationStateKind };
 }
 
 function isFormulaPureLatex(str: string): boolean {
@@ -91,16 +77,18 @@ function handlePrint() {
 function PinnedFacsimilePanel({
   patent,
   pdfEmbedUnsupported,
+  sourceFallback = false,
 }: {
   patent: Patent;
   pdfEmbedUnsupported: boolean;
+  sourceFallback?: boolean;
 }) {
   const frameHeight = "h-[75dvh] sm:h-[80dvh] lg:h-[800px]";
 
   return (
     <section
       className="space-y-5"
-      data-testid="pinned-pdf-facsimile"
+      data-testid={sourceFallback ? "source-facsimile-fallback" : "pinned-pdf-facsimile"}
       data-facsimile-context="standalone"
     >
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 pb-4 dark:border-ink-800">
@@ -111,6 +99,11 @@ function PinnedFacsimilePanel({
           <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-100">
             {patent.patentNumber} — Pinned Scanned Facsimile
           </h3>
+          {sourceFallback && (
+            <p className="mt-1 font-sans text-sm leading-relaxed text-ink-700 dark:text-parchment-300">
+              Complete patent text is available in this pinned primary-source facsimile.
+            </p>
+          )}
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <a
@@ -198,44 +191,15 @@ function ReviewedTranscript({ transcript }: { transcript: string }) {
           The page markers preserve the source order while a structured reading edition is prepared.
         </p>
       </div>
-      <pre className="max-h-[68dvh] overflow-auto whitespace-pre-wrap break-words rounded-xl border border-parchment-300 bg-parchment-100/80 p-4 font-mono text-xs leading-relaxed text-ink-950 shadow-xs dark:border-ink-800 dark:bg-ink-900/80 dark:text-parchment-100 sm:p-6">
+      <pre className="overflow-x-auto whitespace-pre-wrap rounded-2xl border border-parchment-300 bg-parchment-100/80 p-6 font-mono text-xs leading-relaxed text-ink-900 shadow-xs select-text dark:border-ink-800 dark:bg-ink-900/80 dark:text-parchment-100 sm:p-8 sm:text-sm">
         {transcript}
       </pre>
     </section>
   );
 }
 
-function TranscriptUnavailable({ patent }: { patent: Patent }) {
-  return (
-    <section
-      className="space-y-4 rounded-2xl border border-parchment-300 bg-parchment-100/80 p-5 text-ink-900 dark:border-ink-800 dark:bg-ink-900/80 dark:text-parchment-100"
-      data-testid="source-text-excerpt"
-    >
-      <div>
-        <h4 className="font-serif text-lg font-bold">Available patent text</h4>
-        <p className="mt-1 font-sans text-sm leading-relaxed">
-          This record has not yet received a page-complete reviewed transcript. Its available source
-          excerpt remains visible here.
-        </p>
-      </div>
-      <pre className="max-h-[40dvh] overflow-auto whitespace-pre-wrap break-words border-t border-parchment-300 pt-4 font-serif text-sm leading-relaxed text-ink-950 dark:border-ink-800 dark:text-parchment-100">
-        {patent.originalText}
-      </pre>
-      <a
-        href={patent.originalPdfUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex w-fit items-center gap-2 text-sm font-mono font-semibold text-amber-800 underline decoration-amber-500/60 underline-offset-4 hover:text-amber-900 dark:text-amber-300 dark:hover:text-amber-200"
-      >
-        <FileText className="h-4 w-4" /> Open original facsimile
-      </a>
-    </section>
-  );
-}
-
 export function DualProjectionViewer({
   patent,
-  archivalPublication,
   archivalParallelReadings,
   reviewedTranscript,
   initialView,
@@ -266,7 +230,7 @@ export function DualProjectionViewer({
     ? `Patent text edition · prepared ${archivalSource.edition.preparedAt}`
     : reviewedTranscript
       ? "Complete patent transcript"
-      : "Available primary-source text";
+      : "Complete pinned primary-source facsimile";
   const sourceVisualHold = patent.id === "us-3671542-kwolek-kevlar";
   const visualFaceLabel = sourceVisualHold
     ? "Visual Model in Preparation"
@@ -323,9 +287,9 @@ export function DualProjectionViewer({
       className="space-y-8 print:space-y-4"
       data-testid="dual-projection-viewer"
       data-hydrated={hydrated}
-      data-archival-edition={archivalSource?.edition.kind ?? "withheld"}
-      data-archival-publication-state={archivalPublication.state.kind}
-      data-archival-publication-reason={archivalPublication.reasonCode}
+      data-source-delivery={
+        archivalSource ? "edition" : reviewedTranscript ? "transcript" : "facsimile"
+      }
       data-source-visual-hold={sourceVisualHold || undefined}
     >
       {/* Archival Broadside Plaque Header (Active during print) */}
@@ -552,7 +516,11 @@ export function DualProjectionViewer({
               ) : reviewedTranscript ? (
                 <ReviewedTranscript transcript={reviewedTranscript} />
               ) : (
-                <TranscriptUnavailable patent={patent} />
+                <PinnedFacsimilePanel
+                  patent={patent}
+                  pdfEmbedUnsupported={pdfEmbedUnsupported}
+                  sourceFallback
+                />
               )}
             </div>
           </div>
@@ -783,7 +751,7 @@ export function DualProjectionViewer({
                     ? "Complete Manually Prepared Archival Edition"
                     : reviewedTranscript
                       ? "Complete Patent Transcript"
-                      : "Available Patent Text"}
+                      : "Complete Pinned Primary-Source Facsimile"}
                 </span>
                 <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ink-950 dark:text-parchment-50">
                   {patent.patentNumber} · Specification of Letters Patent
@@ -814,7 +782,11 @@ export function DualProjectionViewer({
             ) : reviewedTranscript ? (
               <ReviewedTranscript transcript={reviewedTranscript} />
             ) : (
-              <TranscriptUnavailable patent={patent} />
+              <PinnedFacsimilePanel
+                patent={patent}
+                pdfEmbedUnsupported={pdfEmbedUnsupported}
+                sourceFallback
+              />
             )}
           </div>
         </div>

@@ -1,17 +1,29 @@
 "use client";
 
 import { RotateCcw, Waves } from "lucide-react";
+import { stepSpencerMicrowaveSource } from "@/physics/spencerMicrowaveKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 const PATENT_ID = "us-2495429-spencer-microwave";
 
 export function SpencerMicrowaveSim() {
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const isEnergized = (params.rfPowerSetting ?? 0) > 0;
+  const sourceState = stepSpencerMicrowaveSource(params);
+  const isEnergized = sourceState.energyPathActive;
   const toggleEnergy = () => updateParam("rfPowerSetting", isEnergized ? 0 : 1);
 
   return (
-    <div className="rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 shadow-patent">
+    <div
+      className="rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 shadow-patent"
+      data-testid="spencer-microwave-two"
+      data-source-path={isEnergized ? "active" : "disabled"}
+      data-source-path-continuous={String(sourceState.sourcePathContinuous)}
+      data-source-wavelength-reference-m={sourceState.sourceWavelengthReferenceM}
+      data-vacuum-frequency-at-ten-centimeters-hz={sourceState.vacuumFrequencyAtTenCentimetersHz}
+      data-kernel-source={sourceState.kernelSource}
+      data-quantitative-tube-model="refused"
+      data-quantitative-cooking-model="refused"
+    >
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
@@ -172,7 +184,20 @@ export function SpencerMicrowaveSim() {
             <dd className="text-ink-700 dark:text-ink-300">loops 26 and 27</dd>
             <dt className="text-ink-500">Load motion</dt>
             <dd className="text-ink-700 dark:text-ink-300">conveyor 28</dd>
+            <dt className="text-ink-500">Source λ region</dt>
+            <dd className="text-ink-700 dark:text-ink-300">about 10 cm or less</dd>
+            <dt className="text-ink-500">At λ = 10 cm</dt>
+            <dd className="text-ink-700 dark:text-ink-300">
+              f ≈ {(sourceState.vacuumFrequencyAtTenCentimetersHz / 1e9).toFixed(3)} GHz in vacuum
+            </dd>
+            <dt className="text-ink-500">Tube/cooking SI</dt>
+            <dd className="font-semibold text-amber-700 dark:text-amber-300">refused</dd>
           </dl>
+          <p className="text-xs leading-relaxed text-ink-600 dark:text-ink-400">
+            The frequency line is only the universal c = λf conversion at the patent&apos;s
+            ten-centimetre reference. Voltage, magnetic field, RF output, field magnitude,
+            dielectric loss, temperature rise, cooking time, and efficiency remain unavailable.
+          </p>
         </aside>
       </div>
     </div>
