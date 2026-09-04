@@ -106,3 +106,7 @@ neighboring source matter. The drawing-sheet summary references render one
 complete sheet each rather than a wall of redundant individual crops. With
 those explicit fallbacks, the canonical Thomson record remains bound to the
 complete manual edition without relabeling any rejected crop as accepted.
+
+## Independent source-sheet review (2026-09-04)
+
+Drawing sheets 1 and 2 (PDF pages 1 and 2) were rendered directly from the pinned facsimile at 300 DPI (2320 × 3408 pixels) and visually compared against the printed sheets. The resulting immutable source-sheet assets are `public/patents/figures/us-347140-thomson-welding/source-sheet-1-v1.png` and `source-sheet-2-v1.png`. All forty authored figure-reference occurrences lead with their respective full sheet, whose source rectangle is the entire page (`0,0,2320,3408`). This confirms drawing-sheet coverage, but does not change the separate candidate hold: the continuous edition still requires independent review of the complete specification and claims before publication.

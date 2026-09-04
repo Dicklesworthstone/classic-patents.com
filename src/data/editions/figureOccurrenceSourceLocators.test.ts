@@ -667,6 +667,16 @@ const EINK_OCCURRENCES = Object.fromEntries(
     locator.activeAsset,
   ]),
 );
+const THOMSON_WELDING_ID = "us-347140-thomson-welding";
+const THOMSON_WELDING_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[THOMSON_WELDING_ID].assets,
+);
+const THOMSON_WELDING_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[THOMSON_WELDING_ID].map((locator) => [
+    locator.occurrenceKey,
+    locator.activeAsset,
+  ]),
+);
 const COLT_ID = "us-x9430-colt-revolver";
 const COLT_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[COLT_ID].assets);
 const COLT_REVOLVER_OCCURRENCES = {
@@ -1319,6 +1329,7 @@ const VALIDATION_OPTIONS = {
     [FESSENDEN_WIRELESS_ID]: FESSENDEN_WIRELESS_ASSETS,
     [TESLA_TELEAUTOMATON_ID]: TESLA_TELEAUTOMATON_ASSETS,
     [EINK_ID]: EINK_ASSETS,
+    [THOMSON_WELDING_ID]: THOMSON_WELDING_ASSETS,
     [ROOMBA_ID]: ROOMBA_ASSETS,
     [CORLISS_ID]: CORLISS_ASSETS,
     [LINDE_AIR_LIQUEFACTION_ID]: LINDE_AIR_LIQUEFACTION_ASSETS,
@@ -1404,6 +1415,7 @@ const VALIDATION_OPTIONS = {
     [FESSENDEN_WIRELESS_ID]: FESSENDEN_WIRELESS_OCCURRENCES,
     [TESLA_TELEAUTOMATON_ID]: TESLA_TELEAUTOMATON_OCCURRENCES,
     [EINK_ID]: EINK_OCCURRENCES,
+    [THOMSON_WELDING_ID]: THOMSON_WELDING_OCCURRENCES,
     [WOZNIAK_APPLE_ID]: WOZNIAK_APPLE_OCCURRENCES,
     [ROOMBA_ID]: ROOMBA_OCCURRENCES,
     [CORLISS_ID]: CORLISS_OCCURRENCES,
@@ -1491,6 +1503,7 @@ const VALIDATION_OPTIONS = {
     [FESSENDEN_WIRELESS_ID]: 7,
     [TESLA_TELEAUTOMATON_ID]: 13,
     [EINK_ID]: 26,
+    [THOMSON_WELDING_ID]: 5,
     [ROOMBA_ID]: 26,
     [CORLISS_ID]: 8,
     [LINDE_AIR_LIQUEFACTION_ID]: 5,
@@ -1581,6 +1594,7 @@ describe("figure occurrence source locators", () => {
       FESSENDEN_WIRELESS_ID,
       TESLA_TELEAUTOMATON_ID,
       EINK_ID,
+      THOMSON_WELDING_ID,
       WOZNIAK_APPLE_ID,
       ROOMBA_ID,
       CORLISS_ID,
@@ -1721,6 +1735,29 @@ describe("figure occurrence source locators", () => {
           locator.sourceRectPixels.y === 0 &&
           locator.sourceRectPixels.width === 928 &&
           locator.sourceRectPixels.height === 1364 &&
+          locator.evidenceReference.endsWith("#independent-source-sheet-review-2026-09-04"),
+      ),
+    ).toBe(true);
+  });
+
+  test("binds every Thomson Welding citation to its independently reviewed full source sheet", () => {
+    const locators = FIGURE_OCCURRENCE_SOURCE_LOCATORS[THOMSON_WELDING_ID];
+    expect(locators).toHaveLength(40);
+    expect(locators.map((locator) => locator.occurrenceKey)).toEqual(
+      Object.keys(THOMSON_WELDING_OCCURRENCES) as FigureOccurrenceKey[],
+    );
+    expect(new Set(locators.map((locator) => locator.activeAsset))).toEqual(
+      new Set(THOMSON_WELDING_ASSETS),
+    );
+    expect(
+      locators.every(
+        (locator) =>
+          locator.sourceRaster.width === 2320 &&
+          locator.sourceRaster.height === 3408 &&
+          locator.sourceRectPixels.x === 0 &&
+          locator.sourceRectPixels.y === 0 &&
+          locator.sourceRectPixels.width === 2320 &&
+          locator.sourceRectPixels.height === 3408 &&
           locator.evidenceReference.endsWith("#independent-source-sheet-review-2026-09-04"),
       ),
     ).toBe(true);

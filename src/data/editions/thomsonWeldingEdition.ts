@@ -139,16 +139,16 @@ const SHEET_TWO = 2 as const;
 const SOURCE_SHEET_PREVIEWS: Readonly<Record<typeof SHEET_ONE | typeof SHEET_TWO, FigurePreview>> =
   {
     [SHEET_ONE]: {
-      src: "/patents/figures/us-347140-thomson-welding/fig-1-source-crop-v1.png",
+      src: "/patents/figures/us-347140-thomson-welding/source-sheet-1-v1.png",
       alt: "US 347,140 source drawing sheet 1 containing Figs. 1 through 9.",
-      width: 2321,
-      height: 3409,
+      width: 2320,
+      height: 3408,
     },
     [SHEET_TWO]: {
-      src: "/patents/figures/us-347140-thomson-welding/fig-2-source-crop-v1.png",
+      src: "/patents/figures/us-347140-thomson-welding/source-sheet-2-v1.png",
       alt: "US 347,140 source drawing sheet 2 containing Figs. 10 through 18.",
-      width: 2321,
-      height: 3409,
+      width: 2320,
+      height: 3408,
     },
   };
 
@@ -190,7 +190,12 @@ const figure = (
   figurePreviews:
     text === "Figs. 1 through 9" || text === "Figs. 10 through 18"
       ? [SOURCE_SHEET_PREVIEWS[sourceSheet]]
-      : FIGURE_REFERENCE_PREVIEWS[text].map((number) => FIGURE_PREVIEWS[number]),
+      : [
+          // The exact full page is active evidence. Retain the old isolated
+          // crop(s) after it as a reading aid rather than reclassifying them.
+          SOURCE_SHEET_PREVIEWS[sourceSheet],
+          ...FIGURE_REFERENCE_PREVIEWS[text].map((number) => FIGURE_PREVIEWS[number]),
+        ],
 });
 
 const term = (text: string, definition: string): CuratedSpecificationInline => ({

@@ -4465,6 +4465,85 @@ function eInkSourceSheetLocator(
   };
 }
 
+const THOMSON_WELDING_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const THOMSON_WELDING_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-347140-thomson-welding.md#independent-source-sheet-review-2026-09-04";
+const THOMSON_WELDING_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-347140-thomson-welding/source-sheet-1-v1.png",
+  2: "/patents/figures/us-347140-thomson-welding/source-sheet-2-v1.png",
+} as const;
+const THOMSON_WELDING_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-1-group-0-inline-1", 1],
+  ["edition-block-2-group-0-inline-1", 2],
+  ["edition-block-9-group-0-inline-0", 1],
+  ["edition-block-9-group-0-inline-2", 1],
+  ["edition-block-9-group-0-inline-4", 1],
+  ["edition-block-9-group-0-inline-6", 1],
+  ["edition-block-9-group-0-inline-8", 1],
+  ["edition-block-9-group-0-inline-10", 1],
+  ["edition-block-9-group-0-inline-12", 1],
+  ["edition-block-9-group-0-inline-14", 1],
+  ["edition-block-9-group-0-inline-16", 1],
+  ["edition-block-9-group-0-inline-18", 2],
+  ["edition-block-9-group-0-inline-20", 2],
+  ["edition-block-9-group-0-inline-22", 2],
+  ["edition-block-9-group-0-inline-24", 2],
+  ["edition-block-9-group-0-inline-26", 2],
+  ["edition-block-11-group-0-inline-1", 1],
+  ["edition-block-12-group-0-inline-0", 1],
+  ["edition-block-13-group-0-inline-0", 1],
+  ["edition-block-13-group-0-inline-2", 1],
+  ["edition-block-13-group-0-inline-4", 1],
+  ["edition-block-14-group-0-inline-0", 1],
+  ["edition-block-14-group-0-inline-2", 1],
+  ["edition-block-15-group-0-inline-1", 1],
+  ["edition-block-15-group-0-inline-3", 1],
+  ["edition-block-16-group-0-inline-1", 1],
+  ["edition-block-16-group-0-inline-3", 1],
+  ["edition-block-17-group-0-inline-1", 1],
+  ["edition-block-19-group-0-inline-0", 2],
+  ["edition-block-20-group-0-inline-0", 2],
+  ["edition-block-21-group-0-inline-0", 2],
+  ["edition-block-21-group-0-inline-2", 2],
+  ["edition-block-21-group-0-inline-4", 2],
+  ["edition-block-22-group-0-inline-1", 2],
+  ["edition-block-22-group-0-inline-3", 2],
+  ["edition-block-22-group-0-inline-5", 2],
+  ["edition-block-24-group-0-inline-1", 2],
+  ["edition-block-24-group-0-inline-3", 1],
+  ["edition-block-24-group-0-inline-5", 2],
+  ["edition-block-25-group-0-inline-1", 2],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof THOMSON_WELDING_SOURCE_SHEET_ASSETS,
+])[];
+
+function thomsonWeldingSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof THOMSON_WELDING_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: THOMSON_WELDING_SOURCE_SHEET_RASTER.width,
+    height: THOMSON_WELDING_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: THOMSON_WELDING_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: THOMSON_WELDING_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      THOMSON_WELDING_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: THOMSON_WELDING_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
 const WOZNIAK_APPLE_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
 const WOZNIAK_APPLE_EVIDENCE_REFERENCE =
   "docs/provenance/us-4136359-wozniak-apple.md#editorial-boundaries";
@@ -6725,6 +6804,10 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
   ),
   "us-6120588-eink": EINK_SOURCE_SHEET_OCCURRENCES.map(([occurrenceKey, sourceSheet]) =>
     eInkSourceSheetLocator(occurrenceKey, sourceSheet),
+  ),
+  "us-347140-thomson-welding": THOMSON_WELDING_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) =>
+      thomsonWeldingSourceSheetLocator(occurrenceKey, sourcePdfPage),
   ),
   "us-4136359-wozniak-apple": [
     // Fig. 1 (Page 2)

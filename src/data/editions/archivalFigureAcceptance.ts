@@ -2263,4 +2263,23 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
       },
     },
   },
+  "us-347140-thomson-welding": {
+    sourcePdfSha256: "80e7bbf735c52f3ace482277f39b130c0b6a62ee8eb9290389175939ba48356c",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 40,
+    assets: {
+      "/patents/figures/us-347140-thomson-welding/source-sheet-1-v1.png": {
+        sha256: "c36b2eecff6a1b842ad46224895372c1d90bea94145beea91e7e92b35c11da54",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-347140-thomson-welding/source-sheet-2-v1.png": {
+        sha256: "698343a4d6d6fd2171b93338b7eddb6f5ac69524f97043c754c4c85d2f55d054",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
 } as const satisfies Readonly<Record<string, ArchivalFigureAcceptanceAttestation>>;

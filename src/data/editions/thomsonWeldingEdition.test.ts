@@ -26,7 +26,7 @@ describe("thomsonWeldingArchivalEdition", () => {
     ).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 
-  test("binds every source-figure occurrence to an accepted local crop", () => {
+  test("keeps a complete primary source sheet active for every source-figure occurrence", () => {
     const figureReferences = thomsonWeldingArchivalEdition.blocks.flatMap((block) => {
       const inlines =
         block.kind === "paragraph" || block.kind === "claim"
@@ -40,8 +40,9 @@ describe("thomsonWeldingArchivalEdition", () => {
       );
     });
     const figureRoot = "/patents/figures/us-347140-thomson-welding";
-    const sourceSheetOne = `${figureRoot}/fig-1-source-crop-v1.png`;
-    const sourceSheetTwo = `${figureRoot}/fig-2-source-crop-v1.png`;
+    const sourceSheetOne = `${figureRoot}/source-sheet-1-v1.png`;
+    const sourceSheetTwo = `${figureRoot}/source-sheet-2-v1.png`;
+    const legacySourceSheetOne = `${figureRoot}/fig-1-source-crop-v1.png`;
     const expectedFiguresByReference: Readonly<Record<string, readonly number[]>> = {
       "Figure 1": [1],
       "Fig. 1": [1],
@@ -76,19 +77,24 @@ describe("thomsonWeldingArchivalEdition", () => {
           ? [sourceSheetOne]
           : reference.text === "Figs. 10 through 18"
             ? [sourceSheetTwo]
-            : expectedFigures.map((figureNumber) => {
-                if ([1, 3, 8, 9].includes(figureNumber)) return sourceSheetOne;
-                const version = [5, 6].includes(figureNumber)
-                  ? 6
-                  : [2, 12, 13, 15].includes(figureNumber)
-                    ? 5
-                    : [11, 14].includes(figureNumber)
-                      ? 4
-                      : [4, 10].includes(figureNumber)
-                        ? 2
-                        : 1;
-                return `${figureRoot}/figure-${figureNumber}-source-crop-v${version}.png`;
-              });
+            : [
+                expectedFigures.every((figureNumber) => figureNumber <= 9)
+                  ? sourceSheetOne
+                  : sourceSheetTwo,
+                ...expectedFigures.map((figureNumber) => {
+                  if ([1, 3, 8, 9].includes(figureNumber)) return legacySourceSheetOne;
+                  const version = [5, 6].includes(figureNumber)
+                    ? 6
+                    : [2, 12, 13, 15].includes(figureNumber)
+                      ? 5
+                      : [11, 14].includes(figureNumber)
+                        ? 4
+                        : [4, 10].includes(figureNumber)
+                          ? 2
+                          : 1;
+                  return `${figureRoot}/figure-${figureNumber}-source-crop-v${version}.png`;
+                }),
+              ];
       expect(previews.map((preview) => preview.src)).toEqual(expectedPaths);
       for (const preview of previews) {
         const previewPath = resolve(process.cwd(), "public", preview.src.slice(1));
@@ -112,6 +118,7 @@ describe("thomsonWeldingArchivalEdition", () => {
       [
         sourceSheetOne,
         sourceSheetTwo,
+        legacySourceSheetOne,
         `${figureRoot}/figure-2-source-crop-v5.png`,
         `${figureRoot}/figure-4-source-crop-v2.png`,
         `${figureRoot}/figure-5-source-crop-v6.png`,
