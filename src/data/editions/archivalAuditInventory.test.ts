@@ -13,10 +13,10 @@ describe("server-only archival audit inventory", () => {
     );
     expect(inventory.summary).toMatchObject({
       catalogueRecordCount: 103,
-      acceptedRecordCount: 71,
-      nonacceptedRecordCount: 32,
+      acceptedRecordCount: 72,
+      nonacceptedRecordCount: 31,
       primaryReasonCounts: {
-        figure: 14,
+        figure: 13,
         "facsimile-review": 8,
         ledger: 0,
         "full-specification": 5,
@@ -26,8 +26,8 @@ describe("server-only archival audit inventory", () => {
         other: 0,
       },
       readerDeliveryCounts: { edition: 91, transcript: 12, facsimile: 0 },
-      unacceptedFigureOccurrenceCount: 823,
-      recordsWithAttestedFiguresMissingLocators: 9,
+      unacceptedFigureOccurrenceCount: 800,
+      recordsWithAttestedFiguresMissingLocators: 8,
       recordsMissingFigureAttestationsAndLocators: 15,
     });
   }, 30000);
