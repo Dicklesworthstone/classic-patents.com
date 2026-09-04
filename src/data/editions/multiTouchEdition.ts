@@ -76,7 +76,11 @@ export const multiTouchArchivalEdition: CuratedSpecificationEdition = {
   sourcePdfSha256: "9b29747e60aad27302671e1be32fda99680c474d4e3a5ce0ffc93201460bfe1c",
   preparedBy: "Classic Patents Editorial Team",
   preparedAt: "2026-08-20",
-  completeFacsimileReviewed: true,
+  // This partial editorial draft is preserved as research evidence. The source
+  // reader deliberately selects the page-complete reviewed ledger until every
+  // source paragraph, claim, and figure citation has been re-authored and
+  // checked against the 364-page pinned facsimile.
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",

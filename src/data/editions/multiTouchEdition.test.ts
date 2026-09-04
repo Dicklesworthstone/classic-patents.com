@@ -5,18 +5,25 @@ import path from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { multiTouchArchivalEdition } from "@/data/editions/multiTouchEdition";
 import { multiTouchPatent } from "@/data/patents/multitouch";
+import { completeArchivalEditionForViewer } from "./publicationApproval";
+import { reviewedLedgerTextForViewer } from "./reviewedLedgerPublicationEvidence.server";
 
 const PINNED_SHA256 = "9b29747e60aad27302671e1be32fda99680c474d4e3a5ce0ffc93201460bfe1c";
 
 describe("US 7,479,949 Apple Multi-Touch Heuristics Archival Edition Contract", () => {
-  test("is a valid, complete manual edition of US 7,479,949", () => {
+  test("preserves a partial editorial draft without presenting it as complete", () => {
     const result = validateCuratedSpecificationEdition(multiTouchArchivalEdition);
     expect(result).toEqual({
-      valid: true,
-      errors: [],
+      valid: false,
+      errors: ["The archival edition must attest that the complete facsimile was reviewed."],
     });
+    expect(multiTouchArchivalEdition.completeFacsimileReviewed).toBe(false);
     expect(multiTouchPatent.archivalEdition).toBe(multiTouchArchivalEdition);
     expect(multiTouchPatent.originalTextAsset).toBeDefined();
+    expect(completeArchivalEditionForViewer(multiTouchPatent)).toBeUndefined();
+    expect(reviewedLedgerTextForViewer(multiTouchPatent)).toStartWith(
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 364 ---",
+    );
   });
 
   test("pinned PDF SHA-256 matches archival edition", () => {

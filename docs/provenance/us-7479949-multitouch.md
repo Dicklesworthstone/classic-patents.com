@@ -10,7 +10,7 @@
 - Grant date: January 20, 2009
 - Primary public record: <https://patents.google.com/patent/US7479949B2/en>
 - Pinned facsimile: `public/patents/pdfs/us-7479949-multitouch.pdf`
-- Retrieval and full-facsimile review date: 2026-08-20 (initial ledger review); 2026-08-22 (receipt authored against pinned PDF)
+- Retrieval and ledger review dates: 2026-08-20 (initial ledger review); 2026-08-22 (receipt authored against pinned PDF). The stored manual edition is an incomplete editorial draft and has not received a full-facsimile-review attestation.
 - Rights basis: United States patent text and government-issued drawings are historical public-domain source material; this receipt does not assert rights in later commentary or derivative assets.
 - SHA-256 (lowercase): `9b29747e60aad27302671e1be32fda99680c474d4e3a5ce0ffc93201460bfe1c`
 - PDF page count: 364
@@ -29,8 +29,8 @@ The pinned PDF is the issued B2 document without a printed cover page: page 1 is
 
 ## Editorial and preservation boundaries
 
-- Public source face: `src/data/editions/multiTouchEdition.ts`, a continuous hand-authored typed edition without scan-page banners.
-- Reviewed ledger: `public/patents/transcripts/us-7479949-multitouch-reviewed.txt`, with 364 ordered page markers matching the pinned PDF page count (`validateReviewedTranscription` passes).
+- Public source face while the draft is remediated: `public/patents/transcripts/us-7479949-multitouch-reviewed.txt`, with 364 ordered page markers matching the pinned PDF page count (`validateReviewedTranscription` passes). It is always available to visitors together with the pinned facsimile.
+- Preserved editorial draft: `src/data/editions/multiTouchEdition.ts`. It remains typed research evidence but is deliberately not labeled or rendered as the complete source face until its 364-page source packet, claims, and figure citations are reconciled.
 - Local figure assets preserved under `public/patents/figures/us-7479949-multitouch/`: source crops `fig-1-source-crop-v1.png`, `fig-2-source-crop-v1.png`, `fig-3-source-crop-v1.png` plus full-sheet renders `sheet-1-005.png` through `sheet-3-007.png`. These are source-derived reference assets and are not currently cited by the edition's figure references.
 - Claim text in the catalogue record is dynamically joined from the edition's claim nodes; no literal duplication exists in `src/data/patents/multitouch.ts`.
 - No local OCR engine, OCR daemon, or local recognition process was run at any point in preparing the ledger or edition. Any cloud machine draft remains private research evidence only; every served line must stand against the pinned facsimile.

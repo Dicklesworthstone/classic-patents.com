@@ -25,7 +25,7 @@ describe("server-only archival audit inventory", () => {
         "primary-facsimile": 2,
         other: 0,
       },
-      readerDeliveryCounts: { edition: 91, transcript: 12, facsimile: 0 },
+      readerDeliveryCounts: { edition: 90, transcript: 13, facsimile: 0 },
       unacceptedFigureOccurrenceCount: 242,
       recordsWithAttestedFiguresMissingLocators: 0,
       recordsMissingFigureAttestationsAndLocators: 4,
