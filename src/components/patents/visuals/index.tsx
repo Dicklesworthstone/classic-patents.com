@@ -70,6 +70,15 @@ const MarconiPhysicsRuntimeOwner = dynamic(
   () => import("./PatentPhysicsRuntimeOwner").then((module) => module.MarconiPhysicsRuntimeOwner),
   { ssr: false },
 );
+const WattRotaryPhysicsRuntimeOwner = dynamic(
+  () =>
+    import("./PatentPhysicsRuntimeOwner").then((module) => module.WattRotaryPhysicsRuntimeOwner),
+  { ssr: false },
+);
+const ArkwrightPhysicsRuntimeOwner = dynamic(
+  () => import("./PatentPhysicsRuntimeOwner").then((module) => module.ArkwrightPhysicsRuntimeOwner),
+  { ssr: false },
+);
 // 2D sims are lazy: the dispatcher defaults to the 3D face, so each page only
 // downloads the vector-diagram code when the visitor actually toggles it.
 const AmfVersatranSim = dynamic(() => import("./AMFVersatranSim").then((m) => m.AmfVersatranSim), {
@@ -1084,13 +1093,23 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
                 <WattSeparateCondenserSim />
               );
             case "gb-931-arkwright-water-frame":
-              return renderMode === "3d-physics" ? (
-                <ArkwrightWaterFrame3D />
-              ) : (
-                <ArkwrightWaterFrameSim />
+              return (
+                <>
+                  <ArkwrightPhysicsRuntimeOwner patentId={patentId} />
+                  {renderMode === "3d-physics" ? (
+                    <ArkwrightWaterFrame3D />
+                  ) : (
+                    <ArkwrightWaterFrameSim />
+                  )}
+                </>
               );
             case "gb-1306-watt-rotary-engine":
-              return renderMode === "3d-physics" ? <WattRotaryEngine3D /> : <WattRotaryEngineSim />;
+              return (
+                <>
+                  <WattRotaryPhysicsRuntimeOwner patentId={patentId} />
+                  {renderMode === "3d-physics" ? <WattRotaryEngine3D /> : <WattRotaryEngineSim />}
+                </>
+              );
             case "gb-1420-cort-puddling-rolling":
               return renderMode === "3d-physics" ? (
                 <CortPuddlingRolling3D />

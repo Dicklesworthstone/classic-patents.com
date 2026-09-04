@@ -89,6 +89,8 @@ export interface PatentCoverageSummary {
  * resetting the physical sequence or mounting a second updater.
  */
 export const EXTERNAL_RUNTIME_OWNER_PATENT_IDS = [
+  "gb-931-arkwright-water-frame",
+  "gb-1306-watt-rotary-engine",
   "us-1773980-farnsworth-tv",
   "us-4063220-metcalfe-ethernet",
   "us-3728480-baer-odyssey",

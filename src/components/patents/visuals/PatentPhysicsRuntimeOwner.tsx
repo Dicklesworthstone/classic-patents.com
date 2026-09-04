@@ -1,6 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  ARKWRIGHT_FRANKENSIM_BOUNDARY,
+  ARKWRIGHT_KERNEL_SOURCE,
+  ARKWRIGHT_SOURCE_BOUNDARY,
+  createArkwrightTransportUpdater,
+  getArkwrightTapeFrame,
+  readArkwrightRuntimeControls,
+} from "@/physics/arkwrightKernel";
 import { createBaerOdysseyTransportUpdater, readBaerControls } from "@/physics/baerOdysseyKernel";
 import {
   createBoyleSmithCcdTransportUpdater,
@@ -38,6 +46,14 @@ import {
 } from "@/physics/metcalfeEthernetKernel";
 import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import {
+  createWattRotaryTransportUpdater,
+  getWattRotaryTapeFrame,
+  readWattRotaryRuntimeControls,
+  WATT_ROTARY_FRANKENSIM_BOUNDARY,
+  WATT_ROTARY_KERNEL_SOURCE,
+  WATT_ROTARY_SOURCE_BOUNDARY,
+} from "@/physics/wattRotaryKernel";
 import { useLiveSimParams } from "./three/useLiveSimParams";
 
 let nextRuntimeOwnerMount = 0;
@@ -48,6 +64,91 @@ function useRuntimeOwnerMount(): number {
     return nextRuntimeOwnerMount;
   });
   return mount;
+}
+
+/** Stable owner for the prescribed water-frame transmission coordinates. */
+export function ArkwrightPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
+  const mount = useRuntimeOwnerMount();
+  const { effectiveParams } = usePatentPhysics(patentId);
+  const liveParams = useLiveSimParams(effectiveParams);
+  const { frame } = useFrankenSimPhysics(patentId, {
+    domain: "continuum_elasticity",
+    refusal: { isRefused: true, reason: ARKWRIGHT_SOURCE_BOUNDARY },
+  });
+
+  useEffect(() => {
+    return globalTransportBus.registerUpdater(
+      patentId,
+      createArkwrightTransportUpdater(() => readArkwrightRuntimeControls(liveParams.current)),
+      "TS_FALLBACK",
+    );
+  }, [patentId, liveParams]);
+
+  const tape = getArkwrightTapeFrame();
+  return (
+    <span
+      hidden
+      data-testid="patent-physics-runtime-owner"
+      data-patent-id={patentId}
+      data-runtime-tick={frame.tick}
+      data-runtime-owner-mount={mount}
+      data-runtime-digest={frame.digest}
+      data-runtime-provenance={frame.provenance}
+      data-arkwright-kernel-source={ARKWRIGHT_KERNEL_SOURCE}
+      data-arkwright-frankensim-boundary={ARKWRIGHT_FRANKENSIM_BOUNDARY}
+      data-arkwright-time-sec={tape?.timeSec ?? ""}
+      data-arkwright-wheel-phase-rad={tape?.phases.wheelRad ?? ""}
+      data-arkwright-feed-phase-rad={tape?.phases.feedRollerRad ?? ""}
+      data-arkwright-delivery-phase-rad={tape?.phases.deliveryRollerRad ?? ""}
+      data-arkwright-spindle-phase-rad={tape?.phases.spindleRad ?? ""}
+      data-arkwright-bobbin-phase-rad={tape?.phases.bobbinRad ?? ""}
+      data-arkwright-traverse-phase-rad={tape?.phases.traverseRad ?? ""}
+    />
+  );
+}
+
+/** Stable owner for Watt's closed linkage and constrained external-gear mesh. */
+export function WattRotaryPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
+  const mount = useRuntimeOwnerMount();
+  const { effectiveParams } = usePatentPhysics(patentId);
+  const liveParams = useLiveSimParams(effectiveParams);
+  const { frame } = useFrankenSimPhysics(patentId, {
+    domain: "thermo_fluid",
+    refusal: { isRefused: true, reason: WATT_ROTARY_SOURCE_BOUNDARY },
+  });
+
+  useEffect(() => {
+    return globalTransportBus.registerUpdater(
+      patentId,
+      createWattRotaryTransportUpdater(() => readWattRotaryRuntimeControls(liveParams.current)),
+      "TS_FALLBACK",
+    );
+  }, [patentId, liveParams]);
+
+  const tape = getWattRotaryTapeFrame();
+  return (
+    <span
+      hidden
+      data-testid="patent-physics-runtime-owner"
+      data-patent-id={patentId}
+      data-runtime-tick={frame.tick}
+      data-runtime-owner-mount={mount}
+      data-runtime-digest={frame.digest}
+      data-runtime-provenance={frame.provenance}
+      data-watt-kernel-source={WATT_ROTARY_KERNEL_SOURCE}
+      data-watt-frankensim-boundary={WATT_ROTARY_FRANKENSIM_BOUNDARY}
+      data-watt-running={tape?.controls.isRunning ?? ""}
+      data-watt-time-sec={tape?.timeSec ?? ""}
+      data-watt-carrier-angle-rad={tape?.telemetry.planetOrbitAngleRad ?? ""}
+      data-watt-rod-angle-rad={tape?.telemetry.connectingRodAngleRad ?? ""}
+      data-watt-planet-angle-rad={tape?.telemetry.planetBodyAngleRad ?? ""}
+      data-watt-sun-angle-rad={tape?.telemetry.sunShaftAngleRad ?? ""}
+      data-watt-mesh-residual-rad={tape?.telemetry.gearMeshConstraintResidualRad ?? ""}
+      data-watt-rod-residual-m={tape?.telemetry.connectingRodConstraintResidualM ?? ""}
+      data-watt-sun-teeth={tape?.telemetry.sunTeeth ?? ""}
+      data-watt-planet-teeth={tape?.telemetry.planetTeeth ?? ""}
+    />
+  );
 }
 
 /** Stable nonvisual owner that survives 2D/3D face switches in the dispatcher. */

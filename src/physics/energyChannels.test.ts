@@ -38,6 +38,8 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       }
     }
     expect(Object.keys(ENERGY_CHANNEL_OMISSION_REASONS)).toEqual([
+      "gb-931-arkwright-water-frame",
+      "gb-1306-watt-rotary-engine",
       "us-3138743-kilby-integrated-circuit",
       "us-2981877-noyce-ic",
       "us-2929922-townes-laser",

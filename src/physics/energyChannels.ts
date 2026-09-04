@@ -1,5 +1,4 @@
 import type { EnergyChannel } from "@/components/patents/EnergyFlowStrip";
-import { stepArkwrightWaterFrame } from "./arkwrightKernel";
 import { stepBellPhotophone } from "./bellPhotophoneKernel";
 import {
   stepBellTelephone,
@@ -25,7 +24,6 @@ import { FrankenSimEngine } from "./engine";
 import { stepHopkinsPotash } from "./hopkinsPotashKernel";
 import { readKamenSegwayControls, stepKamenSegwaySi } from "./kamenSegwayKernel";
 import { stepRillieuxEvaporator } from "./rillieuxEvaporatorKernel";
-import { readWattRotaryControls, stepWattRotaryEngine } from "./wattRotaryKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 /** Mechanical horsepower in watts. Used only to print an already-owned hp field. */
@@ -33,6 +31,10 @@ const MECHANICAL_HORSEPOWER_W = 745.7;
 
 /** Explicit reasons that a published record has no honest SI power-flow strip. */
 export const ENERGY_CHANNEL_OMISSION_REASONS = {
+  "gb-931-arkwright-water-frame":
+    "The pinned GB 931 artifact is a modern reconstruction and supplies no authenticated water head, flow rate, wheel torque, bearing friction, roller work, spindle inertia, or loss measurements from which a closed SI energy partition can be derived.",
+  "gb-1306-watt-rotary-engine":
+    "The surviving GB 1306 record used here establishes the sun-and-planet topology but supplies no source engine dimensions, pressure trace, steam mass flow, condenser heat rejection, friction, efficiency, or calibrated flywheel inertia from which a closed SI energy partition can be derived.",
   "us-3138743-kilby-integrated-circuit":
     "US 3,138,743 prints the monolithic circuit construction, wafer dimensions and resistivity, layer depth, selected resistor and capacitor values, contacts, leads, and interconnect topology, but no supply voltage, operating current, transistor gain, junction geometry, measured frequency, delay, thermal point, or power datum from which a closed SI energy balance can be derived.",
   "us-2981877-noyce-ic":
@@ -322,36 +324,9 @@ export function energyChannelsFor(
   }
 
   // --- Extended Landmark SI Energy Balances ---
-  if (patentId === "gb-931-arkwright-water-frame") {
-    const ark = stepArkwrightWaterFrame({
-      waterWheelRpm: params.waterWheelRpm,
-      totalDraftRatio: params.totalDraftRatio,
-      rollerClampingWeightKg: params.rollerClampingWeightKg,
-      stapleLengthMm: params.stapleLengthMm,
-      inputRovingCountNe: params.inputRovingCountNe,
-    });
-    const wheelWatts = ark.wheelOmegaRadPerS * 14.5;
-    return [
-      { name: "Water Wheel", watts: wheelWatts, tone: "in" },
-      { name: "Flyer Spindles", watts: wheelWatts * 0.78, tone: "useful" },
-      { name: "Draft Roller Friction", watts: wheelWatts * 0.22, tone: "loss" },
-    ];
-  }
+  if (patentId === "gb-931-arkwright-water-frame") return [];
 
-  if (patentId === "gb-1306-watt-rotary-engine") {
-    const wattRot = stepWattRotaryEngine(readWattRotaryControls(params));
-    const indicatedW = wattRot.indicatedPowerKw * 1000;
-    const boilerHeatW = indicatedW / 0.15;
-    return [
-      { name: "Boiler Enthalpy", watts: boilerHeatW, tone: "in" },
-      { name: "Sun & Planet Shaft", watts: indicatedW, tone: "useful" },
-      {
-        name: "Condenser Heat Rejection",
-        watts: Math.max(0, boilerHeatW - indicatedW),
-        tone: "loss",
-      },
-    ];
-  }
+  if (patentId === "gb-1306-watt-rotary-engine") return [];
 
   if (patentId === "gb-1420-cort-puddling-rolling") {
     const cort = stepCortPuddlingRolling({
