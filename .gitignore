@@ -67,6 +67,7 @@ artifacts/deploy-sweeps/
 artifacts/test-tmp/
 artifacts/*.md
 artifacts/*.json
+tmp
 tmp/
 tsconfig.tsbuildinfo
 .ntm/

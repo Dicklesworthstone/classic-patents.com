@@ -248,10 +248,8 @@ describe("patent E2E scenario contract", () => {
     expect(scenarios.some((scenario) => !scenario.hasEnergyChannels)).toBe(true);
     expect(scenarios.some((scenario) => scenario.controls.length > 0)).toBe(true);
 
-    const renoEscalator = scenarios.find(
-      (scenario) => scenario.patentId === "us-470918-reno-escalator",
-    );
-    expect(renoEscalator?.sourceDecision.figureAttestation).toMatchObject({
+    const gatlingGun = scenarios.find((scenario) => scenario.patentId === "us-36836-gatling-gun");
+    expect(gatlingGun?.sourceDecision.figureAttestation).toMatchObject({
       reviewer: expect.any(String),
       reviewedAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
       acceptanceBasis: expect.any(String),
@@ -259,20 +257,32 @@ describe("patent E2E scenario contract", () => {
       matchesEdition: true,
       matchesLocators: false,
     });
-    expect(renoEscalator?.sourceDecision.figureAttestation?.acceptedOccurrenceCount).toBe(
-      renoEscalator?.sourceDecision.requiredFigureCount,
+    expect(gatlingGun?.sourceDecision.figureAttestation?.acceptedOccurrenceCount).toBe(
+      gatlingGun?.sourceDecision.requiredFigureCount,
     );
-    expect(renoEscalator?.sourceState).toBe("edition");
-    expect(renoEscalator?.sourceReasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
-    expect(renoEscalator?.sourceDecision.acceptedFigureCount).toBe(0);
+    expect(gatlingGun?.sourceState).toBe("edition");
+    expect(gatlingGun?.sourceReasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+    expect(gatlingGun?.sourceDecision.acceptedFigureCount).toBe(0);
     expect(
-      renoEscalator?.sourceDecision.figures.every(
+      gatlingGun?.sourceDecision.figures.every(
         (figure) =>
           figure.status === "pending" &&
           figure.sourcePdfPage === null &&
           figure.sourceRegion === null,
       ),
     ).toBe(true);
+
+    const renoEscalator = scenarios.find(
+      (scenario) => scenario.patentId === "us-470918-reno-escalator",
+    );
+    expect(renoEscalator?.sourceDecision.figureAttestation).toMatchObject({
+      matchesEdition: true,
+      matchesLocators: true,
+    });
+    expect(renoEscalator?.sourceReasonCode).toBe("ACCEPTED");
+    expect(renoEscalator?.sourceDecision.acceptedFigureCount).toBe(
+      renoEscalator?.sourceDecision.requiredFigureCount,
+    );
 
     const teslaMotor = scenarios.find((s) => s.patentId === "us-381968-tesla-motor");
     expect(teslaMotor?.sourceDecision.ledgerContent).toMatchObject({

@@ -3350,6 +3350,66 @@ function ericssonPropellerSourceSheetLocator(
   };
 }
 
+const CRUMP_FDM_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const CRUMP_FDM_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-5121329-crump-fdm.md#complete-source-sheet-acceptance-2026-09-04";
+const CRUMP_FDM_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-5121329-crump-fdm/source-sheet-1-v1.png",
+  2: "/patents/figures/us-5121329-crump-fdm/source-sheet-2-v1.png",
+  3: "/patents/figures/us-5121329-crump-fdm/source-sheet-3-v1.png",
+} as const;
+const CRUMP_FDM_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-1-group-0-inline-1", 1],
+  ["edition-block-1-group-0-inline-3", 2],
+  ["edition-block-1-group-0-inline-5", 2],
+  ["edition-block-1-group-0-inline-7", 3],
+  ["edition-block-1-group-0-inline-9", 3],
+  ["edition-block-1-group-0-inline-11", 2],
+  ["edition-block-1-group-0-inline-13", 2],
+  ["edition-block-1-group-0-inline-15", 2],
+  ["edition-block-1-group-0-inline-17", 3],
+  ["edition-block-1-group-0-inline-19", 3],
+  ["edition-block-1-group-0-inline-21", 2],
+  ["edition-block-1-group-0-inline-23", 3],
+  ["edition-block-2-group-0-inline-5", 1],
+  ["edition-block-3-group-0-inline-1", 1],
+  ["edition-block-3-group-0-inline-3", 2],
+  ["edition-block-4-group-0-inline-1", 2],
+  ["edition-block-4-group-0-inline-3", 3],
+  ["edition-block-5-group-0-inline-1", 3],
+  ["edition-block-5-group-0-inline-3", 2],
+  ["edition-block-6-group-0-inline-1", 2],
+  ["edition-block-6-group-0-inline-3", 3],
+  ["edition-block-6-group-0-inline-5", 2],
+  ["edition-block-6-group-0-inline-7", 2],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof CRUMP_FDM_SOURCE_SHEET_ASSETS,
+])[];
+
+function crumpFdmSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof CRUMP_FDM_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: CRUMP_FDM_SOURCE_SHEET_RASTER.width,
+    height: CRUMP_FDM_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: CRUMP_FDM_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage: sourcePdfPage + 1,
+    sourceRaster: CRUMP_FDM_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, CRUMP_FDM_SOURCE_SHEET_RASTER),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: CRUMP_FDM_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
 const DE_FOREST_AUDION_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
 const DE_FOREST_AUDION_EVIDENCE_REFERENCE =
   "docs/provenance/us-879532-de-forest-audion.md#source-sheet-acceptance-2026-09-03";
@@ -5502,6 +5562,10 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
   "us-588-ericsson-propeller": ERICSSON_PROPELLER_SOURCE_SHEET_OCCURRENCES.map(
     ([occurrenceKey, sourcePdfPage]) =>
       ericssonPropellerSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-5121329-crump-fdm": CRUMP_FDM_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourceSheetNumber]) =>
+      crumpFdmSourceSheetLocator(occurrenceKey, sourceSheetNumber),
   ),
   "us-6594844-roomba": [
     roombaSourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-1" }),

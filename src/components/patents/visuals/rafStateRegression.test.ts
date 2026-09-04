@@ -4,7 +4,6 @@ import { join } from "node:path";
 
 const SNAPSHOT_CONTRACTS = [
   ["DavenportMotorSim.tsx", "rotorAngleRef", "setRotorAngleDeg"],
-  ["McCormickReaperSim.tsx", "phaseRef", "setPhase"],
   ["PasteurFermentationSim.tsx", "timerSecondsRef", "setTimerSeconds"],
   ["RenoEscalatorSim.tsx", "treadOffsetRef", "setTreadOffset"],
   ["StackhouseManipulatorSim.tsx", "animTimeRef", "setAnimTime"],
@@ -81,6 +80,14 @@ describe("2D rAF presentation ownership", () => {
 
     expect(source).toContain('useFrankenSimPhysics("us-x72-whitney-cotton-gin"');
     expect(source).toContain("getWhitneyTapeFrame()");
+    expect(source).not.toContain("requestAnimationFrame");
+  });
+
+  test("keeps McCormick Reaper on the route-level owner without a private rAF loop", () => {
+    const source = sourceFor("McCormickReaperSim.tsx");
+
+    expect(source).toContain('useFrankenSimPhysics("us-x8277-mccormick-reaper"');
+    expect(source).toContain("getMcCormickTapeFrame()");
     expect(source).not.toContain("requestAnimationFrame");
   });
 

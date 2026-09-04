@@ -24,10 +24,10 @@ describe("Publication Approval State Machine", () => {
   });
 
   it("withholds a crop-attested edition until every occurrence has a source locator", () => {
-    const renoEscalator = allPatents.find((p) => p.id === "us-470918-reno-escalator");
-    if (!renoEscalator) throw new Error("Reno escalator patent not found");
+    const gatling = allPatents.find((p) => p.id === "us-36836-gatling-gun");
+    if (!gatling) throw new Error("Gatling gun patent not found");
 
-    const decision = evaluateArchivalPublicationState(renoEscalator);
+    const decision = evaluateArchivalPublicationState(gatling);
     expect(decision.status).toBe("withheld-pending-review");
     expect(decision.isPublished).toBe(false);
     expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
