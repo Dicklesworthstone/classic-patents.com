@@ -572,6 +572,69 @@ const PELTON_WATER_WHEEL_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
 const PELTON_WATER_WHEEL_EVIDENCE_REFERENCE =
   "docs/provenance/us-233692-pelton-water-wheel.md#source-sheet-acceptance-2026-09-03";
 
+const LINDE_AIR_LIQUEFACTION_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const LINDE_AIR_LIQUEFACTION_EVIDENCE_REFERENCE =
+  "docs/provenance/us-727650-linde-air-liquefaction.md#source-sheet-acceptance-2026-09-03";
+
+const EDISON_INDICATOR_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const EDISON_INDICATOR_EVIDENCE_REFERENCE =
+  "docs/provenance/us-307031-edison-indicator.md#facsimile-map-and-comparison-record";
+
+function edisonIndicatorSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: EDISON_INDICATOR_SOURCE_RASTER.width,
+    height: EDISON_INDICATOR_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-307031-edison-indicator/source-sheet-1-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: EDISON_INDICATOR_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      EDISON_INDICATOR_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (Codex); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: EDISON_INDICATOR_EVIDENCE_REFERENCE,
+  };
+}
+
+/**
+ * The sole apparatus diagram is one continuous, interconnected drawing. The
+ * active preview preserves its complete upright primary sheet rather than
+ * claiming an isolated crop while cutting off the G³ separation branch.
+ */
+function lindeAirLiquefactionSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: LINDE_AIR_LIQUEFACTION_SOURCE_RASTER.width,
+    height: LINDE_AIR_LIQUEFACTION_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-727650-linde-air-liquefaction/source-sheet-1-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: LINDE_AIR_LIQUEFACTION_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      LINDE_AIR_LIQUEFACTION_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: LINDE_AIR_LIQUEFACTION_EVIDENCE_REFERENCE,
+  };
+}
+
 /**
  * The page-one drawing sheet interleaves all four figures with title and
  * execution furniture. The active preview deliberately keeps its full,
@@ -627,6 +690,161 @@ function sundbackZipperSourceSheetLocator(args: {
     reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
     reviewedAt: "2026-09-03",
     evidenceReference: SUNDBACK_ZIPPER_EVIDENCE_REFERENCE,
+  };
+}
+
+const ROOMBA_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const ROOMBA_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-6594844-roomba.md#source-sheet-acceptance-2026-09-03";
+
+/**
+ * The three early Roomba views share one printed source sheet. The active
+ * preview retains that exact upright sheet rather than relying on the prior
+ * misplaced crops, which show later drawings from different sheets.
+ */
+function roombaSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: ROOMBA_SOURCE_SHEET_RASTER.width,
+    height: ROOMBA_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-6594844-roomba/source-sheet-1-v1.png",
+    sourcePdfPage: 2,
+    sourceRaster: ROOMBA_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, ROOMBA_SOURCE_SHEET_RASTER),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: ROOMBA_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const CORLISS_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const CORLISS_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-6162-corliss-steam-engine.md#source-sheet-acceptance-2026-09-03";
+const CORLISS_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-6162-corliss-steam-engine/source-sheet-1-v1.png",
+  2: "/patents/figures/us-6162-corliss-steam-engine/source-sheet-2-v1.png",
+  3: "/patents/figures/us-6162-corliss-steam-engine/source-sheet-3-v1.png",
+  4: "/patents/figures/us-6162-corliss-steam-engine/source-sheet-4-v1.png",
+} as const;
+
+/**
+ * Each active Corliss citation uses the entire directly rendered drawing sheet
+ * containing its printed figure label. This preserves the source geometry and
+ * sheet furniture instead of relying on any legacy crop boundary.
+ */
+function corlissSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  sourcePdfPage: keyof typeof CORLISS_SOURCE_SHEET_ASSETS;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: CORLISS_SOURCE_SHEET_RASTER.width,
+    height: CORLISS_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: CORLISS_SOURCE_SHEET_ASSETS[args.sourcePdfPage],
+    sourceRaster: CORLISS_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, CORLISS_SOURCE_SHEET_RASTER),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: CORLISS_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const MESTRAL_VELCRO_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const MESTRAL_VELCRO_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-2717437-mestral-velcro.md#source-sheet-acceptance-2026-09-03";
+
+function mestralVelcroSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: MESTRAL_VELCRO_SOURCE_SHEET_RASTER.width,
+    height: MESTRAL_VELCRO_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: MESTRAL_VELCRO_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      MESTRAL_VELCRO_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: MESTRAL_VELCRO_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const LINCOLN_BUOY_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const LINCOLN_BUOY_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-6469-lincoln-buoy.md#source-sheet-acceptance-2026-09-03";
+
+function lincolnBuoySourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: LINCOLN_BUOY_SOURCE_SHEET_RASTER.width,
+    height: LINCOLN_BUOY_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: LINCOLN_BUOY_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      LINCOLN_BUOY_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: LINCOLN_BUOY_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const HALL_ALUMINIUM_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const HALL_ALUMINIUM_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-400766-hall-aluminium.md#source-sheet-acceptance-2026-09-03";
+
+function hallAluminiumSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: HALL_ALUMINIUM_SOURCE_SHEET_RASTER.width,
+    height: HALL_ALUMINIUM_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-400766-hall-aluminium/source-sheet-1-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: HALL_ALUMINIUM_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      HALL_ALUMINIUM_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: HALL_ALUMINIUM_SOURCE_SHEET_EVIDENCE_REFERENCE,
   };
 }
 
@@ -909,6 +1127,37 @@ function edisonPhonographSourceSheetLocator(args: {
   };
 }
 
+const OTIS_ELEVATOR_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const OTIS_ELEVATOR_EVIDENCE_REFERENCE =
+  "docs/provenance/us-31128-otis-elevator.md#source-sheet-acceptance-2026-09-03";
+
+/**
+ * Figs. 1–3 share Otis's sole historic drawing sheet. Each active citation
+ * intentionally names the intact sheet, retaining its printed identity,
+ * all related figures, witnesses, and inventor signature.
+ */
+function otisElevatorSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: OTIS_ELEVATOR_SOURCE_RASTER.width,
+    height: OTIS_ELEVATOR_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: "/patents/figures/us-31128-otis-elevator/source-sheet-1-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: OTIS_ELEVATOR_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, OTIS_ELEVATOR_SOURCE_RASTER),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: OTIS_ELEVATOR_EVIDENCE_REFERENCE,
+  };
+}
+
 const MAXIM_MACHINE_GUN_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
 const MAXIM_MACHINE_GUN_EVIDENCE_REFERENCE =
   "docs/provenance/us-319596-maxim-machine-gun.md#source-sheet-acceptance-2026-09-03";
@@ -1001,10 +1250,7 @@ function parsonsTurbineSourceSheetLocator(args: {
     activeAsset: `/patents/figures/us-608969-parsons-turbine/source-sheet-${args.sourcePdfPage}-v1.png`,
     sourceRaster: PARSONS_TURBINE_SOURCE_RASTER,
     sourceRectPixels,
-    normalizedSourceRect: normalizeSourceRectangle(
-      sourceRectPixels,
-      PARSONS_TURBINE_SOURCE_RASTER,
-    ),
+    normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, PARSONS_TURBINE_SOURCE_RASTER),
     reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
     reviewedAt: "2026-09-03",
     evidenceReference: PARSONS_TURBINE_EVIDENCE_REFERENCE,
@@ -2391,6 +2637,14 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
     deForestAudionSourceSheetLocator({ occurrenceKey: "edition-block-9-group-0-inline-3" }),
     deForestAudionSourceSheetLocator({ occurrenceKey: "edition-block-9-group-0-inline-5" }),
   ],
+  "us-307031-edison-indicator": [
+    edisonIndicatorSourceSheetLocator({ occurrenceKey: "edition-block-5-group-0-inline-1" }),
+    edisonIndicatorSourceSheetLocator({ occurrenceKey: "edition-block-5-group-0-inline-3" }),
+    edisonIndicatorSourceSheetLocator({ occurrenceKey: "edition-block-5-group-0-inline-5" }),
+    edisonIndicatorSourceSheetLocator({ occurrenceKey: "edition-block-5-group-0-inline-7" }),
+    edisonIndicatorSourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-1" }),
+    edisonIndicatorSourceSheetLocator({ occurrenceKey: "edition-block-9-group-0-inline-1" }),
+  ],
   "us-157124-glidden-barbed-wire": [
     gliddenBarbedWireSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-1" }),
     gliddenBarbedWireSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-2" }),
@@ -2435,6 +2689,79 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
     peltonWaterWheelSourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-3" }),
     peltonWaterWheelSourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-5" }),
     peltonWaterWheelSourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-7" }),
+  ],
+  "us-2717437-mestral-velcro": [
+    mestralVelcroSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-0" }),
+    mestralVelcroSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-2" }),
+    mestralVelcroSourceSheetLocator({ occurrenceKey: "edition-block-6-group-0-inline-1" }),
+    mestralVelcroSourceSheetLocator({ occurrenceKey: "edition-block-6-group-0-inline-3" }),
+    mestralVelcroSourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-1" }),
+    mestralVelcroSourceSheetLocator({ occurrenceKey: "edition-block-11-group-0-inline-1" }),
+    mestralVelcroSourceSheetLocator({ occurrenceKey: "edition-block-11-group-0-inline-5" }),
+    mestralVelcroSourceSheetLocator({ occurrenceKey: "edition-block-13-group-0-inline-1" }),
+    mestralVelcroSourceSheetLocator({ occurrenceKey: "edition-block-13-group-0-inline-3" }),
+    mestralVelcroSourceSheetLocator({ occurrenceKey: "edition-block-16-group-0-inline-1" }),
+    mestralVelcroSourceSheetLocator({ occurrenceKey: "edition-block-16-group-0-inline-3" }),
+  ],
+  "us-6469-lincoln-buoy": [
+    lincolnBuoySourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-0" }),
+    lincolnBuoySourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-2" }),
+    lincolnBuoySourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-4" }),
+    lincolnBuoySourceSheetLocator({ occurrenceKey: "edition-block-9-group-0-inline-1" }),
+    lincolnBuoySourceSheetLocator({ occurrenceKey: "edition-block-10-group-0-inline-1" }),
+    lincolnBuoySourceSheetLocator({ occurrenceKey: "edition-block-11-group-0-inline-1" }),
+    lincolnBuoySourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-1" }),
+    lincolnBuoySourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-3" }),
+    lincolnBuoySourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-5" }),
+    lincolnBuoySourceSheetLocator({ occurrenceKey: "edition-block-13-group-0-inline-1" }),
+  ],
+  "us-400766-hall-aluminium": [
+    hallAluminiumSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-1" }),
+    hallAluminiumSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-3" }),
+    hallAluminiumSourceSheetLocator({ occurrenceKey: "edition-block-4-group-0-inline-1" }),
+    hallAluminiumSourceSheetLocator({ occurrenceKey: "edition-block-4-group-0-inline-3" }),
+    hallAluminiumSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-1" }),
+    hallAluminiumSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-3" }),
+  ],
+  "us-6594844-roomba": [
+    roombaSourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-1" }),
+    roombaSourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-3" }),
+    roombaSourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-5" }),
+    roombaSourceSheetLocator({ occurrenceKey: "edition-block-16-group-0-inline-1" }),
+  ],
+  "us-6162-corliss-steam-engine": [
+    corlissSourceSheetLocator({
+      occurrenceKey: "edition-block-7-group-0-inline-0",
+      sourcePdfPage: 1,
+    }),
+    corlissSourceSheetLocator({
+      occurrenceKey: "edition-block-7-group-0-inline-2",
+      sourcePdfPage: 2,
+    }),
+    corlissSourceSheetLocator({
+      occurrenceKey: "edition-block-7-group-0-inline-4",
+      sourcePdfPage: 3,
+    }),
+    corlissSourceSheetLocator({
+      occurrenceKey: "edition-block-7-group-0-inline-6",
+      sourcePdfPage: 4,
+    }),
+    corlissSourceSheetLocator({
+      occurrenceKey: "edition-block-7-group-0-inline-8",
+      sourcePdfPage: 4,
+    }),
+    corlissSourceSheetLocator({
+      occurrenceKey: "edition-block-7-group-0-inline-10",
+      sourcePdfPage: 3,
+    }),
+    corlissSourceSheetLocator({
+      occurrenceKey: "edition-block-20-group-0-inline-1",
+      sourcePdfPage: 4,
+    }),
+  ],
+  "us-727650-linde-air-liquefaction": [
+    lindeAirLiquefactionSourceSheetLocator({ occurrenceKey: "edition-block-1-group-0-inline-1" }),
+    lindeAirLiquefactionSourceSheetLocator({ occurrenceKey: "edition-block-8-group-0-inline-1" }),
   ],
   "us-1781541-einstein-refrigerator": [
     einsteinRefrigeratorSourceSheetLocator({ occurrenceKey: "edition-block-2-group-0-inline-1" }),
@@ -2582,6 +2909,16 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
     edisonPhonographSourceSheetLocator({ occurrenceKey: "edition-block-9-group-0-inline-3" }),
     edisonPhonographSourceSheetLocator({ occurrenceKey: "edition-block-26-group-0-inline-5" }),
     edisonPhonographSourceSheetLocator({ occurrenceKey: "edition-block-26-group-0-inline-7" }),
+  ],
+  "us-31128-otis-elevator": [
+    otisElevatorSourceSheetLocator({ occurrenceKey: "edition-block-3-group-0-inline-0" }),
+    otisElevatorSourceSheetLocator({ occurrenceKey: "edition-block-3-group-0-inline-2" }),
+    otisElevatorSourceSheetLocator({ occurrenceKey: "edition-block-3-group-0-inline-4" }),
+    otisElevatorSourceSheetLocator({ occurrenceKey: "edition-block-3-group-0-inline-6" }),
+    otisElevatorSourceSheetLocator({ occurrenceKey: "edition-block-7-group-0-inline-1" }),
+    otisElevatorSourceSheetLocator({ occurrenceKey: "edition-block-9-group-0-inline-1" }),
+    otisElevatorSourceSheetLocator({ occurrenceKey: "edition-block-13-group-0-inline-1" }),
+    otisElevatorSourceSheetLocator({ occurrenceKey: "edition-block-27-group-0-inline-1" }),
   ],
   "us-319596-maxim-machine-gun": [
     maximMachineGunSourceSheetLocator({

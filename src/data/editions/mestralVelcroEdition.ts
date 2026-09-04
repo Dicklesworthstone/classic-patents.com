@@ -16,16 +16,16 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   text: value,
   definition,
 });
-const crop = (file: string, width: number, height: number, label: string) => ({
-  src: `/patents/figures/us-2717437-mestral-velcro/${file}.png`,
-  alt: `Source-facsimile crop of ${label} from US 2,717,437.`,
-  width,
-  height,
+const sourceSheetPreview = (label: string) => ({
+  src: "/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png",
+  alt: `Complete unmodified source drawing sheet 1 of 1, containing ${label}, from US 2,717,437.`,
+  width: 2320,
+  height: 3408,
 });
 
 const FIGURES = {
-  "Fig. 1": [crop("fig-1-source-crop-v1", 640, 310, "Fig. 1")],
-  "Fig. 2": [crop("fig-2-source-crop-v1", 580, 280, "Fig. 2")],
+  "Fig. 1": [sourceSheetPreview("Fig. 1")],
+  "Fig. 2": [sourceSheetPreview("Fig. 2")],
 };
 
 const figure = (

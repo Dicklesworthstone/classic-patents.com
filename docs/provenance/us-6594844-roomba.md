@@ -61,9 +61,26 @@ The pinned PDF is the facsimile. The reviewed ledger is
 blocks are the sole literal source used by `src/data/patents/roomba.ts`.
 
 Existing figure files are preserved under
-`public/patents/figures/us-6594844-roomba/`. Only the three existing source
-previews are referenced by the current edition; the remaining printed figure
-occurrences require bounded cloud Luna visual review and upright isolated crops
-before this record can be independently accepted for publication. No local OCR,
-PDF rendering, or crop generation was run for this repair. Existing ledger text
-and source previews remain research evidence until that visual closure is complete.
+`public/patents/figures/us-6594844-roomba/`, including the three earlier
+`fig-*-source-crop-v1.png` candidates. The visitor-facing edition now cites the
+unmodified source sheet documented below. The ledger remains comparison evidence;
+the continuous manual edition remains the visitor-facing source face.
+
+## Source-sheet acceptance (2026-09-03)
+
+The four active figure citations (FIGS. 1, 2, and 3 in the brief-description
+paragraph, plus the later FIG. 1 citation) use
+`public/patents/figures/us-6594844-roomba/source-sheet-1-v1.png`. This is the
+complete, upright first drawing sheet: PDF page 2, rendered directly at 300 DPI
+to 2320 x 3408 pixels. It retains the printed header, all three labelled views,
+and the surrounding primary-source furniture; no crop boundary, masking,
+reconstruction, compositing, or OCR was used.
+
+The active PNG SHA-256 is
+`94e6a12462932936aee2df4b36939da798c1ac878058111621758a0ba7bc627b`.
+An independent fresh 300-DPI render of pinned PDF page 2 compared with this
+active asset at absolute error 0. The prior `fig-1`, `fig-2`, and `fig-3`
+candidates are deliberately preserved but no longer cited: visual inspection
+showed that they depict later-sheet figures rather than the cited FIGS. 1-3.
+This internal acceptance evidence never changes whether a visitor can read the
+complete source text.

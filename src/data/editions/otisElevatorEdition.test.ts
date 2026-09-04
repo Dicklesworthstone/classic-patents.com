@@ -1,9 +1,18 @@
 import { describe, expect, test } from "bun:test";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { evaluateArchivalPublicationState } from "@/data/editions/publicationApproval";
 import { parsePatentCatalog } from "@/data/patents/schema";
+import type { CuratedSpecificationInline } from "@/types/patent";
 import { otisElevatorPatent } from "../patents/otis-elevator";
 import { otisElevatorArchivalEdition } from "./otisElevatorEdition";
 import { otisElevatorParallelReadings } from "./otisElevatorParallelReading";
+
+const isFigureReference = (
+  inline: CuratedSpecificationInline,
+): inline is Extract<CuratedSpecificationInline, { kind: "reference" }> =>
+  inline.kind === "reference" && inline.referenceType === "figure";
 
 describe("otisElevatorArchivalEdition", () => {
   test("pins the reviewed facsimile and presents all four printed claims", () => {
@@ -21,22 +30,35 @@ describe("otisElevatorArchivalEdition", () => {
     ).toEqual([1, 2, 3, 4]);
   });
 
-  test("gives every descriptive paragraph a substantial authored companion and every figure a local crop", () => {
+  test("gives every descriptive paragraph a substantial authored companion and every figure an exact full source sheet", () => {
+    const expectedSourceSheet = "/patents/figures/us-31128-otis-elevator/source-sheet-1-v1.png";
+    const figureReferences = otisElevatorArchivalEdition.blocks.flatMap((block) => {
+      if (block.kind === "figure-sheet") return block.description.filter(isFigureReference);
+      return "inlines" in block ? block.inlines.filter(isFigureReference) : [];
+    });
+
     for (const [index, block] of otisElevatorArchivalEdition.blocks.entries()) {
       if (block.kind === "paragraph" && otisElevatorParallelReadings[index]) {
         expect(otisElevatorParallelReadings[index]?.join(" ").trim().length).toBeGreaterThan(20);
       }
-      if (block.kind !== "paragraph") continue;
-      for (const inline of block.inlines) {
-        if (inline.kind !== "reference" || inline.referenceType !== "figure") continue;
-        expect(inline.figurePreviews?.[0]?.src).toStartWith(
-          "/patents/figures/us-31128-otis-elevator/",
-        );
-      }
     }
+
+    for (const inline of figureReferences) {
+      expect(inline.figurePreviews).toEqual([
+        expect.objectContaining({
+          src: expectedSourceSheet,
+          width: 2320,
+          height: 3408,
+          alt: expect.stringContaining("Complete unmodified source drawing sheet 1"),
+        }),
+      ]);
+    }
+
+    expect(figureReferences).toHaveLength(8);
+    expect(existsSync(resolve(process.cwd(), `public${expectedSourceSheet}`))).toBe(true);
   });
 
-  test("uses the tightly framed, upright source crop for the detached Fig. 3 stop mechanism", () => {
+  test("keeps Fig. 3 on the complete sheet that preserves its relation to Figs. 1 and 2", () => {
     const fig3 = otisElevatorArchivalEdition.blocks
       .flatMap((block) =>
         block.kind === "paragraph"
@@ -55,11 +77,32 @@ describe("otisElevatorArchivalEdition", () => {
 
     expect(fig3.figurePreviews).toEqual([
       expect.objectContaining({
-        src: "/patents/figures/us-31128-otis-elevator/figure-3-oriented-cw-v3.png",
-        width: 160,
-        height: 1300,
+        src: "/patents/figures/us-31128-otis-elevator/source-sheet-1-v1.png",
+        width: 2320,
+        height: 3408,
       }),
     ]);
+  });
+
+  test("preserves all prior Otis crops as legacy research assets", () => {
+    const legacyAssets = [
+      "figure-1-oriented-cw.png",
+      "figure-1.png",
+      "figure-2-oriented-cw.png",
+      "figure-2.png",
+      "figure-3-oriented-cw-v2.png",
+      "figure-3-oriented-cw-v3.png",
+      "figure-3-oriented-cw.png",
+      "figure-3.png",
+    ];
+
+    for (const filename of legacyAssets) {
+      expect(
+        existsSync(
+          resolve(process.cwd(), "public/patents/figures/us-31128-otis-elevator", filename),
+        ),
+      ).toBe(true);
+    }
   });
 
   test("keeps the catalogue record in parity with the four-claim source edition", () => {
@@ -115,12 +158,23 @@ describe("otisElevatorArchivalEdition", () => {
     expect(parsePatentCatalog([otisElevatorPatent])).toHaveLength(1);
   });
 
-  test("enforces figure acceptance pending hold while ledger is verified", () => {
-    const { evaluateArchivalPublicationState } = require("./publicationApproval");
+  test("accepts all eight source citations against full-sheet source-pixel evidence", () => {
     const decision = evaluateArchivalPublicationState(otisElevatorPatent);
-    expect(decision.isPublished).toBe(false);
-    expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
     expect(decision.state.evidence.ledgerContent.valid).toBe(true);
     expect(decision.state.evidence.ledgerContent.status).toBe("verified");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 8,
+      acceptedFigureCount: 8,
+      attestation: {
+        acceptedOccurrenceCount: 8,
+        matchesEdition: true,
+        matchesLocators: true,
+      },
+    });
+    expect(decision.figureManifest.figures.every((figure) => figure.status === "accepted")).toBe(
+      true,
+    );
   });
 });

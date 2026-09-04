@@ -5,16 +5,23 @@ import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { hallAluminiumPatent } from "@/data/patents/hall-aluminium";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
-import type { CuratedSpecificationEdition } from "@/types/patent";
+import type { CuratedSpecificationInline } from "@/types/patent";
 import {
   HALL_ALUMINIUM_PARALLEL_READINGS,
   hallAluminiumArchivalEdition,
   manualHallClaimText,
 } from "./hallAluminiumEdition";
 
+const isFigureReference = (
+  inline: CuratedSpecificationInline,
+): inline is Extract<CuratedSpecificationInline, { kind: "reference" }> =>
+  inline.kind === "reference" && inline.referenceType === "figure";
+
 describe("Charles Martin Hall US 400,766 Archival Edition Contract", () => {
   const rootDir = process.cwd();
   const expectedSha256 = "8a9cda34caaa0426bc62d75ca3910cab636c9f0329cb2f6193019c95c5d94791";
+  const expectedSourceSheetSha256 =
+    "05f64e513dab40fb7d4ba6f21e71fda8ca7b2f3766cb7f56c3b4fc7f0b349cdd";
 
   test("pins the immutable source PDF and matches SHA-256 digest", () => {
     const pdfPath = resolve(rootDir, "public/patents/pdfs/us-400766-hall-aluminium.pdf");
@@ -26,14 +33,11 @@ describe("Charles Martin Hall US 400,766 Archival Edition Contract", () => {
     expect(hallAluminiumArchivalEdition.sourcePdfSha256).toBe(expectedSha256);
   });
 
-  test("publishes the candidate edition and validates its curated structure", () => {
-    const validation = validateCuratedSpecificationEdition(
-      hallAluminiumArchivalEdition as unknown as CuratedSpecificationEdition,
-      { requireCompleteFacsimileReview: false },
-    );
+  test("pins a complete facsimile review and validates its curated structure", () => {
+    const validation = validateCuratedSpecificationEdition(hallAluminiumArchivalEdition);
     expect(validation.valid).toBe(true);
     expect(validation.errors).toEqual([]);
-    expect(hallAluminiumArchivalEdition.completeFacsimileReviewed).toBe(false);
+    expect(hallAluminiumArchivalEdition.completeFacsimileReviewed).toBe(true);
   });
 
   test("keeps every authored source block verbatim in the reviewed transcript ledger", () => {
@@ -54,40 +58,48 @@ describe("Charles Martin Hall US 400,766 Archival Edition Contract", () => {
     }
   });
 
-  test("keeps the held candidate on preserved v1 crops until reviewed replacements exist", () => {
-    const figures = [
-      {
-        path: "public/patents/figures/us-400766-hall-aluminium/fig-1-source-crop-v1.png",
-        width: 1630,
-        height: 1360,
-      },
-      {
-        path: "public/patents/figures/us-400766-hall-aluminium/fig-2-source-crop-v1.png",
-        width: 1500,
-        height: 960,
-      },
+  test("uses one exact full source sheet for all six active citations and preserves legacy crops", () => {
+    const sourceSheet = "/patents/figures/us-400766-hall-aluminium/source-sheet-1-v1.png";
+    const legacyAssets = [
+      "fig-1-source-crop-v1-preview.png",
+      "fig-1-source-crop-v1.png",
+      "fig-2-source-crop-v1-preview.png",
+      "fig-2-source-crop-v1.png",
+      "page-1.png",
+      "page-2.png",
+      "page-3.png",
     ];
 
-    for (const fig of figures) {
-      const fullPath = resolve(rootDir, fig.path);
+    const sourceSheetPath = resolve(rootDir, `public${sourceSheet}`);
+    expect(existsSync(sourceSheetPath)).toBe(true);
+    expect(createHash("sha256").update(readFileSync(sourceSheetPath)).digest("hex")).toBe(
+      expectedSourceSheetSha256,
+    );
+    for (const filename of legacyAssets) {
+      const fullPath = resolve(
+        rootDir,
+        "public/patents/figures/us-400766-hall-aluminium",
+        filename,
+      );
       expect(existsSync(fullPath)).toBe(true);
     }
+
     expect(hallAluminiumPatent.archivalEdition).toBe(hallAluminiumArchivalEdition);
     const figureReferences = hallAluminiumArchivalEdition.blocks.flatMap((block) => {
-      const inlines = block.kind === "paragraph" ? block.inlines : [];
-      return inlines.flatMap((inline) =>
-        inline.kind === "reference" && inline.referenceType === "figure" ? [inline] : [],
-      );
+      if (block.kind === "figure-sheet") return block.description.filter(isFigureReference);
+      return "inlines" in block ? block.inlines.filter(isFigureReference) : [];
     });
-    expect(figureReferences.length).toBeGreaterThan(0);
-    expect(
-      figureReferences.every((reference) =>
-        reference.figurePreviews?.every((preview: { src: string }) =>
-          /-v1\.png$/.test(preview.src),
-        ),
-      ),
-    ).toBe(true);
-    expect(JSON.stringify(hallAluminiumArchivalEdition)).not.toContain("source-crop-v2.png");
+    expect(figureReferences).toHaveLength(6);
+    for (const reference of figureReferences) {
+      expect(reference.figurePreviews).toEqual([
+        expect.objectContaining({
+          src: sourceSheet,
+          width: 2320,
+          height: 3408,
+          alt: expect.stringContaining("Complete unmodified source drawing sheet 1"),
+        }),
+      ]);
+    }
   });
 
   test("confirms reviewed transcript ledger exists and contains page markers", () => {
@@ -165,13 +177,23 @@ describe("Charles Martin Hall US 400,766 Archival Edition Contract", () => {
     }
   });
 
-  test("enforces figure acceptance pending audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(hallAluminiumPatent, {
-      hasCompanionReadings: true,
+  test("presents a complete source edition for central figure-acceptance integration", () => {
+    expect(hallAluminiumPatent.archivalEdition).toBe(hallAluminiumArchivalEdition);
+    expect(hallAluminiumArchivalEdition.completeFacsimileReviewed).toBe(true);
+  });
+
+  test("records complete source-sheet evidence without changing source-reader delivery", () => {
+    const {
+      evaluateArchivalPublicationState,
+      patentForSourceReader,
+    } = require("./publicationApproval");
+    const decision = evaluateArchivalPublicationState(hallAluminiumPatent);
+    expect(decision.state.evidence.figures).toMatchObject({
+      requiredFigureCount: 6,
+      acceptedFigureCount: 6,
     });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("candidate");
-    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+    expect(patentForSourceReader(hallAluminiumPatent).archivalEdition).toBe(
+      hallAluminiumArchivalEdition,
+    );
   });
 });

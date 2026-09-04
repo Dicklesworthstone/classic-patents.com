@@ -3,6 +3,10 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import {
+  completeArchivalEditionForViewer,
+  evaluateArchivalPublicationState,
+} from "@/data/editions/publicationApproval";
 import { lindeAirLiquefactionPatent } from "@/data/patents/linde-air-liquefaction";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import {
@@ -29,35 +33,75 @@ describe("US 727,650 Carl Linde Air Liquefaction manual archival edition", () =>
     ]);
   });
 
-  test("makes the sole apparatus diagrammatic drawing available as a local crop", () => {
-    const references = lindeAirLiquefactionArchivalEdition.blocks.flatMap((block) =>
-      "inlines" in block
-        ? block.inlines.filter(
-            (inline): inline is Extract<(typeof block.inlines)[number], { kind: "reference" }> =>
-              inline.kind === "reference" && inline.referenceType === "figure",
-          )
-        : [],
-    );
-    expect(references).not.toHaveLength(0);
+  test("uses the complete source sheet for every sole-apparatus citation and preserves prior crops", () => {
+    const references = lindeAirLiquefactionArchivalEdition.blocks.flatMap((block) => {
+      const groups =
+        block.kind === "figure-sheet"
+          ? [block.description]
+          : "inlines" in block
+            ? [block.inlines]
+            : [];
+      return groups.flatMap((inlines) =>
+        inlines.flatMap((inline) =>
+          inline.kind === "reference" && inline.referenceType === "figure" ? [inline] : [],
+        ),
+      );
+    });
+    expect(references).toHaveLength(2);
     for (const reference of references) {
-      expect(reference.figurePreviews).toHaveLength(2);
+      expect(reference.figurePreviews).toHaveLength(1);
       for (const preview of reference.figurePreviews ?? []) {
         expect(preview.src).toStartWith("/patents/figures/us-727650-linde-air-liquefaction/");
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
       }
       expect(reference.figurePreviews).toContainEqual({
-        src: "/patents/figures/us-727650-linde-air-liquefaction/fig-1-source-crop-v2.png",
-        alt: "Upright source-facsimile crop of the sole apparatus drawing in US 727,650, excluding the witness and inventor-signature blocks.",
-        width: 1640,
-        height: 1500,
-      });
-      expect(reference.figurePreviews).toContainEqual({
-        src: "/patents/figures/us-727650-linde-air-liquefaction/fig-1-left-pipe-source-crop-v2.png",
-        alt: "Upright source-facsimile detail preserving the left-hand pipe and flow arrow cropped from the main US 727,650 apparatus preview.",
-        width: 360,
-        height: 120,
+        src: "/patents/figures/us-727650-linde-air-liquefaction/source-sheet-1-v1.png",
+        alt: "Complete upright source drawing sheet 1 of 1 for US 727,650, including the interconnected apparatus, title, and execution furniture.",
+        width: 2320,
+        height: 3408,
       });
     }
+    expect(
+      createHash("sha256")
+        .update(
+          readFileSync(
+            resolve(
+              process.cwd(),
+              "public/patents/figures/us-727650-linde-air-liquefaction/source-sheet-1-v1.png",
+            ),
+          ),
+        )
+        .digest("hex"),
+    ).toBe("842b7ff51fe93dcf058c0fc837164c7dfa246074389c6ea04ecfbe7b5e24da47");
+    for (const preservedLegacyCrop of [
+      "fig-1-source-crop-v1.png",
+      "fig-1-source-crop-v2.png",
+      "fig-1-left-pipe-source-crop-v2.png",
+    ]) {
+      expect(
+        existsSync(
+          resolve(
+            process.cwd(),
+            "public/patents/figures/us-727650-linde-air-liquefaction",
+            preservedLegacyCrop,
+          ),
+        ),
+      ).toBe(true);
+    }
+  });
+
+  test("accepts both source-sheet citations while the complete-text reader remains independent", () => {
+    const decision = evaluateArchivalPublicationState(lindeAirLiquefactionPatent);
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 2,
+      acceptedFigureCount: 2,
+    });
+    expect(decision.figureManifest.figures.every((figure) => figure.status === "accepted")).toBe(
+      true,
+    );
+    expect(completeArchivalEditionForViewer(lindeAirLiquefactionPatent, decision)).toBe(
+      lindeAirLiquefactionArchivalEdition,
+    );
   });
 
   test("pairs every prose paragraph with an authored parallel reading", () => {

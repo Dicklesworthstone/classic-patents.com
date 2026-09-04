@@ -15,11 +15,7 @@ const sourceSheetPreview = (sheet: 1 | 2 | 3, figure: string, description: strin
 
 const PREVIEWS = {
   1: sourceSheetPreview(1, "Fig. 1", "eight marine turbines coupled to four screw-shafts"),
-  2: sourceSheetPreview(
-    2,
-    "Fig. 2",
-    "four main turbines and reversing turbines for a fast vessel",
-  ),
+  2: sourceSheetPreview(2, "Fig. 2", "four main turbines and reversing turbines for a fast vessel"),
   3: sourceSheetPreview(3, "Fig. 3", "six turbines coupled to three screw-shafts"),
 } as const;
 

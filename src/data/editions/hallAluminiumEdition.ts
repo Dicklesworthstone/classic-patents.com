@@ -15,30 +15,26 @@ const term = (
   definition,
 });
 
-const FIGURE_DIMS: Record<number, { width: number; height: number }> = {
-  1: { width: 1630, height: 1360 },
-  2: { width: 1500, height: 960 },
-};
+const HALL_SOURCE_SHEET = "/patents/figures/us-400766-hall-aluminium/source-sheet-1-v1.png";
+
+const sourceSheetPreview = (figure: string, description: string) => ({
+  src: HALL_SOURCE_SHEET,
+  alt: `Complete unmodified source drawing sheet 1 from US 400,766, including ${figure}: ${description}`,
+  width: 2320,
+  height: 3408,
+});
 
 const preview = (
   surfaceText: string,
   figureNumber: number,
-  src: string,
-  alt: string,
+  description: string,
 ): CuratedSpecificationInline => ({
   kind: "reference",
   text: surfaceText,
   href: `#figure-${figureNumber}`,
   referenceType: "figure",
-  label: alt,
-  figurePreviews: [
-    {
-      src,
-      alt,
-      width: FIGURE_DIMS[figureNumber]?.width ?? 1600,
-      height: FIGURE_DIMS[figureNumber]?.height ?? 1200,
-    },
-  ],
+  label: `Open the complete source drawing sheet containing ${surfaceText} from US 400,766`,
+  figurePreviews: [sourceSheetPreview(surfaceText, description)],
 });
 
 const p = (
@@ -52,24 +48,15 @@ const p = (
 });
 
 /**
- * Candidate-only source edition. It remains structurally typed but is
- * deliberately not publishable while independently accepted replacement
- * facsimile crops are absent. References stay on the preserved v1 research
- * assets instead of advertising planned files that do not exist.
+ * Manual continuous edition reviewed against all three sheets of the pinned
+ * facsimile. Every active figure citation retains its intact drawing sheet.
  */
-type HallAluminiumEditionCandidate = Omit<
-  CuratedSpecificationEdition,
-  "completeFacsimileReviewed"
-> & {
-  completeFacsimileReviewed: false;
-};
-
-export const hallAluminiumArchivalEdition: HallAluminiumEditionCandidate = {
+export const hallAluminiumArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "8a9cda34caaa0426bc62d75ca3910cab636c9f0329cb2f6193019c95c5d94791",
-  preparedBy: "Classic Patents editorial agent (GPT-5.6 Luna)",
-  preparedAt: "2026-08-21",
-  completeFacsimileReviewed: false,
+  preparedBy: "Classic Patents editorial agent (GPT-5.6); direct source-sheet review",
+  preparedAt: "2026-09-03",
+  completeFacsimileReviewed: true,
   blocks: [
     {
       kind: "masthead",
@@ -87,19 +74,9 @@ export const hallAluminiumArchivalEdition: HallAluminiumEditionCandidate = {
       title: "Two forms of electrolytic reduction apparatus",
       description: [
         { kind: "text", text: "The sheet prints " },
-        preview(
-          "Fig. 1",
-          1,
-          "/patents/figures/us-400766-hall-aluminium/fig-1-source-crop-v1.png",
-          "Source-facsimile crop for Fig. 1, sectional elevation of Hall's apparatus.",
-        ),
+        preview("Fig. 1", 1, "sectional elevation of Hall's apparatus"),
         { kind: "text", text: ", a sectional elevation, and " },
-        preview(
-          "Fig. 2",
-          2,
-          "/patents/figures/us-400766-hall-aluminium/fig-2-source-crop-v1.png",
-          "Source-facsimile crop for Fig. 2, modified apparatus in elevation and section.",
-        ),
+        preview("Fig. 2", 2, "modified apparatus in elevation and section"),
         {
           kind: "text",
           text: ", a modified form partly in elevation and partly in section. The sheet also prints `Witnesses: GEORGE E. HALL. ROBT. L. FENWICK.` and `Inventor: CHARLES M. HALL.`; an attorney line and handwritten signatures appear beneath the inventor line.",
@@ -126,19 +103,9 @@ export const hallAluminiumArchivalEdition: HallAluminiumEditionCandidate = {
     ),
     p(
       "In the accompanying drawings, forming a part of this specification, ",
-      preview(
-        "Figure 1",
-        1,
-        "/patents/figures/us-400766-hall-aluminium/fig-1-source-crop-v1.png",
-        "Source-facsimile crop for Figure 1, sectional elevation.",
-      ),
+      preview("Figure 1", 1, "sectional elevation"),
       " is a sectional elevation of a form of apparatus applicable in the practice of my invention; and ",
-      preview(
-        "Fig. 2",
-        2,
-        "/patents/figures/us-400766-hall-aluminium/fig-2-source-crop-v1.png",
-        "Source-facsimile crop for Fig. 2, modified apparatus.",
-      ),
+      preview("Fig. 2", 2, "modified apparatus"),
       " is a view, partly in elevation and partly in section, of a modified form of apparatus.",
     ),
     p(
@@ -182,19 +149,9 @@ export const hallAluminiumArchivalEdition: HallAluminiumEditionCandidate = {
     ),
     p(
       "In lieu of the electrode D, as shown in ",
-      preview(
-        "Fig. 1",
-        1,
-        "/patents/figures/us-400766-hall-aluminium/fig-1-source-crop-v1.png",
-        "Source-facsimile crop for Fig. 1, electrode D and carbon-lined crucible.",
-      ),
+      preview("Fig. 1", 1, "electrode D and carbon-lined crucible"),
       ", the carbon lining A′ may be employed as the negative electrode, as shown in ",
-      preview(
-        "Fig. 2",
-        2,
-        "/patents/figures/us-400766-hall-aluminium/fig-2-source-crop-v1.png",
-        "Source-facsimile crop for Fig. 2, carbon lining A-prime as negative electrode.",
-      ),
+      preview("Fig. 2", 2, "carbon lining A-prime as negative electrode"),
       ", the conductor from the negative pole of the electric generator being suitably connected, as shown at N′, to such lining.",
     ),
     p(

@@ -35,8 +35,8 @@ export const baekelandBakelitePatent: Patent = {
     url: "/patents/transcripts/us-942699-baekeland-bakelite-reviewed.txt",
     pageCount: 3,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (MossyCat; cloud-Luna visual review pending)",
-    reviewedAt: "2026-08-21",
+    reviewedBy: "Classic Patents editorial agent (Codex)",
+    reviewedAt: "2026-09-03",
     sourcePdfSha256: "91b63f1cfe7c4a24739ea63c9d45caa8059e74010ae3a2191bed97616a384dc5",
     pageAnchors: [
       {
@@ -135,7 +135,7 @@ export const baekelandBakelitePatent: Patent = {
       isIndependent: true,
       originalText: baekelandClaimText(1),
       plainEnglish:
-        "Covers the fundamental industrial process of producing a hard, compact, insoluble, and infusible synthetic condensation material by reacting a phenolic body with formaldehyde and subsequently applying heat and superatmospheric pressure in a closed vessel.",
+        "Covers the fundamental industrial process of producing a hard, compact, insoluble, and infusible condensation material by reacting a phenolic body with formaldehyde and then hardening the resulting product by the combined action of heat and pressure.",
       keyInnovations: [
         "Two-step reaction converting phenol and formaldehyde into an insoluble solid",
         "Combined application of heat and pressure to harden the condensation product",
@@ -149,7 +149,7 @@ export const baekelandBakelitePatent: Patent = {
       isIndependent: true,
       originalText: baekelandClaimText(2),
       plainEnglish:
-        "Protects the staged manufacturing method comprising reacting a phenolic body with formaldehyde, forming an intermediate fusible resinous reaction product into a desired shape or article, and subsequently hardening the formed article under combined heat and pressure.",
+        "Protects a staged manufacturing method: react a phenolic body with formaldehyde, form an article from the resulting heat-transformable product, then render the article hard, insoluble, and infusible by applying heat and pressure.",
       keyInnovations: [
         "Staged molding process from fusible intermediate to finished shape",
         "Forming an article before heat-and-pressure hardening",
@@ -163,7 +163,7 @@ export const baekelandBakelitePatent: Patent = {
       isIndependent: true,
       originalText: baekelandClaimText(3),
       plainEnglish:
-        "Covers the article-making process wherein aqueous reaction byproduct and solvent water are physically separated from the intermediate condensation product prior to molding and final irreversible cross-linking under elevated temperature and superatmospheric pressure.",
+        "Covers an article-making process that separates water from the reaction product, forms the article from that product, and renders it hard, insoluble, and infusible by applying heat and pressure.",
       keyInnovations: [
         "Explicit phase separation of aqueous byproduct from intermediate resin",
         "Separating water before forming and hardening the article",
@@ -177,7 +177,7 @@ export const baekelandBakelitePatent: Patent = {
       isIndependent: true,
       originalText: baekelandClaimText(4),
       plainEnglish:
-        "Protects compounding the intermediate phenolic condensation product with solid filling materials such as wood flour, mineral fibers, or asbestos, shaping the composite mixture into an article, and curing it to an infusible state using heat and pressure.",
+        "Protects forming an article from the reaction product after it has been compounded with a filling material, then rendering that article hard, insoluble, and infusible by applying heat and pressure.",
       keyInnovations: [
         "Compounding the reaction product with a filling material",
         "Forming a filled article before heat-and-pressure hardening",
@@ -190,7 +190,7 @@ export const baekelandBakelitePatent: Patent = {
       isIndependent: true,
       originalText: baekelandClaimText(5),
       plainEnglish:
-        "Covers accelerating and facilitating the rapid physical phase separation of the aqueous liquid from the reacting mixture of a phenolic body and aqueous formaldehyde by introducing an effective quantity of a water-soluble metallic salt, yielding a distinct, highly concentrated, dehydratable resinous intermediate layer suitable for subsequent pressure molding.",
+        "Covers the method step of causing water to separate from a phenolic-body and aqueous-formaldehyde mixture by adding a water-soluble metallic salt adapted to cause that separation; no later forming or hardening step is required by this claim.",
       keyInnovations: [
         "Separating water from a phenol-formaldehyde mixture",
         "Adding a water-soluble metallic salt to cause separation",

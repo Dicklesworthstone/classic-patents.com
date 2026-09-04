@@ -44,25 +44,16 @@ describe("corlissSteamEngineArchivalEdition", () => {
     }
   });
 
-  test("makes every printed figure group an explicit preview reference", () => {
+  test("maps every printed figure group to its reviewed complete drawing sheet", () => {
     const publicText = JSON.stringify(corlissSteamEngineArchivalEdition.blocks);
-    for (const figure of [1, 2, 3, 4, 5, 6, 7, 8, 9]) {
-      const filename =
-        figure === 1
-          ? "us-6162-corliss-steam-engine-fig-1-source-crop-v2.png"
-          : figure === 3
-            ? "us-6162-corliss-steam-engine-fig-3-source-crop-v2.png"
-            : figure === 6
-              ? "us-6162-corliss-steam-engine-fig-6-source-crop-v2.png"
-              : figure === 9
-                ? "us-6162-corliss-steam-engine-fig-9-source-crop-v2.png"
-                : `us-6162-corliss-steam-engine-fig-${figure}-preview.png`;
+    for (const sheet of [1, 2, 3, 4]) {
+      const filename = `us-6162-corliss-steam-engine/source-sheet-${sheet}-v1.png`;
       expect(publicText).toContain(filename);
       expect(existsSync(resolve(process.cwd(), "public/patents/figures", filename))).toBe(true);
     }
   });
 
-  test("uses the actual upright source detail for Figure 6", () => {
+  test("keeps the Figures 6 and 7 citation on its reviewed complete source sheet", () => {
     const figureSix = corlissSteamEngineArchivalEdition.blocks
       .flatMap((block) => ("inlines" in block ? block.inlines : []))
       .flatMap((inline) =>
@@ -70,18 +61,18 @@ describe("corlissSteamEngineArchivalEdition", () => {
           ? (inline.figurePreviews ?? [])
           : [],
       )
-      .find((preview) => preview.alt === "Figure 6 from US 6,162.");
+      .find((preview) => preview.alt === "Figures 6 and 7 from US 6,162.");
 
     expect(figureSix).toEqual(
       expect.objectContaining({
-        src: "/patents/figures/us-6162-corliss-steam-engine-fig-6-source-crop-v2.png",
-        width: 600,
-        height: 650,
+        src: "/patents/figures/us-6162-corliss-steam-engine/source-sheet-3-v1.png",
+        width: 2320,
+        height: 3408,
       }),
     );
   });
 
-  test("uses upright exact source crops for Figures 1 and 9", () => {
+  test("keeps the Figures 1 and 8–9 citations on their reviewed complete source sheets", () => {
     const previews = corlissSteamEngineArchivalEdition.blocks
       .flatMap((block) => ("inlines" in block ? block.inlines : []))
       .flatMap((inline) =>
@@ -92,16 +83,16 @@ describe("corlissSteamEngineArchivalEdition", () => {
 
     expect(previews.find((preview) => preview.alt === "Figure 1 from US 6,162.")).toEqual(
       expect.objectContaining({
-        src: "/patents/figures/us-6162-corliss-steam-engine-fig-1-source-crop-v2.png",
-        width: 1400,
-        height: 1043,
+        src: "/patents/figures/us-6162-corliss-steam-engine/source-sheet-1-v1.png",
+        width: 2320,
+        height: 3408,
       }),
     );
-    expect(previews.find((preview) => preview.alt === "Figure 9 from US 6,162.")).toEqual(
+    expect(previews.find((preview) => preview.alt === "Figures 8 and 9 from US 6,162.")).toEqual(
       expect.objectContaining({
-        src: "/patents/figures/us-6162-corliss-steam-engine-fig-9-source-crop-v2.png",
-        width: 1370,
-        height: 520,
+        src: "/patents/figures/us-6162-corliss-steam-engine/source-sheet-4-v1.png",
+        width: 2320,
+        height: 3408,
       }),
     );
   });

@@ -30,6 +30,20 @@ export interface ArchivalFigureAcceptanceAttestation {
 export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
   Record<string, ArchivalFigureAcceptanceAttestation>
 > = {
+  "us-307031-edison-indicator": {
+    sourcePdfSha256: "f36bc6aa879d42a3f495a9bda05871bb6181aa1979e6baa03b258c42d6a30c13",
+    reviewer: "Classic Patents editorial agent (Codex); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 6,
+    assets: {
+      "/patents/figures/us-307031-edison-indicator/source-sheet-1-v1.png": {
+        sha256: "7ef74804b41430a48c6645b90857714e4ee532ba96b3e1cd5936329c28087344",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
   "us-233692-pelton-water-wheel": {
     sourcePdfSha256: "b81019c0239af3ab932bd477970c1a414a91f765a68b28f9b22444e4f95c597c",
     reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
@@ -53,6 +67,20 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
     assets: {
       "/patents/figures/us-1219881-sundback-zipper/source-sheet-1-v1.png": {
         sha256: "d2c2c475fb2fe63d493c6cb15377af95b8b4fcbc0f76fa695c98a4c2bde44fc6",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
+  "us-727650-linde-air-liquefaction": {
+    sourcePdfSha256: "6d5423307d5718474ea8dd5891c52bccc6c7df2103a9ed4b9c7298d27f29c776",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 2,
+    assets: {
+      "/patents/figures/us-727650-linde-air-liquefaction/source-sheet-1-v1.png": {
+        sha256: "842b7ff51fe93dcf058c0fc837164c7dfa246074389c6ea04ecfbe7b5e24da47",
         width: 2320,
         height: 3408,
       },
@@ -483,20 +511,15 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
   },
   "us-2717437-mestral-velcro": {
     sourcePdfSha256: "3b55f3a8b19575d9261a48f695368101b229bc505a21ea9c554e09161b7aa91a",
-    reviewer: "Classic Patents editorial agent (Gemini 3.7 Flash)",
-    reviewedAt: "2026-09-01",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "independent-figure-review",
     acceptedOccurrenceCount: 11,
     assets: {
-      "/patents/figures/us-2717437-mestral-velcro/fig-1-source-crop-v1.png": {
-        sha256: "2c0dd89d419911e182a3f8de568e83ebf90cbe5d95378ec3d8b95cc19fa0124d",
-        width: 640,
-        height: 310,
-      },
-      "/patents/figures/us-2717437-mestral-velcro/fig-2-source-crop-v1.png": {
-        sha256: "078c789f815fe686a4fa70255bc56561cae25abd4b8fb72de54c03eeeb486ec2",
-        width: 580,
-        height: 280,
+      "/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png": {
+        sha256: "3836f440a26c7be2257dbf1bd985f775d0c5387fbbda49b30483bdab493c5dd9",
+        width: 2320,
+        height: 3408,
       },
     },
   },
@@ -680,6 +703,20 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
         sha256: "61abd38220e4976dacdcde7d40d39e081dd4e577390262d235f1881dd3c375e8",
         width: 4834,
         height: 7100,
+      },
+    },
+  },
+  "us-31128-otis-elevator": {
+    sourcePdfSha256: "c35eb5c999bc20b015ef0d24a3ffb0f194123d780c8a46fabea7f2d52a355d42",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "direct-facsimile-crop-review",
+    acceptedOccurrenceCount: 8,
+    assets: {
+      "/patents/figures/us-31128-otis-elevator/source-sheet-1-v1.png": {
+        sha256: "4d4d57f705b8eb92b73193c230e18decfb3f8f1d9c576a4d66e7478f777d8a15",
+        width: 2320,
+        height: 3408,
       },
     },
   },
@@ -1901,6 +1938,77 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
         sha256: "1c59f70fc1f3cbea9d1ef4589072e6eef86522bf32b7ad7e11d39cd659597b57",
         width: 2088,
         height: 2930,
+      },
+    },
+  },
+  "us-6469-lincoln-buoy": {
+    sourcePdfSha256: "0663103c4dc8e15ae66d7829ace7916bd4025bd1751afb8710fca8d3fdbf53be",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 10,
+    assets: {
+      "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png": {
+        sha256: "56bd69ba57f894c068b46ac83bb58d251f5c1e853966168bfaf8004638ef6add",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
+  "us-400766-hall-aluminium": {
+    sourcePdfSha256: "8a9cda34caaa0426bc62d75ca3910cab636c9f0329cb2f6193019c95c5d94791",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 6,
+    assets: {
+      "/patents/figures/us-400766-hall-aluminium/source-sheet-1-v1.png": {
+        sha256: "05f64e513dab40fb7d4ba6f21e71fda8ca7b2f3766cb7f56c3b4fc7f0b349cdd",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
+  "us-6594844-roomba": {
+    sourcePdfSha256: "66133fab282d46a32c5e5228d9207bcce1d2b49db90d627325592964fe4d5a3e",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 4,
+    assets: {
+      "/patents/figures/us-6594844-roomba/source-sheet-1-v1.png": {
+        sha256: "94e6a12462932936aee2df4b36939da798c1ac878058111621758a0ba7bc627b",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
+  "us-6162-corliss-steam-engine": {
+    sourcePdfSha256: "22a03c717ed383165143af5aa3b85c8dac0705eaa4cdadcf93130ba28ef76ff5",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 7,
+    assets: {
+      "/patents/figures/us-6162-corliss-steam-engine/source-sheet-1-v1.png": {
+        sha256: "faa48a280c5b0b6fa42bf2f8405e9e8ff2b61fc4a17eecb54563866823453314",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-6162-corliss-steam-engine/source-sheet-2-v1.png": {
+        sha256: "3aefd2beed1a3edf5a28e72f842a65678ae8616f459a66b7bbfc5b0d6087497d",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-6162-corliss-steam-engine/source-sheet-3-v1.png": {
+        sha256: "718dc57628f1822b406ee44bb1f532fc674c920de255f679b415bccd2ec5ac61",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-6162-corliss-steam-engine/source-sheet-4-v1.png": {
+        sha256: "05719997036b5507a4396b1f6e89ea2dd3470d682cfe45c96154ef0c3be40f9f",
+        width: 2320,
+        height: 3408,
       },
     },
   },

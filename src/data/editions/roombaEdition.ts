@@ -16,13 +16,13 @@ const term = (
 });
 
 export const ROOMBA_FIGURE_DIMS: Record<number, { width: number; height: number }> = {
-  1: { width: 1856, height: 2385 },
-  2: { width: 1856, height: 2385 },
-  3: { width: 1856, height: 2385 },
+  1: { width: 2320, height: 3408 },
+  2: { width: 2320, height: 3408 },
+  3: { width: 2320, height: 3408 },
 };
 
-function figureAssetPath(number: number): string {
-  return `/patents/figures/us-6594844-roomba/fig-${number}-source-crop-v1.png`;
+function figureAssetPath(): string {
+  return "/patents/figures/us-6594844-roomba/source-sheet-1-v1.png";
 }
 
 function makePreview(
@@ -37,8 +37,8 @@ function makePreview(
     referenceType: "figure",
     label: altText,
     figurePreviews: figureNumbers.map((num) => ({
-      src: figureAssetPath(num),
-      alt: `Figure ${num}: ${altText}`,
+      src: figureAssetPath(),
+      alt: `Figure ${num}: ${altText}. Complete source drawing sheet 1 of 19.`,
       width: ROOMBA_FIGURE_DIMS[num]?.width ?? 1200,
       height: ROOMBA_FIGURE_DIMS[num]?.height ?? 1600,
     })),

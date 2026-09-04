@@ -218,7 +218,7 @@ export const carrierAirConditionerArchivalEdition: CuratedSpecificationEdition =
     ),
     paragraph(text("Witness my hand this 14th day of September, 1904.")),
     paragraph([{ kind: "small-caps", text: "WILLIS H. CARRIER." }]),
-    paragraph(text("Witnesses: CHAS. W. PARKER, G. B. HORNBECK.")),
+    paragraph(text("Witnesses: CHAS. W. PARKER, C. B. HORNBECK.")),
   ],
 };
 
@@ -264,5 +264,5 @@ export const carrierAirConditionerParallelReadings: Readonly<Record<number, read
     "This is the execution date printed in the grant: September 14, 1904. It is distinct from the September 16 filing date shown in the masthead.",
   ],
   20: ["Willis H. Carrier is the inventor who signs the specification."],
-  21: ["Chas. W. Parker and G. B. Hornbeck are the two printed witnesses."],
+  21: ["Chas. W. Parker and C. B. Hornbeck are the two printed witnesses."],
 };

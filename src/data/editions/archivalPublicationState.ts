@@ -289,11 +289,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "classic-patentscom-6xs",
     "The Figure 3 and Figure 5 source crops require acceptance.",
   ),
-  "us-2929922-townes-laser": auditHold(
-    "AUDIT_FACSIMILE_REVIEW_PENDING",
-    "classic-patentscom-zr3",
-    "The archival packet requires rebuild and re-acceptance.",
-  ),
   "us-2708656-fermi-reactor": auditHold(
     "AUDIT_FULL_SPECIFICATION_PENDING",
     "classic-patentscom-wt9",
@@ -329,16 +324,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "classic-patentscom-owu",
     "The source hold remains in force while the source-bound presentation is repaired.",
   ),
-  "us-942699-baekeland-bakelite": auditHold(
-    "AUDIT_FACSIMILE_REVIEW_PENDING",
-    "classic-patentscom-5wq",
-    "The archival hold requires reconciliation before publication.",
-  ),
-  "us-808897-carrier-air-conditioner": auditHold(
-    "AUDIT_FACSIMILE_REVIEW_PENDING",
-    "classic-patentscom-365",
-    "The source face is held while the mechanism and archival evidence are reconciled.",
-  ),
   "us-706737-fessenden-wireless": auditHold(
     "AUDIT_FACSIMILE_REVIEW_PENDING",
     "classic-patentscom-q5o",
@@ -355,21 +340,11 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "classic-patentscom-a4b",
     "The archival edition remains withheld while source support is repaired.",
   ),
-  "us-608969-parsons-turbine": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-5e8",
-    "Accepted source crops are required before archival release.",
-  ),
   "us-313224-mergenthaler-linotype": auditHold(
     "AUDIT_FULL_SPECIFICATION_PENDING",
     "classic-patentscom-0tl",
     "The archival recovery is incomplete.",
     "source-bounded",
-  ),
-  "us-307031-edison-indicator": auditHold(
-    "AUDIT_FACSIMILE_REVIEW_PENDING",
-    "classic-patentscom-l69",
-    "The original publication hold remains in force.",
   ),
   "us-235199-bell-photophone": auditHold(
     "AUDIT_FIGURE_ACCEPTANCE_PENDING",
@@ -401,11 +376,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "AUDIT_FIGURE_ACCEPTANCE_PENDING",
     "classic-patentscom-l6d",
     "The source face remains withheld pending crop acceptance.",
-  ),
-  "us-6162-corliss-steam-engine": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-efu",
-    "Verified crop acceptance is pending.",
   ),
   "us-4750-howe-sewing-machine": auditHold(
     "AUDIT_FIGURE_ACCEPTANCE_PENDING",
@@ -447,12 +417,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "A primary facsimile has not yet been independently published.",
     "facsimile-only",
   ),
-  "us-727650-linde-air-liquefaction": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-0tc",
-    "The Figure 3 crop requires acceptance.",
-  ),
-
   "us-347140-thomson-welding": auditHold(
     "AUDIT_FACSIMILE_REVIEW_PENDING",
     "classic-patentscom-qm2",
