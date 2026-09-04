@@ -22,6 +22,54 @@ import {
 } from "./makinoScaraModel";
 
 const THREE_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals", "three");
+const COMPACT_PHONE_VIEWPORT = { width: 286, height: 380 };
+const COMPACT_SWEEP_SAFE_ZONE = { minX: -0.86, maxX: 0.86, minY: -0.5, maxY: 0.56 };
+
+function createCompactOverviewCamera() {
+  const cameraView = makinoScaraViewForViewport("overview", COMPACT_PHONE_VIEWPORT.width);
+  const camera = new THREE.PerspectiveCamera(
+    42,
+    COMPACT_PHONE_VIEWPORT.width / COMPACT_PHONE_VIEWPORT.height,
+    0.1,
+    100,
+  );
+  camera.position.fromArray(cameraView.position);
+  camera.lookAt(...cameraView.target);
+  camera.updateProjectionMatrix();
+  camera.updateMatrixWorld(true);
+  return camera;
+}
+
+function isEffectivelyVisible(node: THREE.Object3D) {
+  for (let current: THREE.Object3D | null = node; current; current = current.parent) {
+    if (!current.visible) return false;
+  }
+  return true;
+}
+
+function projectedVisibleGeometryBounds(object: THREE.Object3D, camera: THREE.Camera) {
+  const points: THREE.Vector3[] = [];
+  object.traverse((node) => {
+    if (!isEffectivelyVisible(node) || !(node instanceof THREE.Mesh)) return;
+    const positions = node.geometry.getAttribute("position");
+    if (!positions) return;
+    for (let index = 0; index < positions.count; index += 1) {
+      points.push(
+        new THREE.Vector3()
+          .fromBufferAttribute(positions, index)
+          .applyMatrix4(node.matrixWorld)
+          .project(camera),
+      );
+    }
+  });
+  expect(points.length).toBeGreaterThan(0);
+  return {
+    minX: Math.min(...points.map((point) => point.x)),
+    maxX: Math.max(...points.map((point) => point.x)),
+    minY: Math.min(...points.map((point) => point.y)),
+    maxY: Math.max(...points.map((point) => point.y)),
+  };
+}
 
 function projectedPhonePlinthBounds(viewportWidth: number, viewportHeight: number) {
   const cameraView = makinoScaraViewForViewport("overview", viewportWidth);
@@ -63,8 +111,8 @@ describe("US 4,341,502 Makino Assembly Robot visual boundary", () => {
     const tablet = makinoScaraViewForViewport("overview", 644);
 
     expect(phone).toEqual({
-      position: [3.4, -1.8, 4.8],
-      target: [0.75, -3.65, 0],
+      position: [3.05, -1.3375, 6],
+      target: [0.4, -3.65, 0],
     });
     expect(distanceFromTarget(phone)).toBeGreaterThan(distanceFromTarget(tablet));
 
@@ -78,40 +126,64 @@ describe("US 4,341,502 Makino Assembly Robot visual boundary", () => {
         }),
       );
       model.root.updateMatrixWorld(true);
-      const closure = new THREE.Box3();
-      for (const name of [
-        "Motor 1 and shaft 3",
-        "Motor 2 and shaft 3a",
-        "First link 4",
-        "Fourth link 5",
-        "Second link 6",
-        "Third link 7",
-        "First vertical pivot shaft 8",
-        "Third vertical pivot shaft 8",
-        "Second vertical axis and assembly tool joint 8",
-        "Assembly tool 9",
-      ]) {
-        const part = model.root.getObjectByName(name);
-        expect(part).toBeInstanceOf(THREE.Object3D);
-        closure.union(new THREE.Box3().setFromObject(part as THREE.Object3D));
-      }
       const camera = new THREE.PerspectiveCamera(42, 286 / 420, 0.1, 100);
       camera.position.fromArray(phone.position);
       camera.lookAt(...phone.target);
       camera.updateProjectionMatrix();
       camera.updateMatrixWorld(true);
-      const projected: THREE.Vector3[] = [];
-      for (const x of [closure.min.x, closure.max.x]) {
-        for (const y of [closure.min.y, closure.max.y]) {
-          for (const z of [closure.min.z, closure.max.z]) {
-            projected.push(new THREE.Vector3(x, y, z).project(camera));
-          }
+      const closure = projectedVisibleGeometryBounds(model.root, camera);
+      expect(closure.minX).toBeGreaterThanOrEqual(-0.86);
+      expect(closure.maxX).toBeLessThanOrEqual(0.86);
+      expect(closure.maxX - closure.minX).toBeGreaterThan(1.3);
+    } finally {
+      model.dispose();
+    }
+  });
+
+  test("keeps the primary sweep and Claim 1-inverted linkage inside the 286 px phone overview", () => {
+    const model = buildMakinoScaraModel();
+    const camera = createCompactOverviewCamera();
+    const inverted = applySharedClaimConstraintModifications("us-4341502-makino-scara", {
+      topologyVariant: 1,
+      firstLinkAngleDeg: 180,
+      fourthLinkAngleDeg: -38,
+      toolAttitudeDeg: 0,
+      claim1ConstraintActive: 0,
+    });
+    const controlSweep = [32, 64, 96, 128, 160, 180].map((firstLinkAngleDeg) => ({
+      label: `θ₁ ${firstLinkAngleDeg}°`,
+      params: {
+        topologyVariant: 1,
+        firstLinkAngleDeg,
+        fourthLinkAngleDeg: -38,
+        toolAttitudeDeg: 0,
+      },
+    }));
+
+    try {
+      for (const state of [
+        ...controlSweep,
+        { label: "Claim 1 inverted at θ₁ 180°", params: inverted.modifiedParams },
+      ]) {
+        model.updatePose(stepMakinoScaraTopology(state.params));
+        model.root.updateMatrixWorld(true);
+
+        const fullLinkage = projectedVisibleGeometryBounds(model.root, camera);
+        const assemblyTool = model.root.getObjectByName("Assembly tool 9");
+        expect(assemblyTool).toBeInstanceOf(THREE.Object3D);
+        const tool = projectedVisibleGeometryBounds(assemblyTool as THREE.Object3D, camera);
+
+        for (const bounds of [fullLinkage, tool]) {
+          expect(bounds.minX, state.label).toBeGreaterThanOrEqual(COMPACT_SWEEP_SAFE_ZONE.minX);
+          expect(bounds.maxX, state.label).toBeLessThanOrEqual(COMPACT_SWEEP_SAFE_ZONE.maxX);
+          expect(bounds.minY, state.label).toBeGreaterThanOrEqual(COMPACT_SWEEP_SAFE_ZONE.minY);
+          expect(bounds.maxY, state.label).toBeLessThanOrEqual(COMPACT_SWEEP_SAFE_ZONE.maxY);
         }
+        expect(
+          (fullLinkage.maxY - fullLinkage.minY) * (COMPACT_PHONE_VIEWPORT.height / 2),
+          state.label,
+        ).toBeGreaterThanOrEqual(120);
       }
-      const horizontal = projected.map((point) => point.x);
-      expect(Math.min(...horizontal)).toBeGreaterThanOrEqual(-0.96);
-      expect(Math.max(...horizontal)).toBeLessThanOrEqual(0.95);
-      expect(Math.max(...horizontal) - Math.min(...horizontal)).toBeGreaterThan(1.7);
     } finally {
       model.dispose();
     }

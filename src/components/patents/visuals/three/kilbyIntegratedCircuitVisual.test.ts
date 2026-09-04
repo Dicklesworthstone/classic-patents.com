@@ -8,7 +8,47 @@ import {
   KILBY_SOURCE_CIRCUIT_DEFAULTS,
   stepKilbySourceCircuitTopology,
 } from "@/physics/kilbySourceCircuitKernel";
+import {
+  KILBY_SOURCE_CIRCUIT_CAMERA_PRESETS,
+  kilbySourceCircuitCameraForViewport,
+} from "./kilbySourceCircuitCamera";
 import { buildKilbySourceCircuitModel } from "./kilbySourceCircuitModel";
+
+function projectedObjectBounds(object: THREE.Object3D, camera: THREE.PerspectiveCamera) {
+  object.updateMatrixWorld(true);
+  const bounds = new THREE.Box3().setFromObject(object);
+  const frame = {
+    minX: Number.POSITIVE_INFINITY,
+    maxX: Number.NEGATIVE_INFINITY,
+    minY: Number.POSITIVE_INFINITY,
+    maxY: Number.NEGATIVE_INFINITY,
+  };
+
+  for (const x of [bounds.min.x, bounds.max.x]) {
+    for (const y of [bounds.min.y, bounds.max.y]) {
+      for (const z of [bounds.min.z, bounds.max.z]) {
+        const projected = new THREE.Vector3(x, y, z).project(camera);
+        frame.minX = Math.min(frame.minX, projected.x);
+        frame.maxX = Math.max(frame.maxX, projected.x);
+        frame.minY = Math.min(frame.minY, projected.y);
+        frame.maxY = Math.max(frame.maxY, projected.y);
+      }
+    }
+  }
+
+  return frame;
+}
+
+function projectedPixels(
+  frame: ReturnType<typeof projectedObjectBounds>,
+  canvasWidth: number,
+  canvasHeight: number,
+) {
+  return {
+    width: ((frame.maxX - frame.minX) * canvasWidth) / 2,
+    height: ((frame.maxY - frame.minY) * canvasHeight) / 2,
+  };
+}
 
 describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Visual & Physics Boundary", () => {
   const rootDir = process.cwd();
@@ -33,6 +73,7 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Visual & Phys
     expect(modelSource).not.toContain("carrier particle");
     expect(studioSource).not.toContain("GLTFLoader");
     expect(studioSource).toContain('from "./useLiveSimParams"');
+    expect(studioSource).toContain("kilbySourceCircuitCameraForViewport");
     expect(studioSource).toContain("model.update(live.current.state)");
     expect(studioSource).toContain("isRefused: true");
     expect(dispatcherSource).toContain('import("./three/KilbySourceCircuit3D")');
@@ -148,5 +189,98 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Visual & Phys
     expect(model.wireBonds.visible).toBe(true);
     expect(model.openCircuitMarkers.visible).toBe(false);
     model.dispose();
+  });
+
+  test("keeps the semiconductor and interconnect envelope legible in the exact 286 by 380px phone canvas", () => {
+    const model = buildKilbySourceCircuitModel();
+    try {
+      const canvasWidth = 286;
+      const canvasHeight = 380;
+      const desktop = kilbySourceCircuitCameraForViewport("figure6a", 1216, 460);
+      expect(desktop).toEqual(KILBY_SOURCE_CIRCUIT_CAMERA_PRESETS.figure6a);
+      expect(kilbySourceCircuitCameraForViewport("wires70", canvasWidth, canvasHeight)).toEqual(
+        KILBY_SOURCE_CIRCUIT_CAMERA_PRESETS.wires70,
+      );
+
+      const phone = kilbySourceCircuitCameraForViewport("figure6a", canvasWidth, canvasHeight);
+      expect(phone).not.toEqual(KILBY_SOURCE_CIRCUIT_CAMERA_PRESETS.figure6a);
+
+      const camera = new THREE.PerspectiveCamera(42, canvasWidth / canvasHeight, 0.1, 1000);
+      camera.position.set(...phone.pos);
+      camera.lookAt(...phone.target);
+      camera.updateProjectionMatrix();
+      camera.updateMatrixWorld();
+
+      for (const claim1ConductiveMeansPresent of [0, 1] as const) {
+        model.update(stepKilbySourceCircuitTopology({ claim1ConductiveMeansPresent }));
+        model.root.updateMatrixWorld(true);
+
+        const apparatus = projectedObjectBounds(model.root, camera);
+        const wafer = projectedPixels(
+          projectedObjectBounds(model.wafer, camera),
+          canvasWidth,
+          canvasHeight,
+        );
+        const resistors = projectedPixels(
+          projectedObjectBounds(model.resistorRegions, camera),
+          canvasWidth,
+          canvasHeight,
+        );
+        const leads = projectedPixels(
+          projectedObjectBounds(model.kovarLeads, camera),
+          canvasWidth,
+          canvasHeight,
+        );
+
+        expect(
+          apparatus.minX,
+          `Claim 1 ${claim1ConductiveMeansPresent} left envelope`,
+        ).toBeGreaterThan(-0.84);
+        expect(
+          apparatus.maxX,
+          `Claim 1 ${claim1ConductiveMeansPresent} right envelope`,
+        ).toBeLessThan(0.95);
+        expect(
+          apparatus.minY,
+          `Claim 1 ${claim1ConductiveMeansPresent} lower envelope`,
+        ).toBeGreaterThan(-0.62);
+        expect(
+          apparatus.maxY,
+          `Claim 1 ${claim1ConductiveMeansPresent} upper envelope`,
+        ).toBeLessThan(0.46);
+        expect(
+          projectedPixels(apparatus, canvasWidth, canvasHeight).height,
+          `Claim 1 ${claim1ConductiveMeansPresent} projected apparatus height`,
+        ).toBeGreaterThan(170);
+        expect(wafer.width, "germanium wafer projected width").toBeGreaterThan(150);
+        expect(wafer.height, "germanium wafer projected height").toBeGreaterThan(105);
+        expect(resistors.width, "integral resistor projected width").toBeGreaterThan(135);
+        expect(resistors.height, "integral resistor projected height").toBeGreaterThan(90);
+        expect(leads.width, "Kovar lead projected width").toBeGreaterThan(205);
+        expect(leads.height, "Kovar lead projected height").toBeGreaterThan(135);
+
+        const claimProbe = claim1ConductiveMeansPresent
+          ? projectedPixels(
+              projectedObjectBounds(model.wireBonds, camera),
+              canvasWidth,
+              canvasHeight,
+            )
+          : projectedPixels(
+              projectedObjectBounds(model.openCircuitMarkers, camera),
+              canvasWidth,
+              canvasHeight,
+            );
+        expect(
+          claimProbe.width,
+          `Claim 1 ${claim1ConductiveMeansPresent} probe width`,
+        ).toBeGreaterThan(claim1ConductiveMeansPresent ? 155 : 60);
+        expect(
+          claimProbe.height,
+          `Claim 1 ${claim1ConductiveMeansPresent} probe height`,
+        ).toBeGreaterThan(claim1ConductiveMeansPresent ? 105 : 48);
+      }
+    } finally {
+      model.dispose();
+    }
   });
 });

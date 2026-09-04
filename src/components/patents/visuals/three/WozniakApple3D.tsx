@@ -19,20 +19,8 @@ import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+import { type WozniakAppleCameraPreset, wozniakAppleCameraForViewport } from "./wozniakAppleCamera";
 import { buildWozniakAppleModel } from "./wozniakAppleModel";
-
-type CameraPreset = "iso" | "cpu" | "ram_matrix" | "slots" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [0, 8.0, 9.5], target: [0, 0, 0] },
-  cpu: { pos: [-2.5, 3.5, 4.0], target: [-1.2, 0, 0] },
-  ram_matrix: { pos: [2.5, 3.5, 4.0], target: [1.2, 0, 0] },
-  slots: { pos: [0, 4.0, 5.0], target: [0, 0, 1.5] },
-  top: { pos: [0, 11.0, 0.1], target: [0, 0, 0] },
-};
 
 /** Fields the render loop consumes from each Apple kernel step. */
 interface WozniakStepPose {
@@ -50,7 +38,7 @@ export function WozniakApple3D() {
   const [videoMode] = useState<"text" | "lores" | "hires">("lores");
   const [isCpuActive] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<WozniakAppleCameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
@@ -123,9 +111,14 @@ export function WozniakApple3D() {
     return unregister;
   }, [live]);
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: WozniakAppleCameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const container = containerRef.current;
+    const cfg = wozniakAppleCameraForViewport(
+      preset,
+      container?.clientWidth ?? 0,
+      container?.clientHeight ?? 0,
+    );
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -139,7 +132,7 @@ export function WozniakApple3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = wozniakAppleCameraForViewport("iso", container.clientWidth, container.clientHeight);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -204,7 +197,7 @@ export function WozniakApple3D() {
                 ["ram_matrix", "4116 RAM Bank"],
                 ["slots", "Bus Slots"],
                 ["top", "Motherboard"],
-              ] as [CameraPreset, string][]
+              ] as [WozniakAppleCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}

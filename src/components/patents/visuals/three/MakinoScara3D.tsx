@@ -122,6 +122,20 @@ export function MakinoScara3D() {
     };
   }, [liveParams]);
 
+  // Keep an actively selected inspection view responsive when a handset
+  // rotates or its viewport changes. The compact overview is derived from
+  // the linkage's moving envelope, so it must be recalculated at the new width.
+  useEffect(() => {
+    const restoreResponsiveView = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const camera = makinoScaraViewForViewport(view, container.clientWidth);
+      studioRef.current?.controls.setView(camera.position, camera.target);
+    };
+    window.addEventListener("resize", restoreResponsiveView);
+    return () => window.removeEventListener("resize", restoreResponsiveView);
+  }, [view]);
+
   return (
     <section
       data-testid="makino-scara-three"

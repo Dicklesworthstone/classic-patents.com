@@ -12,6 +12,10 @@ import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
+  type CarrierAirConditionerCameraPreset,
+  carrierAirConditionerCameraForViewport,
+} from "./carrierAirConditionerCamera";
+import {
   buildCarrierAirConditionerModel,
   updateCarrierAirConditionerKinematics,
 } from "./carrierAirConditionerModel";
@@ -20,24 +24,13 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "spray" | "plates" | "fan";
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [9.5, 3.8, 9.5], target: [-0.25, 0, 0] },
-  spray: { pos: [-3.4, 2.1, 4.1], target: [-2.3, 0.2, 0] },
-  plates: { pos: [0.2, 2.6, 4.5], target: [-0.5, 0.2, 0] },
-  fan: { pos: [4.2, 1.8, 3.6], target: [2.4, 0.3, 0] },
-};
-
 export function CarrierAirConditioner3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [cutawayMode, setCutawayMode] = useState(true);
   const [showSpray, setShowSpray] = useState(true);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<CarrierAirConditionerCameraPreset>("iso");
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const { params, updateParam } = usePatentPhysics("us-808897-carrier-air-conditioner");
@@ -82,19 +75,29 @@ export function CarrierAirConditioner3D() {
     thermo: washerThermo,
   });
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: CarrierAirConditionerCameraPreset) => {
     setActiveCamera(preset);
-    const view = CAMERA_PRESETS[preset];
+    const container = containerRef.current;
+    const view = carrierAirConditionerCameraForViewport(
+      preset,
+      container?.clientWidth ?? 0,
+      container?.clientHeight ?? 0,
+    );
     studioRef.current?.controls.setView(view.pos, view.target);
   };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    const overview = carrierAirConditionerCameraForViewport(
+      "iso",
+      container.clientWidth,
+      container.clientHeight,
+    );
     const studio = createThreeStudioScene({
       container,
-      cameraPos: CAMERA_PRESETS.iso.pos,
-      targetPos: CAMERA_PRESETS.iso.target,
+      cameraPos: overview.pos,
+      targetPos: overview.target,
       fov: 44,
     });
     studioRef.current = studio;
@@ -138,16 +141,18 @@ export function CarrierAirConditioner3D() {
             <span className="px-1.5 py-1 text-ink-500 flex items-center gap-1">
               <Camera className="w-3.5 h-3.5" /> View:
             </span>
-            {(["iso", "spray", "plates", "fan"] as CameraPreset[]).map((preset) => (
-              <button
-                key={preset}
-                type="button"
-                onClick={() => applyCameraPreset(preset)}
-                className={`min-h-9 px-2 py-1 rounded-lg ${activeCamera === preset ? "bg-cyan-600 text-white" : "text-ink-700 dark:text-ink-300"}`}
-              >
-                {preset}
-              </button>
-            ))}
+            {(["iso", "spray", "plates", "fan"] as CarrierAirConditionerCameraPreset[]).map(
+              (preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => applyCameraPreset(preset)}
+                  className={`min-h-9 px-2 py-1 rounded-lg ${activeCamera === preset ? "bg-cyan-600 text-white" : "text-ink-700 dark:text-ink-300"}`}
+                >
+                  {preset}
+                </button>
+              ),
+            )}
           </div>
         )}
         <div className="absolute top-3 right-3 z-10 flex flex-wrap justify-end gap-1.5">

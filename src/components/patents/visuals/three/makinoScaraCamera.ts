@@ -23,15 +23,15 @@ export const MAKINO_SCARA_CAMERA_VIEWS: Record<MakinoScaraCameraView, CameraView
 };
 
 const PHONE_OVERVIEW: CameraView = {
-  // Preserve a complete, inspectable four-bar closure while leaving a real
-  // margin around its finite presentation plinth at 320 px. The plinth itself
-  // adapts below, keeping the claimed mechanism at a legible inspection size.
-  position: [3.4, -1.8, 4.8],
-  target: [0.75, -3.65, 0],
+  // This is centered on the complete physical control sweep, not merely the
+  // rest pose. θ₁ can move through 180° and Claim 1's constraint inversion
+  // exposes the offset linkage, so both working ends need a safe phone frame.
+  position: [3.05, -1.3375, 6],
+  target: [0.4, -3.65, 0],
 };
 
 const DESKTOP_STUDIO_FLOOR = { radius: 2.8, centerX: 0 };
-const PHONE_STUDIO_FLOOR = { radius: 1.4, centerX: 0.75 };
+const PHONE_STUDIO_FLOOR = { radius: 1.4, centerX: 0.4 };
 
 /**
  * The dark circular plinth is a bounded exhibit object, not an infinite

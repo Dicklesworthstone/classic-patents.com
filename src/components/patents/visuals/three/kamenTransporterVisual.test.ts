@@ -11,9 +11,37 @@ import {
   stepKamenTransporterTopology,
 } from "@/physics/kamenTransporterKernel";
 import {
+  KAMEN_TRANSPORTER_CAMERA_PRESETS,
+  kamenTransporterCameraForViewport,
+} from "./kamenTransporterCamera";
+import {
   buildKamenTransporterModel,
   updateKamenTransporterKinematics,
 } from "./kamenTransporterModel";
+
+function projectedObjectBounds(object: THREE.Object3D, camera: THREE.PerspectiveCamera) {
+  object.updateMatrixWorld(true);
+  const bounds = new THREE.Box3().setFromObject(object);
+  const frame = {
+    minX: Number.POSITIVE_INFINITY,
+    maxX: Number.NEGATIVE_INFINITY,
+    minY: Number.POSITIVE_INFINITY,
+    maxY: Number.NEGATIVE_INFINITY,
+  };
+
+  for (const x of [bounds.min.x, bounds.max.x]) {
+    for (const y of [bounds.min.y, bounds.max.y]) {
+      for (const z of [bounds.min.z, bounds.max.z]) {
+        const projected = new THREE.Vector3(x, y, z).project(camera);
+        frame.minX = Math.min(frame.minX, projected.x);
+        frame.maxX = Math.max(frame.maxX, projected.x);
+        frame.minY = Math.min(frame.minY, projected.y);
+        frame.maxY = Math.max(frame.maxY, projected.y);
+      }
+    }
+  }
+  return frame;
+}
 
 describe("US 5,701,965 Kamen Transporter source-bound Three.js topology", () => {
   test("uses a procedural Three.js model with named cluster-wheel topology and no external asset", () => {
@@ -105,6 +133,75 @@ describe("US 5,701,965 Kamen Transporter source-bound Three.js topology", () => 
     expect(model.rightDirectWheel.visible).toBe(true);
     expect(model.leftDirectWheel.position.y).toBe(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.wheelRadiusM);
     model.dispose();
+  });
+
+  test("keeps the complete balance and transfer apparatus inside the exact 320px phone canvas", () => {
+    const model = buildKamenTransporterModel();
+    try {
+      const desktop = kamenTransporterCameraForViewport("overview", 1216, 460);
+      const tablet = kamenTransporterCameraForViewport("overview", 718, 460);
+      expect(desktop).toEqual(KAMEN_TRANSPORTER_CAMERA_PRESETS.overview);
+      expect(tablet).toEqual(desktop);
+
+      // V26's 320px browser viewport produces a 286 × 380px studio canvas.
+      // Sweep all published source poses and the Claim 16 topology-withheld
+      // receipt; the high control mast and transfer terrain must remain in
+      // frame in every visitor-facing comparison.
+      const canvasWidth = 286;
+      const canvasHeight = 380;
+      const view = kamenTransporterCameraForViewport("overview", canvasWidth, canvasHeight);
+      const camera = new THREE.PerspectiveCamera(42, canvasWidth / canvasHeight, 0.1, 1000);
+      camera.position.set(...view.pos);
+      camera.lookAt(...view.target);
+      camera.updateProjectionMatrix();
+      camera.updateMatrixWorld();
+
+      const auditedStates = [
+        ...KAMEN_TRANSPORTER_TOPOLOGY_STATES.map((state, topologyState) => ({
+          label: state,
+          controls: readKamenTransporterControls({ topologyState }),
+        })),
+        {
+          label: "claim 16 cluster withheld",
+          controls: readKamenTransporterControls({ topologyState: 4, claim16ClusterEnabled: 0 }),
+        },
+      ];
+
+      for (const { label, controls } of auditedStates) {
+        const telemetry = stepKamenTransporterTopology(controls);
+        updateKamenTransporterKinematics(model, controls, telemetry, 0);
+        model.root.updateMatrixWorld(true);
+
+        const apparatus = projectedObjectBounds(model.root, camera);
+        const chassis = projectedObjectBounds(model.chassis, camera);
+        const controlMast = projectedObjectBounds(model.standingMast, camera);
+
+        expect(apparatus.minX, `${label} left edge`).toBeGreaterThan(-0.72);
+        expect(apparatus.maxX, `${label} right edge`).toBeLessThan(0.8);
+        expect(apparatus.minY, `${label} lower edge`).toBeGreaterThan(-0.65);
+        expect(apparatus.maxY, `${label} handle edge`).toBeLessThan(0.64);
+        expect(
+          ((apparatus.maxX - apparatus.minX) * canvasWidth) / 2,
+          `${label} horizontal legibility`,
+        ).toBeGreaterThan(190);
+        expect(
+          ((apparatus.maxY - apparatus.minY) * canvasHeight) / 2,
+          `${label} vertical legibility`,
+        ).toBeGreaterThan(180);
+
+        for (const [name, part] of [
+          ["chassis", chassis],
+          ["control mast", controlMast],
+        ] as const) {
+          expect(part.minX, `${label} ${name} left`).toBeGreaterThan(-0.72);
+          expect(part.maxX, `${label} ${name} right`).toBeLessThan(0.8);
+          expect(part.minY, `${label} ${name} lower`).toBeGreaterThan(-0.65);
+          expect(part.maxY, `${label} ${name} upper`).toBeLessThan(0.64);
+        }
+      }
+    } finally {
+      model.dispose();
+    }
   });
 
   test("keeps the public scenes on the shared tape while excluding false SI and gear-train language", () => {

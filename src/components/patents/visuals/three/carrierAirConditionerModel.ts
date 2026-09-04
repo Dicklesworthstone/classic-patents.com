@@ -13,6 +13,7 @@ export interface CarrierAirConditionerModelNodes {
   separatorPlates: THREE.Group[];
   basin: THREE.Mesh;
   filter: THREE.Mesh;
+  fanHousing: THREE.Mesh;
   fanRotor: THREE.Group;
   airDroplets: THREE.Points;
 }
@@ -302,6 +303,7 @@ export function buildCarrierAirConditionerModel(): CarrierAirConditionerModelRes
       separatorPlates,
       basin,
       filter,
+      fanHousing,
       fanRotor,
       airDroplets,
     },

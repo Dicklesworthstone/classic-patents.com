@@ -24,6 +24,7 @@ import { createGlowPointTexture } from "./ThreeStudioScene";
 export interface WozniakAppleModel {
   root: THREE.Group;
   computerGroup: THREE.Group;
+  chassis: THREE.Mesh;
   motherboard: THREE.Mesh;
   cpuGroup: THREE.Group;
   ramGroup: THREE.Group;
@@ -391,6 +392,7 @@ export function buildWozniakAppleModel(): WozniakAppleModel {
   return {
     root,
     computerGroup,
+    chassis,
     motherboard,
     cpuGroup,
     ramGroup,

@@ -32,9 +32,11 @@ import {
 } from "@/physics/kamenTransporterWasm";
 import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import {
+  type KamenTransporterCameraPreset,
+  kamenTransporterCameraForViewport,
+} from "./kamenTransporterCamera";
 import { useLiveSimParams } from "./useLiveSimParams";
-
-type CameraPreset = "overview" | "side" | "balance" | "stairs";
 
 export default function KamenTransporter3D({
   patentId = "us-5701965-kamen-transporter",
@@ -54,7 +56,7 @@ export default function KamenTransporter3D({
     [controls, kernelSource],
   );
   const liveControls = useLiveSimParams(controls);
-  const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
+  const [cameraPreset, setCameraPreset] = useState<KamenTransporterCameraPreset>("overview");
 
   useFrankenSimPhysics(patentId);
 
@@ -83,14 +85,20 @@ export default function KamenTransporter3D({
   }, [kernelSource, liveControls, patentId]);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
     let destroyed = false;
     let animationFrameId: number;
+    const overview = kamenTransporterCameraForViewport(
+      "overview",
+      container.clientWidth,
+      container.clientHeight,
+    );
     const studio = createThreeStudioScene({
-      container: containerRef.current,
-      cameraPos: [1.8, 1.5, 2.2],
-      targetPos: [0.1, 0.58, 0],
+      container,
+      cameraPos: overview.pos,
+      targetPos: overview.target,
       ambientIntensity: 0.7,
       sunIntensity: 1.5,
     });
@@ -136,23 +144,16 @@ export default function KamenTransporter3D({
     };
   }, []);
 
-  const handleCameraPreset = (preset: CameraPreset) => {
+  const handleCameraPreset = (preset: KamenTransporterCameraPreset) => {
     setCameraPreset(preset);
     if (!studioRef.current) return;
-    switch (preset) {
-      case "overview":
-        studioRef.current.controls.setView([1.8, 1.5, 2.2], [0.1, 0.58, 0]);
-        break;
-      case "side":
-        studioRef.current.controls.setView([0, 0.65, 2.8], [0.1, 0.58, 0]);
-        break;
-      case "balance":
-        studioRef.current.controls.setView([1.3, 1.2, 1.7], [0, 0.62, 0]);
-        break;
-      case "stairs":
-        studioRef.current.controls.setView([1.6, 1.45, 2.25], [0.18, 0.58, 0]);
-        break;
-    }
+    const container = containerRef.current;
+    const view = kamenTransporterCameraForViewport(
+      preset,
+      container?.clientWidth ?? 0,
+      container?.clientHeight ?? 0,
+    );
+    studioRef.current.controls.setView(view.pos, view.target);
   };
 
   const selectedStateIndex = KAMEN_TRANSPORTER_TOPOLOGY_STATES.indexOf(topology.topologyState);
@@ -217,7 +218,9 @@ export default function KamenTransporter3D({
           aria-label="Camera view"
           className="absolute right-3 top-3 z-10 max-w-[calc(100%-1.5rem)] rounded-lg border border-ink-700 bg-ink-900/90 px-2.5 py-2 font-mono text-[11px] font-bold text-ink-200 backdrop-blur-sm sm:hidden"
           value={cameraPreset}
-          onChange={(event) => handleCameraPreset(event.target.value as CameraPreset)}
+          onChange={(event) =>
+            handleCameraPreset(event.target.value as KamenTransporterCameraPreset)
+          }
         >
           <option value="overview">OVERVIEW</option>
           <option value="side">SIDE</option>

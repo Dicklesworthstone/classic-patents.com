@@ -12,34 +12,13 @@ import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { StudioOverlayActionToolbar } from "./StudioOverlayActionToolbar";
 import { createOrbitingStudioOverlayActions } from "./studioOverlayActions";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import {
+  type TownesMaserSystemCameraPreset as CameraPreset,
+  townesMaserSystemCameraForViewport,
+} from "./townesMaserSystemCamera";
 import { buildTownesMaserSystemModel } from "./townesMaserSystemModel";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset = "system" | "generator" | "modeSelector" | "amplifier" | "detector";
-
-const DESKTOP_CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  system: { pos: [-0.4, 3.55, 10.1], target: [-0.4, 0, 0] },
-  generator: { pos: [-4.1, 2.4, 5.2], target: [-4.1, 0, 0] },
-  modeSelector: { pos: [-1.95, 1.35, 3.4], target: [-1.95, 0, 0] },
-  amplifier: { pos: [0.15, 2.4, 5.2], target: [0.15, 0, 0] },
-  detector: { pos: [3.05, 1.6, 4.1], target: [2.7, 0, 0] },
-};
-
-const PHONE_SYSTEM_VIEW = {
-  pos: [-0.4, 6.8, 22.5] as [number, number, number],
-  target: [-0.4, 0, 0] as [number, number, number],
-};
-
-function cameraConfig(preset: CameraPreset) {
-  if (preset === "system" && window.matchMedia("(max-width: 639px)").matches) {
-    return PHONE_SYSTEM_VIEW;
-  }
-  return DESKTOP_CAMERA_PRESETS[preset];
-}
 
 export function TownesLaser3D() {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -69,7 +48,10 @@ export function TownesLaser3D() {
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const config = cameraConfig(preset);
+    const config = townesMaserSystemCameraForViewport(
+      preset,
+      containerRef.current?.clientWidth ?? 1000,
+    );
     studioRef.current?.controls.setView(config.pos, config.target);
   };
 
@@ -77,7 +59,7 @@ export function TownesLaser3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const initial = cameraConfig("system");
+    const initial = townesMaserSystemCameraForViewport("system", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: initial.pos,
@@ -109,6 +91,17 @@ export function TownesLaser3D() {
       studioRef.current = null;
     };
   }, [live]);
+
+  useEffect(() => {
+    const restoreResponsiveView = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const view = townesMaserSystemCameraForViewport(activeCamera, container.clientWidth);
+      studioRef.current?.controls.setView(view.pos, view.target);
+    };
+    window.addEventListener("resize", restoreResponsiveView);
+    return () => window.removeEventListener("resize", restoreResponsiveView);
+  }, [activeCamera]);
 
   const toolbarActions = createOrbitingStudioOverlayActions({
     isAudioMuted,

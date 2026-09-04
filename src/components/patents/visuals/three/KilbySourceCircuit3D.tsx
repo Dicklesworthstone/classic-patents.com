@@ -14,6 +14,11 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import {
+  KILBY_SOURCE_CIRCUIT_CAMERA_PRESETS,
+  type KilbySourceCircuitCameraPreset,
+  kilbySourceCircuitCameraForViewport,
+} from "./kilbySourceCircuitCamera";
 import { buildKilbySourceCircuitModel } from "./kilbySourceCircuitModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { StudioOverlayActionToolbar } from "./StudioOverlayActionToolbar";
@@ -26,45 +31,6 @@ interface Kilby3DProps {
   className?: string;
 }
 
-type CameraPreset = "figure6a" | "wires70" | "etchedSlot" | "integralRegions";
-
-const VIEWS: Record<
-  CameraPreset,
-  { label: string; pos: [number, number, number]; target: [number, number, number] }
-> = {
-  figure6a: {
-    label: "Fig. 6a Construction",
-    pos: [8.7, 7.8, 10.6],
-    target: [0, 0.2, 0],
-  },
-  wires70: {
-    label: "Wires 70",
-    pos: [1.5, 4.2, 7.4],
-    target: [0, 0.35, -0.1],
-  },
-  etchedSlot: {
-    label: "Etched Slot",
-    pos: [0, 3.2, 5.2],
-    target: [0, 0.25, 1.05],
-  },
-  integralRegions: {
-    label: "Integral Regions",
-    pos: [-1.5, 6.8, 3.8],
-    target: [0, 0.2, -0.1],
-  },
-};
-
-const PHONE_VIEW = {
-  pos: [13.6, 12.4, 18.4] as [number, number, number],
-  target: [0, 0.1, 0] as [number, number, number],
-};
-
-function viewFor(preset: CameraPreset) {
-  return preset === "figure6a" && window.matchMedia("(max-width: 639px)").matches
-    ? PHONE_VIEW
-    : VIEWS[preset];
-}
-
 /** Source-bounded reconstruction of Kilby's Fig. 6a monolithic multivibrator. */
 export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "" }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -73,7 +39,7 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
   const { params, updateParam } = usePatentPhysics("us-3138743-kilby-integrated-circuit");
   const controls = readKilbySourceCircuitControls(params);
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-  const [activeView, setActiveView] = useState<CameraPreset>("figure6a");
+  const [activeView, setActiveView] = useState<KilbySourceCircuitCameraPreset>("figure6a");
   const [cutaway, setCutaway] = useState(false);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -89,16 +55,25 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
     refusal: { isRefused: true, reason: state.refusal.reason },
   });
 
-  const applyView = (preset: CameraPreset) => {
+  const applyView = (preset: KilbySourceCircuitCameraPreset) => {
     setActiveView(preset);
-    const view = viewFor(preset);
+    const container = containerRef.current;
+    const view = kilbySourceCircuitCameraForViewport(
+      preset,
+      container?.clientWidth ?? 0,
+      container?.clientHeight ?? 0,
+    );
     studioRef.current?.controls.setView(view.pos, view.target);
   };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const initial = viewFor("figure6a");
+    const initial = kilbySourceCircuitCameraForViewport(
+      "figure6a",
+      container.clientWidth,
+      container.clientHeight,
+    );
     const studio = createThreeStudioScene({
       container,
       cameraPos: initial.pos,
@@ -159,18 +134,21 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
             <span className="flex shrink-0 items-center gap-1 px-2 py-1 font-sans text-ink-500">
               <Camera className="h-3.5 w-3.5" /> View:
             </span>
-            {(Object.entries(VIEWS) as [CameraPreset, (typeof VIEWS)[CameraPreset]][]).map(
-              ([preset, view]) => (
-                <button
-                  key={preset}
-                  type="button"
-                  onClick={() => applyView(preset)}
-                  className={`min-h-9 shrink-0 rounded-lg px-2 py-1 font-medium ${activeView === preset ? "bg-amber-600 font-semibold text-white" : "text-ink-700 hover:bg-parchment-200 dark:text-ink-300"}`}
-                >
-                  {view.label}
-                </button>
-              ),
-            )}
+            {(
+              Object.entries(KILBY_SOURCE_CIRCUIT_CAMERA_PRESETS) as [
+                KilbySourceCircuitCameraPreset,
+                (typeof KILBY_SOURCE_CIRCUIT_CAMERA_PRESETS)[KilbySourceCircuitCameraPreset],
+              ][]
+            ).map(([preset, view]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyView(preset)}
+                className={`min-h-9 shrink-0 rounded-lg px-2 py-1 font-medium ${activeView === preset ? "bg-amber-600 font-semibold text-white" : "text-ink-700 hover:bg-parchment-200 dark:text-ink-300"}`}
+              >
+                {view.label}
+              </button>
+            ))}
           </div>
         )}
         <StudioOverlayActionToolbar actions={actions} />

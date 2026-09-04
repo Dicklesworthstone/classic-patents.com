@@ -1,11 +1,42 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import {
   stepTownesMaserTopology,
   TOWNES_MASER_DEFAULT_CONTROLS,
 } from "@/physics/townesMaserKernel";
+import {
+  TOWNES_COMPACT_SYSTEM_SAFE_ZONE,
+  TOWNES_MASER_DESKTOP_CAMERA_PRESETS,
+  townesMaserSystemCameraForViewport,
+} from "./townesMaserSystemCamera";
 import { buildTownesMaserSystemModel } from "./townesMaserSystemModel";
+
+function projectedObjectBounds(root: THREE.Object3D, camera: THREE.PerspectiveCamera) {
+  const bounds = {
+    minX: Number.POSITIVE_INFINITY,
+    maxX: Number.NEGATIVE_INFINITY,
+    minY: Number.POSITIVE_INFINITY,
+    maxY: Number.NEGATIVE_INFINITY,
+  };
+  const point = new THREE.Vector3();
+  root.traverse((node) => {
+    const positions = (node as THREE.Mesh).geometry?.getAttribute("position");
+    if (!positions || !node.visible) return;
+    for (let index = 0; index < positions.count; index += 1) {
+      point.fromBufferAttribute(positions, index).applyMatrix4(node.matrixWorld).project(camera);
+      bounds.minX = Math.min(bounds.minX, point.x);
+      bounds.maxX = Math.max(bounds.maxX, point.x);
+      bounds.minY = Math.min(bounds.minY, point.y);
+      bounds.maxY = Math.max(bounds.maxY, point.y);
+    }
+  });
+  return {
+    ...bounds,
+    widthPx: ((bounds.maxX - bounds.minX) * TOWNES_COMPACT_SYSTEM_SAFE_ZONE.viewportWidth) / 2,
+  };
+}
 
 describe("US 2,929,922 Arthur L. Schawlow & Charles H. Townes Optical Maser / Laser Visual Boundary", () => {
   const rootDir = process.cwd();
@@ -49,6 +80,97 @@ describe("US 2,929,922 Arthur L. Schawlow & Charles H. Townes Optical Maser / La
     expect(studioSource).not.toContain("Math.random");
     expect(studioSource).not.toContain("Date.now");
     expect(studioSource).not.toContain("performance.now");
+  });
+
+  test("keeps the resonator and beam assembly legible in both compact audit states", () => {
+    const { viewportWidth: width, viewportHeight: height } = TOWNES_COMPACT_SYSTEM_SAFE_ZONE;
+    const compactSystem = townesMaserSystemCameraForViewport("system", width);
+    expect(compactSystem).toEqual({ pos: [11.6, 12, 14], target: [-0.4, 0, 0] });
+    expect(townesMaserSystemCameraForViewport("system", 718)).toEqual(
+      TOWNES_MASER_DESKTOP_CAMERA_PRESETS.system,
+    );
+    for (const preset of ["generator", "modeSelector", "amplifier", "detector"] as const) {
+      expect(townesMaserSystemCameraForViewport(preset, width)).toEqual(
+        TOWNES_MASER_DESKTOP_CAMERA_PRESETS[preset],
+      );
+    }
+
+    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 1000);
+    camera.position.set(...compactSystem.pos);
+    camera.lookAt(...compactSystem.target);
+    camera.updateProjectionMatrix();
+    camera.updateMatrixWorld();
+
+    const auditStates = [
+      { name: "primary-control", claim1PathPresent: 1 },
+      { name: "claim-inverted", claim1PathPresent: 0 },
+    ] as const;
+    for (const audit of auditStates) {
+      const model = buildTownesMaserSystemModel();
+      try {
+        const state = stepTownesMaserTopology({
+          ...TOWNES_MASER_DEFAULT_CONTROLS,
+          pumpExcitationPct: 100,
+          claim1PathPresent: audit.claim1PathPresent,
+        });
+        model.setCutaway(true);
+        for (const timeSec of [0, 1, 2]) {
+          model.update(state, timeSec);
+          model.root.updateMatrixWorld(true);
+
+          const envelope = projectedObjectBounds(model.root, camera);
+          expect(envelope.minX, `${audit.name}: generator remains in frame`).toBeGreaterThan(
+            TOWNES_COMPACT_SYSTEM_SAFE_ZONE.minX,
+          );
+          expect(envelope.maxX, `${audit.name}: detector remains in frame`).toBeLessThan(
+            TOWNES_COMPACT_SYSTEM_SAFE_ZONE.maxX,
+          );
+          expect(envelope.minY, `${audit.name}: bench remains in frame`).toBeGreaterThan(
+            TOWNES_COMPACT_SYSTEM_SAFE_ZONE.minY,
+          );
+          expect(envelope.maxY, `${audit.name}: source blocks clear the toolbar`).toBeLessThan(
+            TOWNES_COMPACT_SYSTEM_SAFE_ZONE.maxY,
+          );
+          expect(projectedObjectBounds(model.generator, camera).widthPx).toBeGreaterThan(
+            TOWNES_COMPACT_SYSTEM_SAFE_ZONE.minimumGeneratorWidthPx,
+          );
+          expect(projectedObjectBounds(model.amplifier, camera).widthPx).toBeGreaterThan(
+            TOWNES_COMPACT_SYSTEM_SAFE_ZONE.minimumAmplifierWidthPx,
+          );
+          expect(projectedObjectBounds(model.detector, camera).widthPx).toBeGreaterThan(
+            TOWNES_COMPACT_SYSTEM_SAFE_ZONE.minimumDetectorWidthPx,
+          );
+          expect(projectedObjectBounds(model.modeSelector, camera).widthPx).toBeGreaterThan(
+            TOWNES_COMPACT_SYSTEM_SAFE_ZONE.minimumModeSelectorWidthPx,
+          );
+
+          if (audit.claim1PathPresent === 1) {
+            expect(model.generatorBeam.visible).toBe(true);
+            expect(model.amplifierBeam.visible).toBe(true);
+            expect(model.detectorBeam.visible).toBe(true);
+            const beamPath = [
+              projectedObjectBounds(model.generatorBeam, camera),
+              projectedObjectBounds(model.amplifierBeam, camera),
+              projectedObjectBounds(model.detectorBeam, camera),
+            ];
+            const beamPathWidthPx =
+              ((Math.max(...beamPath.map((bounds) => bounds.maxX)) -
+                Math.min(...beamPath.map((bounds) => bounds.minX))) *
+                width) /
+              2;
+            expect(beamPathWidthPx).toBeGreaterThan(
+              TOWNES_COMPACT_SYSTEM_SAFE_ZONE.minimumActiveBeamPathWidthPx,
+            );
+          } else {
+            expect(model.generatorBeam.visible).toBe(false);
+            expect(model.amplifierBeam.visible).toBe(false);
+            expect(model.detectorBeam.visible).toBe(false);
+          }
+        }
+      } finally {
+        model.dispose();
+      }
+    }
   });
 
   test("computes only source-supported geometry and exact reflectivity bookkeeping", () => {
