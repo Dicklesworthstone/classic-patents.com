@@ -35,8 +35,9 @@
     "tmp/classic-patents-next-audit-cort-20260904b/types/**/*.ts",
     "tmp/classic-patents-next-audit-current/types/**/*.ts",
     "tmp/classic-patents-next-audit-mccormick-20260904/types/**/*.ts",
+    "tmp/classic-patents-next-audit-mccormick-20260904c/types/**/*.ts",
     "tmp/classic-patents-next-audit-whitney-20260904/types/**/*.ts",
-    "tmp/classic-patents-next-audit-mccormick-20260904c/types/**/*.ts"
+    "node_modules/.cache/classic-patents-next-audit-mccormick-20260904/types/**/*.ts"
   ],
   "exclude": ["node_modules", ".next", ".next-isolated-build", "doctor.config.ts"]
 }

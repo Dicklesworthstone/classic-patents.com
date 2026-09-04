@@ -103,6 +103,7 @@ const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
   "us-48475-yale-lock",
   "us-4921293-salisbury-robot-hand",
   "us-4976582-clavel-delta-robot",
+  "us-5121329-crump-fdm",
   "us-5701965-kamen-transporter",
   "us-6285999-pagerank",
   "us-6302230-kamen-segway",
