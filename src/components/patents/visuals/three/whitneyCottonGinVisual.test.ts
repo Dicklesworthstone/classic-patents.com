@@ -128,7 +128,7 @@ describe("US X72 Eli Whitney Cotton Gin visual & kinematics boundary", () => {
 
     const phases = { crankRad: 0.75, cylinderRad: 0.75, clearerRad: -2.25, lintCycle01: 0.4 };
     updateWhitneyCottonGinKinematics(model, phases, true, true);
-    expect(model.crankGroup.rotation.x).toBe(phases.cylinderRad);
+    expect(model.crankGroup.rotation.x).toBe(phases.crankRad);
     expect(model.sawCylinderGroup.rotation.x).toBe(phases.cylinderRad);
     expect(model.drivePulleyGroup.rotation.x).toBe(phases.cylinderRad);
     expect(model.brushCylinderGroup.rotation.x).toBe(phases.clearerRad);
