@@ -7,6 +7,7 @@ import {
   readDaVinciInterfaceControls,
   resolveDaVinciInterfaceTopology,
 } from "@/physics/daVinciInterfaceTopology";
+import { daVinciInterfaceViewForViewport } from "./daVinciInterfaceCamera";
 import { buildDaVinciInterfaceModel } from "./daVinciInterfaceModel";
 
 const ROOT = process.cwd();
@@ -128,5 +129,20 @@ describe("US 6,331,181 source-bounded tool-interface visual", () => {
     expect(DA_VINCI_INTERFACE_KERNEL_SOURCE).toBe("source-bounded-ts");
     expect(three).not.toContain("ensureDaVinciTopologyWasm");
     expect(three).not.toContain("tryDaVinciTopologyWasmStep");
+  });
+
+  test("backs the camera away enough to retain the whole interface on a narrow phone", () => {
+    for (const preset of ["overview", "processor", "tool"] as const) {
+      const desktop = daVinciInterfaceViewForViewport(preset, 1214);
+      const phone = daVinciInterfaceViewForViewport(preset, 286);
+      const distance = (view: typeof desktop) =>
+        Math.hypot(
+          view.pos[0] - view.target[0],
+          view.pos[1] - view.target[1],
+          view.pos[2] - view.target[2],
+        );
+      expect(phone.target).toEqual(desktop.target);
+      expect(distance(phone) / distance(desktop)).toBeCloseTo(1.55, 10);
+    }
   });
 });

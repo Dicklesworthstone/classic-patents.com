@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { ENERGY_CHANNEL_OMISSION_REASONS, energyChannelsFor } from "@/physics/energyChannels";
 import {
   readWattRotaryControls,
   stepWattRotaryEngine,
@@ -19,7 +20,9 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     expect(studioSource).not.toContain("new THREE.WebGLRenderer");
     expect(studioSource).toContain("controls.setView");
     expect(studioSource).toContain("readWattRotaryControls");
+    expect(studioSource).toContain("getWattRotaryTapeFrame()?.telemetry");
     expect(studioSource).toContain("updateAnimation(out)");
+    expect(studioSource).not.toContain("globalTransportBus.registerUpdater");
     expect(studioSource).toContain("telemetry.shaftRpm");
     expect(studioSource).not.toContain("p.strokeRateSpm, p.gearRatioNpOverNs");
     expect(studioSource).toContain("useResponsiveStudioHud(false)");
@@ -29,8 +32,9 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     // The 320px shell must pull the full flywheel/base footprint farther back
     // than the 375px shell; this protects the narrow-phone containment fix.
     expect(studioSource).toContain("viewportWidth < 360 ? 2.15 : 1.55");
-    expect(studioSource).toContain("overview: { pos: [4.8, 4.2, -5.8]");
-    expect(studioSource).toContain('"gear-mesh": { pos: [3.25, 1.45, -3]');
+    expect(studioSource).toContain("pos: [4.8, 5.4, -5.8]");
+    expect(studioSource).toContain("pos: [3.25, 2.65, -3]");
+    expect(studioSource).toContain("WATT_ROTARY_KINEMATIC_GEOMETRY.sunCenterY");
     expect(studioSource).toContain("const [showCallouts, setShowCallouts] = useState(false);");
     expect(studioSource).toContain("hidden lg:flex");
     expect(studioSource).toContain("lg:hidden");
@@ -38,7 +42,6 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     expect(studioSource).not.toContain("isPlayingRef.current =");
     expect(studioSource).not.toContain("cutawayRef.current =");
     expect(studioSource).not.toContain("showCalloutsRef.current =");
-    expect(studioSource).toContain("live.current.isPlaying");
     expect(studioSource).toContain("live.current.cutaway");
     expect(studioSource).toContain("live.current.gearInspection");
     expect(studioSource).toContain("live.current.showCallouts");
@@ -60,6 +63,21 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     expect(model.cylinderShellMesh).toBeDefined();
     expect(model.cylinderCutawayMesh).toBeDefined();
     expect(model.calloutSprites.length).toBe(10);
+    expect(model.root.getObjectByName("FoundationSlab")).toBeDefined();
+    expect(model.root.getObjectByName("CylinderFoundationPlinth")).toBeDefined();
+    expect(model.root.getObjectByName("WalkingBeamPillar")).toBeDefined();
+    expect(model.root.getObjectByName("OutputShaftPedestal1")).toBeDefined();
+    expect(model.root.getObjectByName("OutputShaftPedestal2")).toBeDefined();
+    expect(model.root.getObjectByName("OutputShaftBearing1")).toBeDefined();
+    expect(model.root.getObjectByName("OutputShaftBearing2")).toBeDefined();
+
+    const flywheelBottomY =
+      model.flywheelGroup.position.y -
+      WATT_ROTARY_KINEMATIC_GEOMETRY.flywheelRadiusM -
+      WATT_ROTARY_KINEMATIC_GEOMETRY.flywheelRimRadiusM;
+    expect(flywheelBottomY).toBeGreaterThanOrEqual(
+      WATT_ROTARY_KINEMATIC_GEOMETRY.minimumMovingClearanceM,
+    );
 
     model.dispose();
   });
@@ -125,6 +143,7 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     const model = buildWattRotaryEngineModel();
     for (const ratio of [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]) {
       const controls = readWattRotaryControls({ strokeRateSpm: 20, gearRatioNpOverNs: ratio });
+      const initial = stepWattRotaryEngine(controls, 0);
 
       for (let sec = 0; sec <= 3; sec += 0.125) {
         const telemetry = stepWattRotaryEngine(controls, sec);
@@ -151,10 +170,13 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
         expect(computedBottomX).toBeCloseTo(model.planetGearGroup.position.x, 10);
         expect(computedBottomY).toBeCloseTo(model.planetGearGroup.position.y, 10);
 
-        // The restrained planet has a fixed world orientation; sun and
-        // flywheel share the source-required keyed shaft angle.
+        // The restrained planet is rigidly bolted to the rocking rod; sun and
+        // flywheel share the no-slip keyed shaft angle.
         expect(model.planetGearGroup.rotation.z).toBeCloseTo(telemetry.planetBodyAngleRad, 12);
-        expect(model.planetGearGroup.rotation.z).toBe(0);
+        expect(model.planetGearGroup.rotation.z).toBeCloseTo(
+          telemetry.connectingRodAngleRad - initial.connectingRodAngleRad,
+          12,
+        );
         expect(model.sunGearGroup.rotation.z).toBeCloseTo(telemetry.sunShaftAngleRad, 12);
         expect(model.flywheelGroup.rotation.z).toBeCloseTo(telemetry.sunShaftAngleRad, 12);
 
@@ -186,6 +208,46 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     expect(svgSource).not.toContain("INITIAL_WATT_CONNECTING_ROD_ANGLE_RAD");
 
     model.dispose();
+  });
+
+  test("keeps one route-level physics owner mounted across both visual faces", () => {
+    const dispatcherSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/index.tsx"),
+      "utf8",
+    );
+    const ownerSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/PatentPhysicsRuntimeOwner.tsx"),
+      "utf8",
+    );
+    const svgSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/WattRotaryEngineSim.tsx"),
+      "utf8",
+    );
+
+    expect(dispatcherSource).toContain("<WattRotaryPhysicsRuntimeOwner patentId={patentId} />");
+    expect(ownerSource).toContain("createWattRotaryTransportUpdater");
+    expect(ownerSource).toContain("data-watt-kernel-source={WATT_ROTARY_KERNEL_SOURCE}");
+    expect(ownerSource).toContain(
+      "data-watt-frankensim-boundary={WATT_ROTARY_FRANKENSIM_BOUNDARY}",
+    );
+    expect(svgSource).toContain("getWattRotaryTapeFrame()?.telemetry");
+    expect(svgSource).not.toContain("requestAnimationFrame");
+    expect(svgSource).not.toContain("performance.now");
+  });
+
+  test("refuses the source-unsupported closed energy balance instead of fabricating one", () => {
+    const studioSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/WattRotaryEngine3D.tsx"),
+      "utf8",
+    );
+    const ledgerSource = readFileSync(join(process.cwd(), "src/physics/energyLedger.ts"), "utf8");
+
+    expect(studioSource).not.toContain("PortHamiltonianEnergyStrip");
+    expect(energyChannelsFor("gb-1306-watt-rotary-engine", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["gb-1306-watt-rotary-engine"]).toContain(
+      "no source engine dimensions",
+    );
+    expect(ledgerSource).toContain("a closed historical");
   });
 
   test("disposes all allocated geometries and materials cleanly", () => {

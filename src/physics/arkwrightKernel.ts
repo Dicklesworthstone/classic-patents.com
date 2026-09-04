@@ -3,13 +3,21 @@
  *
  * SI Physics Kernel for Richard Arkwright's 1769 Water Frame Cotton Spinning Machine (GB 931).
  *
- * Implements genuine textile mechanics:
+ * Implements a declared modern textile-mechanics teaching scenario:
  * 1. Multi-stage differential roller draft: D = v_delivery / v_feed = ∏(r_i · ω_i)
  * 2. Staple fiber parallelization kinetics and roving linear density attenuation (English Count Ne & Tex)
  * 3. High-velocity flyer twist kinetics: TPM = RPM / (60 · v_delivery), TPI = TM · √Ne
  * 4. Fiber normal clamping friction and yarn tensile tenacity (warp-grade "water twist")
  * 5. Drag-retarded dead-spindle bobbin differential take-up and cardioid heart-cam traverse
  */
+
+import type { TapeUpdater } from "./useFrankenSimPhysics";
+
+export const ARKWRIGHT_KERNEL_SOURCE = "source-bounded-ts" as const;
+export const ARKWRIGHT_FRANKENSIM_BOUNDARY =
+  "fs-mbd::articulated-revolute-and-prismatic-browser-step-unavailable" as const;
+export const ARKWRIGHT_SOURCE_BOUNDARY =
+  "The pinned GB 931 artifact is a modern reconstruction, not the original enrolled specification or drawing. This exhibit therefore owns only a declared normalized topology and internally consistent differential-speed kinematics. Historical dimensions, gear ratios, spindle speed, clamp mass, material law, yarn strength, output, power, and efficiency remain unavailable; every numeric input and output is a modern teaching scenario." as const;
 
 export interface ArkwrightWaterFrameControls {
   /** Water wheel / drum driving speed (RPM, default 180) */
@@ -77,6 +85,28 @@ export interface ArkwrightWaterFrameOutputs {
   yarnLengthMetersPerHour: number;
 }
 
+export interface ArkwrightRuntimeControls extends Required<ArkwrightWaterFrameControls> {
+  isRunning: boolean;
+  resetEpoch: number;
+}
+
+export interface ArkwrightKinematicPhases {
+  wheelRad: number;
+  shaftRad: number;
+  feedRollerRad: number;
+  deliveryRollerRad: number;
+  spindleRad: number;
+  bobbinRad: number;
+  traverseRad: number;
+}
+
+export interface ArkwrightTapeFrame {
+  controls: ArkwrightRuntimeControls;
+  outputs: ArkwrightWaterFrameOutputs;
+  phases: ArkwrightKinematicPhases;
+  timeSec: number;
+}
+
 export const ARKWRIGHT_DEFAULT_CONTROLS: Required<ArkwrightWaterFrameControls> = {
   waterWheelRpm: 180,
   totalDraftRatio: 6.0,
@@ -85,6 +115,50 @@ export const ARKWRIGHT_DEFAULT_CONTROLS: Required<ArkwrightWaterFrameControls> =
   inputRovingCountNe: 1.0,
   bobbinDragCoeff: 0.25,
 };
+
+export const ARKWRIGHT_ZERO_PHASES: Readonly<ArkwrightKinematicPhases> = Object.freeze({
+  wheelRad: 0,
+  shaftRad: 0,
+  feedRollerRad: 0,
+  deliveryRollerRad: 0,
+  spindleRad: 0,
+  bobbinRad: 0,
+  traverseRad: 0,
+});
+
+let latestArkwrightTapeFrame: ArkwrightTapeFrame | null = null;
+
+export function readArkwrightControls(
+  raw: Partial<ArkwrightWaterFrameControls> | Record<string, number | undefined>,
+): Required<ArkwrightWaterFrameControls> {
+  return {
+    waterWheelRpm: Number(raw.waterWheelRpm ?? ARKWRIGHT_DEFAULT_CONTROLS.waterWheelRpm),
+    totalDraftRatio: Number(raw.totalDraftRatio ?? ARKWRIGHT_DEFAULT_CONTROLS.totalDraftRatio),
+    rollerClampingWeightKg: Number(
+      raw.rollerClampingWeightKg ?? ARKWRIGHT_DEFAULT_CONTROLS.rollerClampingWeightKg,
+    ),
+    stapleLengthMm: Number(raw.stapleLengthMm ?? ARKWRIGHT_DEFAULT_CONTROLS.stapleLengthMm),
+    inputRovingCountNe: Number(
+      raw.inputRovingCountNe ?? ARKWRIGHT_DEFAULT_CONTROLS.inputRovingCountNe,
+    ),
+    bobbinDragCoeff: Number(raw.bobbinDragCoeff ?? ARKWRIGHT_DEFAULT_CONTROLS.bobbinDragCoeff),
+  };
+}
+
+export function readArkwrightRuntimeControls(
+  raw: Partial<ArkwrightRuntimeControls> | Record<string, number | boolean | undefined>,
+): ArkwrightRuntimeControls {
+  return {
+    ...readArkwrightControls(raw as Record<string, number | undefined>),
+    isRunning:
+      typeof raw.isRunning === "boolean" ? raw.isRunning : Number(raw.isRunning ?? 1) > 0.5,
+    resetEpoch: Number(raw.resetEpoch ?? 0),
+  };
+}
+
+export function getArkwrightTapeFrame(): ArkwrightTapeFrame | null {
+  return latestArkwrightTapeFrame;
+}
 
 /**
  * Step the textile drafting, twist kinetics, and production dynamics of Arkwright's 1769 Water Frame.
@@ -219,5 +293,61 @@ export function stepArkwrightWaterFrame(
     productionRateGramsPerHour,
     millProductionKgPerDay,
     yarnLengthMetersPerHour,
+  };
+}
+
+/**
+ * One fixed-step owner for both visual faces. This integrates prescribed
+ * revolute coordinates and the bobbin-rail prismatic phase from the same
+ * kinematic outputs; it does not claim an accepted FrankenSim WASM step.
+ */
+export function createArkwrightTransportUpdater(
+  readControls: () => ArkwrightRuntimeControls,
+): TapeUpdater {
+  const phases: ArkwrightKinematicPhases = { ...ARKWRIGHT_ZERO_PHASES };
+  let timeSec = 0;
+  let lastResetEpoch: number | null = null;
+  let ticksSincePublish = 4;
+
+  return (_previous, dt) => {
+    const controls = readControls();
+    if (lastResetEpoch !== null && controls.resetEpoch !== lastResetEpoch) {
+      Object.assign(phases, ARKWRIGHT_ZERO_PHASES);
+      timeSec = 0;
+    }
+    lastResetEpoch = controls.resetEpoch;
+    const outputs = stepArkwrightWaterFrame(controls);
+
+    if (controls.isRunning) {
+      timeSec += dt;
+      phases.wheelRad += outputs.wheelOmegaRadPerS * dt;
+      phases.shaftRad += outputs.wheelOmegaRadPerS * dt;
+      phases.feedRollerRad += outputs.feedRollerOmegaRadPerS * dt;
+      phases.deliveryRollerRad += outputs.deliveryRollerOmegaRadPerS * dt;
+      phases.spindleRad += outputs.spindleOmegaRadPerSec * dt;
+      phases.bobbinRad += outputs.bobbinOmegaRadPerS * dt;
+      phases.traverseRad =
+        (phases.traverseRad + outputs.traverseFreqHz * 2 * Math.PI * dt) % (2 * Math.PI);
+    }
+
+    latestArkwrightTapeFrame = {
+      controls,
+      outputs,
+      phases: { ...phases },
+      timeSec,
+    };
+
+    ticksSincePublish += 1;
+    if (ticksSincePublish < 5) return null;
+    ticksSincePublish = 0;
+    return {
+      machine: {
+        poseXMeters: 0,
+        poseYMeters: Math.sin(phases.traverseRad) * 0.04,
+        headingRad: phases.spindleRad,
+        modeLabel: controls.isRunning ? "water-frame prescribed drive" : "water-frame held",
+        wheelSpeedMps: outputs.deliveryVelocityMPerSec,
+      },
+    };
   };
 }

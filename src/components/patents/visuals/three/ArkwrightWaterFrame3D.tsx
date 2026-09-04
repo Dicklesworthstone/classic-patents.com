@@ -2,17 +2,20 @@
 
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepArkwrightWaterFrame } from "@/physics/arkwrightKernel";
-import type { MachineState } from "@/physics/types";
 import {
-  globalTransportBus,
-  type TapeUpdater,
-  useFrankenSimPhysics,
-} from "@/physics/useFrankenSimPhysics";
+  ARKWRIGHT_DEFAULT_CONTROLS,
+  ARKWRIGHT_FRANKENSIM_BOUNDARY,
+  ARKWRIGHT_KERNEL_SOURCE,
+  ARKWRIGHT_SOURCE_BOUNDARY,
+  ARKWRIGHT_ZERO_PHASES,
+  getArkwrightTapeFrame,
+  readArkwrightControls,
+  stepArkwrightWaterFrame,
+} from "@/physics/arkwrightKernel";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildArkwrightWaterFrameModel } from "./arkwrightWaterFrameModel";
 import { type KernelChip, StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -53,9 +56,10 @@ export function ArkwrightWaterFrame3D() {
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
-  const waterWheelRpm = params.waterWheelRpm ?? 32;
-  const totalDraftRatio = params.totalDraftRatio ?? 4.2;
-  const rollerClampingWeightKg = params.rollerClampingWeightKg ?? 4.5;
+  const waterWheelRpm = params.waterWheelRpm ?? ARKWRIGHT_DEFAULT_CONTROLS.waterWheelRpm;
+  const totalDraftRatio = params.totalDraftRatio ?? ARKWRIGHT_DEFAULT_CONTROLS.totalDraftRatio;
+  const rollerClampingWeightKg =
+    params.rollerClampingWeightKg ?? ARKWRIGHT_DEFAULT_CONTROLS.rollerClampingWeightKg;
 
   const live = useLiveSimParams({
     waterWheelRpm,
@@ -67,54 +71,10 @@ export function ArkwrightWaterFrame3D() {
     showCallouts,
   });
 
-  // Shared transport tape: honest envelope plus one bus-owned integrator.
-  // The updater steps every roller/flyer/traverse phase from the shared
-  // kernel; the render loop consumes the integrated phases instead of
-  // privately stepping. Accumulators live in a ref so re-registering on
-  // control changes never snaps a phase back to zero.
-  useFrankenSimPhysics(EXHIBIT_ID, {
+  const { frame } = useFrankenSimPhysics(EXHIBIT_ID, {
     domain: "continuum_elasticity",
-    refusal: { isRefused: false },
+    refusal: { isRefused: true, reason: ARKWRIGHT_SOURCE_BOUNDARY },
   });
-
-  const phasesRef = useRef({
-    wheel: 0,
-    shaft: 0,
-    feed: 0,
-    delivery: 0,
-    spindle: 0,
-    bobbin: 0,
-    traverse: 0,
-  });
-  useEffect(() => {
-    const integrate: TapeUpdater = (_prev, dt) => {
-      const out = stepArkwrightWaterFrame({
-        waterWheelRpm: live.current.waterWheelRpm,
-        totalDraftRatio: live.current.totalDraftRatio,
-        rollerClampingWeightKg: live.current.rollerClampingWeightKg,
-        stapleLengthMm: live.current.stapleLengthMm,
-        inputRovingCountNe: live.current.inputRovingCountNe,
-      });
-      const ph = phasesRef.current;
-      ph.wheel += out.wheelOmegaRadPerS * dt;
-      ph.shaft += out.wheelOmegaRadPerS * dt;
-      ph.feed += out.feedRollerOmegaRadPerS * dt;
-      ph.delivery += out.deliveryRollerOmegaRadPerS * dt;
-      ph.spindle += out.spindleOmegaRadPerSec * dt;
-      ph.bobbin += out.bobbinOmegaRadPerS * dt;
-      ph.traverse = (ph.traverse + out.traverseFreqHz * 2 * Math.PI * dt) % (2 * Math.PI);
-      const machine: MachineState = {
-        poseXMeters: 0,
-        poseYMeters: 0,
-        headingRad: ph.spindle % (2 * Math.PI),
-        modeLabel: "water-frame drafting + flyer twist",
-        wheelSpeedMps: out.deliveryVelocityMPerMin / 60,
-      };
-      return { machine };
-    };
-    const unregister = globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
-    return unregister;
-  }, [live]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setActivePreset(preset);
@@ -144,31 +104,9 @@ export function ArkwrightWaterFrame3D() {
       rafId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
 
-      // Pure consumer of the shared transport tape: every phase below is
-      // integrated by the bus updater from the shared kernel ω.
-      const ph = phasesRef.current;
-
-      // Kinematic rotations from the shared kernel ω
-      model.wheelGroup.rotation.x = ph.wheel;
-      model.shaftGroup.rotation.z = ph.shaft;
-
-      // Rollers
-      model.feedRollersGroup.rotation.x = ph.feed;
-      model.deliveryRollersGroup.rotation.x = ph.delivery;
-
-      // Flyers & Bobbins
-      for (const f of model.flyerGroups) {
-        f.rotation.y = ph.spindle;
-      }
-
-      for (const b of model.bobbinGroups) {
-        b.rotation.y = ph.bobbin;
-      }
-
-      // Heart-cam & traverse rail lift
-      const traverseOffset = Math.sin(ph.traverse) * 0.04;
-      model.traverseRailGroup.position.y = 0.52 + traverseOffset;
-      model.camGroup.rotation.z = ph.traverse;
+      // Pure consumer of the route-level shared tape. The model owns the axis
+      // mapping so a renderer cannot accidentally rotate an entire nip cage.
+      model.updateAnimation(getArkwrightTapeFrame()?.phases ?? ARKWRIGHT_ZERO_PHASES);
 
       model.setCutaway(live.current.cutaway);
       model.setCalloutsVisible(live.current.showCallouts);
@@ -187,13 +125,17 @@ export function ArkwrightWaterFrame3D() {
     };
   }, [live]);
 
-  const outputs = stepArkwrightWaterFrame({
-    waterWheelRpm,
-    totalDraftRatio,
-    rollerClampingWeightKg,
-    stapleLengthMm: params.stapleLengthMm,
-    inputRovingCountNe: params.inputRovingCountNe,
-  });
+  const outputs =
+    getArkwrightTapeFrame()?.outputs ??
+    stepArkwrightWaterFrame(
+      readArkwrightControls({
+        waterWheelRpm,
+        totalDraftRatio,
+        rollerClampingWeightKg,
+        stapleLengthMm: params.stapleLengthMm,
+        inputRovingCountNe: params.inputRovingCountNe,
+      }),
+    );
 
   const chips: KernelChip[] = [
     {
@@ -229,7 +171,18 @@ export function ArkwrightWaterFrame3D() {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+    <div
+      className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent"
+      data-arkwright-face="three"
+      data-arkwright-runtime-tick={frame.tick}
+      data-arkwright-runtime-provenance={frame.provenance}
+      data-arkwright-kernel-source={ARKWRIGHT_KERNEL_SOURCE}
+      data-arkwright-frankensim-boundary={ARKWRIGHT_FRANKENSIM_BOUNDARY}
+      data-arkwright-wheel-phase-rad={getArkwrightTapeFrame()?.phases.wheelRad ?? 0}
+      data-arkwright-feed-phase-rad={getArkwrightTapeFrame()?.phases.feedRollerRad ?? 0}
+      data-arkwright-delivery-phase-rad={getArkwrightTapeFrame()?.phases.deliveryRollerRad ?? 0}
+      data-arkwright-traverse-phase-rad={getArkwrightTapeFrame()?.phases.traverseRad ?? 0}
+    >
       <div className="sr-only">Richard Arkwright Spinning Water Frame 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -334,9 +287,9 @@ export function ArkwrightWaterFrame3D() {
             <input
               type="range"
               aria-label="Water wheel speed"
-              min="10"
-              max="60"
-              step="1"
+              min="60"
+              max="260"
+              step="10"
               value={waterWheelRpm}
               onChange={(e) => updateParam("waterWheelRpm", Number.parseFloat(e.target.value))}
               className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
@@ -353,9 +306,9 @@ export function ArkwrightWaterFrame3D() {
             <input
               type="range"
               aria-label="Total draft ratio"
-              min="2.0"
-              max="6.0"
-              step="0.1"
+              min="3.0"
+              max="10.0"
+              step="0.5"
               value={totalDraftRatio}
               onChange={(e) => updateParam("totalDraftRatio", Number.parseFloat(e.target.value))}
               className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
@@ -374,8 +327,8 @@ export function ArkwrightWaterFrame3D() {
             <input
               type="range"
               aria-label="Roller clamp weight"
-              min="2.0"
-              max="10.0"
+              min="1.0"
+              max="6.0"
               step="0.5"
               value={rollerClampingWeightKg}
               onChange={(e) =>
@@ -395,11 +348,10 @@ export function ArkwrightWaterFrame3D() {
           className="mt-2"
         />
 
-        <PortHamiltonianEnergyStrip
-          patentId="gb-931-arkwright-water-frame"
-          params={params}
-          className="mt-3"
-        />
+        <p className="mt-3 rounded-xl border border-amber-500/25 bg-amber-950/10 px-3 py-2 text-xs leading-relaxed text-ink-700 dark:text-parchment-300">
+          <strong className="text-ink-900 dark:text-parchment-100">Source boundary.</strong>{" "}
+          {ARKWRIGHT_SOURCE_BOUNDARY}
+        </p>
       </div>
     </div>
   );

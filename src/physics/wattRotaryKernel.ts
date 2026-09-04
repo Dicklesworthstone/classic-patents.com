@@ -84,12 +84,16 @@ export interface WattRotaryTelemetry {
  */
 export const WATT_ROTARY_KINEMATIC_GEOMETRY = Object.freeze({
   beamPivotX: 0,
-  beamPivotY: 3.2,
+  beamPivotY: 4.4,
   beamHalfLengthM: 2.2,
   sunCenterX: 2.2,
-  sunCenterY: 0.9,
+  sunCenterY: 2.1,
   gearCenterDistanceM: 0.9,
   connectingRodLengthM: 2.4,
+  flywheelRadiusM: 1.8,
+  flywheelRimRadiusM: 0.14,
+  foundationTopY: 0,
+  minimumMovingClearanceM: 0.12,
   nominalSunTeeth: 20,
   ratioMin: 0.5,
   ratioMax: 2,
@@ -191,8 +195,11 @@ export function stepWattRotaryEngine(
   const rPlanet = rOrbit - rSun;
   const sunTeeth = geometry.nominalSunTeeth;
   const planetTeeth = Math.round(sunTeeth * ratio);
-  const rFlywheel = 2.4; // Flywheel outer rim radius (m)
-  const iFlywheel = 0.5 * mFlywheel * (rFlywheel * rFlywheel); // Moment of inertia (kg*m^2)
+  const rFlywheel = geometry.flywheelRadiusM;
+  // The rendered flywheel carries most of its material in the rim, so the
+  // thin-ring limit I = mr^2 is the consistent declared scenario model. The
+  // previous solid-disc factor silently disagreed with the visible machine.
+  const iFlywheel = mFlywheel * rFlywheel * rFlywheel;
 
   // Cycle Frequency
   const fCycle = spm / 60; // Hz (engine cycles per sec)
@@ -225,7 +232,10 @@ export function stepWattRotaryEngine(
 
   // The piston follows the left beam end. Differentiate the four-bar closure
   // analytically so velocity and rendered position remain the same mechanism.
-  const pistonBottomReferenceY = geometry.beamHalfLengthM;
+  // The mechanism was translated upward as one rigid layout so its orbiting
+  // gears and flywheel clear the foundation. Preserve the same normalized
+  // piston datum relative to the beam pivot rather than to world zero.
+  const pistonBottomReferenceY = geometry.beamPivotY - 1;
   const pistonPositionM = clamp(leftBeamEndY - pistonBottomReferenceY, 0, stroke);
   const planetVelocityX = rOrbit * omegaCycle * Math.cos(orbitPhase);
   const planetVelocityY = rOrbit * omegaCycle * Math.sin(orbitPhase);

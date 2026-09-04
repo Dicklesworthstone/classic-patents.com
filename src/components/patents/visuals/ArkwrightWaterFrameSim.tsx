@@ -1,15 +1,22 @@
 "use client";
 
 import { Cog, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
-import { ARKWRIGHT_DEFAULT_CONTROLS, stepArkwrightWaterFrame } from "@/physics/arkwrightKernel";
+import { useId } from "react";
+import {
+  ARKWRIGHT_DEFAULT_CONTROLS,
+  ARKWRIGHT_FRANKENSIM_BOUNDARY,
+  ARKWRIGHT_KERNEL_SOURCE,
+  ARKWRIGHT_SOURCE_BOUNDARY,
+  ARKWRIGHT_ZERO_PHASES,
+  getArkwrightTapeFrame,
+  stepArkwrightWaterFrame,
+} from "@/physics/arkwrightKernel";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
-import { useOffscreenGate } from "./useOffscreenGate";
 
 const EXHIBIT_ID = "gb-931-arkwright-water-frame";
-const UI_SNAPSHOT_INTERVAL_MS = 80;
 
 export function ArkwrightWaterFrameSim() {
   const { params, updateParam, resetParams } = usePatentPhysics(EXHIBIT_ID);
@@ -28,62 +35,45 @@ export function ArkwrightWaterFrameSim() {
     stapleLengthMm,
     inputRovingCountNe,
   };
-  const [animTime, setAnimTime] = useState(0);
-  const animTimeRef = useRef(0);
-  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
+  const { frame } = useFrankenSimPhysics(EXHIBIT_ID, {
+    domain: "continuum_elasticity",
+    refusal: { isRefused: true, reason: ARKWRIGHT_SOURCE_BOUNDARY },
+  });
 
   const speedId = useId();
   const draftId = useId();
   const weightId = useId();
   const stapleId = useId();
 
-  // Run 60 FPS animation loop (paused while scrolled offscreen)
-  useEffect(() => {
-    let frameId: number;
-    let lastTime = performance.now();
-    let lastUiSnapshot = 0;
-
-    const loop = (time: number) => {
-      frameId = requestAnimationFrame(loop);
-      if (!onscreenRef.current) {
-        lastTime = time;
-        return;
-      }
-      const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
-      lastTime = time;
-      animTimeRef.current += dt;
-      // Rollers, flyer, bobbin, and heart-cam traverse derive from one drive;
-      // keep their SVG projection coherent in a bounded UI snapshot.
-      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
-        lastUiSnapshot = time;
-        setAnimTime(animTimeRef.current);
-      }
-    };
-
-    frameId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(frameId);
-  }, [onscreenRef]);
-
-  const outputs = stepArkwrightWaterFrame(controls);
+  const tape = getArkwrightTapeFrame();
+  const outputs = tape?.outputs ?? stepArkwrightWaterFrame(controls);
+  const phases = tape?.phases ?? ARKWRIGHT_ZERO_PHASES;
 
   const wheelRpm = waterWheelRpm;
   const draftRatio = totalDraftRatio;
 
   // Roller angles: feed is slow, intermediate faster, front is fastest
-  const feedRollerAngle = animTime * outputs.feedRollerOmegaRadPerS;
-  const deliveryRollerAngle = animTime * outputs.deliveryRollerOmegaRadPerS;
-  const flyerAngle = animTime * outputs.spindleOmegaRadPerSec;
-  const _bobbinAngle = animTime * outputs.bobbinOmegaRadPerS;
+  const feedRollerAngle = phases.feedRollerRad;
+  const deliveryRollerAngle = phases.deliveryRollerRad;
+  const flyerAngle = phases.spindleRad;
 
   // Heart-cam vertical oscillation [-18px, +18px]
-  const traversePhase = (animTime * outputs.traverseFreqHz * 2 * Math.PI) % (2 * Math.PI);
+  const traversePhase = phases.traverseRad;
   // Cardioid / triangular continuous lift
   const traverseOffset = Math.sin(traversePhase) * 18;
 
   return (
     <div
-      ref={rootRef}
       className="w-full bg-parchment-50 dark:bg-ink-900/95 border border-parchment-300 dark:border-ink-800 rounded-2xl p-4 sm:p-6 text-ink-900 dark:text-parchment-200 shadow-md backdrop-blur-xl transition-colors"
+      data-arkwright-face="two"
+      data-arkwright-runtime-tick={frame.tick}
+      data-arkwright-runtime-provenance={frame.provenance}
+      data-arkwright-kernel-source={ARKWRIGHT_KERNEL_SOURCE}
+      data-arkwright-frankensim-boundary={ARKWRIGHT_FRANKENSIM_BOUNDARY}
+      data-arkwright-wheel-phase-rad={phases.wheelRad}
+      data-arkwright-feed-phase-rad={phases.feedRollerRad}
+      data-arkwright-delivery-phase-rad={phases.deliveryRollerRad}
+      data-arkwright-traverse-phase-rad={phases.traverseRad}
     >
       {/* Header & Mode Badge */}
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-5 border-b border-parchment-200 dark:border-ink-800">
@@ -150,8 +140,7 @@ export function ArkwrightWaterFrameSim() {
             type="button"
             onClick={() => {
               resetParams();
-              animTimeRef.current = 0;
-              setAnimTime(0);
+              updateParam("resetEpoch", (params.resetEpoch ?? 0) + 1);
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
@@ -625,6 +614,10 @@ export function ArkwrightWaterFrameSim() {
               1771 Factory System
             </span>
           </div>
+
+          <p className="rounded-xl border border-amber-500/25 bg-amber-950/10 px-3 py-2 text-xs leading-relaxed text-stone-300">
+            <strong className="text-stone-100">Source boundary.</strong> {ARKWRIGHT_SOURCE_BOUNDARY}
+          </p>
         </div>
       </div>
     </div>

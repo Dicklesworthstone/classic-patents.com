@@ -16,33 +16,15 @@ import {
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import {
+  DA_VINCI_INTERFACE_CAMERA_PRESETS,
+  type DaVinciInterfaceCameraPreset,
+  daVinciInterfaceViewForViewport,
+} from "./daVinciInterfaceCamera";
 import { buildDaVinciInterfaceModel } from "./daVinciInterfaceModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 
 const EXHIBIT_ID = "us-6331181-davinci";
-
-type CameraPreset = "overview" | "processor" | "tool";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { label: string; pos: [number, number, number]; target: [number, number, number] }
-> = {
-  overview: {
-    label: "Interface overview",
-    pos: [5.4, 3.2, 7.2],
-    target: [0, 0, 0],
-  },
-  processor: {
-    label: "Processor boundary",
-    pos: [-3.8, 1.8, 3.7],
-    target: [-1.4, 0.2, 0],
-  },
-  tool: {
-    label: "Tool-side memory",
-    pos: [4.25, 1.8, 3.35],
-    target: [1.2, 0.18, 0],
-  },
-};
 
 function statusCopy(status: ReturnType<typeof resolveDaVinciInterfaceTopology>["status"]) {
   switch (status) {
@@ -61,7 +43,7 @@ export function DaVinciInterface3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("overview");
+  const [activeCamera, setActiveCamera] = useState<DaVinciInterfaceCameraPreset>("overview");
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 17: true });
   const { params, updateParam, resetParams } = usePatentPhysics(EXHIBIT_ID);
   const topology = resolveDaVinciInterfaceTopology(readDaVinciInterfaceControls(params));
@@ -85,9 +67,12 @@ export function DaVinciInterface3D() {
     },
   });
 
-  const setCamera = (preset: CameraPreset) => {
+  const setCamera = (preset: DaVinciInterfaceCameraPreset) => {
     setActiveCamera(preset);
-    const camera = CAMERA_PRESETS[preset];
+    const camera = daVinciInterfaceViewForViewport(
+      preset,
+      containerRef.current?.clientWidth ?? 1000,
+    );
     studioRef.current?.controls.setView(camera.pos, camera.target);
   };
 
@@ -95,7 +80,7 @@ export function DaVinciInterface3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const overview = CAMERA_PRESETS.overview;
+    const overview = daVinciInterfaceViewForViewport("overview", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: overview.pos,
@@ -122,6 +107,17 @@ export function DaVinciInterface3D() {
       studioRef.current = null;
     };
   }, [liveTopology]);
+
+  useEffect(() => {
+    const restoreResponsiveView = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const camera = daVinciInterfaceViewForViewport(activeCamera, container.clientWidth);
+      studioRef.current?.controls.setView(camera.pos, camera.target);
+    };
+    window.addEventListener("resize", restoreResponsiveView);
+    return () => window.removeEventListener("resize", restoreResponsiveView);
+  }, [activeCamera]);
 
   const controls = [
     {
@@ -174,9 +170,9 @@ export function DaVinciInterface3D() {
 
         <div className="absolute bottom-3 left-3 flex flex-wrap gap-1.5">
           {(
-            Object.entries(CAMERA_PRESETS) as [
-              CameraPreset,
-              (typeof CAMERA_PRESETS)[CameraPreset],
+            Object.entries(DA_VINCI_INTERFACE_CAMERA_PRESETS) as [
+              DaVinciInterfaceCameraPreset,
+              (typeof DA_VINCI_INTERFACE_CAMERA_PRESETS)[DaVinciInterfaceCameraPreset],
             ][]
           ).map(([preset, config]) => (
             <button

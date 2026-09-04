@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import type { ArkwrightKinematicPhases } from "@/physics/arkwrightKernel";
 
 export interface ArkwrightWaterFrameModelNodes {
   root: THREE.Group;
@@ -6,6 +7,10 @@ export interface ArkwrightWaterFrameModelNodes {
   shaftGroup: THREE.Group;
   feedRollersGroup: THREE.Group;
   deliveryRollersGroup: THREE.Group;
+  feedLowerRollers: THREE.Mesh[];
+  feedUpperRollers: THREE.Mesh[];
+  deliveryLowerRollers: THREE.Mesh[];
+  deliveryUpperRollers: THREE.Mesh[];
   flyerGroups: THREE.Group[];
   bobbinGroups: THREE.Group[];
   traverseRailGroup: THREE.Group;
@@ -13,6 +18,7 @@ export interface ArkwrightWaterFrameModelNodes {
   calloutGroup: THREE.Group;
   setCutaway: (cutaway: boolean) => void;
   setCalloutsVisible: (visible: boolean) => void;
+  updateAnimation: (phases: ArkwrightKinematicPhases) => void;
   dispose: () => void;
 }
 
@@ -181,6 +187,10 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
 
   const rollerGeom = new THREE.CylinderGeometry(0.018, 0.018, 0.07, 16);
   disposables.push(rollerGeom);
+  const feedLowerRollers: THREE.Mesh[] = [];
+  const feedUpperRollers: THREE.Mesh[] = [];
+  const deliveryLowerRollers: THREE.Mesh[] = [];
+  const deliveryUpperRollers: THREE.Mesh[] = [];
 
   for (const x of stationX) {
     // Pair 1: Feed Rollers (Lower fluted brass, upper leather cot)
@@ -188,22 +198,26 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
     lowerFeed.rotation.z = Math.PI / 2;
     lowerFeed.position.set(x, -0.01, 0);
     feedRollersGroup.add(lowerFeed);
+    feedLowerRollers.push(lowerFeed);
 
     const upperFeed = new THREE.Mesh(rollerGeom, leatherMaterial);
     upperFeed.rotation.z = Math.PI / 2;
     upperFeed.position.set(x, 0.026, 0);
     feedRollersGroup.add(upperFeed);
+    feedUpperRollers.push(upperFeed);
 
     // Pair 4: Delivery Rollers (Accelerating speed)
     const lowerDeliv = new THREE.Mesh(rollerGeom, brassMaterial);
     lowerDeliv.rotation.z = Math.PI / 2;
     lowerDeliv.position.set(x, -0.01, 0);
     deliveryRollersGroup.add(lowerDeliv);
+    deliveryLowerRollers.push(lowerDeliv);
 
     const upperDeliv = new THREE.Mesh(rollerGeom, leatherMaterial);
     upperDeliv.rotation.z = Math.PI / 2;
     upperDeliv.position.set(x, 0.026, 0);
     deliveryRollersGroup.add(upperDeliv);
+    deliveryUpperRollers.push(upperDeliv);
 
     // D: Suspended Lead Weights & Saddles
     const saddleWireGeom = new THREE.CylinderGeometry(0.002, 0.002, 0.18, 8);
@@ -222,6 +236,32 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
   // ==================== 5. E & F: SPINDLES, FLYERS & BOBBINS ====================
   const flyerGroups: THREE.Group[] = [];
   const bobbinGroups: THREE.Group[] = [];
+
+  // Four continuous roving paths make the material flow physically legible:
+  // feed nip -> delivery nip -> flyer guide -> bobbin. They remain stationary
+  // centerlines while the rollers and flyers move around them.
+  const yarnPathMaterial = new THREE.LineBasicMaterial({
+    color: 0xfef08a,
+    transparent: true,
+    opacity: 0.9,
+  });
+  disposables.push(yarnPathMaterial);
+  const yarnPathGeometries: THREE.BufferGeometry[] = [];
+  for (const x of stationX) {
+    const pathPoints = [
+      new THREE.Vector3(x, 0.88, -0.12),
+      new THREE.Vector3(x, 0.88, 0.06),
+      new THREE.Vector3(x, 0.72, 0.06),
+      new THREE.Vector3(x + 0.045, 0.56, 0.06),
+      new THREE.Vector3(x + 0.026, 0.61, 0.06),
+    ];
+    const pathGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
+    disposables.push(pathGeometry);
+    yarnPathGeometries.push(pathGeometry);
+    const yarnPath = new THREE.Line(pathGeometry, yarnPathMaterial);
+    yarnPath.name = `continuous-roving-path-${x}`;
+    root.add(yarnPath);
+  }
 
   // G: Traversing Rail holding the bobbins (moves up and down)
   const traverseRailGroup = new THREE.Group();
@@ -342,6 +382,27 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
   leverMesh.position.set(-0.05, 0, 0);
   camGroup.add(leverMesh);
 
+  // A visible right-angle transmission at the intersection of wheel A and
+  // shaft B closes the power path. The modern reconstruction names
+  // intermediate gearing without dimensions, so these are deliberately
+  // normalized bevel members rather than asserted historical tooth counts.
+  const rightAngleDriveGroup = new THREE.Group();
+  rightAngleDriveGroup.name = "normalized-right-angle-drive-A-to-B";
+  rightAngleDriveGroup.position.set(0.35, 0.22, 0);
+  const wheelBevelGeom = new THREE.CylinderGeometry(0.045, 0.09, 0.08, 20);
+  const shaftBevelGeom = new THREE.CylinderGeometry(0.045, 0.09, 0.08, 20);
+  disposables.push(wheelBevelGeom, shaftBevelGeom);
+  const wheelBevel = new THREE.Mesh(wheelBevelGeom, brassMaterial);
+  wheelBevel.name = "wheel-axis-bevel-member";
+  wheelBevel.rotation.x = Math.PI / 2;
+  wheelBevel.position.z = 0.05;
+  const shaftBevel = new THREE.Mesh(shaftBevelGeom, brassMaterial);
+  shaftBevel.name = "shaft-axis-bevel-member";
+  shaftBevel.rotation.z = Math.PI / 2;
+  shaftBevel.position.x = -0.05;
+  rightAngleDriveGroup.add(wheelBevel, shaftBevel);
+  root.add(rightAngleDriveGroup);
+
   // ==================== 7. CALLOUT ANNOTATION PINS ====================
   const calloutGroup = new THREE.Group();
   calloutGroup.name = "callout-pins";
@@ -380,6 +441,32 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
     calloutGroup.visible = visible;
   };
 
+  const updateAnimation = (phases: ArkwrightKinematicPhases) => {
+    // Rotate every body about its own physical shaft. Rotating the former
+    // aggregate groups made complete roller nips, hanging weights, and the
+    // main drum orbit around arbitrary world axes.
+    wheelGroup.rotation.z = phases.wheelRad;
+    shaftGroup.rotation.x = phases.shaftRad;
+    for (const roller of feedLowerRollers) roller.rotation.x = phases.feedRollerRad;
+    for (const roller of feedUpperRollers) roller.rotation.x = -phases.feedRollerRad;
+    for (const roller of deliveryLowerRollers) roller.rotation.x = phases.deliveryRollerRad;
+    for (const roller of deliveryUpperRollers) roller.rotation.x = -phases.deliveryRollerRad;
+    for (const flyer of flyerGroups) flyer.rotation.y = phases.spindleRad;
+    for (const bobbin of bobbinGroups) bobbin.rotation.y = phases.bobbinRad;
+
+    const traverseOffset = Math.sin(phases.traverseRad) * 0.04;
+    traverseRailGroup.position.y = 0.52 + traverseOffset;
+    camGroup.rotation.z = phases.traverseRad;
+
+    // Keep the final yarn segment attached to the traversing bobbin instead
+    // of leaving a floating endpoint at the rail's neutral pose.
+    for (const pathGeometry of yarnPathGeometries) {
+      const positions = pathGeometry.getAttribute("position") as THREE.BufferAttribute;
+      positions.setY(4, 0.61 + traverseOffset);
+      positions.needsUpdate = true;
+    }
+  };
+
   const dispose = () => {
     for (const d of disposables) {
       d.dispose();
@@ -392,6 +479,10 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
     shaftGroup,
     feedRollersGroup,
     deliveryRollersGroup,
+    feedLowerRollers,
+    feedUpperRollers,
+    deliveryLowerRollers,
+    deliveryUpperRollers,
     flyerGroups,
     bobbinGroups,
     traverseRailGroup,
@@ -399,6 +490,7 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
     calloutGroup,
     setCutaway,
     setCalloutsVisible,
+    updateAnimation,
     dispose,
   };
 }

@@ -50,7 +50,7 @@ export const wattRotaryEnginePatent: Patent = {
     overview:
       "Before 1781, steam engines were exclusively reciprocating pumpers—suited for bailing water out of Cornish copper and coal mines, but incapable of turning a factory driveshaft. Mills still relied entirely on capricious water wheels and draft horses. When Boulton & Watt sought to apply steam to factories, they found James Pickard had patented the simple crankshaft in 1780, demanding exorbitant royalties. Instead of yielding, Watt and William Murdoch invented five ingenious rotary mechanisms, crowned by the Sun and Planet epicyclic gear. By clamping an orbiting planet gear rigidly to the connecting rod, the mechanism not only bypassed the crank patent but doubled output shaft speed, spinning factory line shafts at twice the frequency of the engine beam.",
     coreMechanism:
-      "The engine piston rocks a great wooden or cast-iron walking beam through a stroke $S = 1.8\\text{ m}$. Suspended from the outer beam head is a long iron connecting spear. Clamped rigidly to the bottom of this spear is the 'Planet' spur gear ($N_p = 40$ teeth). Meshing with it is the 'Sun' spur gear ($N_s = 40$ teeth) keyed directly to the flywheel shaft. A brass radius link holds the two gear centers at constant pitch distance $R_{\\text{orbit}} = r_s + r_p$. Because the planet gear cannot spin independently on its own center, orbiting once around the sun forces the sun gear to advance by its own teeth PLUS the planet's teeth, yielding an exact 2:1 epicyclic speed multiplication: $\\omega_{\\text{shaft}} = \\omega_{\\text{beam}} \\cdot (1 + N_p / N_s) = 2 \\cdot \\omega_{\\text{beam}}$.",
+      "The engine piston rocks a great wooden or cast-iron walking beam through a declared reconstruction stroke $S = 1.8\\text{ m}$. Suspended from the outer beam head is a long iron connecting spear. Clamped rigidly to the bottom of this spear is the 'Planet' spur gear; it cannot spin freely, but it does rock through the spear's small angular excursion. Meshing with it is the 'Sun' spur gear keyed directly to the flywheel shaft. A radius link holds the two gear centers at constant pitch distance $R_{\\text{orbit}} = r_s + r_p$. The exact no-slip relation is $N_s(\\theta_s-\\theta_c)+N_p(\\theta_p-\\theta_c)=0$. The rocking term makes instantaneous shaft speed vary, while the planet returns to its starting orientation after one beam cycle, so equal gears still produce exactly two net shaft revolutions per cycle.",
     mechanicalBreakdown: [
       {
         title: "Sun & Planet Epicyclic Gear Pair",
@@ -66,7 +66,7 @@ export const wattRotaryEnginePatent: Patent = {
         summary:
           "Solid iron flange bolting the planet gear rigidly to the connecting rod, preventing independent rotation on its own center.",
         technicalDetails:
-          "If the planet gear were free to rotate on a bearing pin at the end of the connecting rod like an idler, it would transmit zero continuous torque. Bolting it solidly locks its angular orientation to the connecting rod, converting rod translation into orbital driving torque.",
+          "If the planet gear were free to rotate on a bearing pin at the end of the connecting rod like an idler, it would not impose Watt's driven-shaft relation. Bolting it solidly locks its angular orientation to the connecting rod: the wheel rocks with the finite-length rod rather than spinning freely or remaining artificially fixed in world space.",
         archaicTerm: "Spear or connecting rod",
         modernEquivalent: "Rigid planetary carrier / connecting rod extension",
       },
@@ -102,9 +102,9 @@ export const wattRotaryEnginePatent: Patent = {
       {
         principle: "Epicyclic Kinematic Velocity Multiplication",
         formula:
-          "\\omega_{\\text{shaft}} = \\omega_{\\text{beam}} \\left(1 + \\frac{N_{\\text{planet}}}{N_{\\text{sun}}}\\right) = 2 \\cdot \\omega_{\\text{beam}}",
+          "\\omega_s = \\left(1 + \\frac{N_p}{N_s}\\right)\\omega_c - \\frac{N_p}{N_s}\\omega_p; \\quad \\Delta\\theta_s = 2\\pi\\left(1 + \\frac{N_p}{N_s}\\right) \\text{ per cycle}",
         explanation:
-          "In an epicyclic gear train where the planet gear does not rotate relative to its carrier arm, the driven sun gear rotates with angular velocity equal to the carrier arm velocity plus the ratio of gear teeth. For identical gears ($N_p = N_s$), the velocity ratio is exactly $1 + 1 = 2.0$.",
+          "The external mesh equates pitch-line material velocity. Here the planet is rigidly attached to a connecting rod, so its body angular velocity $\\omega_p$ is the rod's small rocking rate, not an independent gear spin. That rocking modulates instantaneous sun speed. Because the rod returns to the same angle after each orbit, its net contribution is zero and identical gears still yield exactly two sun turns per beam cycle.",
       },
       {
         principle: "Instantaneous Shaft Torque & Tangential Tooth Contact",

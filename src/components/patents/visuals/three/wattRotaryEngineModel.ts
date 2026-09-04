@@ -136,20 +136,23 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
   // ==========================================
   const baseGeom = track(new THREE.BoxGeometry(7.0, 0.4, 4.0));
   const baseMesh = new THREE.Mesh(baseGeom, masonryMat);
+  baseMesh.name = "FoundationSlab";
   baseMesh.position.set(0, -0.2, 0);
   root.add(baseMesh);
 
   // Main Central Pillar supporting Walking Beam
-  const pillarGeom = track(new THREE.BoxGeometry(0.8, 3.4, 1.0));
+  const pillarHeight = geometry.beamPivotY - geometry.foundationTopY + 0.2;
+  const pillarGeom = track(new THREE.BoxGeometry(0.8, pillarHeight, 1.0));
   const pillarMesh = new THREE.Mesh(pillarGeom, masonryMat);
-  pillarMesh.position.set(0, 1.5, 0);
+  pillarMesh.name = "WalkingBeamPillar";
+  pillarMesh.position.set(geometry.beamPivotX, geometry.foundationTopY + pillarHeight / 2 - 0.2, 0);
   root.add(pillarMesh);
 
   // Beam Trunnion Bearings (Brass Pillow Blocks)
   const bearingGeom = track(new THREE.CylinderGeometry(0.18, 0.18, 1.2, 16));
   const bearingMesh = new THREE.Mesh(bearingGeom, brassMat);
   bearingMesh.rotation.x = Math.PI / 2;
-  bearingMesh.position.set(0, 3.2, 0);
+  bearingMesh.position.set(geometry.beamPivotX, geometry.beamPivotY, 0);
   root.add(bearingMesh);
 
   // ==========================================
@@ -158,11 +161,28 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
   const cylRadius = 0.55;
   const cylHeight = 2.2;
   const cylPosX = -2.2;
+  const cylCenterY = 2.5;
+  const cylinderBottomY = cylCenterY - cylHeight / 2;
+
+  // The cylinder cannot hover above the engine bed. A masonry plinth carries
+  // its lower flange down to the common foundation while leaving the piston
+  // and rod free inside the bore.
+  const cylinderPlinthGeom = track(
+    new THREE.BoxGeometry(1.4, cylinderBottomY - geometry.foundationTopY, 1.3),
+  );
+  const cylinderPlinthMesh = new THREE.Mesh(cylinderPlinthGeom, masonryMat);
+  cylinderPlinthMesh.name = "CylinderFoundationPlinth";
+  cylinderPlinthMesh.position.set(
+    cylPosX,
+    geometry.foundationTopY + (cylinderBottomY - geometry.foundationTopY) / 2,
+    0,
+  );
+  root.add(cylinderPlinthMesh);
 
   // Solid Cylinder Outer Shell
   const cylShellGeom = track(new THREE.CylinderGeometry(cylRadius, cylRadius, cylHeight, 24));
   const cylinderShellMesh = new THREE.Mesh(cylShellGeom, castIronMat);
-  cylinderShellMesh.position.set(cylPosX, 1.3, 0);
+  cylinderShellMesh.position.set(cylPosX, cylCenterY, 0);
   root.add(cylinderShellMesh);
 
   // Cutaway Half-Cylinder Mesh (for cutaway mode)
@@ -170,21 +190,21 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
     new THREE.CylinderGeometry(cylRadius, cylRadius, cylHeight, 24, 1, false, 0, Math.PI),
   );
   const cylinderCutawayMesh = new THREE.Mesh(cylCutawayGeom, castIronMat);
-  cylinderCutawayMesh.position.set(cylPosX, 1.3, 0);
+  cylinderCutawayMesh.position.set(cylPosX, cylCenterY, 0);
   cylinderCutawayMesh.visible = false;
   root.add(cylinderCutawayMesh);
 
   // Cylinder End Flanges
   const flangeGeom = track(new THREE.CylinderGeometry(0.65, 0.65, 0.12, 24));
   const topFlange = new THREE.Mesh(flangeGeom, castIronMat);
-  topFlange.position.set(cylPosX, 2.4, 0);
+  topFlange.position.set(cylPosX, cylCenterY + cylHeight / 2, 0);
   const bottomFlange = new THREE.Mesh(flangeGeom, castIronMat);
-  bottomFlange.position.set(cylPosX, 0.2, 0);
+  bottomFlange.position.set(cylPosX, cylinderBottomY, 0);
   root.add(topFlange, bottomFlange);
 
   // Piston Group (moves vertically)
   const pistonGroup = new THREE.Group();
-  pistonGroup.position.set(cylPosX, 1.3, 0);
+  pistonGroup.position.set(cylPosX, cylCenterY, 0);
 
   const pistonDiscGeom = track(new THREE.CylinderGeometry(0.5, 0.5, 0.18, 20));
   const pistonDiscMesh = new THREE.Mesh(pistonDiscGeom, brassMat);
@@ -206,7 +226,7 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
   root.add(pistonLinkGroup);
 
   // ==========================================
-  // 3. GREAT WALKING BEAM (Pivot at (0, 3.2, 0))
+  // 3. GREAT WALKING BEAM
   // ==========================================
   const beamGroup = new THREE.Group();
   beamGroup.position.set(geometry.beamPivotX, geometry.beamPivotY, 0);
@@ -250,7 +270,7 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
   root.add(connectingRodGroup);
 
   // ==========================================
-  // 5. SUN & PLANET EPICYCLIC GEARS & FLYWHEEL (Right side at X = 2.2, Y = 0.9)
+  // 5. SUN & PLANET EPICYCLIC GEARS & FLYWHEEL
   // ==========================================
   const sunPosX = geometry.sunCenterX;
   const sunPosY = geometry.sunCenterY;
@@ -262,6 +282,25 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
   shaftMesh.rotation.x = Math.PI / 2;
   shaftMesh.position.set(sunPosX, sunPosY, 0.5);
   root.add(shaftMesh);
+
+  // Two pedestal bearings carry the output shaft on opposite sides of the
+  // gear plane. Their Z offsets keep the stationary housings clear of the
+  // orbiting planet while making the shaft load path to the bed explicit.
+  const shaftBearingZPositions = [-0.45, 0.65] as const;
+  const shaftPedestalTopY = sunPosY - 0.22;
+  const shaftPedestalHeight = shaftPedestalTopY - geometry.foundationTopY;
+  const shaftPedestalGeom = track(new THREE.BoxGeometry(0.64, shaftPedestalHeight, 0.28));
+  const shaftBearingGeom = track(new THREE.CylinderGeometry(0.2, 0.2, 0.28, 20));
+  shaftBearingZPositions.forEach((z, index) => {
+    const pedestal = new THREE.Mesh(shaftPedestalGeom, masonryMat);
+    pedestal.name = `OutputShaftPedestal${index + 1}`;
+    pedestal.position.set(sunPosX, geometry.foundationTopY + shaftPedestalHeight / 2, z);
+    const bearing = new THREE.Mesh(shaftBearingGeom, brassMat);
+    bearing.name = `OutputShaftBearing${index + 1}`;
+    bearing.rotation.x = Math.PI / 2;
+    bearing.position.set(sunPosX, sunPosY, z);
+    root.add(pedestal, bearing);
+  });
 
   // The seven supported gear ratios are discrete, physically compatible gear
   // pairs. Each pair has one module shared by its sun and planet; inactive
@@ -395,12 +434,14 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
   const flywheelGroup = new THREE.Group();
   flywheelGroup.position.set(sunPosX, sunPosY, 1.4);
 
-  const rimGeom = track(new THREE.TorusGeometry(1.8, 0.14, 16, 40));
+  const rimGeom = track(
+    new THREE.TorusGeometry(geometry.flywheelRadiusM, geometry.flywheelRimRadiusM, 16, 40),
+  );
   const rimMesh = new THREE.Mesh(rimGeom, castIronMat);
   flywheelGroup.add(rimMesh);
 
   // 6 Spokes
-  const spokeGeom = track(new THREE.CylinderGeometry(0.06, 0.06, 3.6, 12));
+  const spokeGeom = track(new THREE.CylinderGeometry(0.06, 0.06, geometry.flywheelRadiusM * 2, 12));
   for (let i = 0; i < 3; i++) {
     const spoke = new THREE.Mesh(spokeGeom, castIronMat);
     spoke.rotation.z = (i * Math.PI) / 3;
@@ -412,16 +453,16 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
   // 6. CALLOUT SPRITES
   // ==========================================
   const calloutDefinitions = [
-    { text: "A: Walking Beam", pos: [0, 3.7, 0] },
-    { text: "B: Connecting Rod", pos: [2.5, 2.2, 0] },
-    { text: "C: Planet Gear", pos: [2.9, 0.3, 0] },
-    { text: "D: Sun Gear", pos: [1.7, 0.9, 0] },
-    { text: "E: Flywheel", pos: [2.2, 2.6, 1.4] },
-    { text: "F: Steam Cylinder", pos: [-2.2, 2.7, 0] },
-    { text: "G: Radius Link", pos: [2.2, 0.5, 0.3] },
-    { text: "H: Masonry Pillar", pos: [0, 1.2, 0.6] },
-    { text: "I: Trunnion Bearings", pos: [0, 3.3, 0.7] },
-    { text: "J: Driveshaft", pos: [2.2, 0.9, 1.8] },
+    { text: "A: Walking Beam", pos: [0, geometry.beamPivotY + 0.5, 0] },
+    { text: "B: Connecting Rod", pos: [2.5, geometry.beamPivotY - 1, 0] },
+    { text: "C: Planet Gear", pos: [2.9, sunPosY - 0.6, 0] },
+    { text: "D: Sun Gear", pos: [sunPosX - 0.5, sunPosY, 0] },
+    { text: "E: Flywheel", pos: [sunPosX, sunPosY + 1.7, 1.4] },
+    { text: "F: Steam Cylinder", pos: [cylPosX, cylCenterY + 1.4, 0] },
+    { text: "G: Radius Link", pos: [sunPosX, sunPosY - 0.4, 0.3] },
+    { text: "H: Masonry Pillar", pos: [0, geometry.beamPivotY - 2, 0.6] },
+    { text: "I: Trunnion Bearings", pos: [0, geometry.beamPivotY + 0.1, 0.7] },
+    { text: "J: Driveshaft", pos: [sunPosX, sunPosY, 1.8] },
   ];
 
   function createTextSprite(message: string): THREE.Sprite {
@@ -524,8 +565,9 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
     connectingRodGroup.rotation.z = pose.connectingRodAngleRad;
     connectingRodGroup.scale.set(1, 1, 1);
 
-    // The planet centre orbits while the restrained wheel keeps its fixed
-    // orientation; the spear only positions the bearing at its centre.
+    // The planet centre orbits while its body rocks exactly with the rigidly
+    // attached spear. It is restrained from free axial spin, not frozen in
+    // world orientation as an infinite-rod approximation would imply.
     planetGearGroup.rotation.z = pose.planetBodyAngleRad;
 
     // Radius link guide bar pivots at sun center and rotates with phase

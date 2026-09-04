@@ -12,14 +12,20 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
+import {
+  getWattRotaryTapeFrame,
+  readWattRotaryControls,
+  stepWattRotaryEngine,
+  WATT_ROTARY_FRANKENSIM_BOUNDARY,
+  WATT_ROTARY_KERNEL_SOURCE,
+  WATT_ROTARY_KINEMATIC_GEOMETRY,
+  WATT_ROTARY_SOURCE_BOUNDARY,
+} from "@/physics/wattRotaryKernel";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
-import { useOffscreenGate } from "./useOffscreenGate";
-
-const UI_SNAPSHOT_INTERVAL_MS = 80;
 
 export function WattRotaryEngineSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("gb-1306-watt-rotary-engine");
@@ -28,55 +34,31 @@ export function WattRotaryEngineSim() {
   const [activeTab, setActiveTab] = useState<
     "engine-elevation" | "gear-mesh" | "alternative-methods"
   >("engine-elevation");
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [time, setTime] = useState(0);
-  const timeRef = useRef(0);
-  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
+  const isPlaying = (params.isRunning ?? 1) > 0.5;
 
   const strokeRateSpm = params.strokeRateSpm ?? 20;
   const boilerPressureKpa = params.boilerPressureKpa ?? 70;
   const gearRatioNpOverNs = params.gearRatioNpOverNs ?? 1.0;
   const flywheelMassKg = params.flywheelMassKg ?? 3500;
 
-  // Animation frame loop
-  useEffect(() => {
-    if (!isPlaying) return;
-    let animationFrameId: number;
-    let lastTimestamp = performance.now();
-    let lastUiSnapshot = 0;
-
-    const render = (now: number) => {
-      animationFrameId = requestAnimationFrame(render);
-      if (!onscreenRef.current) {
-        lastTimestamp = now;
-        return;
-      }
-      const deltaSec = Math.max(0, Math.min(0.1, (now - lastTimestamp) / 1000));
-      lastTimestamp = now;
-      timeRef.current += deltaSec;
-      // The beam, connecting rod, fixed-centre gear mesh, and both rendering
-      // tabs derive from one closed kernel pose; publish a coherent 12.5 Hz
-      // snapshot rather than re-rendering their entire SVG tree each rAF.
-      if (now - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
-        lastUiSnapshot = now;
-        setTime(timeRef.current);
-      }
-    };
-
-    animationFrameId = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [isPlaying, onscreenRef]);
-
-  // Compute live physics telemetry
-  const telemetry = stepWattRotaryEngine(
-    {
-      strokeRateSpm,
-      boilerPressureKpa,
-      gearRatioNpOverNs,
-      flywheelMassKg,
-    },
-    time,
-  );
+  // The route-level owner remains mounted while the visitor changes faces.
+  // This hook supplies the throttled React snapshot; both faces read the same
+  // exact kinematic state from the kernel tape.
+  const { frame } = useFrankenSimPhysics("gb-1306-watt-rotary-engine", {
+    domain: "thermo_fluid",
+    refusal: { isRefused: true, reason: WATT_ROTARY_SOURCE_BOUNDARY },
+  });
+  const telemetry =
+    getWattRotaryTapeFrame()?.telemetry ??
+    stepWattRotaryEngine(
+      readWattRotaryControls({
+        strokeRateSpm,
+        boilerPressureKpa,
+        gearRatioNpOverNs,
+        flywheelMassKg,
+      }),
+      0,
+    );
 
   // One affine world-to-SVG transform keeps every joint coincident with the
   // same kernel geometry used by the 3D model.
@@ -84,13 +66,14 @@ export function WattRotaryEngineSim() {
   const beamPivotX = 280;
   const beamPivotY = 160;
   const worldToSvgX = (worldX: number) => beamPivotX + worldX * pixelsPerMeter;
-  const worldToSvgY = (worldY: number) => beamPivotY - (worldY - 3.2) * pixelsPerMeter;
+  const worldToSvgY = (worldY: number) =>
+    beamPivotY - (worldY - WATT_ROTARY_KINEMATIC_GEOMETRY.beamPivotY) * pixelsPerMeter;
   const leftBeamX = worldToSvgX(telemetry.leftBeamEndX);
   const leftBeamY = worldToSvgY(telemetry.leftBeamEndY);
   const rightBeamX = worldToSvgX(telemetry.rightBeamEndX);
   const rightBeamY = worldToSvgY(telemetry.rightBeamEndY);
-  const sunCenterX = worldToSvgX(2.2);
-  const sunCenterY = worldToSvgY(0.9);
+  const sunCenterX = worldToSvgX(WATT_ROTARY_KINEMATIC_GEOMETRY.sunCenterX);
+  const sunCenterY = worldToSvgY(WATT_ROTARY_KINEMATIC_GEOMETRY.sunCenterY);
   const rOrbitPx = telemetry.gearCenterDistanceM * pixelsPerMeter;
   const rSunPx = telemetry.sunPitchRadiusM * pixelsPerMeter;
   const rPlanetPx = telemetry.planetPitchRadiusM * pixelsPerMeter;
@@ -132,8 +115,21 @@ export function WattRotaryEngineSim() {
 
   return (
     <div
-      ref={rootRef}
       className="w-full bg-parchment-50 dark:bg-canvas border border-parchment-300 dark:border-amber-950/40 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6 text-ink-900 dark:text-parchment-200"
+      data-watt-face="two"
+      data-watt-runtime-tick={frame.tick}
+      data-watt-runtime-provenance={frame.provenance}
+      data-watt-kernel-source={WATT_ROTARY_KERNEL_SOURCE}
+      data-watt-frankensim-boundary={WATT_ROTARY_FRANKENSIM_BOUNDARY}
+      data-watt-running={isPlaying}
+      data-watt-carrier-angle-rad={telemetry.planetOrbitAngleRad}
+      data-watt-rod-angle-rad={telemetry.connectingRodAngleRad}
+      data-watt-planet-angle-rad={telemetry.planetBodyAngleRad}
+      data-watt-sun-angle-rad={telemetry.sunShaftAngleRad}
+      data-watt-mesh-residual-rad={telemetry.gearMeshConstraintResidualRad}
+      data-watt-rod-residual-m={telemetry.connectingRodConstraintResidualM}
+      data-watt-sun-teeth={telemetry.sunTeeth}
+      data-watt-planet-teeth={telemetry.planetTeeth}
     >
       {/* Header & Subtitle */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-parchment-200 dark:border-amber-900/30 pb-4">
@@ -156,7 +152,7 @@ export function WattRotaryEngineSim() {
           <button
             type="button"
             onClick={() => {
-              setIsPlaying(!isPlaying);
+              updateParam("isRunning", isPlaying ? 0 : 1);
               soundEngine.playSwitchClick();
             }}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
@@ -185,9 +181,8 @@ export function WattRotaryEngineSim() {
             type="button"
             onClick={() => {
               resetParams();
-              timeRef.current = 0;
-              setTime(0);
-              setIsPlaying(true);
+              updateParam("resetEpoch", (params.resetEpoch ?? 0) + 1);
+              updateParam("isRunning", 1);
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
@@ -469,7 +464,7 @@ export function WattRotaryEngineSim() {
               strokeDasharray="4,2"
             />
 
-            {/* Planet gear: its centre orbits while the body is restrained from a full turn. */}
+            {/* Planet gear: its centre orbits while its bolted body rocks with the spear. */}
             <g transform={`rotate(${planetAngleDeg}, ${planetCenterX}, ${planetCenterY})`}>
               <circle
                 cx={planetCenterX}
@@ -515,7 +510,8 @@ export function WattRotaryEngineSim() {
               <text x="12" y="60" fill="#94a3b8" fontSize="10">
                 Shaft Speed:{" "}
                 <tspan fill="#38bdf8">
-                  {telemetry.shaftRpm.toFixed(1)} RPM ({telemetry.speedMultiplier.toFixed(2)}×)
+                  {telemetry.shaftRpm.toFixed(1)} inst · {telemetry.meanShaftRpm.toFixed(1)} mean
+                  RPM
                 </tspan>
               </text>
               <text x="12" y="78" fill="#94a3b8" fontSize="10">
@@ -603,7 +599,7 @@ export function WattRotaryEngineSim() {
                       strokeDasharray="4,3"
                     />
 
-                    {/* Planet centre orbits; restrained body does not accumulate an axial turn. */}
+                    {/* Planet centre orbits; its restrained body rocks with the connecting spear. */}
                     <g transform={`rotate(${planetAngleDeg}, ${meshPlanetX}, ${meshPlanetY})`}>
                       <circle
                         cx={meshPlanetX}
@@ -657,11 +653,11 @@ export function WattRotaryEngineSim() {
                   Epicyclic Velocity Multiplier
                 </text>
                 <text x="0" y="35" fill="#e2e8f0" fontSize="11" fontFamily="monospace">
-                  ω_shaft = ω_beam · (1 + N_planet / N_sun)
+                  N_s(ω_s−ω_c) + N_p(ω_p−ω_c) = 0
                 </text>
                 <text x="0" y="55" fill="#94a3b8" fontSize="10">
                   Current pair: {telemetry.planetTeeth}:{telemetry.sunTeeth} teeth →{" "}
-                  {telemetry.speedMultiplier.toFixed(2)}× shaft speed
+                  {telemetry.speedMultiplier.toFixed(2)}× net turns/cycle
                 </text>
               </g>
             </svg>
@@ -717,6 +713,11 @@ export function WattRotaryEngineSim() {
           </div>
         )}
       </div>
+
+      <p className="rounded-xl border border-amber-500/25 bg-amber-950/10 px-4 py-3 text-xs leading-relaxed text-ink-700 dark:text-parchment-300">
+        <strong className="text-ink-900 dark:text-parchment-100">Source boundary.</strong>{" "}
+        {WATT_ROTARY_SOURCE_BOUNDARY}
+      </p>
 
       {/* Interactive Sliders Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-stone-900/40 p-4 rounded-xl border border-stone-800">

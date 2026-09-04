@@ -1259,6 +1259,191 @@ async function auditPatent(
 
     let mechanismInteraction: Record<string, unknown> = { available: false };
     let mechanismInteractionValid = true;
+    if (patentId === "gb-1306-watt-rotary-engine") {
+      const readWattOwner = async () => {
+        const snapshot = await runtimeOwnerSnapshot(page, patentId);
+        return {
+          raw: snapshot,
+          running: snapshot?.["data-watt-running"],
+          timeSec: Number(snapshot?.["data-watt-time-sec"]),
+          carrierAngleRad: Number(snapshot?.["data-watt-carrier-angle-rad"]),
+          rodAngleRad: Number(snapshot?.["data-watt-rod-angle-rad"]),
+          planetAngleRad: Number(snapshot?.["data-watt-planet-angle-rad"]),
+          sunAngleRad: Number(snapshot?.["data-watt-sun-angle-rad"]),
+          meshResidualRad: Number(snapshot?.["data-watt-mesh-residual-rad"]),
+          rodResidualM: Number(snapshot?.["data-watt-rod-residual-m"]),
+          sunTeeth: Number(snapshot?.["data-watt-sun-teeth"]),
+          planetTeeth: Number(snapshot?.["data-watt-planet-teeth"]),
+          provenance: snapshot?.["data-runtime-provenance"],
+          kernelSource: snapshot?.["data-watt-kernel-source"],
+          frankenSimBoundary: snapshot?.["data-watt-frankensim-boundary"],
+        };
+      };
+      const readWattFace = (face: "two" | "three") =>
+        dispatcher.locator(`[data-watt-face="${face}"]`).evaluate((element) => ({
+          carrierAngleRad: Number(element.getAttribute("data-watt-carrier-angle-rad")),
+          rodAngleRad: Number(element.getAttribute("data-watt-rod-angle-rad")),
+          planetAngleRad: Number(element.getAttribute("data-watt-planet-angle-rad")),
+          sunAngleRad: Number(element.getAttribute("data-watt-sun-angle-rad")),
+          meshResidualRad: Number(element.getAttribute("data-watt-mesh-residual-rad")),
+          rodResidualM: Number(element.getAttribute("data-watt-rod-residual-m")),
+          sunTeeth: Number(element.getAttribute("data-watt-sun-teeth")),
+          planetTeeth: Number(element.getAttribute("data-watt-planet-teeth")),
+        }));
+
+      await page.waitForFunction(
+        (id) => {
+          const owner = document.querySelector(
+            `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+          );
+          const time = owner?.getAttribute("data-watt-time-sec");
+          return time !== null && time !== "" && Number.isFinite(Number(time));
+        },
+        patentId,
+        { timeout: 3_000 },
+      );
+      const movingStart = await readWattOwner();
+      await page.waitForTimeout(250);
+      const movingEnd = await readWattOwner();
+      const rodDelta = movingEnd.rodAngleRad - movingStart.rodAngleRad;
+      const planetDelta = movingEnd.planetAngleRad - movingStart.planetAngleRad;
+      const planetRigidToRod =
+        Math.abs(planetDelta) > 1e-4 && Math.abs(planetDelta - rodDelta) < 1e-9;
+      const constraintsClosed =
+        Math.abs(movingStart.meshResidualRad) < 1e-9 &&
+        Math.abs(movingEnd.meshResidualRad) < 1e-9 &&
+        Math.abs(movingStart.rodResidualM) < 1e-9 &&
+        Math.abs(movingEnd.rodResidualM) < 1e-9;
+      const sourceBoundaryHonest =
+        movingEnd.provenance === "TS_FALLBACK" &&
+        movingEnd.kernelSource === "source-bounded-ts" &&
+        movingEnd.frankenSimBoundary ===
+          "fs-mbd::holonomic-gear-and-four-bar-constraints-unavailable";
+
+      const mobileCameraSelect = surface.getByLabel("Watt engine camera view");
+      if ((await mobileCameraSelect.count()) > 0 && (await mobileCameraSelect.isVisible())) {
+        await mobileCameraSelect.selectOption("gear-mesh");
+      } else {
+        await surface.getByRole("button", { name: "Gear Mesh" }).click();
+      }
+      await page.waitForTimeout(100);
+      const gearMeshScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.gear-mesh.png`,
+      );
+      await dispatcher.screenshot({ path: gearMeshScreenshotPath });
+
+      await surface.getByRole("button", { name: "Pause Motion" }).click();
+      await page.waitForFunction(
+        (id) =>
+          document
+            .querySelector(`[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`)
+            ?.getAttribute("data-watt-running") === "false",
+        patentId,
+        { timeout: 3_000 },
+      );
+      const pausedStart = await readWattOwner();
+      const pausedThreeFace = await readWattFace("three");
+      await page.waitForTimeout(200);
+      const pausedEnd = await readWattOwner();
+      const pauseHeld = Math.abs(pausedEnd.timeSec - pausedStart.timeSec) < 1e-12;
+
+      await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
+      await dispatcher
+        .locator('[data-watt-face="two"]')
+        .waitFor({ state: "visible", timeout: 20_000 });
+      const pausedTwoFace = await readWattFace("two");
+      const faceTolerance = 1e-9;
+      const pausedCrossFaceParity =
+        Math.abs(pausedTwoFace.carrierAngleRad - pausedThreeFace.carrierAngleRad) < faceTolerance &&
+        Math.abs(pausedTwoFace.rodAngleRad - pausedThreeFace.rodAngleRad) < faceTolerance &&
+        Math.abs(pausedTwoFace.planetAngleRad - pausedThreeFace.planetAngleRad) < faceTolerance &&
+        Math.abs(pausedTwoFace.sunAngleRad - pausedThreeFace.sunAngleRad) < faceTolerance;
+
+      const ratioControl = surface.getByLabel("Planet-to-sun gear tooth ratio");
+      await ratioControl.focus();
+      await ratioControl.press("End");
+      await page.waitForFunction(
+        (id) => {
+          const owner = document.querySelector(
+            `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+          );
+          return (
+            owner?.getAttribute("data-watt-sun-teeth") === "20" &&
+            owner?.getAttribute("data-watt-planet-teeth") === "40"
+          );
+        },
+        patentId,
+        { timeout: 3_000 },
+      );
+      const ratioTwoFace = await readWattFace("two");
+      const twoDimensionalScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.ratio-two-to-one-two-dimensional.png`,
+      );
+      await dispatcher.screenshot({ path: twoDimensionalScreenshotPath });
+
+      await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
+      await dispatcher
+        .locator('[data-watt-face="three"]')
+        .waitFor({ state: "visible", timeout: 20_000 });
+      const ratioThreeFace = await readWattFace("three");
+      const ratioCrossFaceParity =
+        ratioTwoFace.sunTeeth === 20 &&
+        ratioTwoFace.planetTeeth === 40 &&
+        ratioThreeFace.sunTeeth === ratioTwoFace.sunTeeth &&
+        ratioThreeFace.planetTeeth === ratioTwoFace.planetTeeth &&
+        Math.abs(ratioThreeFace.sunAngleRad - ratioTwoFace.sunAngleRad) < faceTolerance &&
+        Math.abs(ratioThreeFace.planetAngleRad - ratioTwoFace.planetAngleRad) < faceTolerance;
+      await surface.getByRole("button", { name: "Resume Motion" }).click();
+      const resumed = await page
+        .waitForFunction(
+          ({ id, heldTime }) => {
+            const owner = document.querySelector(
+              `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+            );
+            return (
+              owner?.getAttribute("data-watt-running") === "true" &&
+              Number(owner?.getAttribute("data-watt-time-sec")) > heldTime
+            );
+          },
+          { id: patentId, heldTime: pausedEnd.timeSec },
+          { timeout: 3_000 },
+        )
+        .then(() => true)
+        .catch(() => false);
+
+      mechanismInteraction = {
+        available: true,
+        kind: "rigid-planet-rocking-no-slip-mesh-pause-and-cross-face-parity",
+        movingStart,
+        movingEnd,
+        planetRigidToRod,
+        constraintsClosed,
+        sourceBoundaryHonest,
+        pausedStart,
+        pausedEnd,
+        pauseHeld,
+        pausedThreeFace,
+        pausedTwoFace,
+        pausedCrossFaceParity,
+        ratioTwoFace,
+        ratioThreeFace,
+        ratioCrossFaceParity,
+        resumed,
+        gearMeshScreenshotPath,
+        twoDimensionalScreenshotPath,
+      };
+      mechanismInteractionValid =
+        planetRigidToRod &&
+        constraintsClosed &&
+        sourceBoundaryHonest &&
+        pauseHeld &&
+        pausedCrossFaceParity &&
+        ratioCrossFaceParity &&
+        resumed;
+    }
+
     if (patentId === "us-4063220-metcalfe-ethernet") {
       const beforeCollision = await runtimeOwnerSnapshot(page, patentId);
       const beforeCollisionCount = Number(beforeCollision?.["data-collision-count"] ?? 0);
