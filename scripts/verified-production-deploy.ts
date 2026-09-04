@@ -82,7 +82,10 @@ function trackedWorkingTreeChanges(): string {
   ).stdout;
   return status
     .split("\n")
-    .filter((line) => line && !line.endsWith(" tsconfig.tsbuildinfo"))
+    .filter(
+      (line) =>
+        line && !line.endsWith(" tsconfig.tsbuildinfo") && !line.endsWith(" next-env.d.ts"),
+    )
     .join("\n");
 }
 
