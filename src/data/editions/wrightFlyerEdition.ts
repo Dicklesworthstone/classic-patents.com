@@ -24,34 +24,28 @@ const annotated = (
  */
 const WRIGHT_FIGURE_PREVIEWS = {
   1: {
-    src: "/patents/figures/us-821393-wright-flyer-fig-1-preview.png",
-    alt: "Figure 1 from US 821,393: perspective view of the Wright flying machine.",
-    width: 2160,
-    height: 1800,
+    src: "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+    alt: "Complete upright source drawing sheet 1 of 3 from US 821,393, containing Figure 1, the perspective view of the Wright flying machine.",
+    width: 3408,
+    height: 2320,
   },
   2: {
-    src: "/patents/figures/us-821393-wright-flyer-fig-2-preview.png",
-    alt: "Figure 2 from US 821,393: plan view of the Wright flying machine.",
-    width: 2150,
-    height: 1680,
+    src: "/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png",
+    alt: "Complete upright source drawing sheet 2 of 3 from US 821,393, containing Figure 2, the plan view of the Wright flying machine.",
+    width: 3408,
+    height: 2320,
   },
   3: {
-    src: "/patents/figures/us-821393-wright-flyer-fig-3-preview.png",
-    alt: "Figure 3 from US 821,393: side elevation of the flying machine.",
-    width: 1780,
-    height: 890,
+    src: "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+    alt: "Complete upright source drawing sheet 3 of 3 from US 821,393, containing Figures 3, 4, and 5, including the side elevation.",
+    width: 3408,
+    height: 2320,
   },
   4: {
-    src: "/patents/figures/us-821393-wright-flyer-fig-4-preview.png",
-    alt: "Figure 4 from US 821,393: flexible-joint detail.",
-    width: 670,
-    height: 760,
-  },
-  5: {
-    src: "/patents/figures/us-821393-wright-flyer-fig-5-preview.png",
-    alt: "Figure 5 from US 821,393: flexible-joint detail.",
-    width: 1010,
-    height: 850,
+    src: "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+    alt: "Complete upright source drawing sheet 3 of 3 from US 821,393, containing Figures 3, 4, and 5, including both flexible-joint details.",
+    width: 3408,
+    height: 2320,
   },
 } as const;
 
@@ -178,7 +172,7 @@ export const wrightFlyerArchivalEdition: CuratedSpecificationEdition = {
         },
         figureReference("Fig. 3", WRIGHT_FIGURE_PREVIEWS[3]),
         { kind: "text", text: " is a side elevation; and " },
-        figureReference("Figs. 4 and 5", WRIGHT_FIGURE_PREVIEWS[4], WRIGHT_FIGURE_PREVIEWS[5]),
+        figureReference("Figs. 4 and 5", WRIGHT_FIGURE_PREVIEWS[4]),
         {
           kind: "text",
           text: " are detail views, of one form of flexible joint for connecting the upright standards with the aeroplanes.",
@@ -235,7 +229,7 @@ export const wrightFlyerArchivalEdition: CuratedSpecificationEdition = {
           kind: "text",
           text: "When two aeroplanes are employed, as in the construction illustrated, they are connected together by upright standards 8. These standards are substantially rigid, being preferably constructed of wood and of equal length, equally spaced along the front and rear edges of the aeroplane, to which they are connected at their top and bottom ends by hinged joints or universal joints of any suitable description. We have shown one form of connection which may be used for this purpose in ",
         },
-        figureReference("Figs. 4 and 5", WRIGHT_FIGURE_PREVIEWS[4], WRIGHT_FIGURE_PREVIEWS[5]),
+        figureReference("Figs. 4 and 5", WRIGHT_FIGURE_PREVIEWS[4]),
         {
           kind: "text",
           text: " of the drawings. In this construction each end of the standard 8 has secured to it an eye 9, which engages with a hook 10, secured to a bracket-plate 11, which latter plate is in turn fastened to the spar 3. Diagonal braces or stay-wires 12 extend from each end of each standard to the opposite ends of the adjacent standards, and as a convenient mode of attaching these parts I have shown a hook 13, made integral with the hook 10 to receive the end of one of the stay-wires, the other stay-wire being mounted on the hook 10. The hook 13 is shown as bent down to retain the stay-wire in connection to it, while the hook 10 is shown as provided with a pin 14 to hold the stay-wire 12 and eye 9 in position thereon. It will be seen that this construction forms a truss system which gives the whole machine great transverse rigidity and strength, while at the same time the jointed connections of the parts permit the aeroplanes to be bent or twisted in the manner which we will now proceed to describe.",

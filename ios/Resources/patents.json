@@ -70689,10 +70689,10 @@
               "label": "Preview Figure 1 from the original patent facsimile",
               "figurePreviews": [
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-1-preview.png",
-                  "alt": "Figure 1 from US 821,393: perspective view of the Wright flying machine.",
-                  "width": 2160,
-                  "height": 1800
+                  "src": "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 1 of 3 from US 821,393, containing Figure 1, the perspective view of the Wright flying machine.",
+                  "width": 3408,
+                  "height": 2320
                 }
               ]
             },
@@ -70708,10 +70708,10 @@
               "label": "Preview Fig. 2 from the original patent facsimile",
               "figurePreviews": [
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-2-preview.png",
-                  "alt": "Figure 2 from US 821,393: plan view of the Wright flying machine.",
-                  "width": 2150,
-                  "height": 1680
+                  "src": "/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 2 of 3 from US 821,393, containing Figure 2, the plan view of the Wright flying machine.",
+                  "width": 3408,
+                  "height": 2320
                 }
               ]
             },
@@ -70727,10 +70727,10 @@
               "label": "Preview Fig. 3 from the original patent facsimile",
               "figurePreviews": [
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-3-preview.png",
-                  "alt": "Figure 3 from US 821,393: side elevation of the flying machine.",
-                  "width": 1780,
-                  "height": 890
+                  "src": "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 3 of 3 from US 821,393, containing Figures 3, 4, and 5, including the side elevation.",
+                  "width": 3408,
+                  "height": 2320
                 }
               ]
             },
@@ -70746,16 +70746,10 @@
               "label": "Preview Figs. 4 and 5 from the original patent facsimile",
               "figurePreviews": [
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-4-preview.png",
-                  "alt": "Figure 4 from US 821,393: flexible-joint detail.",
-                  "width": 670,
-                  "height": 760
-                },
-                {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-5-preview.png",
-                  "alt": "Figure 5 from US 821,393: flexible-joint detail.",
-                  "width": 1010,
-                  "height": 850
+                  "src": "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 3 of 3 from US 821,393, containing Figures 3, 4, and 5, including both flexible-joint details.",
+                  "width": 3408,
+                  "height": 2320
                 }
               ]
             },
@@ -70817,10 +70811,10 @@
               "label": "Preview Fig. 2 from the original patent facsimile",
               "figurePreviews": [
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-2-preview.png",
-                  "alt": "Figure 2 from US 821,393: plan view of the Wright flying machine.",
-                  "width": 2150,
-                  "height": 1680
+                  "src": "/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 2 of 3 from US 821,393, containing Figure 2, the plan view of the Wright flying machine.",
+                  "width": 3408,
+                  "height": 2320
                 }
               ]
             },
@@ -70845,16 +70839,10 @@
               "label": "Preview Figs. 4 and 5 from the original patent facsimile",
               "figurePreviews": [
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-4-preview.png",
-                  "alt": "Figure 4 from US 821,393: flexible-joint detail.",
-                  "width": 670,
-                  "height": 760
-                },
-                {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-5-preview.png",
-                  "alt": "Figure 5 from US 821,393: flexible-joint detail.",
-                  "width": 1010,
-                  "height": 850
+                  "src": "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 3 of 3 from US 821,393, containing Figures 3, 4, and 5, including both flexible-joint details.",
+                  "width": 3408,
+                  "height": 2320
                 }
               ]
             },
@@ -70897,16 +70885,16 @@
               "label": "Preview Figs. 1 and 2 from the original patent facsimile",
               "figurePreviews": [
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-1-preview.png",
-                  "alt": "Figure 1 from US 821,393: perspective view of the Wright flying machine.",
-                  "width": 2160,
-                  "height": 1800
+                  "src": "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 1 of 3 from US 821,393, containing Figure 1, the perspective view of the Wright flying machine.",
+                  "width": 3408,
+                  "height": 2320
                 },
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-2-preview.png",
-                  "alt": "Figure 2 from US 821,393: plan view of the Wright flying machine.",
-                  "width": 2150,
-                  "height": 1680
+                  "src": "/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 2 of 3 from US 821,393, containing Figure 2, the plan view of the Wright flying machine.",
+                  "width": 3408,
+                  "height": 2320
                 }
               ]
             },
@@ -70922,10 +70910,10 @@
               "label": "Preview Fig. 1 from the original patent facsimile",
               "figurePreviews": [
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-1-preview.png",
-                  "alt": "Figure 1 from US 821,393: perspective view of the Wright flying machine.",
-                  "width": 2160,
-                  "height": 1800
+                  "src": "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 1 of 3 from US 821,393, containing Figure 1, the perspective view of the Wright flying machine.",
+                  "width": 3408,
+                  "height": 2320
                 }
               ]
             },
@@ -70941,10 +70929,10 @@
               "label": "Preview Fig. 2 from the original patent facsimile",
               "figurePreviews": [
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-2-preview.png",
-                  "alt": "Figure 2 from US 821,393: plan view of the Wright flying machine.",
-                  "width": 2150,
-                  "height": 1680
+                  "src": "/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 2 of 3 from US 821,393, containing Figure 2, the plan view of the Wright flying machine.",
+                  "width": 3408,
+                  "height": 2320
                 }
               ]
             },
@@ -70960,10 +70948,10 @@
               "label": "Preview Fig. 1 from the original patent facsimile",
               "figurePreviews": [
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-1-preview.png",
-                  "alt": "Figure 1 from US 821,393: perspective view of the Wright flying machine.",
-                  "width": 2160,
-                  "height": 1800
+                  "src": "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 1 of 3 from US 821,393, containing Figure 1, the perspective view of the Wright flying machine.",
+                  "width": 3408,
+                  "height": 2320
                 }
               ]
             },
@@ -70979,10 +70967,10 @@
               "label": "Preview Fig. 1 from the original patent facsimile",
               "figurePreviews": [
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-1-preview.png",
-                  "alt": "Figure 1 from US 821,393: perspective view of the Wright flying machine.",
-                  "width": 2160,
-                  "height": 1800
+                  "src": "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 1 of 3 from US 821,393, containing Figure 1, the perspective view of the Wright flying machine.",
+                  "width": 3408,
+                  "height": 2320
                 }
               ]
             },
@@ -71026,16 +71014,16 @@
               "label": "Preview Figs. 1 and 2 from the original patent facsimile",
               "figurePreviews": [
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-1-preview.png",
-                  "alt": "Figure 1 from US 821,393: perspective view of the Wright flying machine.",
-                  "width": 2160,
-                  "height": 1800
+                  "src": "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 1 of 3 from US 821,393, containing Figure 1, the perspective view of the Wright flying machine.",
+                  "width": 3408,
+                  "height": 2320
                 },
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-2-preview.png",
-                  "alt": "Figure 2 from US 821,393: plan view of the Wright flying machine.",
-                  "width": 2150,
-                  "height": 1680
+                  "src": "/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 2 of 3 from US 821,393, containing Figure 2, the plan view of the Wright flying machine.",
+                  "width": 3408,
+                  "height": 2320
                 }
               ]
             },
@@ -71060,10 +71048,10 @@
               "label": "Preview Fig. 3 from the original patent facsimile",
               "figurePreviews": [
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-3-preview.png",
-                  "alt": "Figure 3 from US 821,393: side elevation of the flying machine.",
-                  "width": 1780,
-                  "height": 890
+                  "src": "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 3 of 3 from US 821,393, containing Figures 3, 4, and 5, including the side elevation.",
+                  "width": 3408,
+                  "height": 2320
                 }
               ]
             },
@@ -71089,10 +71077,10 @@
               "label": "Preview Fig. 3 from the original patent facsimile",
               "figurePreviews": [
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-3-preview.png",
-                  "alt": "Figure 3 from US 821,393: side elevation of the flying machine.",
-                  "width": 1780,
-                  "height": 890
+                  "src": "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 3 of 3 from US 821,393, containing Figures 3, 4, and 5, including the side elevation.",
+                  "width": 3408,
+                  "height": 2320
                 }
               ]
             },
@@ -71154,10 +71142,10 @@
               "label": "Preview Fig. 3 from the original patent facsimile",
               "figurePreviews": [
                 {
-                  "src": "/patents/figures/us-821393-wright-flyer-fig-3-preview.png",
-                  "alt": "Figure 3 from US 821,393: side elevation of the flying machine.",
-                  "width": 1780,
-                  "height": 890
+                  "src": "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+                  "alt": "Complete upright source drawing sheet 3 of 3 from US 821,393, containing Figures 3, 4, and 5, including the side elevation.",
+                  "width": 3408,
+                  "height": 2320
                 }
               ]
             },
@@ -72499,6 +72487,7 @@
       "patents/figures/us-821393-wright-flyer/fig-3-source-crop-v5.png",
       "patents/figures/us-821393-wright-flyer/fig-4-source-crop-v5.png",
       "patents/figures/us-821393-wright-flyer/fig-5-source-crop-v5.png",
+      "patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
       "patents/source-text/us-821393-wright-flyer.txt",
       "patents/transcripts/us-821393-wright-flyer-reviewed.txt",
       "patents/transcripts/us-821393-wright-flyer.txt"

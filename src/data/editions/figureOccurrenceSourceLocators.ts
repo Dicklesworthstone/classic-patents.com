@@ -532,6 +532,38 @@ function hullStereolithographyLocator(options: {
   };
 }
 
+const WRIGHT_FLYER_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const WRIGHT_FLYER_EVIDENCE_REFERENCE =
+  "docs/provenance/us-821393-wright-flyer.md#source-sheet-acceptance-2026-09-03";
+
+/**
+ * The active Wright assets are complete upright source sheets. Figures 1 and
+ * 2 cannot be cleanly isolated without cutting printed drawing content or
+ * including a clipped witness/header band, so their full source sheets are
+ * intentionally the reviewable archival preview.
+ */
+function wrightFlyerSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  activeAsset: string;
+  sourcePdfPage: 1 | 2 | 3;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: WRIGHT_FLYER_SOURCE_RASTER.width,
+    height: WRIGHT_FLYER_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    sourceRaster: WRIGHT_FLYER_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, WRIGHT_FLYER_SOURCE_RASTER),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: WRIGHT_FLYER_EVIDENCE_REFERENCE,
+  };
+}
+
 export const FIGURE_OCCURRENCE_SOURCE_LOCATORS = {
   "us-4575330-hull-stereolithography": [
     hullStereolithographyLocator({
@@ -1724,6 +1756,83 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS = {
       occurrenceKey: figureOccurrenceKey(34, 0, 1),
       activeAsset: "/patents/figures/us-6285999-pagerank/fig-3-source-crop-v1.png",
       sourcePdfPage: 5,
+    }),
+  ],
+  "us-821393-wright-flyer": [
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-1",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+      sourcePdfPage: 1,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-3",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png",
+      sourcePdfPage: 2,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-5",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+      sourcePdfPage: 3,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-7",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+      sourcePdfPage: 3,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-13-group-0-inline-3",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png",
+      sourcePdfPage: 2,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-14-group-0-inline-1",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+      sourcePdfPage: 3,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-17-group-0-inline-1",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+      sourcePdfPage: 1,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-17-group-0-inline-3",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+      sourcePdfPage: 1,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-17-group-0-inline-5",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png",
+      sourcePdfPage: 2,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-17-group-0-inline-7",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+      sourcePdfPage: 1,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-17-group-0-inline-9",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+      sourcePdfPage: 1,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-19-group-0-inline-1",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+      sourcePdfPage: 1,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-20-group-0-inline-1",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+      sourcePdfPage: 3,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-20-group-0-inline-5",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+      sourcePdfPage: 3,
+    }),
+    wrightFlyerSourceSheetLocator({
+      occurrenceKey: "edition-block-24-group-0-inline-3",
+      activeAsset: "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+      sourcePdfPage: 3,
     }),
   ],
 } as const satisfies FigureOccurrenceSourceLocatorRegistry;

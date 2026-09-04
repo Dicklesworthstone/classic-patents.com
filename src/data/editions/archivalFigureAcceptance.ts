@@ -2080,6 +2080,30 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
       },
     },
   },
+  "us-821393-wright-flyer": {
+    sourcePdfSha256: "678bea5d81cb4e90a15c998bc932d2cf01bc87cfc3fcc53f0ecbdbdc70097966",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 15,
+    assets: {
+      "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png": {
+        sha256: "b09b55b78fd5fd0e321b6e939e665d0981b1724d2fc2b50b8721cac657f79390",
+        width: 3408,
+        height: 2320,
+      },
+      "/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png": {
+        sha256: "cedeeaf0931143da7b82a2979be8213470118535eb90e3907c586b51fecb98d4",
+        width: 3408,
+        height: 2320,
+      },
+      "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png": {
+        sha256: "c223b62ec6fb80e1a58bc958af129c34f54be685814883e4e9b4b87ba13e60cc",
+        width: 3408,
+        height: 2320,
+      },
+    },
+  },
   "us-879532-de-forest-audion": {
     sourcePdfSha256: "3a37d70051d784a5a086d53b8d2d09f372b8bb14d40179b68b62a5c166e7876e",
     reviewer: "Classic Patents editorial agent (Antigravity)",

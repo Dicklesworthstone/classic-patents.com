@@ -85,7 +85,7 @@ describe("Wright archival parallel reading", () => {
           expect(inline.figurePreviews).toBeArray();
           expect(inline.figurePreviews?.length).toBeGreaterThan(0);
           for (const preview of inline.figurePreviews ?? []) {
-            expect(preview.src).toStartWith("/patents/figures/us-821393-wright-flyer-");
+            expect(preview.src).toStartWith("/patents/figures/us-821393-wright-flyer/");
             expect(preview.alt.trim().length).toBeGreaterThan(0);
           }
         }

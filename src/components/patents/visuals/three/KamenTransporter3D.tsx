@@ -319,9 +319,9 @@ export default function KamenTransporter3D({
           <p className="font-bold">Source boundary</p>
           <p className="mt-1 text-[11px] leading-relaxed text-ink-600 dark:text-ink-400">
             The grant prints three equal wheels per cluster and nominal wheel, carrier, stair, and
-            centre-offset dimensions. The generic fs-mbd owner checks rigid tread support and
-            finite vertical-riser clearance; force, friction, impact, compliance, motor, sensor,
-            and controller results remain withheld.
+            centre-offset dimensions. The generic fs-mbd owner checks rigid tread support and finite
+            vertical-riser clearance; force, friction, impact, compliance, motor, sensor, and
+            controller results remain withheld.
           </p>
         </div>
 

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { wrightFlyerArchivalEdition } from "@/data/editions/wrightFlyerEdition";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
@@ -35,9 +35,39 @@ describe("wrightFlyerArchivalEdition", () => {
 
     expect(source).not.toContain("figureNumbers.map");
     expect(source).not.toContain("figurePreviews: figureNumbers");
-    expect(source).toContain(
-      'figureReference("Figs. 4 and 5", WRIGHT_FIGURE_PREVIEWS[4], WRIGHT_FIGURE_PREVIEWS[5])',
-    );
+    expect(source).toContain('figureReference("Figs. 4 and 5", WRIGHT_FIGURE_PREVIEWS[4])');
+  });
+
+  test("uses reviewed upright source sheets when a figure-only crop would cut the source", () => {
+    const previews = wrightFlyerArchivalEdition.blocks.flatMap((block) => {
+      const inlineGroups =
+        block.kind === "paragraph" || block.kind === "claim"
+          ? [block.inlines]
+          : block.kind === "figure-sheet"
+            ? [block.description]
+            : [];
+      return inlineGroups.flatMap((inlines) =>
+        inlines.flatMap((inline) =>
+          inline.kind === "reference" && inline.referenceType === "figure"
+            ? (inline.figurePreviews ?? [])
+            : [],
+        ),
+      );
+    });
+    const assets = [...new Set(previews.map((preview) => preview.src))].sort();
+    expect(assets).toEqual([
+      "/patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+      "/patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png",
+      "/patents/figures/us-821393-wright-flyer/figs-3-5-source-sheet-v1.png",
+    ]);
+    for (const asset of assets) {
+      expect(existsSync(`${process.cwd()}/public${asset}`)).toBe(true);
+    }
+    for (const preview of previews) {
+      expect(preview.width).toBe(3408);
+      expect(preview.height).toBe(2320);
+      expect(preview.alt).toContain("Complete upright source drawing sheet");
+    }
   });
 
   test("preserves the simultaneous warp linkage in printed claim 2", () => {
