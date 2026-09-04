@@ -3213,6 +3213,128 @@ async function auditPatent(
         sourceBoundaryHonest && toggleSequenceCompleted && crossFaceParity;
     }
 
+    if (patentId === "us-6331181-davinci") {
+      const readDaVinciInterfaceState = (testId: string) =>
+        dispatcher.getByTestId(testId).evaluate((element) => ({
+          status: element.getAttribute("data-interface-status"),
+          compatibilitySignal: element.getAttribute("data-compatibility-signal"),
+          calibrationRecord: element.getAttribute("data-calibration-record"),
+          engagementSignal: element.getAttribute("data-engagement-signal"),
+          processorCanConfigure: element.getAttribute("data-processor-can-configure"),
+          kernelSource: element.getAttribute("data-kernel-source"),
+          quantitativeMechanics: element.getAttribute("data-quantitative-mechanics"),
+          connectedTopology: element.getAttribute("data-connected-topology"),
+        }));
+      const threeDimensional = dispatcher.getByTestId("davinci-interface-three");
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      const defaultState = await readDaVinciInterfaceState("davinci-interface-three");
+      const engagementToggle = threeDimensional
+        .getByRole("button")
+        .filter({ hasText: "Engagement confirmation" });
+      await engagementToggle.click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="davinci-interface-three"]')
+            ?.getAttribute("data-interface-status") === "engagement-unconfirmed",
+        undefined,
+        { timeout: 3_000 },
+      );
+      const unconfirmedState = await readDaVinciInterfaceState("davinci-interface-three");
+      const unconfirmedScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.engagement-unconfirmed.png`,
+      );
+      const daVinciCanvas = threeDimensional.locator("canvas").first();
+      await daVinciCanvas.scrollIntoViewIfNeeded();
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) => {
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+          }),
+      );
+      await dispatcher.screenshot({ path: unconfirmedScreenshotPath });
+
+      await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
+      const twoDimensional = dispatcher.getByTestId("davinci-interface-two");
+      await twoDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      const twoDimensionalUnconfirmedState =
+        await readDaVinciInterfaceState("davinci-interface-two");
+      const twoDimensionalScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.engagement-unconfirmed-two-dimensional.png`,
+      );
+      await dispatcher.screenshot({ path: twoDimensionalScreenshotPath });
+
+      await twoDimensional
+        .getByRole("button")
+        .filter({ hasText: "Engagement confirmation" })
+        .click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="davinci-interface-two"]')
+            ?.getAttribute("data-interface-status") === "ready",
+        undefined,
+        { timeout: 3_000 },
+      );
+      const twoDimensionalRestoredState = await readDaVinciInterfaceState("davinci-interface-two");
+      await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      const restoredState = await readDaVinciInterfaceState("davinci-interface-three");
+
+      const defaultBoundaryHonest =
+        defaultState.status === "ready" &&
+        defaultState.compatibilitySignal === "true" &&
+        defaultState.calibrationRecord === "true" &&
+        defaultState.engagementSignal === "true" &&
+        defaultState.processorCanConfigure === "true" &&
+        defaultState.kernelSource === "source-bounded-ts" &&
+        defaultState.quantitativeMechanics === "refused" &&
+        defaultState.connectedTopology === "processor-data-path-holder-engagement-tool";
+      const missingSignalRefused =
+        unconfirmedState.status === "engagement-unconfirmed" &&
+        unconfirmedState.engagementSignal === "false" &&
+        unconfirmedState.processorCanConfigure === "false" &&
+        unconfirmedState.connectedTopology === defaultState.connectedTopology;
+      const crossFaceParity =
+        twoDimensionalUnconfirmedState.status === unconfirmedState.status &&
+        twoDimensionalUnconfirmedState.compatibilitySignal ===
+          unconfirmedState.compatibilitySignal &&
+        twoDimensionalUnconfirmedState.calibrationRecord === unconfirmedState.calibrationRecord &&
+        twoDimensionalUnconfirmedState.engagementSignal === unconfirmedState.engagementSignal &&
+        twoDimensionalUnconfirmedState.processorCanConfigure ===
+          unconfirmedState.processorCanConfigure &&
+        twoDimensionalUnconfirmedState.kernelSource === unconfirmedState.kernelSource &&
+        twoDimensionalUnconfirmedState.quantitativeMechanics ===
+          unconfirmedState.quantitativeMechanics &&
+        twoDimensionalUnconfirmedState.connectedTopology === unconfirmedState.connectedTopology;
+      const restoredAcrossFaces =
+        twoDimensionalRestoredState.status === "ready" &&
+        twoDimensionalRestoredState.engagementSignal === "true" &&
+        twoDimensionalRestoredState.processorCanConfigure === "true" &&
+        restoredState.status === twoDimensionalRestoredState.status &&
+        restoredState.engagementSignal === twoDimensionalRestoredState.engagementSignal &&
+        restoredState.processorCanConfigure === twoDimensionalRestoredState.processorCanConfigure;
+      mechanismInteraction = {
+        available: true,
+        kind: "source-bounded-connected-tool-interface-missing-signal-refusal-and-cross-face-parity",
+        defaultState,
+        unconfirmedState,
+        twoDimensionalUnconfirmedState,
+        twoDimensionalRestoredState,
+        restoredState,
+        defaultBoundaryHonest,
+        missingSignalRefused,
+        crossFaceParity,
+        restoredAcrossFaces,
+        unconfirmedScreenshotPath,
+        twoDimensionalScreenshotPath,
+      };
+      mechanismInteractionValid =
+        defaultBoundaryHonest && missingSignalRefused && crossFaceParity && restoredAcrossFaces;
+    }
+
     if (patentId === "us-586193-marconi-radio") {
       const receiverPreset = surface.getByRole("button", { name: "Receiver & Reset" });
       const receiverFocusApplied =
