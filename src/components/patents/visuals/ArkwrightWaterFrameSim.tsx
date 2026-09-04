@@ -1,6 +1,6 @@
 "use client";
 
-import { Cog, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Cog, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useId } from "react";
 import {
   ARKWRIGHT_DEFAULT_CONTROLS,
@@ -28,6 +28,7 @@ export function ArkwrightWaterFrameSim() {
   const stapleLengthMm = params.stapleLengthMm ?? ARKWRIGHT_DEFAULT_CONTROLS.stapleLengthMm;
   const inputRovingCountNe =
     params.inputRovingCountNe ?? ARKWRIGHT_DEFAULT_CONTROLS.inputRovingCountNe;
+  const isRunning = (params.isRunning ?? 1) > 0.5;
   const controls = {
     waterWheelRpm,
     totalDraftRatio,
@@ -54,8 +55,11 @@ export function ArkwrightWaterFrameSim() {
 
   // Roller angles: feed is slow, intermediate faster, front is fastest
   const feedRollerAngle = phases.feedRollerRad;
+  const intermediateOneAngle = phases.intermediateRollerOneRad;
+  const intermediateTwoAngle = phases.intermediateRollerTwoRad;
   const deliveryRollerAngle = phases.deliveryRollerRad;
   const flyerAngle = phases.spindleRad;
+  const wheelAngle = phases.wheelRad;
 
   // Heart-cam vertical oscillation [-18px, +18px]
   const traversePhase = phases.traverseRad;
@@ -70,9 +74,13 @@ export function ArkwrightWaterFrameSim() {
       data-arkwright-runtime-provenance={frame.provenance}
       data-arkwright-kernel-source={ARKWRIGHT_KERNEL_SOURCE}
       data-arkwright-frankensim-boundary={ARKWRIGHT_FRANKENSIM_BOUNDARY}
+      data-arkwright-running={isRunning}
       data-arkwright-wheel-phase-rad={phases.wheelRad}
       data-arkwright-feed-phase-rad={phases.feedRollerRad}
+      data-arkwright-intermediate-one-phase-rad={phases.intermediateRollerOneRad}
+      data-arkwright-intermediate-two-phase-rad={phases.intermediateRollerTwoRad}
       data-arkwright-delivery-phase-rad={phases.deliveryRollerRad}
+      data-arkwright-spindle-phase-rad={phases.spindleRad}
       data-arkwright-traverse-phase-rad={phases.traverseRad}
     >
       {/* Header & Mode Badge */}
@@ -105,7 +113,7 @@ export function ArkwrightWaterFrameSim() {
                   : "text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-stone-200"
               }`}
             >
-              Arkwright Frame (Warp)
+              Nominal Teaching Scenario
             </button>
             <button
               type="button"
@@ -123,6 +131,19 @@ export function ArkwrightWaterFrameSim() {
               Low-Draft Comparison
             </button>
           </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              updateParam("isRunning", isRunning ? 0 : 1);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isRunning ? "Pause Motion" : "Resume Motion"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isRunning ? "Pause Motion" : "Resume Motion"}
+          >
+            {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          </button>
 
           <button
             type="button"
@@ -250,13 +271,45 @@ export function ArkwrightWaterFrameSim() {
               {/* Pair 2: Intermediate Slow */}
               <g transform="translate(-20, 0)">
                 <circle cx="0" cy="12" r="10" fill="url(#brassGrad)" />
+                <line
+                  x1="0"
+                  y1="12"
+                  x2={10 * Math.cos(intermediateOneAngle)}
+                  y2={12 + 10 * Math.sin(intermediateOneAngle)}
+                  stroke="#451a03"
+                  strokeWidth="1.5"
+                />
                 <circle cx="0" cy="-10" r="10" fill="url(#leatherGrad)" />
+                <line
+                  x1="0"
+                  y1="-10"
+                  x2={10 * Math.cos(-intermediateOneAngle)}
+                  y2={-10 + 10 * Math.sin(-intermediateOneAngle)}
+                  stroke="#451a03"
+                  strokeWidth="1.5"
+                />
               </g>
 
               {/* Pair 3: Intermediate Fast */}
               <g transform="translate(20, 0)">
                 <circle cx="0" cy="12" r="10" fill="url(#brassGrad)" />
+                <line
+                  x1="0"
+                  y1="12"
+                  x2={10 * Math.cos(intermediateTwoAngle)}
+                  y2={12 + 10 * Math.sin(intermediateTwoAngle)}
+                  stroke="#451a03"
+                  strokeWidth="1.5"
+                />
                 <circle cx="0" cy="-10" r="10" fill="url(#leatherGrad)" />
+                <line
+                  x1="0"
+                  y1="-10"
+                  x2={10 * Math.cos(-intermediateTwoAngle)}
+                  y2={-10 + 10 * Math.sin(-intermediateTwoAngle)}
+                  stroke="#451a03"
+                  strokeWidth="1.5"
+                />
               </g>
 
               {/* Pair 4: Front Delivery Rollers (High Speed v4 = D * v1) */}
@@ -360,10 +413,16 @@ export function ArkwrightWaterFrameSim() {
 
             {/* Central Driving Drum (A) on right */}
             <g transform="translate(420, 380)">
-              <ellipse cx="0" cy="0" rx="55" ry="18" fill="url(#woodPost)" />
-              <ellipse cx="0" cy="-10" rx="55" ry="18" fill="url(#woodPost)" />
-              <circle cx="0" cy="-10" r="10" fill="#475569" />
-              <line x1="0" y1="-10" x2="0" y2="35" stroke="#334155" strokeWidth="4" />
+              <circle cx="0" cy="0" r="48" fill="url(#woodPost)" stroke="#451a03" strokeWidth="3" />
+              <circle cx="0" cy="0" r="10" fill="#475569" />
+              <line
+                x1="0"
+                y1="0"
+                x2={42 * Math.cos(wheelAngle)}
+                y2={42 * Math.sin(wheelAngle)}
+                stroke="#d6b27a"
+                strokeWidth="4"
+              />
             </g>
 
             {/* Heart-Cam & Traverse Mechanism (G) */}
@@ -443,7 +502,7 @@ export function ArkwrightWaterFrameSim() {
             </g>
           </svg>
 
-          {/* Warp Grade Water Twist Badge */}
+          {/* Declared comparison-threshold badge */}
           <div className="absolute bottom-3 left-4 flex items-center gap-2">
             <span
               className={`px-2.5 py-1 text-xs font-mono font-bold rounded-lg border ${
@@ -453,8 +512,8 @@ export function ArkwrightWaterFrameSim() {
               }`}
             >
               {outputs.isWarpGradeWaterTwist
-                ? "✓ WARP-GRADE WATER TWIST (Loom Ready)"
-                : "⚠ WEFT-ONLY YARN (Insufficient Tenacity)"}
+                ? "SCENARIO ≥ 1.8 N COMPARISON THRESHOLD"
+                : "SCENARIO < 1.8 N COMPARISON THRESHOLD"}
             </span>
           </div>
         </div>
@@ -501,7 +560,7 @@ export function ArkwrightWaterFrameSim() {
 
             <div className="bg-stone-950/60 p-3 rounded-xl border border-stone-800">
               <span className="text-[11px] font-mono text-stone-400 block">
-                Yarn Tenacity / Break Force
+                Scenario Break Load
               </span>
               <span
                 className={`text-lg font-mono font-bold ${
@@ -599,19 +658,18 @@ export function ArkwrightWaterFrameSim() {
             </div>
           </div>
 
-          {/* Cromford Factory Output Callout */}
+          {/* Explicitly scaled teaching-scenario output */}
           <div className="bg-stone-950/90 p-3 rounded-xl border border-amber-500/20 text-xs flex items-center justify-between">
             <div>
               <span className="text-stone-400 block text-[10px] font-mono">
-                CROMFORD MILL CAPACITY (96 Spindles @ 12hr)
+                SCALED SCENARIO OUTPUT (96 lanes × 12 h)
               </span>
               <span className="text-amber-300 font-bold font-mono text-sm">
-                {outputs.millProductionKgPerDay.toFixed(1)} kg / day (
-                {Math.round((outputs.yarnLengthMetersPerHour * 24) / 1000)} km yarn/day)
+                {outputs.millProductionKgPerDay.toFixed(1)} kg / 12 h
               </span>
             </div>
             <span className="px-2 py-1 bg-amber-500/10 text-amber-300 rounded font-mono text-[10px] border border-amber-500/30">
-              1771 Factory System
+              Declared inputs
             </span>
           </div>
 

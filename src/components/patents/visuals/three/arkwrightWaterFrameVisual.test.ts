@@ -104,6 +104,8 @@ describe("GB 931 Richard Arkwright Water Frame Visual & Drafting Boundary", () =
       wheelRad: 0.25,
       shaftRad: 0.5,
       feedRollerRad: 0.75,
+      intermediateRollerOneRad: 0.833,
+      intermediateRollerTwoRad: 0.916,
       deliveryRollerRad: 1,
       spindleRad: 1.25,
       bobbinRad: 1.5,

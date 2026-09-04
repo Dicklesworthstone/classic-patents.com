@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, Pause, Play, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   ARKWRIGHT_DEFAULT_CONTROLS,
@@ -60,6 +60,7 @@ export function ArkwrightWaterFrame3D() {
   const totalDraftRatio = params.totalDraftRatio ?? ARKWRIGHT_DEFAULT_CONTROLS.totalDraftRatio;
   const rollerClampingWeightKg =
     params.rollerClampingWeightKg ?? ARKWRIGHT_DEFAULT_CONTROLS.rollerClampingWeightKg;
+  const isRunning = (params.isRunning ?? 1) > 0.5;
 
   const live = useLiveSimParams({
     waterWheelRpm,
@@ -152,21 +153,21 @@ export function ArkwrightWaterFrame3D() {
       tone: "ok",
     },
     {
-      label: "Yarn Tenacity",
+      label: "Scenario Break Load",
       value: `${outputs.yarnBreakingForceN.toFixed(2)} N`,
-      unit: outputs.isWarpGradeWaterTwist ? "Warp-Grade" : "Weft-Only",
+      unit: outputs.isWarpGradeWaterTwist ? "≥ 1.8 N threshold" : "< 1.8 N threshold",
       tone: outputs.isWarpGradeWaterTwist ? "ok" : "warn",
     },
     {
       label: "Fiber Parallel",
       value: `${outputs.fiberParallelizationPct.toFixed(1)}%`,
-      unit: "Slip-Free",
+      unit: "scenario estimate",
       tone: "ok",
     },
     {
-      label: "Cromford Output",
+      label: "Scaled Scenario Output",
       value: `${outputs.millProductionKgPerDay.toFixed(1)} kg/d`,
-      unit: "96 Spindles",
+      unit: "96 lanes × 12 h",
       tone: "ok",
     },
   ];
@@ -179,9 +180,17 @@ export function ArkwrightWaterFrame3D() {
       data-arkwright-runtime-provenance={frame.provenance}
       data-arkwright-kernel-source={ARKWRIGHT_KERNEL_SOURCE}
       data-arkwright-frankensim-boundary={ARKWRIGHT_FRANKENSIM_BOUNDARY}
+      data-arkwright-running={isRunning}
       data-arkwright-wheel-phase-rad={getArkwrightTapeFrame()?.phases.wheelRad ?? 0}
       data-arkwright-feed-phase-rad={getArkwrightTapeFrame()?.phases.feedRollerRad ?? 0}
+      data-arkwright-intermediate-one-phase-rad={
+        getArkwrightTapeFrame()?.phases.intermediateRollerOneRad ?? 0
+      }
+      data-arkwright-intermediate-two-phase-rad={
+        getArkwrightTapeFrame()?.phases.intermediateRollerTwoRad ?? 0
+      }
       data-arkwright-delivery-phase-rad={getArkwrightTapeFrame()?.phases.deliveryRollerRad ?? 0}
+      data-arkwright-spindle-phase-rad={getArkwrightTapeFrame()?.phases.spindleRad ?? 0}
       data-arkwright-traverse-phase-rad={getArkwrightTapeFrame()?.phases.traverseRad ?? 0}
     >
       <div className="sr-only">Richard Arkwright Spinning Water Frame 3D</div>
@@ -232,6 +241,19 @@ export function ArkwrightWaterFrame3D() {
           <button
             type="button"
             onClick={() => {
+              updateParam("isRunning", isRunning ? 0 : 1);
+              soundEngine.playSwitchClick();
+            }}
+            className="min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border border-parchment-300 dark:border-ink-700 bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 shadow-xs flex items-center gap-1"
+            aria-label={isRunning ? "Pause Motion" : "Resume Motion"}
+            title={isRunning ? "Pause Motion" : "Resume Motion"}
+          >
+            {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            <span className="hidden md:inline">{isRunning ? "Pause" : "Resume"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               toggleSound();
               soundEngine.playSwitchClick();
             }}
@@ -272,7 +294,7 @@ export function ArkwrightWaterFrame3D() {
         </div>
 
         {/* Bottom SI Telemetry Chips */}
-        <StudioKernelChips visible={showUiOverlay} chips={chips} title="SI Telemetry" />
+        <StudioKernelChips visible={showUiOverlay} chips={chips} title="Declared SI Scenario" />
       </div>
 
       {/* Interactive Controls Bar */}
