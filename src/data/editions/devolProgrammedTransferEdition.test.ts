@@ -97,7 +97,24 @@ describe("US 2,988,237 Devol Programmed Article Transfer archival edition", () =
     }
   });
 
-  test("pins every source figure crop, term annotation, and paragraph reading", () => {
+  test("pins every complete primary source sheet, term annotation, and paragraph reading", () => {
+    const sourceSheets = {
+      "/patents/figures/us-2988237-devol-programmed-transfer/source-sheet-1-v1.png": {
+        sha256: "840fe1202ca5890bef7e2f19eb1de144576a71909d7e067e227a64b2674b5da4",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-2988237-devol-programmed-transfer/source-sheet-2-v1.png": {
+        sha256: "b2d29359ef512cdd3b7fb51835a26730455565af790c88c91bc448d851678207",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-2988237-devol-programmed-transfer/source-sheet-3-v1.png": {
+        sha256: "61c5825513ea014d5fc45b25a9e39759be421f485a255f42f178fff99e9ab4a3",
+        width: 2320,
+        height: 3408,
+      },
+    } as const;
     const figures = devolProgrammedTransferArchivalEdition.blocks.flatMap((block) =>
       block.kind === "paragraph"
         ? block.inlines.flatMap((inline) =>
@@ -111,9 +128,16 @@ describe("US 2,988,237 Devol Programmed Article Transfer archival edition", () =
     for (const figure of figures) {
       const path = join(ROOT, "public", figure.src.replace(/^\//, ""));
       expect(existsSync(path)).toBe(true);
+      expect(figure.src in sourceSheets).toBe(true);
       const bytes = readFileSync(path);
       expect(bytes.readUInt32BE(16)).toBe(figure.width);
       expect(bytes.readUInt32BE(20)).toBe(figure.height);
+    }
+    for (const [src, expected] of Object.entries(sourceSheets)) {
+      const bytes = readFileSync(join(ROOT, "public", src.replace(/^\//, "")));
+      expect(createHash("sha256").update(bytes).digest("hex")).toBe(expected.sha256);
+      expect(bytes.readUInt32BE(16)).toBe(expected.width);
+      expect(bytes.readUInt32BE(20)).toBe(expected.height);
     }
 
     for (const [index, block] of devolProgrammedTransferArchivalEdition.blocks.entries()) {
