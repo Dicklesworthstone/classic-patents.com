@@ -55,3 +55,22 @@ the pinned facsimile's masthead and final claim pages.
   it does not give a reusable physical dimension, payload, hydraulic pressure,
   motor rating, or cycle-time parameter for a modern Unimate. Those values
   must never be introduced as patent-derived simulation telemetry.
+
+## Complete source-sheet acceptance (2026-09-04)
+
+Direct 300 DPI visual review confirms that the three original drawing sheets
+are complete and correctly ordered: PDF page 1 contains Figs. 1-3; page 2
+contains Figs. 4-8; and page 3 contains Figs. 9-11. Each sheet preserves its
+printed patent identity, title, figure labels, source lettering, signatures,
+and the surrounding drawing context needed to interpret the figure.
+
+The active evidence is the unmodified complete-sheet render for each source
+page: `source-sheet-1-v1.png` (SHA-256
+`840fe1202ca5890bef7e2f19eb1de144576a71909d7e067e227a64b2674b5da4`),
+`source-sheet-2-v1.png` (SHA-256
+`b2d29359ef512cdd3b7fb51835a26730455565af790c88c91bc448d851678207`), and
+`source-sheet-3-v1.png` (SHA-256
+`61c5825513ea014d5fc45b25a9e39759be421f485a255f42f178fff99e9ab4a3`). All
+are 2320 × 3408 pixels. All 20 active figure-reference occurrences resolve to
+their complete source sheet. The earlier isolated crops remain preserved;
+neither the new renders nor the older crops reconstruct historical content.

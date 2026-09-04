@@ -53,6 +53,7 @@ const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
   "us-1219881-sundback-zipper",
   "us-135245-pasteur-fermentation",
   "us-157124-glidden-barbed-wire",
+  "us-174465-bell-telephone",
   "us-1773980-farnsworth-tv",
   "us-1781541-einstein-refrigerator",
   "us-200521-edison-phonograph",

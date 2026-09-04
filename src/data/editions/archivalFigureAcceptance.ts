@@ -622,55 +622,25 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
   },
   "us-2988237-devol-programmed-transfer": {
     sourcePdfSha256: "9b0ea9729cf6d670a21dfed17264d7b78fa343ab1e98467fc0d3255a5cd03790",
-    reviewer: "Classic Patents editorial agent (JadeHeron)",
-    reviewedAt: "2026-09-01",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
     acceptedOccurrenceCount: 20,
     assets: {
-      "/patents/figures/us-2988237-devol-programmed-transfer/fig-1-source-crop-v1.png": {
-        sha256: "db7f6a0b10c261218aaededa4031c383ac295a969e3c1657c9f100e750914c34",
-        width: 900,
-        height: 470,
+      "/patents/figures/us-2988237-devol-programmed-transfer/source-sheet-1-v1.png": {
+        sha256: "840fe1202ca5890bef7e2f19eb1de144576a71909d7e067e227a64b2674b5da4",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-2988237-devol-programmed-transfer/fig-11-source-crop-v1.png": {
-        sha256: "728e2c083e353c43bd8fea5ec448256a776109e75793fa1a24a67dce0debd2db",
-        width: 900,
-        height: 780,
+      "/patents/figures/us-2988237-devol-programmed-transfer/source-sheet-2-v1.png": {
+        sha256: "b2d29359ef512cdd3b7fb51835a26730455565af790c88c91bc448d851678207",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-2988237-devol-programmed-transfer/fig-2-source-crop-v1.png": {
-        sha256: "c5ed78e02ab898e15b352591ed640be92c1104720e699e43c74ff27eff237ed5",
-        width: 850,
-        height: 430,
-      },
-      "/patents/figures/us-2988237-devol-programmed-transfer/fig-3-source-crop-v1.png": {
-        sha256: "d21d80490fe41c85e560bc7b759fb083aa32038b81e0fa57c5a4b51bf7a915b5",
-        width: 800,
-        height: 260,
-      },
-      "/patents/figures/us-2988237-devol-programmed-transfer/fig-4-source-crop-v1.png": {
-        sha256: "46053dcc1f3a1e5823a0a9669a2e035f45f4a89bed0133365afc76b41e9b6c62",
-        width: 690,
-        height: 550,
-      },
-      "/patents/figures/us-2988237-devol-programmed-transfer/fig-5-source-crop-v1.png": {
-        sha256: "15c4cecb06228eb370879e84cc3e09867411c4e491dff1ba01b9e9db2176c6b3",
-        width: 930,
-        height: 260,
-      },
-      "/patents/figures/us-2988237-devol-programmed-transfer/fig-6-source-crop-v1.png": {
-        sha256: "c9392083ce26c97733edcaaaddb7bb3ccc04b4fd0a3411c73bddd78f61d66133",
-        width: 380,
-        height: 210,
-      },
-      "/patents/figures/us-2988237-devol-programmed-transfer/fig-7-source-crop-v1.png": {
-        sha256: "2aa1f3a182cb3be49057bb60b5d1913cccfb40a299ab508530f77ac02e435ca3",
-        width: 350,
-        height: 190,
-      },
-      "/patents/figures/us-2988237-devol-programmed-transfer/fig-9-source-crop-v1.png": {
-        sha256: "4206214e8eb312b88f9d6580e58c263b9c7ca19896b87a42c33f70f247ccdc7d",
-        width: 410,
-        height: 410,
+      "/patents/figures/us-2988237-devol-programmed-transfer/source-sheet-3-v1.png": {
+        sha256: "61c5825513ea014d5fc45b25a9e39759be421f485a255f42f178fff99e9ab4a3",
+        width: 2320,
+        height: 3408,
       },
     },
   },

@@ -3179,6 +3179,66 @@ function bellTelephoneSourceSheetLocator(
   };
 }
 
+const DEVOL_PROGRAMMED_TRANSFER_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const DEVOL_PROGRAMMED_TRANSFER_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-2988237-devol-programmed-transfer.md#complete-source-sheet-acceptance-2026-09-04";
+const DEVOL_PROGRAMMED_TRANSFER_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-2988237-devol-programmed-transfer/source-sheet-1-v1.png",
+  2: "/patents/figures/us-2988237-devol-programmed-transfer/source-sheet-2-v1.png",
+  3: "/patents/figures/us-2988237-devol-programmed-transfer/source-sheet-3-v1.png",
+} as const;
+const DEVOL_PROGRAMMED_TRANSFER_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-12-group-0-inline-0", 1],
+  ["edition-block-12-group-0-inline-2", 1],
+  ["edition-block-12-group-0-inline-4", 1],
+  ["edition-block-12-group-0-inline-6", 1],
+  ["edition-block-12-group-0-inline-8", 1],
+  ["edition-block-12-group-0-inline-12", 1],
+  ["edition-block-12-group-0-inline-16", 1],
+  ["edition-block-12-group-0-inline-22", 1],
+  ["edition-block-13-group-0-inline-0", 1],
+  ["edition-block-15-group-0-inline-1", 1],
+  ["edition-block-12-group-0-inline-10", 2],
+  ["edition-block-12-group-0-inline-14", 2],
+  ["edition-block-12-group-0-inline-18", 2],
+  ["edition-block-12-group-0-inline-20", 2],
+  ["edition-block-12-group-0-inline-26", 2],
+  ["edition-block-12-group-0-inline-30", 2],
+  ["edition-block-17-group-0-inline-0", 2],
+  ["edition-block-20-group-0-inline-1", 2],
+  ["edition-block-12-group-0-inline-24", 3],
+  ["edition-block-12-group-0-inline-28", 3],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof DEVOL_PROGRAMMED_TRANSFER_SOURCE_SHEET_ASSETS,
+])[];
+
+function devolProgrammedTransferSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof DEVOL_PROGRAMMED_TRANSFER_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: DEVOL_PROGRAMMED_TRANSFER_SOURCE_SHEET_RASTER.width,
+    height: DEVOL_PROGRAMMED_TRANSFER_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: DEVOL_PROGRAMMED_TRANSFER_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: DEVOL_PROGRAMMED_TRANSFER_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      DEVOL_PROGRAMMED_TRANSFER_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: DEVOL_PROGRAMMED_TRANSFER_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
 const DE_FOREST_AUDION_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
 const DE_FOREST_AUDION_EVIDENCE_REFERENCE =
   "docs/provenance/us-879532-de-forest-audion.md#source-sheet-acceptance-2026-09-03";
@@ -5320,6 +5380,10 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
     ([occurrenceKey, sourcePdfPage]) =>
       bellTelephoneSourceSheetLocator(occurrenceKey, sourcePdfPage),
   ),
+  "us-2988237-devol-programmed-transfer":
+    DEVOL_PROGRAMMED_TRANSFER_SOURCE_SHEET_OCCURRENCES.map(([occurrenceKey, sourcePdfPage]) =>
+      devolProgrammedTransferSourceSheetLocator(occurrenceKey, sourcePdfPage),
+    ),
   "us-6594844-roomba": [
     roombaSourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-1" }),
     roombaSourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-3" }),

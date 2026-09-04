@@ -6,18 +6,23 @@ import type {
 
 const PATENT_ID = "us-2988237-devol-programmed-transfer";
 
-const figureDimensions: Record<number, readonly [number, number]> = {
-  1: [900, 470],
-  2: [850, 430],
-  3: [800, 260],
-  4: [690, 550],
-  5: [930, 260],
-  6: [380, 210],
-  7: [350, 190],
-  8: [330, 220],
-  9: [410, 410],
-  10: [420, 410],
-  11: [900, 780],
+const sourcePdfPageForFigure = (number: number): 1 | 2 | 3 =>
+  number <= 3 ? 1 : number <= 8 ? 2 : 3;
+
+const sourceSheet = (number: number) => {
+  const sourcePdfPage = sourcePdfPageForFigure(number);
+  const figureRange =
+    sourcePdfPage === 1
+      ? "Figs. 1 through 3"
+      : sourcePdfPage === 2
+        ? "Figs. 4 through 8"
+        : "Figs. 9 through 11";
+  return {
+    src: `/patents/figures/${PATENT_ID}/source-sheet-${sourcePdfPage}-v1.png`,
+    alt: `Complete source drawing sheet containing ${figureRange}, highlighting Fig. ${number}, from US 2,988,237.`,
+    width: 2320,
+    height: 3408,
+  };
 };
 
 const p = (
@@ -30,21 +35,13 @@ const p = (
 });
 
 const figure = (number: number, text = `FIG. ${number}`): CuratedSpecificationInline => {
-  const [width, height] = figureDimensions[number] ?? [1200, 800];
   return {
     kind: "reference",
     text,
     href: `#figure-${number}`,
     referenceType: "figure",
-    label: `Source crop of ${text} from US 2,988,237`,
-    figurePreviews: [
-      {
-        src: `/patents/figures/${PATENT_ID}/fig-${number}-source-crop-v1.png`,
-        alt: `${text}, source drawing crop from US 2,988,237`,
-        width,
-        height,
-      },
-    ],
+    label: `Complete source drawing sheet for ${text} from US 2,988,237`,
+    figurePreviews: [sourceSheet(number)],
   };
 };
 
@@ -53,16 +50,8 @@ const figures = (numbers: readonly number[], text: string): CuratedSpecification
   text,
   href: `#figure-${numbers[0]}`,
   referenceType: "figure",
-  label: `Source crops of ${text} from US 2,988,237`,
-  figurePreviews: numbers.map((number) => {
-    const [width, height] = figureDimensions[number] ?? [1200, 800];
-    return {
-      src: `/patents/figures/${PATENT_ID}/fig-${number}-source-crop-v1.png`,
-      alt: `FIG. ${number}, source drawing crop from US 2,988,237`,
-      width,
-      height,
-    };
-  }),
+  label: `Complete source drawing sheets for ${text} from US 2,988,237`,
+  figurePreviews: numbers.map(sourceSheet),
 });
 
 const figureRange = (first: number, last: number, text: string): CuratedSpecificationInline =>
