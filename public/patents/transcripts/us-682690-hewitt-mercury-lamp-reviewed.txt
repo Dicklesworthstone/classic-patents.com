@@ -4,14 +4,14 @@ No. 682,690. Patented Sept. 17, 1901.
 P. C. HEWITT.
 ELECTRIC LAMP.
 (Application filed Apr. 5, 1900.)
-(No Model.) 3 Sheets-Sheet 1.
+(No Model.)
+3 Sheets—Sheet 1.
 
-[Figure 1: Side elevation of tubular mercury-vapor lamp with condensing chamber 8, mercury cathode 1, iron anode 2, and high-voltage inductive starting circuit 13]
-[Figure 2: Detail cross-section of mercury electrode]
-[Figure 3: Circuit diagram of lamp with inductive transformer and ballast]
+Fig. 1.
+Fig. 2.
 
-Witnesses: Henry Noel Potter, Wm. H. Capel.
-Inventor: Peter Cooper Hewitt, by Kerr, Page & Cooper, Att'ys.
+Witnesses.
+Inventor.
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 13 ---
 
@@ -19,13 +19,14 @@ No. 682,690. Patented Sept. 17, 1901.
 P. C. HEWITT.
 ELECTRIC LAMP.
 (Application filed Apr. 5, 1900.)
-(No Model.) 3 Sheets-Sheet 2.
+(No Model.)
+3 Sheets—Sheet 2.
 
-[Figure 4: Operating circuit diagram showing converter transformer, magnetic interrupter, and series automatic cutout switch]
-[Figure 4a: Detail of automatic cutout contact]
+Fig. 3.
+Fig. 4.
 
-Witnesses: Henry Noel Potter, Wm. H. Capel.
-Inventor: Peter Cooper Hewitt, by Kerr, Page & Cooper, Att'ys.
+Witnesses.
+Inventor.
 
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 13 ---
 
@@ -33,13 +34,15 @@ No. 682,690. Patented Sept. 17, 1901.
 P. C. HEWITT.
 ELECTRIC LAMP.
 (Application filed Apr. 5, 1900.)
-(No Model.) 3 Sheets-Sheet 3.
+(No Model.)
+3 Sheets—Sheet 3.
 
-[Figure 5: Alternative lamp structure with double mercury electrodes and vertical cooling jacket]
-[Figure 6: Multi-tube series lamp system with common inductive ballast]
+Fig. 5.
+Fig. 6.
+Exhaust Pump.
 
-Witnesses: Henry Noel Potter, Wm. H. Capel.
-Inventor: Peter Cooper Hewitt, by Kerr, Page & Cooper, Att'ys.
+Witnesses.
+Inventor.
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 13 ---
 
@@ -53,63 +56,57 @@ SPECIFICATION forming part of Letters Patent No. 682,690, dated September 17, 19
 Application filed April 5, 1900. Serial No. 11,605. (No model.)
 
 To all whom it may concern:
-Be it known that I, PETER COOPER HEWITT, a citizen of the United States, residing at New York, in the county of New York and State of New York, have invented certain new and useful Improvements in Electric Lamps, of which the following is a specification.
+Be it known that I, PETER COOPER HEWITT, a citizen of the United States, and a resident of New York, in the county of New York and State of New York, have invented certain new and useful Improvements in Electric Lamps, of which the following is a specification.
 
-My invention relates to that class of electric lamps in which light is produced by the passage of an electric current through a vapor or gas, and the object of the invention is to provide a method of and apparatus for producing light in this manner with high efficiency and under conditions which will permit of commercial application.
+My invention relates to methods of and apparatus for electric lighting.
 
-Heretofore in devices of this character—such as Geissler tubes and vacuum spark discharges—the currents employed have been of very high potential (thousands of volts) and of small quantity (fractions of a milliampere), produced by induction-coils, static machines, or high-potential transformers. Such devices have not been capable of commercial use for general illumination, owing to the dangerous potentials required, the small amount of light produced, and the great cost and inefficiency of the apparatus.
+The general purpose of the invention is to produce light by converting electric energy into light through the agency of vapors or gases as efficiently as possible and with simple and durable apparatus.
 
-I have discovered that when an exhausted tube containing a vaporizable conducting substance, such as mercury, is connected in circuit with a source of electric current of moderate electromotive force—such as is ordinary used in commercial incandescent or arc lighting systems (say, fifty to one hundred and twenty volts)—the tube offers a very high initial resistance to the passage of the current, which resistance resides largely at the surface of the negative electrode or cathode. To start the lamp I apply a momentary higher potential of several thousand volts to break down this initial cathode resistance. The moment this cathode resistance is broken down, the electrical resistance of the vapor column collapses and the tube continues to operate smoothly from the source of moderate potential, emitting a brilliant and highly efficient light.
+In the ordinary conversion of electric energy into light a large amount of the energy is wasted in heat, and while the development of heat is usually, if not always, attendant upon the development of commercial light, yet from theoretical considerations it may be assumed that the efficiency of a light-producing device, other things being equal, would be increased in approximate proportion as the development of heat is suppressed.
+
+My invention aims, among other things, to produce light by the conversion of electrical energy with the coincident production of as moderate an amount of heat as practicable, and I have found that gases or vapors possess this property in a greater degree than matter in any other state, and therefore they offer a field of operation in which the highest efficiencies can be obtained if proper means are devised for rendering the gases or vapors light-emitting under the influence of electricity.
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 13 ---
 
-passes from the electrode into the vapor. Moreover, in the case of the arc there appears to be a narrowing at or near the electrode, which constricts the cross-section of the path of the current and increases the resistance at that point.
+passes from the electrode into the vapor. Moreover, in the case of the arc there appears to be a narrowing at or near an electrode, whereas in the other form of conduction the body of light is of practically the same dimensions throughout the space between the electrodes or between points in close proximity to the electrodes. An arc, moreover, is striated, a condition which does not appear to be present in the other form of conduction. Again, the temperature established by the arc in any one place with a given flow of electric energy appears to be far in excess of that produced by a flow of the same amount of energy in the other form of conduction.
 
-The resistance of the vapor column itself depends upon its length, cross-section, density, and temperature. Under normal operating conditions, as the current increases, the temperature and density of the vapor increase, but the conductivity of the vapor also increases at a rate such that the difference of potential between the terminals of the lamp remains substantially constant or even decreases with increments of current (negative differential resistance). To stabilize the operation of the lamp, a steadying resistance or inductive ballast is placed in series with the lamp.
-
-In the accompanying drawings, Figure 1 is a side elevation, partly in section, of a lamp embodying my invention. Fig. 2 is a cross-sectional detail of the lower electrode. Fig. 3 is a diagram of circuits showing a lamp connected with a supply-circuit and provided with starting apparatus. Fig. 4 is a diagram of circuits showing an automatic starting and cutout system. Fig. 4a is a detail of the cutout switch. Fig. 5 is a modified form of lamp with two liquid electrodes. Fig. 6 shows a system of lamps operating in series.
-
-Referring to Fig. 1, 1 is an exhausted transparent tube of glass or other suitable material, having a liquid electrode 2 (preferably mercury) at its lower end, and a solid electrode 3 (preferably iron or graphite) at its upper end. Leading-in wires 4 and 5 are sealed through the glass walls to connect with the respective electrodes. Surrounding the upper electrode 3 is an enlarged cooling or condensing chamber 8, which provides radiating surface to condense excess mercury vapor and return the liquid mercury down the tube to the cathode 2.
+The lamps which I have produced do not operate upon the arc principle, but possess the characteristics of this special form of conduction. It is, moreover, essential that the proper adjustment of the resistance of the vapor path should be obtained, and I have found that this result can be secured in the case of vapors conducting in this manner, so that the electromotive force with which the lamp is adapted to be operated can be predetermined with as great a degree of accuracy as is usual in the manufacture of the ordinary incandescent lamps having carbon filaments, and the manner in which the resistance shall vary can be controlled in vapor lamps with a much wider range of controllable resistance than is the case with a carbon filament, as the resistance of the carbon is a fixed factor, while the vapor resistance may be selected to vary at will within wide limits.
 
 --- REVIEWED TRANSCRIPTION PAGE 6 OF 13 ---
 
 682,690
 
-If the temperature of the lamp is allowed to become too high, the vapor pressure increases to such an extent that the lamp is liable to extinguish itself. The condensing chamber 8 is therefore constructed with sufficient radiating surface to dissipate the heat and maintain the vapor density at an operative value.
+of the lamp is allowed to become too high, the lamp is liable to extinguish itself. When a fixed gas is used or vapors under such conditions that their densities cannot be unduly increased by heat in the tube, then the cooling-chamber may be dispensed with. The lamp may be made of such a size as to render a special cooling-chamber unnecessary.
 
-To start the lamp, I have found it advantageous to apply an initial high-potential impulse across the electrodes. This may be accomplished by various circuit arrangements. In the arrangement shown in Fig. 3, a source of moderate potential 10 is connected to the lamp through a transformer secondary 11 and an inductance coil 12. A primary circuit 13 includes a circuit-interrupter 14. When the interrupter is operated, a high electromotive force is induced in the secondary 11, which breaks down the cold cathode resistance of the lamp and permits the main current from source 10 to flow continuously through the vapor path.
-
-To facilitate starting and prevent localized static strain on the glass, a conducting band or coating 15 is placed around the exterior of the tube near the cathode 2, and is electrically connected with the opposite electrode 3 or the supply circuit. This conducting band acts as a static dissipator and condenser plate, concentrating the electric field at the meniscus of the mercury cathode and lowering the voltage required to initiate the cathode spot.
+The ability to start the lamp readily is of the utmost importance, gases appearing to present a greater resistance to the passage of the current before the current is passing than after, and I have found that certain materials added to the lamp before or while in the process of manufacture produce a condition which makes it possible to start a current under a moderate increase of electric pressure, and thereupon the continuous or an alternating current of low pressure readily traverses the lamp, producing an intense enduring light.
 
 --- REVIEWED TRANSCRIPTION PAGE 7 OF 13 ---
 
 682,690
 
-In the automatic starting system shown in Fig. 4, the transformer primary 20 is connected across the supply mains 14, 14 through an automatic magnetic interrupter 21 and a series cutout switch 22. The secondary 23 is in series with the lamp 1 and ballast 24. Upon closing the main switch, current flows through the primary circuit, causing the interrupter 21 to vibrate rapidly and generate high-voltage pulses in secondary 23. These pulses strike across the lamp tube 1, establishing the vapor arc.
+In the accompanying drawings, illustrating my invention, Figure 1 represents one form of a complete lamp.
 
-The moment the lamp arc is struck, the operating current traversing the lamp energizes the solenoid of cutout switch 22, pulling its core and opening the primary circuit. The high-voltage starting mechanism is thus automatically disconnected, and the lamp continues to run quietly from the moderate-voltage supply lines.
-
-In the manufacture of the lamp, the tube is exhausted to a high degree of vacuum by a mercury pump while being heated in an oven or by burners to drive off occluded gases from the glass walls and electrodes. A small quantity of starting material, such as sulfide of mercury or red oxide of mercury, may be introduced into the tube before sealing to assist in the initial breakdown.
+Referring to the figures, 1 represents a glass tube of such dimensions as may be required—say, for example, a tube of three-quarters of an inch in diameter and two or three feet in length and having a wall of such thickness as not to be fragile. The particular dimensions of the tube to be chosen are determined by the electromotive force and the current with which it is to be operated and other considerations which will be hereinafter pointed out. This tube is provided with two electrodes, indicated at 2 and 5, respectively. If the lamp is to be run by continuous current, the electrode 2 is usually the anode and the electrode 5 the cathode. In the drawings I have shown the electrode 2 as being of an inverted-cup shape; but other forms may be employed—such, for instance, as a closed spherical, oval, cylindrical, and other shapes. I have obtained excellent results by using a pure iron for this electrode; but other metals may be substituted. It is suspended within or near the neck of an enlargement or chamber 4, which I usually employ, this chamber serving to increase the heat-radiating capacity of the lamp and to retain impurities. The electrode 2 is suspended by leading-in conductor 7, of platinum or other suitable material, extending through the glass wall, and I usually provide a long seal 10 for protecting more or less of the leading-in conductor within the lamp. The electrode 5 is shown in this instance as being a small quantity of mercury. A leading-in conductor 8 connects with this electrode. Surrounding the lower end of the tube, adjacent to and usually projecting a slight distance, say, one-eighth of an inch above the level of the lower electrode, there is placed a thin band 9 of conducting material—such, for instance, as foil—and this is electrically connected by a conductor 13 with the leading-in wire 7.
 
 --- REVIEWED TRANSCRIPTION PAGE 8 OF 13 ---
 
 682,690
 
-The electrode 3 at the upper end of the tube is preferably made of iron, steel, or graphite, which are not readily vaporized and do not give off occluded gases or carbon particles to blacken the glass. The liquid mercury cathode 2 at the bottom of the tube is continuously replenished by the condensed mercury trickling down from the chamber 8, so that the cathode is virtually indestructible and does not deteriorate with use.
-
-The color of the light produced by the mercury arc is a characteristic greenish-blue, extremely rich in actinic and visual rays of high luminous efficiency. For photographic work, printing, and general industrial illumination, this light is exceptionally valuable, while its electrical efficiency is many times greater than that of incandescent carbon lamps.
+operated by the core 16. A contact-point 22, against which the point 20 normally rests, is connected with one terminal of a circuit-interrupting device 19. The remaining terminal of this circuit-interrupting device is connected, through a suitable key or switch 23, with the conductor 15. One terminal of the coil 18 is connected with the conductor 14, and the remaining terminal is connected with the leading-in wire 7. The leading-in wire 8 is connected with the main line 15. When the current is turned on—as, for instance, by the line-switch 23—the interrupter 19 causes rapidly-intermitted currents to pass through the coil 17. This induces a current of any desired potential in the coil 18. The effect of this high potential is to produce within the lamp such an electrical or electrochemical condition as will result in effecting a passage of the currents of normal potential which are simultaneously applied by the main circuit 14, 15.
 
 --- REVIEWED TRANSCRIPTION PAGE 9 OF 13 ---
 
 682,690
 
-Where alternating currents are employed to operate the lamp, both electrodes may consist of mercury pools, or suitable rectifying connections may be provided. Furthermore, the lamp may be constructed in various lengths and diameters according to the voltage of the supply circuit and the candle-power desired.
+As already stated in connection with Fig. 1, the condensing and impurity-containing chamber 4 or its equivalent performs an important function in the operation of the lamp. As the lamp commences to operate heat accumulates, and the increasing temperature appears to soon result in increased resistance on the part of the vapor path. If the heat is not conducted away after the lamp has reached its proper working condition with the same rapidity that it is generated, the lamp may extinguish itself. The chamber 4 is therefore constructed with sufficient radiating surface to get rid of the excess heat and keep the lamp in the proper condition. The chamber 4 need not, however, necessarily surround the electrode 2; but it may be located elsewhere and be of other form, provided it is out of the vapor-path.
 
-Having thus described the principles, construction, and operation of my invention, what I claim as new and desire to secure by Letters Patent is:
+I have used in some instances in place of the form of apparatus above described for producing the higher potential starting-current a simple spark-coil, as shown in Fig. 4, comprising a core 40, with a primary coil 41, adapted to be connected, by means of a switch 42, between the main conductors 14 and 15, and also provided with a secondary coil 43, one terminal of which is connected with the electrode 5 of the lamp and the remaining terminal with the main conductor 15. A switch 44 is included in the conductor 45,
 
 --- REVIEWED TRANSCRIPTION PAGE 10 OF 13 ---
 
-682,690
+which leads from the electrode 2 to the main conductor 14. The coils 41 and 43 are so proportioned as to produce a higher difference of potential at the terminals of the coil 43 upon breaking the circuit of the coil 41, and the discharge from this coil suffices to produce in the vapor path of the lamp the proper conditions for permitting the current from the main circuit to flow through the lamp by way of the conductor 45 and the coil 43.
+
+The invention claimed is:
 
 1. A lamp for producing light by electric energy consisting of an inclosing chamber, a gas or vapor contained therein capable, under proper conditions, of conducting currents of considerable quantity under the influence of moderate difference of potential, and a starting material also contained within the chamber and serving to convey a starting-current under the influence of a higher difference of potential.
 

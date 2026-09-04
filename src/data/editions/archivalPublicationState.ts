@@ -284,22 +284,11 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "classic-patentscom-vt5",
     "The complete archival packet has not yet been accepted.",
   ),
-  "us-1102653-goddard-rocket": auditHold(
-    "AUDIT_FACSIMILE_REVIEW_PENDING",
-    "classic-patentscom-owu",
-    "The source hold remains in force while the source-bound presentation is repaired.",
-  ),
   "us-706737-fessenden-wireless": auditHold(
     "AUDIT_FACSIMILE_REVIEW_PENDING",
     "classic-patentscom-q5o",
     "The source face remains withheld pending source-bound reconstruction.",
   ),
-  "us-682690-hewitt-mercury-lamp": auditHold(
-    "AUDIT_FACSIMILE_REVIEW_PENDING",
-    "classic-patentscom-z99",
-    "Independent archival acceptance is pending.",
-  ),
-
   "us-613809-tesla-teleautomaton": auditHold(
     "AUDIT_FACSIMILE_REVIEW_PENDING",
     "classic-patentscom-a4b",

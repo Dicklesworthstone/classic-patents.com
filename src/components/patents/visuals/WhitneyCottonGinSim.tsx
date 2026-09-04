@@ -1,28 +1,24 @@
 "use client";
 
 import { AlertTriangle, Cog, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import {
+  getWhitneyTapeFrame,
+  WHITNEY_FRANKENSIM_BOUNDARY,
+  WHITNEY_KERNEL_SOURCE,
+  WHITNEY_SOURCE_BOUNDARY,
+} from "@/physics/whitneyCottonGinKernel";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
-import { useOffscreenGate } from "./useOffscreenGate";
-
-const UI_SNAPSHOT_INTERVAL_MS = 80;
 
 export function WhitneyCottonGinSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-x72-whitney-cotton-gin");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const crankRpm = params.crankRpm ?? 180;
+  const crankRpm = params.crankRpm ?? 60;
   const grateClearanceMm = params.seedGridClearance ?? 3.2;
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [angle, setAngle] = useState<number>(0);
-  const animRef = useRef<number | null>(null);
-  const angleRef = useRef(0);
-  const ginRef = useRef<ReturnType<typeof stepWhitneyCottonGin> | null>(null);
-  const sawRef = useRef<SVGGElement>(null);
-  const brushRef = useRef<SVGGElement>(null);
-  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
+  const isPlaying = (params.isRunning ?? 1) > 0.5;
 
   const gin = stepWhitneyCottonGin({ crankRpm, seedGridClearance: grateClearanceMm });
   const sawSpeedMps = gin.sawTipSpeedMps;
@@ -30,54 +26,26 @@ export function WhitneyCottonGinSim() {
   const ginningRateLbsPerDay = gin.outputLbsPerDay;
   const isClogged = grateClearanceMm < 1.8;
   const isSeedDamaged = grateClearanceMm > 3.8;
-
-  useEffect(() => {
-    ginRef.current = gin;
-  }, [gin]);
-
-  useEffect(() => {
-    if (!isPlaying) return;
-
-    let lastTime = performance.now();
-    let lastUiSnapshot = 0;
-
-    const loop = (time: number) => {
-      animRef.current = requestAnimationFrame(loop);
-      if (!onscreenRef.current) {
-        lastTime = time;
-        return;
-      }
-      const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
-      lastTime = time;
-      const liveGin = ginRef.current;
-      if (!liveGin) return;
-
-      angleRef.current =
-        (angleRef.current + liveGin.crankOmegaDegPerS * dt) % liveGin.displayWrapDeg;
-      sawRef.current?.setAttribute(
-        "transform",
-        `translate(260, 170) rotate(${angleRef.current * liveGin.sawToCrankRatio})`,
-      );
-      brushRef.current?.setAttribute(
-        "transform",
-        `translate(420, 170) rotate(${-angleRef.current * liveGin.brushToCrankRatio})`,
-      );
-      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
-        lastUiSnapshot = time;
-        setAngle(angleRef.current);
-      }
-    };
-
-    animRef.current = requestAnimationFrame(loop);
-    return () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-    };
-  }, [isPlaying, onscreenRef]);
+  const { frame } = useFrankenSimPhysics("us-x72-whitney-cotton-gin", {
+    domain: "solid_mechanics",
+    refusal: { isRefused: true, reason: WHITNEY_SOURCE_BOUNDARY },
+  });
+  const tape = getWhitneyTapeFrame();
+  const cylinderAngleDeg = ((tape?.phases.cylinderRad ?? 0) * 180) / Math.PI;
+  const clearerAngleDeg = ((tape?.phases.clearerRad ?? 0) * 180) / Math.PI;
 
   return (
     <div
-      ref={rootRef}
       className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+      data-whitney-face="two"
+      data-whitney-runtime-tick={frame.tick}
+      data-whitney-runtime-provenance={frame.provenance}
+      data-whitney-kernel-source={WHITNEY_KERNEL_SOURCE}
+      data-whitney-frankensim-boundary={WHITNEY_FRANKENSIM_BOUNDARY}
+      data-whitney-running={isPlaying}
+      data-whitney-crank-phase-rad={tape?.phases.crankRad ?? 0}
+      data-whitney-cylinder-phase-rad={tape?.phases.cylinderRad ?? 0}
+      data-whitney-clearer-phase-rad={tape?.phases.clearerRad ?? 0}
     >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
@@ -88,14 +56,14 @@ export function WhitneyCottonGinSim() {
             </h3>
           </div>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
-            Circular saw teeth, slotted breast grate, and counter-rotating brush cylinder.
+            Wire-toothed wooden cylinder, slotted breastwork, and contrary-running clearer.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
             onClick={() => {
-              setIsPlaying(!isPlaying);
+              updateParam("isRunning", isPlaying ? 0 : 1);
               soundEngine.playSwitchClick();
             }}
             aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
@@ -126,10 +94,7 @@ export function WhitneyCottonGinSim() {
             type="button"
             onClick={() => {
               resetParams();
-              angleRef.current = 0;
-              sawRef.current?.setAttribute("transform", "translate(260, 170) rotate(0)");
-              brushRef.current?.setAttribute("transform", "translate(420, 170) rotate(0)");
-              setAngle(0);
+              updateParam("resetEpoch", (params.resetEpoch ?? 0) + 1);
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
@@ -211,17 +176,22 @@ export function WhitneyCottonGinSim() {
             </text>
           </g>
 
-          {/* Rotating Saw Cylinder */}
-          <g ref={sawRef} transform={`translate(260, 170) rotate(${angle * gin.sawToCrankRatio})`}>
+          {/* Rotating wire-toothed wooden cylinder */}
+          <g transform={`translate(260, 170) rotate(${cylinderAngleDeg})`}>
             <circle cx="0" cy="0" r={gin.sawSvgR} fill="#2A2A2A" stroke="#C5A059" strokeWidth="3" />
-            {/* Saw teeth */}
+            {/* The source specifies bent wire teeth, not circular saw plates. */}
             {Array.from({ length: gin.sawToothCount }).map((_, i) => {
               const toothAngle = i * gin.sawToothPitchDeg;
               return (
-                <path
-                  key={`saw-tooth-${toothAngle}`}
-                  d={`M ${gin.sawSvgR} 0 L ${gin.sawToothOuterSvgR} -12 L ${gin.sawSvgR} -6 Z`}
-                  fill="#D4AF37"
+                <line
+                  key={`wire-tooth-${toothAngle}`}
+                  x1={gin.sawSvgR - 2}
+                  y1="0"
+                  x2={gin.sawToothOuterSvgR}
+                  y2="-7"
+                  stroke="#D4AF37"
+                  strokeWidth="3"
+                  strokeLinecap="round"
                   transform={`rotate(${toothAngle})`}
                 />
               );
@@ -230,10 +200,7 @@ export function WhitneyCottonGinSim() {
           </g>
 
           {/* Rotating Brush Cylinder (counter-rotating at kernel brush/crank ratio) */}
-          <g
-            ref={brushRef}
-            transform={`translate(420, 170) rotate(${-angle * gin.brushToCrankRatio})`}
-          >
+          <g transform={`translate(420, 170) rotate(${clearerAngleDeg})`}>
             <circle
               cx="0"
               cy="0"
@@ -300,7 +267,7 @@ export function WhitneyCottonGinSim() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Saw Speed
+            Cylinder Tip Speed
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
             {sawSpeedMps} m/s
@@ -316,7 +283,7 @@ export function WhitneyCottonGinSim() {
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Ginning Rate
+            Scenario Ginning Rate
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
             {ginningRateLbsPerDay} lbs/day
@@ -336,15 +303,15 @@ export function WhitneyCottonGinSim() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Hand Crank Speed</span>
+            <span>Input Shaft Speed</span>
             <span className="font-mono">{crankRpm} RPM</span>
           </div>
           <input
             type="range"
-            aria-label="Cotton-gin hand crank speed in revolutions per minute"
+            aria-label="Cotton-gin input shaft speed in revolutions per minute"
             min="20"
-            max="120"
-            step="5"
+            max="180"
+            step="10"
             value={crankRpm}
             onChange={(e) => updateParam("crankRpm", Number(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
@@ -367,6 +334,10 @@ export function WhitneyCottonGinSim() {
           />
         </div>
       </div>
+
+      <p className="mt-3 text-[11px] leading-relaxed text-amber-800 dark:text-amber-300">
+        {WHITNEY_SOURCE_BOUNDARY}
+      </p>
     </div>
   );
 }

@@ -27,26 +27,22 @@ No OCR output was used as published text for this record.
 
 | Facsimile page | Content | Published local crop / locator |
 | --- | --- | --- |
-| 1 | Drawing sheet, Figs. 1–5; witnesses C. F. Hixon and C. C. Hartnett; inventor signature | Versioned, isolated source crops listed below; the legacy flat previews are preserved but are not linked by the repaired edition. |
+| 1 | Drawing sheet, Figs. 1–5; witness signatures; inventor assignment signature | `public/patents/figures/us-1102653-goddard-rocket/sheet-1-1.png`, a full 2320 × 3408 direct raster of this pinned page. Every active figure reference opens this complete sheet. |
 | 2 | Masthead; purpose; energy-conversion discussion; Figs. 1–5 description; primary combustion chamber 10, tapered tube 11, disks 12; initial spin charges 15–20 | transcript page 2; manual-edition blocks 2–14 |
 | 3 | Launch frame 21–23; firing tube 24 and auxiliary rocket 25–28; auxiliary spin restoration 29–32; camera/gyroscope 33–45; alternative arrangements and operating sequence | transcript page 3; manual-edition blocks 15–22 |
 | 4 | Completion of operating sequence, closing scope language, claims 1–8, signature and witnesses | transcript page 4; manual-edition blocks 23–35 |
 
-Figure captions are transcribed in the source edition's drawing-description paragraph (block 10): Fig. 1 is the longitudinal partly sectional whole apparatus; Fig. 2 is the enlarged head section; Figs. 3 and 4 are the indicated transverse sections; Fig. 5 is the reduced-scale firing framework. Every inline figure reference points to a crop made from facsimile page 1, not to a reconstructed diagram.
+Figure captions are transcribed in the source edition's drawing-description paragraph (block 10): Fig. 1 is the longitudinal partly sectional whole apparatus; Fig. 2 is the enlarged head section; Figs. 3 and 4 are the indicated transverse sections; Fig. 5 is the reduced-scale firing framework. Every inline figure reference points to the same complete, unaltered page-1 source sheet, not to a reconstructed diagram or a selectively framed crop.
 
-## 2026-08-20 figure-crop repair and publication hold
+## 2026-09-04 direct source-sheet figure review
 
-Independent visual QC rejected the retained v3/v4 individual crops: Fig. 1 v4 clipped the drawing at the left, top, and bottom; Figs. 3–5 v3 clipped labels, leaders, or apparatus. The first v5 grouped crop also clipped Fig. 5's support struts and bottom context; v6 preserved that context but was too broad for a visitor preview. Those files remain preserved but are no longer referenced. A 300 dpi render of pinned PDF page 1 supplies the v5 Fig. 2 crop and the target-specific v7 assets. Figs. 1, 2, 4, and 5 use their narrowest complete unaltered rectangles. Fig. 3 uses the narrowest honest adjacency group because its leaders physically interleave with the surrounding section views; the group retains those neighboring source edges rather than clipping or redrawing them. The Fig. 5 crop is centered to keep witnesses and inventor-signature material outside its frame. Coordinates below are pixel coordinates in the 2320 × 3408 page-1 render; dimensions and SHA-256 values are pinned by `goddardRocketEdition.test.ts`.
+Direct visual review at the source's native 300 DPI confirms that PDF page 1 contains the complete drawing sheet: Figs. 1–5, their shared leaders and labels, the firing framework, witnesses, and inventor signature. The old individual crops are preserved for historical auditability but are no longer public-source evidence. They were fragile because figure edges and shared leaders make a narrow crop easy to misframe. The active edition instead binds each of its eleven authored figure-reference occurrences to one unaltered full-page raster. Its dimensions and SHA-256 are pinned by `goddardRocketEdition.test.ts`.
 
-| Figure reference | Versioned source crop | Render rectangle (x, y, width, height) | PNG dimensions | SHA-256 |
+| Active figure-reference occurrences | Direct source-sheet asset | Source PDF page | PNG dimensions | SHA-256 |
 | --- | --- | --- | --- | --- |
-| Fig. 1 | `public/patents/figures/us-1102653-goddard-rocket-fig-1-source-crop-v8.png` | `(1180, 650, 720, 2160)` | 720 × 2160 | `77d43e7f37d6f89037510a44fbbd7c9b449ad999c3f7a1bb739177bda3b491ee` |
-| Fig. 2 | `public/patents/figures/us-1102653-goddard-rocket-fig-2-source-crop-v5.png` | `(150, 670, 1050, 920)` | 1050 × 920 | `18292325c5c392c25b0afd75cbad453b63b352ce2dffc6e32f20a7383d2ebbf6` |
-| Fig. 3 | `public/patents/figures/us-1102653-goddard-rocket-fig-3-source-crop-v8.png` | `(650, 1640, 650, 640)` | 650 × 640 | `e759f032d871373a9f9d24baf268ed41a50802e5e93a8b4f3e1f560f163e2e06` |
-| Fig. 4 | `public/patents/figures/us-1102653-goddard-rocket-fig-4-source-crop-v7.png` | `(100, 1640, 620, 620)` | 620 × 620 | `918e9bf70957b76b2e774b5e1c7582987c7938c582a117adf2abe2e51ecd5b95` |
-| Fig. 5 | `public/patents/figures/us-1102653-goddard-rocket-fig-5-source-crop-v8.png` | `(560, 2250, 740, 850)` | 740 × 850 | `1c83557e8cedfe583fb5c7cdaa43721f4fd1e03adcc83454fec9669b866e08a9` |
+| `Figs. 1 through 5`, `Figure 1`, `Fig. 2` (twice), `Figs. 3 and 4`, `Fig. 5` (twice), `Fig. 1` (twice), `Fig. 3` (twice) | `public/patents/figures/us-1102653-goddard-rocket/sheet-1-1.png` | 1 | 2320 × 3408 | `65f586e211296f66aacd648922ce102b0804d280de2d4a4e4f31237b3774c0ed` |
 
-The retained ledger and manual edition are local comparison evidence only during this repair. The canonical record deliberately does not bind `originalTextAsset` or `archivalEdition`; publication remains withheld for an independent reviewer to inspect the facsimile, crops, mappings, and evidence closure.
+The reviewed ledger and manual edition remain distinct comparison layers. The canonical record binds both as its source-reading materials; strict archival-audit disposition is editorial metadata and must never remove a visitor's access to the full patent text.
 
 ## Claim ledger
 

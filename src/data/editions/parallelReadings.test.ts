@@ -13,7 +13,6 @@ const EXPECTED_ROOT_QA_WITHHOLDS = [
   "us-2708656-fermi-reactor",
   "us-313224-mergenthaler-linotype",
   "us-3138743-kilby-integrated-circuit",
-  "us-3353115-maiman-ruby-laser",
   "us-347140-thomson-welding",
   "us-3541541-engelbart-mouse",
   "us-395781-hollerith-tabulating",

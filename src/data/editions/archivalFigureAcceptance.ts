@@ -241,40 +241,15 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
   },
   "us-124404-westinghouse-air-brake": {
     sourcePdfSha256: "4071920f448fd1c3c5d8b5d593963e629adc0b3ae91212aae23cfad3d95ed665",
-    reviewer: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-08-18",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
-    acceptedOccurrenceCount: 22,
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 23,
     assets: {
-      "/patents/figures/us-124404-westinghouse-air-brake/fig-1-source-crop.png": {
-        sha256: "f2017447d96e5daea3264e46d3d42f87a9aecf90ac4c0d05c2afdcadbe86ff92",
-        width: 1540,
-        height: 900,
-      },
-      "/patents/figures/us-124404-westinghouse-air-brake/fig-2-source-crop.png": {
-        sha256: "8fe595e7e0f347be13071354a7a909f1fbd0a40a71263498fe396ebf414a0f0a",
-        width: 800,
-        height: 650,
-      },
-      "/patents/figures/us-124404-westinghouse-air-brake/fig-3-source-crop.png": {
-        sha256: "9792ee5202d3cee6d8b58dd956eebe66941bd24452465685e85e6f656a8b7ec4",
-        width: 800,
-        height: 650,
-      },
-      "/patents/figures/us-124404-westinghouse-air-brake/fig-4-source-crop-v2.png": {
-        sha256: "d9ebfd783f3454859a9fbb66ef425355671cc59bdf199fffb04c21f477e66a3d",
-        width: 430,
-        height: 520,
-      },
-      "/patents/figures/us-124404-westinghouse-air-brake/fig-5-source-crop.png": {
-        sha256: "9a9134a06b39251b30aa974ee71cc5e5dc7bdfebd985f214ec220a7ffa756349",
-        width: 830,
-        height: 460,
-      },
-      "/patents/figures/us-124404-westinghouse-air-brake/fig-6-source-crop.png": {
-        sha256: "e2b259b40adf4f92c30e75d43c9716f03890b9c2dba39af4adb40b7799fa1f1c",
-        width: 900,
-        height: 400,
+      "/patents/figures/us-124404-westinghouse-air-brake/source-sheet-1-v1.png": {
+        sha256: "7417d1ebd75e021b68f610b49d6f7af4e4ca0cf118dade6e6ca292892bb59c90",
+        width: 2320,
+        height: 3408,
       },
     },
   },
@@ -721,6 +696,20 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
         sha256: "4206214e8eb312b88f9d6580e58c263b9c7ca19896b87a42c33f70f247ccdc7d",
         width: 410,
         height: 410,
+      },
+    },
+  },
+  "us-2929922-townes-laser": {
+    sourcePdfSha256: "0c67f2d45609a1d465f75530c733c7c2feffb87994fa62392cf79f7e737d9270",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 11,
+    assets: {
+      "/patents/figures/us-2929922-townes-laser/sheet-1-1.png": {
+        sha256: "1ea31b81c55171a0c6ced97ed94d80eedb442e4f81bb6248d1ebee8e81648283",
+        width: 2320,
+        height: 3408,
       },
     },
   },
@@ -2155,6 +2144,39 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
       },
     },
   },
+  "us-682690-hewitt-mercury-lamp": {
+    sourcePdfSha256: "bd849330e1ed6e530d0654413016c7e77eda792d0519628ca1bae5747065c74d",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 3,
+    assets: {
+      "/patents/figures/us-682690-hewitt-mercury-lamp/sheet-01.png": {
+        sha256: "5d54d50eee4fccb26abf2dd91ff91845d2313f823f570ec73c53824f00c14087",
+        width: 1160,
+        height: 1704,
+      },
+      "/patents/figures/us-682690-hewitt-mercury-lamp/sheet-02.png": {
+        sha256: "576ae1326f6d3b075a0157b04fb3c5c51b37564f695249d26f7a98dd65d39aab",
+        width: 1160,
+        height: 1704,
+      },
+    },
+  },
+  "us-808897-carrier-air-conditioner": {
+    sourcePdfSha256: "b8cfbb69e27934862236ecabf03396e67d04a4b4011c98083f1205cd76f0291e",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 8,
+    assets: {
+      "/patents/figures/us-808897-carrier-air-conditioner/source-sheet-1-v1.png": {
+        sha256: "3fb82f452c19cdb79c2a204e5b13b3b73c1f2af5fc4f17905b3104deed79e58e",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
   "us-821393-wright-flyer": {
     sourcePdfSha256: "678bea5d81cb4e90a15c998bc932d2cf01bc87cfc3fcc53f0ecbdbdc70097966",
     reviewer: "Classic Patents editorial agent (GPT-5.6); independent source-pixel review",
@@ -2243,6 +2265,20 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
         sha256: "66ed46bd456aaa5a73c7c86126cffb8039844a5f364cebffe72fa3558ccc4895",
         width: 1150,
         height: 650,
+      },
+    },
+  },
+  "us-1102653-goddard-rocket": {
+    sourcePdfSha256: "8503f52914f4201850d7d6f067ac48886dda77c2cdb5e8fce831e13232f7c42b",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 11,
+    assets: {
+      "/patents/figures/us-1102653-goddard-rocket/sheet-1-1.png": {
+        sha256: "65f586e211296f66aacd648922ce102b0804d280de2d4a4e4f31237b3774c0ed",
+        width: 2320,
+        height: 3408,
       },
     },
   },

@@ -42,9 +42,19 @@
 3. **Archival Edition**: `src/data/editions/maimanRubyLaserEdition.ts` is the continuous manual React source face with typed blocks, terms, 18 figure crops, and dynamic claim lookup.
 4. **Editorial & Engineering Face**: Complete mathematical and physical breakdown in `src/data/patents/maiman-ruby-laser.ts`, 2D simulator `MaimanRubyLaserSim.tsx`, and 3D WebGL studio `MaimanRubyLaser3D.tsx`.
 
-## 4. Full Facsimile Review & Visual Reconciliation (2026-09-01)
+## 4. Full Facsimile Review & Source-Text Reconciliation (2026-09-04)
 
-Full facsimile review was completed across all 10 pages of `public/patents/pdfs/us-3353115-maiman-ruby-laser.pdf`. High-resolution 300 DPI extractions of all 5 drawing sheets were audited and cropped into individual figure assets `fig-1-source-crop-v1.png` through `fig-18-source-crop-v1.png`. The continuous archival edition reconstructs the complete patent text, including preamble, 18 figure descriptions, detailed three-level laser mechanics, resonator architectures, Colidar system, and Claims 1 & 2.
+The pinned ten-page PDF was reviewed as the controlling source. Pages 1–5
+were reviewed as complete drawing sheets; pages 6–10 were rendered at 300 DPI
+and visually reviewed for the patent masthead, specification, claims,
+references, and signature blocks. The visitor archival edition and
+page-marked reviewed ledger were then reconciled to the printed legal and
+specification text, including the three-level description, resonator variants,
+Colidar system, and Claims 1 and 2. No OCR output was used as source text.
+
+The historical individual figure crops `fig-1-source-crop-v1.png` through
+`fig-18-source-crop-v1.png` remain preserved; the current figure-occurrence
+audit binds citations to complete reviewed drawing sheets as documented below.
 
 ## 5. Source-Pixel Figure-Crop Lineage
 

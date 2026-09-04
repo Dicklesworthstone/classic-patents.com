@@ -36,4 +36,20 @@
 2. **Observed source boundary**: The grant prints only Figures 1–3 and eleven claims. Figures 4–5, a thirteen-claim sequence, Serial No. 752,021, and related descriptions are not supported by this pinned source and must not be presented as part of this grant.
 3. **Retained false-crop evidence**: `fig-5-source-crop-v1.png` is a clipped portion of Figure 1 plus drawing-sheet signatures, not a Figure 5. It is retained as research evidence and is not linked by the visitor-facing edition.
 4. **Reviewed-ledger repair**: On 2026-09-03, the five-page reviewed ledger was rebuilt from the visually checked facsimile and the source-correct manual edition. Its ordered page markers, seven masthead lines, thirty-two source paragraphs, and all eleven printed claims now have literal-coverage evidence.
-5. **Remaining internal evidence work**: Figure-occurrence acceptance remains independently tracked. It does not gate the complete archival edition or pinned facsimile in the visitor reader.
+5. **Direct source-sheet acceptance (2026-09-04)**: PDF page 1 was visually
+   reviewed at 300 DPI. Its immutable complete render,
+   `public/patents/figures/us-2929922-townes-laser/sheet-1-1.png`, preserves
+   the full printed sheet: Figs. 1–3, all source lettering and directional
+   labels, patent furniture, inventors, and attorney signature. Its SHA-256 is
+   `1ea31b81c55171a0c6ced97ed94d80eedb442e4f81bb6248d1ebee8e81648283` and
+   its raster dimensions are 2320 × 3408 pixels. All eleven active figure
+   occurrences use the entire source rectangle `(0, 0, 2320, 3408)` on PDF
+   page 1: `edition-block-19-group-0-inline-1`,
+   `edition-block-19-group-0-inline-3`, `edition-block-19-group-0-inline-5`,
+   `edition-block-19-group-0-inline-7`, `edition-block-20-group-0-inline-1`,
+   `edition-block-21-group-0-inline-1`, `edition-block-23-group-0-inline-1`,
+   `edition-block-26-group-0-inline-1`, `edition-block-28-group-0-inline-1`,
+   `edition-block-29-group-0-inline-1`, and
+   `edition-block-30-group-0-inline-1`. The older isolated crops remain
+   preserved comparison artifacts. This acceptance is internal provenance
+   evidence and never gates the complete archival edition or pinned facsimile.

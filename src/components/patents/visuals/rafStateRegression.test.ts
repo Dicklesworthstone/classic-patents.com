@@ -11,7 +11,6 @@ const SNAPSHOT_CONTRACTS = [
   ["TeslaMotorSim.tsx", "angleRef", "setAngle"],
   ["GatlingGunSim.tsx", "clusterAngleRef", "setClusterAngleDeg"],
   ["EricssonPropellerSim.tsx", "angleRef", "setAngleDeg"],
-  ["WhitneyCottonGinSim.tsx", "angleRef", "setAngle"],
   ["MaximMachineGunSim.tsx", "cyclePhaseRef", "setCyclePhase"],
   ["ParsonsTurbineSim.tsx", "flowPhaseRef", "setFlowPhase"],
   ["WattSeparateCondenserSim.tsx", "animTimeRef", "setAnimTime"],
@@ -74,6 +73,14 @@ describe("2D rAF presentation ownership", () => {
 
     expect(source).toContain('useFrankenSimPhysics("us-x1-hopkins-potash"');
     expect(source).toContain("getHopkinsTapeFrame()");
+    expect(source).not.toContain("requestAnimationFrame");
+  });
+
+  test("keeps Whitney Cotton Gin on the route-level owner without a private rAF loop", () => {
+    const source = sourceFor("WhitneyCottonGinSim.tsx");
+
+    expect(source).toContain('useFrankenSimPhysics("us-x72-whitney-cotton-gin"');
+    expect(source).toContain("getWhitneyTapeFrame()");
     expect(source).not.toContain("requestAnimationFrame");
   });
 

@@ -62,6 +62,12 @@ describe("US 2,929,922 Townes & Schawlow Optical Maser / Laser Archival Edition 
   });
 
   test("verifies all referenced source figure crops exist on disk", () => {
+    const sourceSheet = {
+      src: "/patents/figures/us-2929922-townes-laser/sheet-1-1.png",
+      width: 2320,
+      height: 3408,
+      sha256: "1ea31b81c55171a0c6ced97ed94d80eedb442e4f81bb6248d1ebee8e81648283",
+    } as const;
     for (const block of townesLaserArchivalEdition.blocks) {
       if (block.kind === "paragraph" || block.kind === "claim") {
         for (const inline of block.inlines) {
@@ -69,11 +75,20 @@ describe("US 2,929,922 Townes & Schawlow Optical Maser / Laser Archival Edition 
             for (const prev of inline.figurePreviews) {
               const cropPath = join(rootDir, "public", prev.src.replace(/^\//, ""));
               expect(existsSync(cropPath)).toBe(true);
+              expect(prev).toMatchObject({
+                src: sourceSheet.src,
+                width: sourceSheet.width,
+                height: sourceSheet.height,
+              });
             }
           }
         }
       }
     }
+    const bytes = readFileSync(join(rootDir, "public", sourceSheet.src));
+    expect(createHash("sha256").update(bytes).digest("hex")).toBe(sourceSheet.sha256);
+    expect(bytes.readUInt32BE(16)).toBe(sourceSheet.width);
+    expect(bytes.readUInt32BE(20)).toBe(sourceSheet.height);
   });
 
   test("exposes all 11 printed claims via dynamic single-source lookup", () => {
@@ -110,12 +125,16 @@ describe("US 2,929,922 Townes & Schawlow Optical Maser / Laser Archival Edition 
     }
   });
 
-  test("reports only the remaining figure-evidence work in publication state", () => {
+  test("accepts the complete source-sheet evidence in publication state", () => {
     const { evaluateArchivalPublicationState } = require("./publicationApproval");
     const { townesLaserPatent } = require("@/data/patents/townes-laser");
     const decision = evaluateArchivalPublicationState(townesLaserPatent);
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("candidate");
-    expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+    expect(decision.isPublished).toBe(true);
+    expect(decision.state.kind).toBe("accepted");
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 11,
+      acceptedFigureCount: 11,
+    });
   });
 });

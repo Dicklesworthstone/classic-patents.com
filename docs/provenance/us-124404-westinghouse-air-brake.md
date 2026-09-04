@@ -23,7 +23,7 @@ Pennsylvania. It has no filing or application date, so the catalogue's
 
 | PDF locator | Source material | Editorial treatment |
 | --- | --- | --- |
-| p. 1 | Drawing sheet, Figs. 1-6, execution names | Direct visual review; direct local crop for each printed figure |
+| p. 1 | Drawing sheet, Figs. 1-6, execution names | Direct visual review; one unmodified complete source sheet for every active figure reference |
 | p. 2 | Masthead, problem statement, five listed functions, paired-pipe and receiver construction | Direct visual and text-layer comparison |
 | p. 3 | Pipe routing, automatic trip cocks, derailment/coupling triggers, signalling gauges | Direct visual and text-layer comparison |
 | p. 4 | Signalling operation, all five claims, execution, witnesses | Direct visual and text-layer comparison |
@@ -55,17 +55,17 @@ the page-marked source ledger for review only. The visitor-facing source reader
 does not display those markers. The older source-text layer remains research
 evidence and is not a public complete-source edition.
 
-| Source figure | Local selected crop |
-| --- | --- |
-| Fig. 1 | `public/patents/figures/us-124404-westinghouse-air-brake/fig-1-source-crop.png` |
-| Fig. 2 | `public/patents/figures/us-124404-westinghouse-air-brake/fig-2-source-crop.png` |
-| Fig. 3 | `public/patents/figures/us-124404-westinghouse-air-brake/fig-3-source-crop.png` |
-| Fig. 4 | `public/patents/figures/us-124404-westinghouse-air-brake/fig-4-source-crop.png` |
-| Fig. 5 | `public/patents/figures/us-124404-westinghouse-air-brake/fig-5-source-crop.png` |
-| Fig. 6 | `public/patents/figures/us-124404-westinghouse-air-brake/fig-6-source-crop.png` |
+### Direct source-sheet acceptance (2026-09-04)
 
-The crop files are unmodified selections from the pinned drawing sheet. They
-do not replace the complete source PDF or add reconstructed historical matter.
+Direct 300 DPI visual review confirms PDF page 1 contains all six printed
+figures, their labels and source lettering, the patent identity, and execution
+furniture. The active edition uses the complete, unmodified page render:
+`public/patents/figures/us-124404-westinghouse-air-brake/source-sheet-1-v1.png`
+(2320 × 3408 pixels; SHA-256
+`7417d1ebd75e021b68f610b49d6f7af4e4ca0cf118dade6e6ca292892bb59c90`).
+All 23 active figure-reference occurrences use its full `(0, 0, 2320, 3408)`
+source rectangle on PDF page 1. The older isolated crops remain preserved
+comparison artifacts; no historical content was reconstructed.
 
 ## Review boundary
 

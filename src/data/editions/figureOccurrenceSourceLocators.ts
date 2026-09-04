@@ -2815,6 +2815,266 @@ function salisburyRobotHandSourceSheetLocator(
   };
 }
 
+const SHOLES_TYPEWRITER_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const SHOLES_TYPEWRITER_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-79265-sholes-typewriter.md#active-edition-reference-map";
+const SHOLES_TYPEWRITER_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-79265-sholes-typewriter/source-sheet-1-v1.png",
+  2: "/patents/figures/us-79265-sholes-typewriter/source-sheet-2-v1.png",
+} as const;
+const SHOLES_TYPEWRITER_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-1-group-0-inline-1", 1],
+  ["edition-block-4-group-0-inline-0", 1],
+  ["edition-block-4-group-0-inline-2", 1],
+  ["edition-block-6-group-0-inline-5", 1],
+  ["edition-block-7-group-0-inline-1", 1],
+  ["edition-block-7-group-0-inline-3", 1],
+  ["edition-block-7-group-0-inline-5", 1],
+  ["edition-block-7-group-0-inline-15", 1],
+  ["edition-block-8-group-0-inline-1", 1],
+  ["edition-block-9-group-0-inline-1", 1],
+  ["edition-block-9-group-0-inline-3", 1],
+  ["edition-block-9-group-0-inline-5", 1],
+  ["edition-block-9-group-0-inline-7", 1],
+  ["edition-block-10-group-0-inline-1", 1],
+  ["edition-block-11-group-0-inline-1", 1],
+  ["edition-block-11-group-0-inline-3", 1],
+  ["edition-block-12-group-0-inline-1", 1],
+  ["edition-block-13-group-0-inline-7", 1],
+  ["edition-block-13-group-0-inline-9", 1],
+  ["edition-block-13-group-0-inline-11", 1],
+  ["edition-block-13-group-0-inline-15", 1],
+  ["edition-block-13-group-0-inline-17", 1],
+  ["edition-block-14-group-0-inline-1", 1],
+  ["edition-block-14-group-0-inline-3", 1],
+  ["edition-block-15-group-0-inline-1", 1],
+  ["edition-block-16-group-0-inline-1", 1],
+  ["edition-block-16-group-0-inline-3", 1],
+  ["edition-block-17-group-0-inline-1", 1],
+  ["edition-block-17-group-0-inline-3", 1],
+  ["edition-block-17-group-0-inline-5", 1],
+  ["edition-block-17-group-0-inline-7", 1],
+  ["edition-block-18-group-0-inline-1", 1],
+  ["edition-block-1-group-0-inline-3", 2],
+  ["edition-block-1-group-0-inline-5", 2],
+  ["edition-block-4-group-0-inline-4", 2],
+  ["edition-block-4-group-0-inline-6", 2],
+  ["edition-block-6-group-0-inline-1", 2],
+  ["edition-block-6-group-0-inline-3", 2],
+  ["edition-block-7-group-0-inline-7", 2],
+  ["edition-block-7-group-0-inline-9", 2],
+  ["edition-block-7-group-0-inline-13", 2],
+  ["edition-block-12-group-0-inline-3", 2],
+  ["edition-block-13-group-0-inline-1", 2],
+  ["edition-block-13-group-0-inline-3", 2],
+  ["edition-block-17-group-0-inline-9", 2],
+  ["edition-block-17-group-0-inline-11", 2],
+  ["edition-block-17-group-0-inline-13", 2],
+  ["edition-block-17-group-0-inline-15", 2],
+  ["edition-block-17-group-0-inline-17", 2],
+  ["edition-block-20-group-0-inline-0", 2],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof SHOLES_TYPEWRITER_SOURCE_SHEET_ASSETS,
+])[];
+function sholesTypewriterSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof SHOLES_TYPEWRITER_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: SHOLES_TYPEWRITER_SOURCE_SHEET_RASTER.width,
+    height: SHOLES_TYPEWRITER_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: SHOLES_TYPEWRITER_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: SHOLES_TYPEWRITER_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      SHOLES_TYPEWRITER_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: SHOLES_TYPEWRITER_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const CARRIER_AIR_CONDITIONER_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const CARRIER_AIR_CONDITIONER_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-808897-carrier-air-conditioner.md#direct-source-sheet-acceptance-2026-09-04";
+const CARRIER_AIR_CONDITIONER_SOURCE_SHEET_OCCURRENCES = [
+  "edition-block-4-group-0-inline-1",
+  "edition-block-4-group-0-inline-3",
+  "edition-block-4-group-0-inline-5",
+  "edition-block-4-group-0-inline-7",
+  "edition-block-4-group-0-inline-9",
+  "edition-block-4-group-0-inline-11",
+  "edition-block-6-group-0-inline-1",
+  "edition-block-6-group-0-inline-3",
+] as const satisfies readonly FigureOccurrenceKey[];
+function carrierAirConditionerSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: CARRIER_AIR_CONDITIONER_SOURCE_SHEET_RASTER.width,
+    height: CARRIER_AIR_CONDITIONER_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: "/patents/figures/us-808897-carrier-air-conditioner/source-sheet-1-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: CARRIER_AIR_CONDITIONER_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      CARRIER_AIR_CONDITIONER_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: CARRIER_AIR_CONDITIONER_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const HEWITT_MERCURY_LAMP_SOURCE_SHEET_RASTER = { width: 1160, height: 1704 } as const;
+const HEWITT_MERCURY_LAMP_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-682690-hewitt-mercury-lamp.md#complete-source-sheet-acceptance-2026-09-04";
+const HEWITT_MERCURY_LAMP_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-682690-hewitt-mercury-lamp/sheet-01.png",
+  2: "/patents/figures/us-682690-hewitt-mercury-lamp/sheet-02.png",
+} as const;
+const HEWITT_MERCURY_LAMP_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-4-group-0-inline-3", 1],
+  ["edition-block-6-group-0-inline-3", 1],
+  ["edition-block-7-group-0-inline-1", 2],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof HEWITT_MERCURY_LAMP_SOURCE_SHEET_ASSETS,
+])[];
+function hewittMercuryLampSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof HEWITT_MERCURY_LAMP_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: HEWITT_MERCURY_LAMP_SOURCE_SHEET_RASTER.width,
+    height: HEWITT_MERCURY_LAMP_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: HEWITT_MERCURY_LAMP_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: HEWITT_MERCURY_LAMP_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      HEWITT_MERCURY_LAMP_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: HEWITT_MERCURY_LAMP_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const GODDARD_ROCKET_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const GODDARD_ROCKET_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-1102653-goddard-rocket.md#2026-09-04-direct-source-sheet-figure-review";
+const GODDARD_ROCKET_SOURCE_SHEET_OCCURRENCES = [
+  "edition-block-1-group-0-inline-1",
+  "edition-block-10-group-0-inline-1",
+  "edition-block-10-group-0-inline-3",
+  "edition-block-10-group-0-inline-5",
+  "edition-block-10-group-0-inline-7",
+  "edition-block-10-group-0-inline-9",
+  "edition-block-11-group-0-inline-1",
+  "edition-block-13-group-0-inline-1",
+  "edition-block-15-group-0-inline-1",
+  "edition-block-18-group-0-inline-1",
+  "edition-block-20-group-0-inline-5",
+] as const satisfies readonly FigureOccurrenceKey[];
+function goddardRocketSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: GODDARD_ROCKET_SOURCE_SHEET_RASTER.width,
+    height: GODDARD_ROCKET_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: "/patents/figures/us-1102653-goddard-rocket/sheet-1-1.png",
+    sourcePdfPage: 1,
+    sourceRaster: GODDARD_ROCKET_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      GODDARD_ROCKET_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: GODDARD_ROCKET_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const TOWNES_LASER_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const TOWNES_LASER_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-2929922-townes-laser.md#preservation-boundaries";
+const TOWNES_LASER_SOURCE_SHEET_OCCURRENCES = [
+  "edition-block-19-group-0-inline-1",
+  "edition-block-19-group-0-inline-3",
+  "edition-block-19-group-0-inline-5",
+  "edition-block-19-group-0-inline-7",
+  "edition-block-20-group-0-inline-1",
+  "edition-block-21-group-0-inline-1",
+  "edition-block-23-group-0-inline-1",
+  "edition-block-26-group-0-inline-1",
+  "edition-block-28-group-0-inline-1",
+  "edition-block-29-group-0-inline-1",
+  "edition-block-30-group-0-inline-1",
+] as const satisfies readonly FigureOccurrenceKey[];
+function townesLaserSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: TOWNES_LASER_SOURCE_SHEET_RASTER.width,
+    height: TOWNES_LASER_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: "/patents/figures/us-2929922-townes-laser/sheet-1-1.png",
+    sourcePdfPage: 1,
+    sourceRaster: TOWNES_LASER_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      TOWNES_LASER_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: TOWNES_LASER_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-124404-westinghouse-air-brake.md#direct-source-sheet-acceptance-2026-09-04";
+const WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_OCCURRENCES = [
+  "edition-block-1-group-0-inline-1", "edition-block-1-group-0-inline-3", "edition-block-1-group-0-inline-5", "edition-block-1-group-0-inline-7", "edition-block-1-group-0-inline-9", "edition-block-1-group-0-inline-11", "edition-block-5-group-0-inline-0", "edition-block-5-group-0-inline-2", "edition-block-5-group-0-inline-4", "edition-block-5-group-0-inline-6", "edition-block-5-group-0-inline-8", "edition-block-5-group-0-inline-10", "edition-block-5-group-0-inline-12", "edition-block-5-group-0-inline-14", "edition-block-14-group-0-inline-1", "edition-block-14-group-0-inline-3", "edition-block-15-group-0-inline-1", "edition-block-15-group-0-inline-3", "edition-block-15-group-0-inline-5", "edition-block-15-group-0-inline-7", "edition-block-17-group-0-inline-1", "edition-block-17-group-0-inline-3",
+] as const satisfies readonly FigureOccurrenceKey[];
+function westinghouseAirBrakeSourceSheetLocator(occurrenceKey: FigureOccurrenceKey): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = { x: 0, y: 0, width: WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_RASTER.width, height: WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_RASTER.height };
+  return { occurrenceKey, activeAsset: "/patents/figures/us-124404-westinghouse-air-brake/source-sheet-1-v1.png", sourcePdfPage: 1, sourceRaster: WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_RASTER, sourceRectPixels, normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_RASTER), reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review", reviewedAt: "2026-09-04", evidenceReference: WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_EVIDENCE_REFERENCE };
+}
+
 const DE_FOREST_AUDION_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
 const DE_FOREST_AUDION_EVIDENCE_REFERENCE =
   "docs/provenance/us-879532-de-forest-audion.md#source-sheet-acceptance-2026-09-03";
@@ -4931,6 +5191,26 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
   "us-4921293-salisbury-robot-hand": SALISBURY_ROBOT_HAND_SOURCE_SHEET_OCCURRENCES.map(
     ([occurrenceKey, sourcePdfPage]) =>
       salisburyRobotHandSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-79265-sholes-typewriter": SHOLES_TYPEWRITER_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) =>
+      sholesTypewriterSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-808897-carrier-air-conditioner": CARRIER_AIR_CONDITIONER_SOURCE_SHEET_OCCURRENCES.map(
+    carrierAirConditionerSourceSheetLocator,
+  ),
+  "us-682690-hewitt-mercury-lamp": HEWITT_MERCURY_LAMP_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) =>
+      hewittMercuryLampSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-1102653-goddard-rocket": GODDARD_ROCKET_SOURCE_SHEET_OCCURRENCES.map(
+    goddardRocketSourceSheetLocator,
+  ),
+  "us-2929922-townes-laser": TOWNES_LASER_SOURCE_SHEET_OCCURRENCES.map(
+    townesLaserSourceSheetLocator,
+  ),
+  "us-124404-westinghouse-air-brake": WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_OCCURRENCES.map(
+    westinghouseAirBrakeSourceSheetLocator,
   ),
   "us-6594844-roomba": [
     roombaSourceSheetLocator({ occurrenceKey: "edition-block-12-group-0-inline-1" }),

@@ -56,7 +56,13 @@ describe("US 124,404 manual source edition", () => {
     }
   });
 
-  test("pairs each source paragraph with a non-lossy reading and every figure with a local crop", () => {
+  test("pairs each source paragraph with a non-lossy reading and every figure with its complete source sheet", () => {
+    const sourceSheet = {
+      src: "/patents/figures/us-124404-westinghouse-air-brake/source-sheet-1-v1.png",
+      width: 2320,
+      height: 3408,
+    } as const;
+    const sourceSheetSha256 = "7417d1ebd75e021b68f610b49d6f7af4e4ca0cf118dade6e6ca292892bb59c90";
     const paragraphIndexes = westinghouseAirBrakeArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
     );
@@ -83,16 +89,13 @@ describe("US 124,404 manual source edition", () => {
     for (const reference of figureReferences) {
       for (const preview of reference.figurePreviews ?? []) {
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+        expect(preview).toMatchObject(sourceSheet);
       }
     }
-
-    const figureFourPreview = figureReferences.find((reference) => reference.text === "Fig. 4")
-      ?.figurePreviews?.[0];
-    expect(figureFourPreview).toMatchObject({
-      src: "/patents/figures/us-124404-westinghouse-air-brake/fig-4-source-crop-v2.png",
-      width: 430,
-      height: 520,
-    });
+    const bytes = readFileSync(resolve(process.cwd(), "public", sourceSheet.src.slice(1)));
+    expect(createHash("sha256").update(bytes).digest("hex")).toBe(sourceSheetSha256);
+    expect(bytes.readUInt32BE(16)).toBe(sourceSheet.width);
+    expect(bytes.readUInt32BE(20)).toBe(sourceSheet.height);
 
     const sourceParagraphInlines = westinghouseAirBrakeArchivalEdition.blocks
       .filter(
@@ -115,9 +118,9 @@ describe("US 124,404 manual source edition", () => {
           inline.kind === "reference" ? inline.figurePreviews?.[0]?.alt : inline.text,
         ),
     ).toEqual([
-      "Source-facsimile crop of Fig. 5 from US 124,404.",
+      "Complete source drawing sheet containing Figs. 1 through 6, highlighting Fig. 5, from US 124,404.",
       " and ",
-      "Source-facsimile crop of Fig. 6 from US 124,404.",
+      "Complete source drawing sheet containing Figs. 1 through 6, highlighting Fig. 6, from US 124,404.",
     ]);
   });
 

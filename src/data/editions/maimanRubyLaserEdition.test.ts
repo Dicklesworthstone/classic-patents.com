@@ -14,6 +14,7 @@ import {
   maimanRubyLaserParallelReadings,
   manualMaimanClaimText,
 } from "./maimanRubyLaserEdition";
+import { evaluateReviewedLedgerTextEvidence } from "./reviewedLedgerPublicationEvidence";
 
 const EXPECTED_PDF_SHA256 = "3222cc08d6662719dba7566e07f96f3d1687dda40d6fe213ac9993ceb1ba03e6";
 
@@ -366,7 +367,7 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition Contract",
     });
   });
 
-  test("verifies reviewed transcript ledger with 10-page markers and editorial integrity", () => {
+  test("verifies a page-complete, literal source ledger against every authored section", () => {
     const ledgerPath = join(
       process.cwd(),
       "public/patents/transcripts/us-3353115-maiman-ruby-laser-reviewed.txt",
@@ -377,6 +378,16 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition Contract",
     expect(validateReviewedTranscription(ledgerText, 10)).toEqual({ valid: true });
     expect(validateReviewedTranscriptionEditorialIntegrity(ledgerText, 10)).toEqual({
       valid: true,
+    });
+    expect(evaluateReviewedLedgerTextEvidence(maimanRubyLaserPatent, ledgerText)).toMatchObject({
+      status: "verified",
+      valid: true,
+      authoredSectionCount: 44,
+      coveredSectionCount: 44,
+      coverageFraction: 1,
+      missingSectionIndexes: [],
+      missingClaimNumbers: [],
+      error: null,
     });
   });
 
@@ -432,11 +443,16 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition Contract",
     }
   });
 
-  test("keeps a remaining ledger audit distinct from completed figure acceptance", () => {
+  test("accepts Maiman ruby laser edition after ledger and figure completion", () => {
     const { evaluateArchivalPublicationState } = require("./publicationApproval");
     const decision = evaluateArchivalPublicationState(maimanRubyLaserPatent);
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("LEDGER_CONTENT_COVERAGE_INCOMPLETE");
+    expect(decision.isPublished).toBe(true);
+    expect(decision.state.kind).toBe("accepted");
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.state.evidence.ledgerContent).toMatchObject({
+      status: "verified",
+      valid: true,
+      coverageFraction: 1,
+    });
   });
 });

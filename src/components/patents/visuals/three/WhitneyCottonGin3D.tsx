@@ -1,19 +1,30 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Sparkles, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
-import { createStudioClock } from "@/physics/tickScheduler";
 import {
-  globalTransportBus,
-  type TapeUpdater,
-  useFrankenSimPhysics,
-} from "@/physics/useFrankenSimPhysics";
+  Camera,
+  Eye,
+  EyeOff,
+  Layers,
+  Pause,
+  Play,
+  RotateCcw,
+  Sparkles,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import {
+  getWhitneyTapeFrame,
+  WHITNEY_FRANKENSIM_BOUNDARY,
+  WHITNEY_KERNEL_SOURCE,
+  WHITNEY_SOURCE_BOUNDARY,
+  WHITNEY_ZERO_PHASES,
+} from "@/physics/whitneyCottonGinKernel";
 import { soundEngine } from "@/utils/soundEngine";
-import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -23,91 +34,70 @@ import {
   updateWhitneyCottonGinKinematics,
 } from "./whitneyCottonGinModel";
 
-type CameraPreset = "iso" | "grate_saws" | "brush_drum" | "hopper" | "crank_drive" | "top";
+type CameraPreset =
+  | "iso"
+  | "grate_teeth"
+  | "brush_drum"
+  | "hopper"
+  | "direct_winch"
+  | "whirl_drive"
+  | "top";
 
 const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
   iso: { pos: [9.5, 7.5, 11.5], target: [0, 0, 0] },
-  grate_saws: { pos: [0, 1.2, 4.8], target: [0, 0.4, 0] },
+  grate_teeth: { pos: [0, 1.2, 4.8], target: [0, 0.4, 0] },
   brush_drum: { pos: [-3.2, 1.8, 3.8], target: [-1.0, 0, 0] },
   hopper: { pos: [0, 6.2, 2.5], target: [0, 1.5, 0] },
-  crank_drive: { pos: [5.5, 0.8, 2.5], target: [3.5, 0, 0] },
+  direct_winch: { pos: [8.8, 3.6, 4.3], target: [4.25, 0.45, -0.75] },
+  whirl_drive: { pos: [-8.8, 3.7, 5.2], target: [-4.45, 0.15, 0.3] },
   top: { pos: [0, 12.0, 0.1], target: [0, 0, 0] },
 };
 
-/** Fields the render loop consumes from each gin kernel step. */
-interface WhitneyGinPose {
-  crankOmegaRadPerS: number;
-  sawOmegaRadPerS: number;
-  brushOmegaRadPerS: number;
-}
+const CAMERA_OPTIONS: readonly [CameraPreset, string][] = [
+  ["iso", "Isometric"],
+  ["grate_teeth", "Breastwork & Teeth"],
+  ["brush_drum", "Brush Drum"],
+  ["hopper", "Hopper Chute"],
+  ["direct_winch", "Direct Winch"],
+  ["whirl_drive", "Whirls & Band"],
+  ["top", "Plan View"],
+];
 
 export function WhitneyCottonGin3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Mechanical Simulation Parameters
-  const { params, updateParam } = usePatentPhysics("us-x72-whitney-cotton-gin");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-x72-whitney-cotton-gin");
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const crankRpm = (params.crankRpm as number) ?? 180;
-  const gin = stepWhitneyCottonGin({ crankRpm });
+  const crankRpm = params.crankRpm ?? 60;
+  const isRunning = (params.isRunning ?? 1) > 0.5;
+  const gin = useMemo(() => stepWhitneyCottonGin({ crankRpm }), [crankRpm]);
   const sawSpeedRpm = gin.sawRpm;
   const brushSpeedRpm = gin.brushRpm;
   const [showFibers, setShowFibers] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const crateSource = useGenericWasmSource();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const dailyOutputLbs = gin.outputLbsPerDay.toFixed(1);
   const laborMultiplier = String(gin.laborMultiplier);
 
   const live = useLiveSimParams({
     crankRpm,
-    sawSpeedRpm,
-    brushSpeedRpm,
     showFibers,
     isCutaway,
-    isAudioMuted,
-    outputLbsPerDay: gin.outputLbsPerDay,
-    crankOmegaRadPerS: gin.crankOmegaRadPerS,
-    sawOmegaRadPerS: gin.sawOmegaRadPerS,
-    brushOmegaRadPerS: gin.brushOmegaRadPerS,
   });
 
-  // Shared transport tape: saw/brush drum state publishes to the patentId-keyed bus.
-  useFrankenSimPhysics("us-x72-whitney-cotton-gin", {
+  const { frame } = useFrankenSimPhysics("us-x72-whitney-cotton-gin", {
     domain: "solid_mechanics",
-    refusal: { isRefused: false },
+    refusal: { isRefused: true, reason: WHITNEY_SOURCE_BOUNDARY },
   });
-  const whitneyGinRef = useRef<WhitneyGinPose | null>(null);
-  const whitneySawAngleRef = useRef(0);
-
-  useEffect(() => {
-    const integrate: TapeUpdater = (_prev, dt) => {
-      const out = stepWhitneyCottonGin({ crankRpm: live.current.crankRpm });
-      whitneyGinRef.current = out;
-      whitneySawAngleRef.current += out.sawOmegaRadPerS * dt;
-      return {
-        machine: {
-          poseXMeters: 0,
-          poseYMeters: 0,
-          // Saw drum rotation on the tape.
-          headingRad: whitneySawAngleRef.current,
-          modeLabel: "ginning",
-          wheelSpeedMps: 0,
-        },
-      };
-    };
-    const unregister = globalTransportBus.registerUpdater(
-      "us-x72-whitney-cotton-gin",
-      integrate,
-      "TS_FALLBACK",
-    );
-    return unregister;
-  }, [live]);
+  const tape = getWhitneyTapeFrame();
+  const outputs = tape?.outputs ?? gin;
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -144,25 +134,15 @@ export function WhitneyCottonGin3D() {
     // Animation Loop
     let reqId: number;
 
-    const clock = createStudioClock();
-
-    const animate = (now: number) => {
+    const animate = () => {
       reqId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      const { dt } = clock.pump(now);
       const p = live.current;
-      // Bus-owned kernel step: prefer the latest shared-tape gin state.
-      const g = whitneyGinRef.current;
       updateWhitneyCottonGinKinematics(
         model,
-        dt,
-        // Bus-owned kernel step: prefer the latest shared-tape drum speeds.
-        g ? g.crankOmegaRadPerS : p.crankOmegaRadPerS,
-        g ? g.sawOmegaRadPerS : p.sawOmegaRadPerS,
-        g ? g.brushOmegaRadPerS : p.brushOmegaRadPerS,
+        getWhitneyTapeFrame()?.phases ?? WHITNEY_ZERO_PHASES,
         p.showFibers,
         p.isCutaway,
-        p.crankRpm,
       );
 
       controls.update();
@@ -180,45 +160,80 @@ export function WhitneyCottonGin3D() {
   }, [live]);
 
   return (
-    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+    <div
+      className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent"
+      data-whitney-face="three"
+      data-whitney-runtime-tick={frame.tick}
+      data-whitney-runtime-provenance={frame.provenance}
+      data-whitney-kernel-source={WHITNEY_KERNEL_SOURCE}
+      data-whitney-frankensim-boundary={WHITNEY_FRANKENSIM_BOUNDARY}
+      data-whitney-running={isRunning}
+      data-whitney-crank-phase-rad={tape?.phases.crankRad ?? 0}
+      data-whitney-cylinder-phase-rad={tape?.phases.cylinderRad ?? 0}
+      data-whitney-clearer-phase-rad={tape?.phases.clearerRad ?? 0}
+    >
       <div className="sr-only">Whitney Cotton Gin 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Top-Left Camera Preset Toolbar */}
-        {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3.5 h-3.5" /> View:
-            </span>
-            {(
-              [
-                ["iso", "Isometric"],
-                ["grate_saws", "Grate & Saws"],
-                ["brush_drum", "Brush Drum"],
-                ["hopper", "Hopper Chute"],
-                ["crank_drive", "Crank Drive"],
-                ["top", "Plan View"],
-              ] as [CameraPreset, string][]
-            ).map(([preset, label]) => (
-              <button
-                key={preset}
-                type="button"
-                onClick={() => applyCameraPreset(preset)}
-                className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                  activeCamera === preset
-                    ? "bg-amber-600 text-white shadow-xs font-semibold"
-                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                }`}
-              >
+        {/* Mobile camera control remains available when the responsive HUD is suppressed. */}
+        <label className="sm:hidden absolute top-14 left-3 z-10 flex min-h-9 max-w-[calc(100%-1.5rem)] items-center gap-1.5 rounded-xl border border-parchment-300 bg-white/90 px-2 text-[10px] text-ink-600 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/90 dark:text-ink-300">
+          <Camera className="h-3.5 w-3.5 shrink-0" />
+          <span className="sr-only">Whitney mechanism camera view</span>
+          <select
+            aria-label="Whitney mechanism camera view"
+            value={activeCamera}
+            onChange={(event) => applyCameraPreset(event.target.value as CameraPreset)}
+            className="min-w-0 max-w-40 bg-transparent font-medium text-ink-800 outline-hidden dark:text-parchment-100"
+          >
+            {CAMERA_OPTIONS.map(([preset, label]) => (
+              <option key={preset} value={preset}>
                 {label}
-              </button>
+              </option>
             ))}
+          </select>
+        </label>
+
+        {/* Desktop camera preset toolbar */}
+        {showUiOverlay && (
+          <div className="hidden sm:block absolute top-4 left-4 z-10 max-w-[calc(100%-28rem)] bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs transition-opacity duration-200">
+            <div className="flex flex-nowrap overflow-x-auto scrollbar-none gap-1.5">
+              <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+                <Camera className="w-3.5 h-3.5" /> View:
+              </span>
+              {CAMERA_OPTIONS.map(([preset, label]) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => applyCameraPreset(preset)}
+                  className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                    activeCamera === preset
+                      ? "bg-amber-600 text-white shadow-xs font-semibold"
+                      : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
         {/* Top Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => {
+              updateParam("isRunning", isRunning ? 0 : 1);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isRunning ? "Pause Simulation" : "Play Simulation"}
+            title={isRunning ? "Pause Simulation" : "Play Simulation"}
+            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+          >
+            {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          </button>
+
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
@@ -270,11 +285,16 @@ export function WhitneyCottonGin3D() {
           </button>
 
           <button
-            aria-label="Reset camera view"
+            aria-label="Reset Simulation and Camera"
             type="button"
-            onClick={() => applyCameraPreset("iso")}
+            onClick={() => {
+              resetParams();
+              updateParam("resetEpoch", (params.resetEpoch ?? 0) + 1);
+              applyCameraPreset("iso");
+              soundEngine.playSwitchClick();
+            }}
             className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
+            title="Reset Simulation and Camera"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
@@ -292,7 +312,7 @@ export function WhitneyCottonGin3D() {
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Saw Speed:</span>
+              <span className="text-ink-600 dark:text-ink-400">Cylinder Speed:</span>
               <span className="font-bold text-cyan-800 dark:text-cyan-400">{sawSpeedRpm} RPM</span>
             </div>
             <div className="flex items-center justify-between gap-2">
@@ -302,7 +322,7 @@ export function WhitneyCottonGin3D() {
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Daily Output:</span>
+              <span className="text-ink-600 dark:text-ink-400">Scenario Output:</span>
               <span className="font-bold text-purple-800 dark:text-purple-400">
                 {dailyOutputLbs} lbs/day ({laborMultiplier}×)
               </span>
@@ -316,15 +336,15 @@ export function WhitneyCottonGin3D() {
           title="Whitney gin"
           chips={[
             { label: "Crank", value: String(Math.round(crankRpm)), unit: "rpm" },
-            { label: "Saws", value: String(sawSpeedRpm), unit: "rpm" },
-            { label: "v_tip", value: String(gin.sawTipSpeedMps), unit: "m/s" },
+            { label: "Cylinder", value: String(outputs.sawRpm), unit: "rpm direct" },
+            { label: "v_tip", value: String(outputs.sawTipSpeedMps), unit: "m/s" },
             { label: "Brush", value: String(brushSpeedRpm), unit: "rpm" },
             { label: "Lint", value: dailyOutputLbs, unit: "lb/day" },
             { label: "vs hand", value: `${laborMultiplier}×` },
             { label: "ω_crank", value: gin.crankOmegaRadPerS.toFixed(1), unit: "rad/s" },
             {
               label: "Lint crate",
-              value: crateSource === "wasm" ? "fs-lbm" : "ts-fluid-fallback",
+              value: crateSource === "wasm" ? "fs-lbm display" : "ts display fallback",
             },
           ]}
         />
@@ -335,16 +355,16 @@ export function WhitneyCottonGin3D() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Hand Crank Speed</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Input Shaft Speed</span>
               <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
                 {Math.round(crankRpm)} RPM
               </span>
             </div>
             <input
               type="range"
-              aria-label="Hand crank speed"
-              min="60"
-              max="360"
+              aria-label="Input shaft speed"
+              min="20"
+              max="180"
               step="10"
               value={crankRpm}
               onChange={(e) => updateParam("crankRpm", Number.parseInt(e.target.value, 10))}
@@ -353,20 +373,9 @@ export function WhitneyCottonGin3D() {
           </div>
         </div>
 
-        <ClaimConstraintToggle
-          patentId="us-x72-whitney-cotton-gin"
-          claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
-          className="mt-2"
-        />
-
-        <PortHamiltonianEnergyStrip
-          patentId="us-x72-whitney-cotton-gin"
-          params={params}
-          className="mt-3"
-        />
+        <p className="mt-3 text-[11px] leading-relaxed text-amber-800 dark:text-amber-300">
+          {WHITNEY_SOURCE_BOUNDARY}
+        </p>
       </div>
     </div>
   );

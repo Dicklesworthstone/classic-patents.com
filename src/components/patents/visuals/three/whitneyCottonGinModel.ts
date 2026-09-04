@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
 import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
+import type { WhitneyKinematicPhases } from "@/physics/whitneyCottonGinKernel";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
 export interface WhitneyCottonGinModel {
@@ -8,11 +8,17 @@ export interface WhitneyCottonGinModel {
   frameGroup: THREE.Group;
   grateGroup: THREE.Group;
   sawCylinderGroup: THREE.Group;
+  wireTeeth: THREE.InstancedMesh;
   brushCylinderGroup: THREE.Group;
+  brushBristles: THREE.InstancedMesh;
   crankGroup: THREE.Group;
   drivePulleyGroup: THREE.Group;
+  brushPulleyGroup: THREE.Group;
+  beltSpans: readonly THREE.Mesh[];
+  beltWraps: readonly THREE.Mesh[];
   fiberPoints: THREE.Points;
   fiberPositions: Float32Array;
+  fiberSeeds: Float32Array;
   fiberCount: number;
   seedsGroup: THREE.Group;
   materials: {
@@ -172,7 +178,7 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
     frameGroup.add(sidePlank);
 
     // Brass Pillow Block Journal Bearings
-    [-0.8, 1.2].forEach((zPos) => {
+    [-0.8, 1.4].forEach((zPos) => {
       const bearingGeo = new THREE.CylinderGeometry(0.35, 0.4, 0.4, 16);
       geometriesToDispose.push(bearingGeo);
       const bearing = new THREE.Mesh(bearingGeo, brassGrate);
@@ -191,7 +197,7 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
   hopperBack.castShadow = true;
   frameGroup.add(hopperBack);
 
-  // --- 3. SLOTTED IRON BREASTWORK GRATE (CLAIM 1) ---
+  // --- 3. SLOTTED IRON BREASTWORK GRATE (SOURCE PART II) ---
   const grateGroup = new THREE.Group();
   grateGroup.position.set(0, 0.3, 0.3);
   rootGroup.add(grateGroup);
@@ -208,7 +214,7 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
     grateGroup.add(rib);
   }
 
-  // --- 4. REVOLVING SAW CYLINDER (CLAIM 1 WIRE TEETH DISCS) ---
+  // --- 4. REVOLVING WOODEN CYLINDER WITH ANNULAR WIRE-TOOTH ROWS ---
   const sawCylinderGroup = new THREE.Group();
   sawCylinderGroup.position.set(0, 0.2, -0.8);
   rootGroup.add(sawCylinderGroup);
@@ -220,28 +226,45 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
   woodCore.rotation.z = Math.PI / 2;
   sawCylinderGroup.add(woodCore);
 
-  // Concentric Iron Circular Saw Discs with Wooden Spacing Collars
-  const sawCount = 27;
-  for (let s = 0; s < sawCount; s++) {
-    const sx = -3.1 + s * (6.2 / (sawCount - 1));
-    const sawDiscGeo = new THREE.CylinderGeometry(1.48, 1.48, 0.04, 32);
-    geometriesToDispose.push(sawDiscGeo);
-    const sawDisc = new THREE.Mesh(sawDiscGeo, ironSaw);
-    sawDisc.rotation.z = Math.PI / 2;
-    sawDisc.position.set(sx, 0, 0);
-    sawDisc.castShadow = true;
-    sawCylinderGroup.add(sawDisc);
-
-    // Wooden Spacing Collars between adjacent saw blades
-    if (s < sawCount - 1) {
-      const collarGeo = new THREE.CylinderGeometry(1.02, 1.02, 0.19, 16);
-      geometriesToDispose.push(collarGeo);
-      const collar = new THREE.Mesh(collarGeo, walnutWood);
-      collar.rotation.z = Math.PI / 2;
-      collar.position.set(sx + 0.12, 0, 0);
-      sawCylinderGroup.add(collar);
+  // The source is explicit: individual one-inch iron-wire teeth are driven
+  // into a continuous wooden cylinder in annular rows and bent 55°–60°
+  // toward the tangent. Circular saw plates would be a different machine.
+  const toothRowCount = 27;
+  const teethPerVisibleRow = 16;
+  const toothLength = 0.55;
+  const wireToothGeometry = new THREE.CylinderGeometry(0.022, 0.027, toothLength, 6);
+  geometriesToDispose.push(wireToothGeometry);
+  const wireTeeth = new THREE.InstancedMesh(
+    wireToothGeometry,
+    ironSaw,
+    toothRowCount * teethPerVisibleRow,
+  );
+  wireTeeth.name = "source-wire-teeth-in-annular-rows";
+  const toothDummy = new THREE.Object3D();
+  const cylinderAxis = new THREE.Vector3(0, 1, 0);
+  const toothAngleFromTangent = THREE.MathUtils.degToRad(57.5);
+  let toothIndex = 0;
+  for (let row = 0; row < toothRowCount; row++) {
+    const x = -3.1 + row * (6.2 / (toothRowCount - 1));
+    for (let tooth = 0; tooth < teethPerVisibleRow; tooth++) {
+      const theta = (tooth / teethPerVisibleRow) * Math.PI * 2;
+      const radial = new THREE.Vector3(0, Math.cos(theta), Math.sin(theta));
+      const tangent = new THREE.Vector3(0, -Math.sin(theta), Math.cos(theta));
+      const direction = tangent
+        .multiplyScalar(Math.cos(toothAngleFromTangent))
+        .add(radial.clone().multiplyScalar(Math.sin(toothAngleFromTangent)))
+        .normalize();
+      const base = radial.multiplyScalar(0.9);
+      toothDummy.position.set(x, base.y, base.z).addScaledVector(direction, toothLength / 2);
+      toothDummy.quaternion.setFromUnitVectors(cylinderAxis, direction);
+      toothDummy.updateMatrix();
+      wireTeeth.setMatrixAt(toothIndex, toothDummy.matrix);
+      toothIndex += 1;
     }
   }
+  wireTeeth.instanceMatrix.needsUpdate = true;
+  wireTeeth.castShadow = true;
+  sawCylinderGroup.add(wireTeeth);
 
   // Heavy Iron Axle Arbor Shaft
   const sawShaftGeo = new THREE.CylinderGeometry(0.18, 0.18, 9.4, 16);
@@ -250,27 +273,56 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
   sawShaft.rotation.z = Math.PI / 2;
   sawCylinderGroup.add(sawShaft);
 
-  // --- 5. HIGH-SPEED CLEARING BRUSH CYLINDER (CLAIM 2) ---
+  // --- 5. HIGH-SPEED CLEARING BRUSH CYLINDER (SOURCE PART IV) ---
   const brushCylinderGroup = new THREE.Group();
-  brushCylinderGroup.position.set(0, 0.2, 1.2);
+  brushCylinderGroup.position.set(0, 0.2, 1.4);
   rootGroup.add(brushCylinderGroup);
 
-  const brushCoreGeo = new THREE.CylinderGeometry(0.72, 0.72, 7.2, 24);
-  geometriesToDispose.push(brushCoreGeo);
-  const brushCore = new THREE.Mesh(brushCoreGeo, walnutWood);
-  brushCore.rotation.z = Math.PI / 2;
-  brushCylinderGroup.add(brushCore);
+  // Two crossed frames on the iron axis carry four longitudinal brush rails,
+  // matching Part IV rather than representing the clearer as a solid drum.
+  for (const x of [-2.35, 2.35]) {
+    for (const alongZ of [false, true]) {
+      const crossArm = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.12, 0.12), walnutWood);
+      geometriesToDispose.push(crossArm.geometry);
+      crossArm.position.x = x;
+      if (alongZ) crossArm.rotation.x = Math.PI / 2;
+      brushCylinderGroup.add(crossArm);
+    }
+  }
 
-  // 4 Longitudinal Rows of Stiff Hog Bristles
+  const brushRailGeometry = new THREE.BoxGeometry(7, 0.14, 0.14);
+  geometriesToDispose.push(brushRailGeometry);
   for (let row = 0; row < 4; row++) {
     const rowAngle = (row * Math.PI) / 2;
-    const bristleRowGeo = new THREE.BoxGeometry(7.0, 0.72, 0.16);
-    geometriesToDispose.push(bristleRowGeo);
-    const bristleRow = new THREE.Mesh(bristleRowGeo, brushBristles);
-    bristleRow.position.set(0, Math.cos(rowAngle) * 0.76, Math.sin(rowAngle) * 0.76);
-    bristleRow.rotation.x = rowAngle;
-    brushCylinderGroup.add(bristleRow);
+    const rail = new THREE.Mesh(brushRailGeometry, walnutWood);
+    rail.position.set(0, Math.cos(rowAngle) * 0.56, Math.sin(rowAngle) * 0.56);
+    brushCylinderGroup.add(rail);
   }
+
+  const bristleGeometry = new THREE.CylinderGeometry(0.014, 0.018, 0.34, 5);
+  geometriesToDispose.push(bristleGeometry);
+  const brushBristleCount = 4 * 29;
+  const brushBristleInstances = new THREE.InstancedMesh(
+    bristleGeometry,
+    brushBristles,
+    brushBristleCount,
+  );
+  brushBristleInstances.name = "four-source-brush-rows";
+  const bristleDummy = new THREE.Object3D();
+  let bristleIndex = 0;
+  for (let row = 0; row < 4; row++) {
+    const theta = (row * Math.PI) / 2;
+    const outward = new THREE.Vector3(0, Math.cos(theta), Math.sin(theta));
+    for (let axial = 0; axial < 29; axial++) {
+      bristleDummy.position.set(-3.35 + axial * (6.7 / 28), 0, 0).addScaledVector(outward, 0.8);
+      bristleDummy.quaternion.setFromUnitVectors(cylinderAxis, outward);
+      bristleDummy.updateMatrix();
+      brushBristleInstances.setMatrixAt(bristleIndex, bristleDummy.matrix);
+      bristleIndex += 1;
+    }
+  }
+  brushBristleInstances.instanceMatrix.needsUpdate = true;
+  brushCylinderGroup.add(brushBristleInstances);
 
   const brushShaftGeo = new THREE.CylinderGeometry(0.18, 0.18, 9.4, 16);
   geometriesToDispose.push(brushShaftGeo);
@@ -297,26 +349,31 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
   crankHandle.castShadow = true;
   crankGroup.add(crankHandle);
 
-  // Step-Up Belt Pulley Assembly
+  // Step-up whirls on the cylinder and clearer shafts. The source specifies
+  // crowned wooden whirls and a leather band, but no diameters; these visible
+  // relative radii close the declared 3:1 scenario.
   const drivePulleyGroup = new THREE.Group();
   drivePulleyGroup.position.set(-4.5, 0.2, -0.8);
   rootGroup.add(drivePulleyGroup);
 
-  const drivePulleyGeo = new THREE.CylinderGeometry(1.25, 1.25, 0.25, 24);
+  const drivePulleyGeo = new THREE.SphereGeometry(1, 24, 12);
   geometriesToDispose.push(drivePulleyGeo);
-  const drivePulley = new THREE.Mesh(drivePulleyGeo, ironSaw);
-  drivePulley.rotation.z = Math.PI / 2;
+  const drivePulley = new THREE.Mesh(drivePulleyGeo, walnutWood);
+  drivePulley.name = "source-crowned-cylinder-whirl";
+  drivePulley.scale.set(0.16, 1.05, 1.05);
   drivePulley.castShadow = true;
   drivePulleyGroup.add(drivePulley);
 
-  // Small Pinion Pulley on Brush Shaft
-  const brushPulleyGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.25, 20);
+  const brushPulleyGroup = new THREE.Group();
+  brushPulleyGroup.position.set(-4.5, 0.2, 1.4);
+  rootGroup.add(brushPulleyGroup);
+  const brushPulleyGeo = new THREE.SphereGeometry(1, 20, 10);
   geometriesToDispose.push(brushPulleyGeo);
-  const brushPulley = new THREE.Mesh(brushPulleyGeo, ironSaw);
-  brushPulley.rotation.z = Math.PI / 2;
-  brushPulley.position.set(-4.5, 0.2, 1.2);
+  const brushPulley = new THREE.Mesh(brushPulleyGeo, walnutWood);
+  brushPulley.name = "source-crowned-clearer-whirl";
+  brushPulley.scale.set(0.16, 0.35, 0.35);
   brushPulley.castShadow = true;
-  rootGroup.add(brushPulley);
+  brushPulleyGroup.add(brushPulley);
 
   // Crossed Leather Transmission Belt (Saw Shaft -> Brush Shaft Speed Step-Up)
   const beltMat = new THREE.MeshStandardMaterial({
@@ -326,19 +383,68 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
   });
   materialsToDispose.push(beltMat);
 
-  const beltTopGeo = new THREE.BoxGeometry(0.08, 0.12, 2.05);
-  geometriesToDispose.push(beltTopGeo);
-  const beltTop = new THREE.Mesh(beltTopGeo, beltMat);
-  beltTop.position.set(-4.5, 0.85, 0.2);
-  beltTop.rotation.x = 0.42;
-  rootGroup.add(beltTop);
+  function beltSpanBetween(start: THREE.Vector3, end: THREE.Vector3, name: string): THREE.Mesh {
+    const direction = end.clone().sub(start);
+    const geometry = new THREE.CylinderGeometry(0.045, 0.045, direction.length(), 8);
+    geometriesToDispose.push(geometry);
+    const span = new THREE.Mesh(geometry, beltMat);
+    span.name = name;
+    span.position.copy(start).add(end).multiplyScalar(0.5);
+    span.quaternion.setFromUnitVectors(cylinderAxis, direction.normalize());
+    rootGroup.add(span);
+    return span;
+  }
+  const beltSpans = [
+    beltSpanBetween(
+      new THREE.Vector3(-4.5, 1.25, -0.8),
+      new THREE.Vector3(-4.5, -0.15, 1.4),
+      "crossed-band-span-a",
+    ),
+    beltSpanBetween(
+      new THREE.Vector3(-4.5, -0.85, -0.8),
+      new THREE.Vector3(-4.5, 0.55, 1.4),
+      "crossed-band-span-b",
+    ),
+  ] as const;
 
-  const beltBotGeo = new THREE.BoxGeometry(0.08, 0.12, 2.05);
-  geometriesToDispose.push(beltBotGeo);
-  const beltBot = new THREE.Mesh(beltBotGeo, beltMat);
-  beltBot.position.set(-4.5, -0.45, 0.2);
-  beltBot.rotation.x = -0.42;
-  rootGroup.add(beltBot);
+  function beltWrap(
+    points: readonly THREE.Vector3[],
+    name: string,
+  ): THREE.Mesh<THREE.TubeGeometry, THREE.MeshStandardMaterial> {
+    const curve = new THREE.CatmullRomCurve3([...points], false, "centripetal");
+    const geometry = new THREE.TubeGeometry(curve, 28, 0.05, 8, false);
+    geometriesToDispose.push(geometry);
+    const wrap = new THREE.Mesh(geometry, beltMat);
+    wrap.name = name;
+    rootGroup.add(wrap);
+    return wrap;
+  }
+
+  // The straight crossed spans alone would terminate at the whirls. These
+  // source-faithful wrap segments close the leather band continuously around
+  // the far side of each crowned wooden whirl.
+  const beltWraps = [
+    beltWrap(
+      [
+        new THREE.Vector3(-4.5, 1.25, -0.8),
+        new THREE.Vector3(-4.5, 0.95, -1.55),
+        new THREE.Vector3(-4.5, 0.2, -1.85),
+        new THREE.Vector3(-4.5, -0.55, -1.55),
+        new THREE.Vector3(-4.5, -0.85, -0.8),
+      ],
+      "cylinder-whirl-band-wrap",
+    ),
+    beltWrap(
+      [
+        new THREE.Vector3(-4.5, -0.15, 1.4),
+        new THREE.Vector3(-4.5, -0.05, 1.65),
+        new THREE.Vector3(-4.5, 0.2, 1.75),
+        new THREE.Vector3(-4.5, 0.45, 1.65),
+        new THREE.Vector3(-4.5, 0.55, 1.4),
+      ],
+      "clearer-whirl-band-wrap",
+    ),
+  ] as const;
 
   // Inclined Seed Apron Chute (Discharging Clean Seeds)
   const seedChuteGeo = new THREE.BoxGeometry(7.0, 0.18, 1.8);
@@ -354,15 +460,19 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
   const fiberGeo = new THREE.BufferGeometry();
   geometriesToDispose.push(fiberGeo);
   const fiberPositions = new Float32Array(fiberCount * 3);
+  const fiberSeeds = new Float32Array(fiberCount * 3);
   const fiberColors = new Float32Array(fiberCount * 3);
   const glowTex = createGlowPointTexture();
   texturesToDispose.push(glowTex);
 
   for (let i = 0; i < fiberCount; i++) {
     const idx = i * 3;
-    fiberPositions[idx] = (deterministicUnit(i, 0) - 0.5) * 6.2;
-    fiberPositions[idx + 1] = 0.2 + (deterministicUnit(i, 1) - 0.5) * 1.5;
-    fiberPositions[idx + 2] = -0.5 + deterministicUnit(i, 2) * 3.0;
+    fiberSeeds[idx] = (deterministicUnit(i, 0) - 0.5) * 6.2;
+    fiberSeeds[idx + 1] = deterministicUnit(i, 1);
+    fiberSeeds[idx + 2] = deterministicUnit(i, 2);
+    fiberPositions[idx] = fiberSeeds[idx];
+    fiberPositions[idx + 1] = 0.9;
+    fiberPositions[idx + 2] = -0.5 + fiberSeeds[idx + 2] * 3;
 
     fiberColors[idx] = 0.98;
     fiberColors[idx + 1] = 0.98;
@@ -415,11 +525,17 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
     frameGroup,
     grateGroup,
     sawCylinderGroup,
+    wireTeeth,
     brushCylinderGroup,
+    brushBristles: brushBristleInstances,
     crankGroup,
     drivePulleyGroup,
+    brushPulleyGroup,
+    beltSpans,
+    beltWraps,
     fiberPoints,
     fiberPositions,
+    fiberSeeds,
     fiberCount,
     seedsGroup,
     materials: {
@@ -440,43 +556,32 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
  */
 export function updateWhitneyCottonGinKinematics(
   model: WhitneyCottonGinModel,
-  dt: number,
-  crankOmegaRadPerS: number,
-  sawOmegaRadPerS: number,
-  brushOmegaRadPerS: number,
+  phases: WhitneyKinematicPhases,
   showFibers: boolean,
   isCutaway = false,
-  crankRpm = 60,
 ): void {
-  // Crank handle manual rotation
-  model.crankGroup.rotation.x += crankOmegaRadPerS * dt;
-
-  // Saw cylinder rotation (forward, into hopper grate)
-  model.sawCylinderGroup.rotation.x += sawOmegaRadPerS * dt;
-  model.drivePulleyGroup.rotation.x += sawOmegaRadPerS * dt;
-
-  // Brush cylinder high-speed counter-rotation (doffing fibers backwards)
-  model.brushCylinderGroup.rotation.x -= brushOmegaRadPerS * dt;
+  // The source puts the winch directly on the cylinder axle. Absolute shared
+  // tape phases make replay, pause, reset, and 2D/3D switching exact.
+  model.crankGroup.rotation.x = phases.crankRad;
+  model.sawCylinderGroup.rotation.x = phases.cylinderRad;
+  model.drivePulleyGroup.rotation.x = phases.cylinderRad;
+  model.brushCylinderGroup.rotation.x = phases.clearerRad;
+  model.brushPulleyGroup.rotation.x = phases.clearerRad;
 
   // Animate cotton fibers through the gin grate and doffing chamber
   if (showFibers) {
     model.fiberPoints.visible = true;
-    const whitney = stepWhitneyCottonGin({ crankRpm });
     const pos = model.fiberPositions;
     const fluid = fluidFrames(16, 8);
-    const frame = Math.abs(Math.floor(model.sawCylinderGroup.rotation.x * 2)) % 8;
+    const frame = Math.floor(phases.lintCycle01 * 8) % 8;
     for (let i = 0; i < model.fiberCount; i++) {
       const idx = i * 3;
       const u = (i + 0.5) / Math.max(1, model.fiberCount);
-      const dens = 1 + sampleFluidAt(fluid, 16, 8, frame, u, 0.4);
-      pos[idx + 2] +=
-        (sawOmegaRadPerS * whitney.fiberSawCoupling + whitney.fiberCarrySpeed) * dt * dens;
-      pos[idx + 1] -= whitney.fiberGravity * dt;
-
-      if (pos[idx + 2] > whitney.fiberWrapZ) {
-        pos[idx + 2] = whitney.fiberResetZ;
-        pos[idx + 1] = whitney.fiberResetY;
-      }
+      const density = sampleFluidAt(fluid, 16, 8, frame, u, 0.4);
+      const progress = (model.fiberSeeds[idx + 2] + phases.lintCycle01 * (1 + density)) % 1;
+      pos[idx] = model.fiberSeeds[idx];
+      pos[idx + 1] = 0.9 - progress * 0.65 + model.fiberSeeds[idx + 1] * 0.12;
+      pos[idx + 2] = -0.55 + progress * 3.75;
     }
     model.fiberPoints.geometry.attributes.position.needsUpdate = true;
   } else {
@@ -486,4 +591,6 @@ export function updateWhitneyCottonGinKinematics(
   // Cutaway transparency for timber casing and frame
   model.materials.walnutWood.opacity = isCutaway ? 0.35 : 1.0;
   model.materials.walnutWood.transparent = isCutaway;
+  model.materials.walnutWood.depthWrite = !isCutaway;
+  model.materials.walnutWood.needsUpdate = true;
 }

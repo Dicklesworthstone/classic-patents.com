@@ -16,7 +16,6 @@ import {
   stepParsonsTurbine,
   stepThomsonWelding,
   stepWattCondenser,
-  stepWhitneyCottonGin,
   stepWozniakApple,
 } from "./catalogKernels";
 import { FrankenSimEngine } from "./engine";
@@ -37,6 +36,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "The pinned GB 1420 witness is a later abridgment with no furnace dimensions, charge thermal state, coal calorimetry, fuel or flue flow, roll torque, rolling speed, loss measurements, or material card from which a closed SI energy partition can be derived.",
   "us-x1-hopkins-potash":
     "The pinned US X1 letters patent supplies no furnace or vessel dimensions, ash or water mass, fuel rate, temperature, duration, heat-transfer properties, evaporation endpoint, loss measurements, or measured yield from which a closed SI energy partition can be derived.",
+  "us-x72-whitney-cotton-gin":
+    "The restored US X72 specification prints the direct winch/cylinder connection and several local dimensions but no input torque, inertia, bearing friction, cotton feed mass, separation force, band tension, whirl diameter, speed, duty cycle, or measured power datum from which a closed SI energy partition can be derived.",
   "us-3138743-kilby-integrated-circuit":
     "US 3,138,743 prints the monolithic circuit construction, wafer dimensions and resistivity, layer depth, selected resistor and capacitor values, contacts, leads, and interconnect topology, but no supply voltage, operating current, transistor gain, junction geometry, measured frequency, delay, thermal point, or power datum from which a closed SI energy balance can be derived.",
   "us-2981877-noyce-ic":
@@ -332,15 +333,7 @@ export function energyChannelsFor(
 
   if (patentId === "gb-1420-cort-puddling-rolling") return [];
 
-  if (patentId === "us-x72-whitney-cotton-gin") {
-    const _gin = stepWhitneyCottonGin({ crankRpm: params.crankRpm });
-    const crankWatts = (params.crankRpm ?? 60) * 1.5;
-    return [
-      { name: "Manual Crank", watts: crankWatts, tone: "in" },
-      { name: "Saw-Tooth Work", watts: crankWatts * 0.72, tone: "useful" },
-      { name: "Grate Friction", watts: crankWatts * 0.28, tone: "loss" },
-    ];
-  }
+  if (patentId === "us-x72-whitney-cotton-gin") return [];
 
   if (patentId === "us-1647-morse-telegraph") {
     const _morse = stepMorseTelegraph({

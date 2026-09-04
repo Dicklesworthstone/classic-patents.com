@@ -87,6 +87,10 @@ const HopkinsPhysicsRuntimeOwner = dynamic(
   () => import("./PatentPhysicsRuntimeOwner").then((module) => module.HopkinsPhysicsRuntimeOwner),
   { ssr: false },
 );
+const WhitneyPhysicsRuntimeOwner = dynamic(
+  () => import("./PatentPhysicsRuntimeOwner").then((module) => module.WhitneyPhysicsRuntimeOwner),
+  { ssr: false },
+);
 // 2D sims are lazy: the dispatcher defaults to the 3D face, so each page only
 // downloads the vector-diagram code when the visitor actually toggles it.
 const AmfVersatranSim = dynamic(() => import("./AMFVersatranSim").then((m) => m.AmfVersatranSim), {
@@ -1137,7 +1141,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
                 </>
               );
             case "us-x72-whitney-cotton-gin":
-              return renderMode === "3d-physics" ? <WhitneyCottonGin3D /> : <WhitneyCottonGinSim />;
+              return (
+                <>
+                  <WhitneyPhysicsRuntimeOwner patentId={patentId} />
+                  {renderMode === "3d-physics" ? <WhitneyCottonGin3D /> : <WhitneyCottonGinSim />}
+                </>
+              );
             case "us-x8277-mccormick-reaper":
               return renderMode === "3d-physics" ? <McCormickReaper3D /> : <McCormickReaperSim />;
             case "us-x9430-colt-revolver":

@@ -786,15 +786,25 @@ export function nobelKieselguhrSvg(
 }
 
 export function stepWhitneyCottonGin(params: { crankRpm?: number; seedGridClearance?: number }) {
-  const rpm = params.crankRpm ?? 180;
+  const rpm = Math.max(0, Math.min(180, params.crankRpm ?? 60));
   const grateClearanceMm = params.seedGridClearance ?? 3.2;
-  const sawToCrankRatio = 3.5;
-  const brushToCrankRatio = 12.0;
+  // The specification puts the winch directly on the cylinder axis: these
+  // cannot rotate at different speeds. The clearer must turn contrary and
+  // faster, but its whirl diameters are not printed; 3:1 is a declared modern
+  // teaching ratio matched by the visible 1.05 : 0.35 relative pulley radii.
+  const sawToCrankRatio = 1;
+  const brushToCrankRatio = 3;
   const sawRpm = Math.round(rpm * sawToCrankRatio);
   const brushRpm = Math.round(rpm * brushToCrankRatio);
   const crank = rpmToOmega(rpm);
-  const saw = rpmToOmega(sawRpm);
-  const brush = rpmToOmega(brushRpm);
+  // Preserve exact constraint closure after the shared display rounding in
+  // rpmToOmega: the cylinder is the crank shaft, and the declared whirl ratio
+  // is algebraic rather than an independently rounded speed.
+  const saw = crank;
+  const brush = {
+    omegaRadPerS: crank.omegaRadPerS * brushToCrankRatio,
+    omegaDegPerS: crank.omegaDegPerS * brushToCrankRatio,
+  };
   return {
     sawRpm,
     brushRpm,
@@ -802,9 +812,22 @@ export function stepWhitneyCottonGin(params: { crankRpm?: number; seedGridCleara
     brushToCrankRatio,
     grateClearanceMm,
     grateStrokePx: Number((grateClearanceMm * 2.5).toFixed(2)),
-    outputLbsPerDay: Math.round((rpm / 180) * 50),
-    sawTipSpeedMps: Number(((sawRpm * 2 * Math.PI * 0.125) / 60).toFixed(2)),
-    laborMultiplier: Math.round((rpm / 180) * 50),
+    // Throughput is a scenario coordinate, not a source measurement. The
+    // source's quantitative statement is instead the water-powered 49/50
+    // reduction in usual labor.
+    outputLbsPerDay: Math.round((rpm / 60) * 50),
+    sawTipSpeedMps: Number(((sawRpm * 2 * Math.PI * 0.1) / 60).toFixed(2)),
+    laborMultiplier: 50,
+    sourceLaborReductionFraction: 49 / 50,
+    cylinderRadiusM: 0.1,
+    clearerWhirlRatioScenario: brushToCrankRatio,
+    toothInclinationDeg: 57.5,
+    annularRowMinimumPitchMm: 11.1125,
+    toothMaximumPitchMm: 2.1167,
+    toothPreferredPitchMm: 1.5875,
+    breastworkThicknessMm: 69.85,
+    bristleLengthMm: 25.4,
+    lintDisplayCyclesPerSecond: rpm / 60,
     ...lintFluidCrate(rpm),
     crankOmegaRadPerS: crank.omegaRadPerS,
     crankOmegaDegPerS: crank.omegaDegPerS,

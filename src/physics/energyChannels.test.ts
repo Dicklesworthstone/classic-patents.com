@@ -42,6 +42,7 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "gb-1306-watt-rotary-engine",
       "gb-1420-cort-puddling-rolling",
       "us-x1-hopkins-potash",
+      "us-x72-whitney-cotton-gin",
       "us-3138743-kilby-integrated-circuit",
       "us-2981877-noyce-ic",
       "us-2929922-townes-laser",
