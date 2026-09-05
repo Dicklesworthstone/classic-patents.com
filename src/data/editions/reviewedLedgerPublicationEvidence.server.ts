@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { isAbsolute, join, normalize, sep } from "node:path";
 import type { Patent } from "@/types/patent";
@@ -9,11 +10,7 @@ import {
 } from "./reviewedLedgerPublicationEvidence";
 
 function publicLedgerPath(url: string): string | null {
-  if (
-    !/^\/patents\/transcripts\/[a-z0-9]+(?:-[a-z0-9]+)*-reviewed(?:-v[1-9]\d*)?\.txt$/.test(
-      url,
-    )
-  )
+  if (!/^\/patents\/transcripts\/[a-z0-9]+(?:-[a-z0-9]+)*-reviewed(?:-v[1-9]\d*)?\.txt$/.test(url))
     return null;
   const relativePath = normalize(url.replace(/^\/+/, ""));
   if (
@@ -53,6 +50,13 @@ function isKnownReconstructedTranscript(id: string | undefined): boolean {
   );
 }
 
+// This exact withdrawn Stackhouse draft contains reconstructed specification
+// and claims (docs/provenance/us-4068536-stackhouse-manipulator.md). Progress
+// on the replacement's editorial hold must not republish these old bytes.
+// Bind the exclusion to content so a reviewed replacement remains readable.
+const WITHDRAWN_STACKHOUSE_LEDGER_SHA256 =
+  "dc37d4a2f8eae0ffbe710e11ec7e9d481604972b98babc5622b77d7227e85a50";
+
 export function reviewedLedgerTextForViewer(
   patent: Pick<Patent, "id" | "originalTextAsset">,
 ): string | undefined {
@@ -73,6 +77,10 @@ export function reviewedLedgerTextForViewer(
 
   try {
     const transcript = readFileSync(ledgerPath, "utf8");
+    if (
+      createHash("sha256").update(transcript).digest("hex") === WITHDRAWN_STACKHOUSE_LEDGER_SHA256
+    )
+      return undefined;
     // Validation remains part of the internal publication-evidence pipeline
     // below. It must never suppress a readable local primary-source transcript
     // from the visitor's source face: a malformed page marker is a repair task,

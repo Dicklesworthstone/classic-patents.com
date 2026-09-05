@@ -17,9 +17,9 @@ describe("archival hold inventory and partition contract (3hc.3)", () => {
     expect(report.categoryCounts["figure-related"]).toBe(0);
     expect(report.categoryCounts["facsimile-review-related"]).toBe(4);
     expect(report.categoryCounts["ledger-related"]).toBe(0);
-    expect(report.categoryCounts["full-specification-related"]).toBe(5);
+    expect(report.categoryCounts["full-specification-related"]).toBe(6);
     expect(report.categoryCounts["claim-parity-related"]).toBe(0);
-    expect(report.categoryCounts["reconstruction-quarantine"]).toBe(3);
+    expect(report.categoryCounts["reconstruction-quarantine"]).toBe(2);
     expect(report.categoryCounts["primary-facsimile-gap"]).toBe(2);
 
     const partitionSum =
@@ -40,8 +40,7 @@ describe("archival hold inventory and partition contract (3hc.3)", () => {
 
     for (const entry of heldEntries) {
       expect(["edition", "transcript", "facsimile"]).toContain(entry.readerDeliveryMode);
-      // No entry may ever withhold text or deliver empty/missing face
-      expect(entry.readerDeliveryMode).not.toBe("facsimile"); // all deliver edition or transcript
+      // A complete pinned facsimile is a real source face, not missing text.
     }
 
     const editionDeliveries = report.entries.filter(
@@ -52,8 +51,17 @@ describe("archival hold inventory and partition contract (3hc.3)", () => {
     ).length;
 
     expect(editionDeliveries).toBe(89);
-    expect(transcriptDeliveries).toBe(14);
-    expect(editionDeliveries + transcriptDeliveries).toBe(103);
+    const facsimileDeliveries = report.entries.filter(
+      (e) => e.readerDeliveryMode === "facsimile",
+    ).length;
+    expect(transcriptDeliveries).toBe(12);
+    expect(facsimileDeliveries).toBe(2);
+    expect(editionDeliveries + transcriptDeliveries + facsimileDeliveries).toBe(103);
+    const stackhouse = report.entries.find(
+      (e) => e.patentId === "us-4068536-stackhouse-manipulator",
+    );
+    expect(stackhouse?.category).toBe("full-specification-related");
+    expect(stackhouse?.readerDeliveryMode).toBe("transcript");
   });
 
   test("maps every hold category to its designated remediation task bead", () => {

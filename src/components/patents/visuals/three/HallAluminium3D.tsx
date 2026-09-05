@@ -105,12 +105,13 @@ export function HallAluminium3D() {
           ...(prev.em ?? IDLE_EM),
           currentAmperes: s.currentAmperes,
           voltageVolts: s.totalCellVoltage,
-          electricalInputWatts: s.electricalPowerKw * 1000,
+          electricalInputWatts: s.electricalInputWatts,
         },
         thermo: {
           ...(prev.thermo ?? IDLE_THERMO),
           temperatureCelsius: s.bathTemperatureCelsius,
           temperatureKelvin: s.bathTemperatureCelsius + 273.15,
+          heatInputWatts: s.bathOhmicHeatingWatts,
         },
       };
     };
@@ -203,13 +204,7 @@ export function HallAluminium3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <PortHamiltonianEnergyStrip
-        patentId="us-400766-hall-aluminium"
-        params={{
-          currentAmperes,
-          bathTemperatureCelsius,
-        }}
-      />
+      <PortHamiltonianEnergyStrip patentId="us-400766-hall-aluminium" params={params} />
       <div className="sr-only">Charles Martin Hall Aluminium Reduction 3D Simulation</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -400,6 +395,20 @@ export function HallAluminium3D() {
           electrodes, and molten bath; the four-anode layout and 300 kA scale are an explicitly
           normalized modern Hall–Héroult teaching scenario, not dimensions printed in US 400,766.
         </p>
+        <dl className="mb-4 grid grid-cols-2 gap-3 text-xs font-mono">
+          <div className="min-w-0 rounded-lg border border-parchment-300 dark:border-ink-700 p-2.5">
+            <dt className="font-sans text-ink-600 dark:text-parchment-400">Cell voltage</dt>
+            <dd className="mt-1 font-bold text-amber-800 dark:text-amber-400">
+              {sim.totalCellVoltage.toFixed(2)} V
+            </dd>
+          </div>
+          <div className="min-w-0 rounded-lg border border-parchment-300 dark:border-ink-700 p-2.5">
+            <dt className="font-sans text-ink-600 dark:text-parchment-400">Aluminium production</dt>
+            <dd className="mt-1 font-bold text-cyan-800 dark:text-cyan-400">
+              {sim.aluminiumProductionRateKgPerHour.toFixed(1)} kg/h
+            </dd>
+          </div>
+        </dl>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <SensitivitySlider
             id="cellCurrent"

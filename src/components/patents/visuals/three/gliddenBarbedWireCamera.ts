@@ -32,7 +32,10 @@ const COMPACT_PHONE_MAX_WIDTH_PX = 480;
 // to the edge. Pulling only the overview back keeps both source Fig. 1 working
 // ends in view; its detail presets remain deliberately close inspection views.
 const COMPACT_ISOMETRIC_DISTANCE_MULTIPLIER = 1.65;
-const CLAIM_FOCUS_ISOMETRIC_DISTANCE_MULTIPLIER = 1.2;
+// The 375px browser route has a 341 × 380px studio canvas. Once the actual
+// canvas is measured, claim focus can move closer to make the wire twist and
+// every transverse barb readable while retaining the complete claimed span.
+const CLAIM_FOCUS_ISOMETRIC_DISTANCE_MULTIPLIER = 0.68;
 
 export const GLIDDEN_COMPACT_ISOMETRIC_SAFE_ZONE = {
   viewportWidth: 286,
@@ -51,7 +54,7 @@ function isPortraitPhoneViewport(viewportWidth: number, viewportHeight: number) 
   );
 }
 
-/** 375 px portrait readers show only the printed-claim wire assembly, not workshop props. */
+/** The 375px reader's 341 × 380px canvas shows the printed-claim wire assembly, not workshop props. */
 export function isGliddenCompactClaimViewport(viewportWidth: number, viewportHeight: number) {
   return (
     isPortraitPhoneViewport(viewportWidth, viewportHeight) &&
@@ -59,7 +62,7 @@ export function isGliddenCompactClaimViewport(viewportWidth: number, viewportHei
   );
 }
 
-function pullCameraBack(
+function scaleCameraDistance(
   view: GliddenBarbedWireCameraView,
   multiplier: number,
 ): GliddenBarbedWireCameraView {
@@ -73,6 +76,16 @@ function pullCameraBack(
   };
 }
 
+function compactClaimFocusCamera(view: GliddenBarbedWireCameraView): GliddenBarbedWireCameraView {
+  const closeView = scaleCameraDistance(view, CLAIM_FOCUS_ISOMETRIC_DISTANCE_MULTIPLIER);
+  // The isometric perspective projects the claimed wire span right-heavy.
+  // A small target pan centers that physical span without cropping either barb.
+  return {
+    ...closeView,
+    target: [closeView.target[0] + 0.15, closeView.target[1], closeView.target[2]],
+  };
+}
+
 export function gliddenBarbedWireCameraForViewport(
   preset: GliddenBarbedWireCameraPreset,
   viewportWidth: number,
@@ -80,10 +93,8 @@ export function gliddenBarbedWireCameraForViewport(
 ): GliddenBarbedWireCameraView {
   const view = GLIDDEN_BARBED_WIRE_CAMERA_PRESETS[preset];
   if (preset !== "iso" || !isPortraitPhoneViewport(viewportWidth, viewportHeight)) return view;
-  return pullCameraBack(
-    view,
-    isGliddenCompactClaimViewport(viewportWidth, viewportHeight)
-      ? CLAIM_FOCUS_ISOMETRIC_DISTANCE_MULTIPLIER
-      : COMPACT_ISOMETRIC_DISTANCE_MULTIPLIER,
-  );
+  if (isGliddenCompactClaimViewport(viewportWidth, viewportHeight)) {
+    return compactClaimFocusCamera(view);
+  }
+  return scaleCameraDistance(view, COMPACT_ISOMETRIC_DISTANCE_MULTIPLIER);
 }

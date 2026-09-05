@@ -14,6 +14,10 @@ const same = (canonical: string): ParamAlias => ({ canonical });
 
 /** Per-patent alias map. Linde remains peer-owned. */
 export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = {
+  "us-542846-diesel-engine": {
+    compressionRatio: same("compRatio"),
+    blastAirPressureBar: same("blastAirPressure"),
+  },
   "us-319596-maxim-machine-gun": { fireRateRpm: same("firingRate") },
   "us-124404-westinghouse-air-brake": { brakePressurePsi: same("trainPipePressure") },
   "us-347140-thomson-welding": { currentAmperes: same("weldCurrentAmps") },

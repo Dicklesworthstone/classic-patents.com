@@ -4,6 +4,18 @@ import { ENERGY_CHANNEL_OMISSION_REASONS, energyChannelsFor } from "./energyChan
 import { readWattCondenserControls, stepWattCondenser } from "./wattCondenserKernel";
 
 describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
+  it("Hall exposes fractional-kW cell input and bath I²R as an incomplete power partition", () => {
+    const channels = energyChannelsFor("us-400766-hall-aluminium", {
+      currentAmperes: 410000,
+      bathTemperatureCelsius: 990,
+      aluminaConcentrationPct: 2.5,
+    });
+    expect(channels).toEqual([
+      { name: "Cell", watts: 2222200, tone: "in" },
+      { name: "Bath Joule heat", watts: 1512900, tone: "loss" },
+    ]);
+    expect(channels[0].watts).toBeGreaterThan(channels[1].watts);
+  });
   it("Watt channels honor condenser and jacket controls without counting air-pump work twice", () => {
     for (const hasSeparateCondenser of [0, 1]) {
       for (const hasSteamJacket of [0, 1]) {
@@ -87,6 +99,7 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-6331181-davinci",
       "us-5701965-kamen-transporter",
       "us-6594844-roomba",
+      "us-7479949-multitouch",
       "us-4750-howe-sewing-machine",
       "us-31128-otis-elevator",
       "us-4341502-makino-scara",
@@ -142,6 +155,13 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-706737-fessenden-wireless",
       "us-2543181-land-polaroid",
     ]);
+  });
+
+  it("does not invent a Multi-Touch sensor-power partition for a post-detection command claim", () => {
+    const id = "us-7479949-multitouch";
+    expect(energyChannelsFor(id, { fingerCount: 2, fingerSeparationMm: 100 })).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS[id]).toContain("post-detection command");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS[id]).toContain("scan rate");
   });
 
   it("handles unknown patent IDs safely returning an empty array", () => {

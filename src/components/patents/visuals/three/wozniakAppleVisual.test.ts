@@ -173,18 +173,18 @@ describe("US 4,136,359 Steve Wozniak Apple II Microcomputer visual & bus timing 
         model.updateKinematics(0.4, 12, primaryMaximum.busDisplaySpeed, true);
         const apparatus = projectedObjectBounds(model.root, camera);
 
-        expect(apparatus.minX, `${stateName} left source envelope`).toBeGreaterThan(-0.7);
-        expect(apparatus.maxX, `${stateName} right source envelope`).toBeLessThan(0.7);
-        expect(apparatus.minY, `${stateName} lower source envelope`).toBeGreaterThan(-0.5);
-        expect(apparatus.maxY, `${stateName} upper source envelope`).toBeLessThan(0.3);
+        expect(apparatus.minX, `${stateName} left source envelope`).toBeGreaterThan(-0.82);
+        expect(apparatus.maxX, `${stateName} right source envelope`).toBeLessThan(0.82);
+        expect(apparatus.minY, `${stateName} lower source envelope`).toBeGreaterThan(-0.55);
+        expect(apparatus.maxY, `${stateName} upper source envelope`).toBeLessThan(0.33);
         expect(
           ((apparatus.maxX - apparatus.minX) * canvasWidth) / 2,
           `${stateName} horizontal legibility`,
-        ).toBeGreaterThan(200);
+        ).toBeGreaterThan(260);
         expect(
           ((apparatus.maxY - apparatus.minY) * canvasHeight) / 2,
           `${stateName} vertical legibility`,
-        ).toBeGreaterThan(125);
+        ).toBeGreaterThan(145);
       }
 
       // The 6502/DRAM/ROM packages must remain visually distinct from dark
@@ -193,8 +193,20 @@ describe("US 4,136,359 Steve Wozniak Apple II Microcomputer visual & bus timing 
         0.2126 * model.icChipMaterial.color.r +
         0.7152 * model.icChipMaterial.color.g +
         0.0722 * model.icChipMaterial.color.b;
-      expect(chipLuminance).toBeGreaterThan(0.12);
-      expect(model.icChipMaterial.emissiveIntensity).toBeGreaterThan(0);
+      const boardMaterial = model.motherboard.material;
+      expect(boardMaterial).toBeInstanceOf(THREE.MeshStandardMaterial);
+      if (!(boardMaterial instanceof THREE.MeshStandardMaterial)) {
+        throw new Error("Apple II motherboard must retain a physical FR-4 material.");
+      }
+      const boardLuminance =
+        0.2126 * boardMaterial.color.r +
+        0.7152 * boardMaterial.color.g +
+        0.0722 * boardMaterial.color.b;
+      expect(chipLuminance).toBeGreaterThan(boardLuminance + 0.12);
+      expect(model.icChipMaterial.emissiveIntensity).toBeGreaterThan(0.25);
+      const tracePerimeter = model.computerGroup.getObjectByName("apple-ii-ground-trace-perimeter");
+      expect(tracePerimeter).toBeInstanceOf(THREE.Group);
+      expect(tracePerimeter?.children).toHaveLength(4);
     } finally {
       model.dispose();
     }
@@ -218,6 +230,8 @@ describe("US 4,136,359 Steve Wozniak Apple II Microcomputer visual & bus timing 
     expect(source).toContain(
       'window.addEventListener("orientationchange", reselectResponsiveOverview)',
     );
+    expect(source).toContain("synchronizeInitialOverview");
+    expect(source).toContain("requestAnimationFrame(synchronizeInitialOverview)");
   });
 
   test("computes genuine CPU clock rate, cycle time, DRAM window, and color subcarrier in SI units", () => {

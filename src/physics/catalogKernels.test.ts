@@ -928,6 +928,57 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.totalCellVoltage).toBeGreaterThan(1.5);
   });
 
+  test("Hall power ports preserve VI and quadratic bath heating without whole-kW rounding", () => {
+    for (const current of [100000, 200000, 300000, 410000, 500000]) {
+      for (const temperature of [920, 960, 1020]) {
+        for (const concentration of [2, 5.5, 8]) {
+          const state = stepHallAluminium({
+            currentAmperes: current,
+            bathTemperatureCelsius: temperature,
+            aluminaConcentrationPct: concentration,
+          });
+          expect(state.electricalInputWatts).toBeCloseTo(current * state.totalCellVoltage, 6);
+          expect(state.bathOhmicHeatingWatts).toBeCloseTo(current ** 2 * 9e-6, 6);
+          // The remainder is reaction/overpotential power, not a fictitious
+          // measured heat-rejection or stored-energy rate.
+          expect(state.electricalInputWatts - state.bathOhmicHeatingWatts).toBeCloseTo(
+            current * 1.73,
+            6,
+          );
+        }
+      }
+    }
+    const low = stepHallAluminium({ currentAmperes: 100000 });
+    const doubled = stepHallAluminium({ currentAmperes: 200000 });
+    expect(doubled.bathOhmicHeatingWatts).toBe(low.bathOhmicHeatingWatts * 4);
+    const fractional = stepHallAluminium({ currentAmperes: 410000 });
+    expect(fractional.electricalInputWatts).toBeCloseTo(2222200, 6);
+    expect(fractional.electricalInputWatts).not.toBe(fractional.electricalPowerKw * 1000);
+  });
+
+  test("Hall exposes smooth production before 0.1 kg/h display rounding", () => {
+    const params = {
+      currentAmperes: 410000,
+      bathTemperatureCelsius: 990,
+      aluminaConcentrationPct: 2.5,
+    };
+    const base = stepHallAluminium(params);
+    const next = stepHallAluminium({ ...params, currentAmperes: 410001 });
+    expect(base.aluminiumProductionRateKgPerHour).toBe(next.aluminiumProductionRateKgPerHour);
+    expect(
+      next.aluminiumProductionKgPerHourUnrounded - base.aluminiumProductionKgPerHourUnrounded,
+    ).toBeCloseTo(base.productionSlopeKgPerHourPerAmpere, 10);
+    expect(base.aluminiumProductionRateKgPerHour).toBe(
+      Number(base.aluminiumProductionKgPerHourUnrounded.toFixed(1)),
+    );
+    expect(
+      stepHallAluminium({ bathTemperatureCelsius: 960 }).productionSlopeKgPerHourPerCelsius,
+    ).toBeNull();
+    expect(
+      stepHallAluminium({ aluminaConcentrationPct: 4 }).productionSlopeKgPerHourPerAluminaPct,
+    ).toBeNull();
+  });
+
   test("Edison indicator computes thermionic emission and galvanometer deflection", () => {
     const resPos = stepEdisonIndicator({ mainsVoltageV: 110, plateBiasPolarity: "positive" });
     expect(resPos.filamentPowerW).toBeGreaterThan(0);

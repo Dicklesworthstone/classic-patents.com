@@ -10,7 +10,7 @@
 - Grant date: January 20, 2009
 - Primary public record: <https://patents.google.com/patent/US7479949B2/en>
 - Pinned facsimile: `public/patents/pdfs/us-7479949-multitouch.pdf`
-- Retrieval and ledger review dates: 2026-08-20 (initial ledger review); 2026-08-22 (receipt authored against pinned PDF). A direct source check subsequently compared pinned PDF page 1 (front-page identity), page 298 (the actual brief drawing list beginning with Figs. 1A and 1B), and page 356 (the opening of Claim 1). The stored manual edition is an incomplete editorial draft and has not received a full-facsimile-review attestation.
+- Retrieval and ledger review dates: 2026-08-20 (initial ledger capture); 2026-08-22 (receipt authored against the pinned PDF); 2026-09-05 (direct visual review of the front matter, Figure sheets 1–5 and 292–293, the specification/drawing-list transition, Claims 1–20, and the two reexamination certificates). The stored manual edition is an incomplete editorial draft and has not received a full-facsimile-review attestation.
 - Rights basis: United States patent text and government-issued drawings are historical public-domain source material; this receipt does not assert rights in later commentary or derivative assets.
 - SHA-256 (lowercase): `9b29747e60aad27302671e1be32fda99680c474d4e3a5ce0ffc93201460bfe1c`
 - PDF page count: 364
@@ -22,22 +22,24 @@ The pinned PDF is the issued B2 document without a printed cover page: page 1 is
 
 | PDF pages | Source matter checked |
 | --- | --- |
-| 1–297 | Drawing sheets, each carrying a "Sheet N of 297 - Figures" banner; gesture-sequence screen illustrations, heuristic flow diagrams, and device-interface figures referenced as FIGS. throughout the specification. |
-| 298–355 | Specification body with running header "US 7,479,949 B2": field, background, summary, brief description of the drawings, and detailed description of touch-event heuristics, simultaneous contact-point detection, gesture determination, and displayed-object scaling. |
-| 356–360 | Claims section beginning "What is claimed is:"; all 20 printed claims, of which 3 are independent. |
-| 361–364 | Remaining claim columns and closing specification/claims matter to the end of the document. |
+| 1–2 | Issued B2 front matter: bibliographic data, references, abstract, and the printed statement “20 Claims, 293 Drawing Sheets.” |
+| 3–295 | The 293 B2 drawing sheets. PDF page 3 is Sheet 1 of 293 (Figure 1A); PDF page 295 is Sheet 293 of 293 (Figure 64B). |
+| 296–355 | B2 specification body, including the technical field, background, summary, brief description of drawings, and detailed embodiments. |
+| 356–358 | B2 claims beginning “What is claimed is:” and ending with Claim 20; the grant prints 3 independent claims (1, 11, and 17). |
+| 359–362 | C1 ex parte reexamination certificate and its continuation pages. |
+| 363–364 | C2 ex parte reexamination certificate, confirming the patentability of Claims 1–20 without amendments. |
 
 ## Figure crop review and preservation boundary
 
-- The active Figure 1, 2, and 3 previews are direct crops from PDF pages 5, 6, and 7 respectively (corresponding to Sheets 3, 4, and 5 of 293 in the patent drawing sheets). The reviewed 300-dpi source raster is 2560 × 3300 pixels for each sheet.
-- Crop rectangles in source pixels are Figure 1: `(256, 495, 2048, 2310)`; Figure 2: `(256, 495, 2048, 2310)`; and Figure 3: `(256, 495, 2048, 2310)`. Their digests and output dimensions are pinned in `archivalFigureAcceptance.ts`; occurrence locators bind each active inline reference to this receipt.
-- The crop assets are facsimile excerpts, not redrawn diagrams. Full source sheet renders `sheet-1-005.png` through `sheet-3-007.png` remain preserved as reference assets.
+- The three preserved preview files are direct crops from 300-dpi, 2560 × 3300-pixel source-sheet renders. Their legacy filenames are not figure numbers: `fig-1-source-crop-v1.png` is **Figure 2** on PDF page 5 / Sheet 3 of 293; `fig-2-source-crop-v1.png` is **Figure 3A** on PDF page 6 / Sheet 4 of 293; and `fig-3-source-crop-v1.png` is **Figure 3B** on PDF page 7 / Sheet 5 of 293.
+- Each crop rectangle is `(256, 495, 2048, 2310)` in its respective source raster. The assets remain facsimile excerpts, not redrawn diagrams. They are retained preservation evidence, not accepted citations in the incomplete archival edition; there are deliberately no active figure-occurrence attestations for this record.
+- Full source-sheet renders `sheet-1-005.png` through `sheet-3-007.png` remain preserved as reference assets.
 
 ## Editorial and preservation boundaries
 
-- Public source face while the draft is remediated: `public/patents/transcripts/us-7479949-multitouch-reviewed.txt`, with 364 ordered page markers matching the pinned PDF page count (`validateReviewedTranscription` passes). It is always available to visitors together with the pinned facsimile.
+- Public source face while the draft is remediated: `public/patents/transcripts/us-7479949-multitouch-reviewed.txt`, with 364 ordered page markers matching the pinned PDF page count. Its marker structure validates, but that is not a claim that every page has passed the manual-edition review required for publication. It remains visible to visitors together with the pinned facsimile; an editorial hold must never suppress the source reader.
 - Preserved editorial draft: `src/data/editions/multiTouchEdition.ts`. It remains typed research evidence but is deliberately not labeled or rendered as the complete source face until its 364-page source packet, claims, and figure citations are reconciled.
-- Local figure assets preserved under `public/patents/figures/us-7479949-multitouch/`: source crops `fig-1-source-crop-v1.png`, `fig-2-source-crop-v1.png`, `fig-3-source-crop-v1.png` cited by the edition's figure references, plus full-sheet renders `sheet-1-005.png` through `sheet-3-007.png` preserved as reference evidence.
+- Local figure assets preserved under `public/patents/figures/us-7479949-multitouch/`: source crops `fig-1-source-crop-v1.png`, `fig-2-source-crop-v1.png`, `fig-3-source-crop-v1.png`, plus full-sheet renders `sheet-1-005.png` through `sheet-3-007.png`. The crop identity manifest lives with the partial edition; no crop is represented as an active archival-edition citation.
 - Claim text in the catalogue record is dynamically joined from the edition's claim nodes; no literal duplication exists in `src/data/patents/multitouch.ts`.
 - No local OCR engine, OCR daemon, or local recognition process was run at any point in preparing the ledger or edition. Any cloud machine draft remains private research evidence only; every served line must stand against the pinned facsimile.
 - The pinned PDF, reviewed ledger, archival edition, figure crops, physics telemetry, and visual are separate evidence layers. No derivative explanation substitutes for the facsimile.

@@ -8,6 +8,7 @@ import {
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimParams";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { type MultiTouchState, stepMultiTouch } from "@/physics/multiTouchKernel";
 import {
   globalTransportBus,
@@ -17,7 +18,6 @@ import {
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildMultiTouchModel } from "./MultiTouchModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { StudioOverlayActionToolbar } from "./StudioOverlayActionToolbar";
@@ -26,17 +26,17 @@ import { usePatentAudio } from "./usePatentAudio";
 
 const EXHIBIT_ID = "us-7479949-multitouch";
 
-type CameraPreset = "iso" | "touch_surface" | "sensor_grid" | "top";
+type CameraPreset = "iso" | "touch_surface" | "command_flow" | "top";
 
 const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  // Keep the whole 5-unit touch surface and its support in the initial view;
-  // the close presets remain available for the capacitive grid and contacts.
+  // Keep the whole touch surface and its support in the initial view; the
+  // close presets expose contact geometry and the command-display surface.
   iso: { pos: [0, 0, 7.5], target: [0, 0, 0] },
   touch_surface: { pos: [0, 0.8, 3.2], target: [0, 0, 0] },
-  sensor_grid: { pos: [0, 1.8, 2.5], target: [0, 0, 0] },
+  command_flow: { pos: [0, 1.8, 2.5], target: [0, 0, 0] },
   top: { pos: [0, 5.0, 0.01], target: [0, 0, 0] },
 };
 
@@ -46,36 +46,44 @@ export function MultiTouch3D() {
   const [isCutaway, setIsCutaway] = useState(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [hud, setHud] = useState({
-    mode: "Pinch-to-Zoom",
+    mode: "Vertical Screen Scroll",
     zoom: 1.0,
-    touchCount: 2,
-    deltaC: "0.68",
+    touchCount: 1,
+    initialAngleDeg: 15,
   });
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
   const fingerSeparationMm = (params.fingerSeparationMm as number) ?? 50;
-  const fingerCount = (params.fingerCount as number) ?? 2;
+  const fingerCount = (params.fingerCount as number) ?? 1;
+  const initialMotionAngleDeg = (params.initialMotionAngleDeg as number) ?? 15;
+  const claim1HeuristicActive =
+    ((params[claimConstraintStateParamId(1)] as number | undefined) ?? 1) >= 0.5;
+  const claimStates = { 1: claim1HeuristicActive };
 
   const live = useLiveSimParams({
     fingerSeparationMm,
     fingerCount,
+    initialMotionAngleDeg,
+    claim1HeuristicActive,
     isCutaway,
-    touchPressureGrams: params.touchPressureGrams ?? 80,
-    gestureVelocityMmS: params.gestureVelocityMmS ?? 15,
   });
 
-  // Shared transport tape envelope: gesture pose publishes to the
-  // patentId-keyed bus so badges and sibling faces read one honest state.
+  // This exhibit deliberately has no FrankenSim SI-domain law: the grant is
+  // a command-classification rule after contact detection. The transport still
+  // carries one source-bounded TS-kernel state to every presentation consumer.
   useFrankenSimPhysics(EXHIBIT_ID, {
-    domain: "aerodynamics_mbd",
-    refusal: { isRefused: false },
+    domain: "source_bounded_command_classification",
+    refusal: {
+      isRefused: true,
+      reason:
+        "US 7,479,949 does not disclose an SI sensor or energy model; the exhibit uses a source-bounded TypeScript command classifier.",
+    },
     machine: {
       poseXMeters: 0,
       poseYMeters: 0,
       headingRad: 0,
-      modeLabel: "Pinch-to-Zoom",
-      wheelSpeedMps: 15 / 1000,
+      modeLabel: "Command heuristic",
+      wheelSpeedMps: 0,
     },
   });
 
@@ -83,7 +91,7 @@ export function MultiTouch3D() {
   // step so every reader shares one deterministic gesture state. Accumulators
   // live in refs so re-registering on control changes never snaps the gesture
   // back to zero; the full typed state rides a ref because the universal tape
-  // carries only the fitting subset (rotation angle + mode label).
+  // carries only the fitting command label and initial-motion direction.
   const multiTouchStateRef = useRef<MultiTouchState | undefined>(undefined);
   const simTimeRef = useRef(0);
   useEffect(() => {
@@ -91,10 +99,10 @@ export function MultiTouch3D() {
       simTimeRef.current += dt;
       const next = stepMultiTouch(
         {
-          fingerCount: live.current.fingerCount ?? 2,
+          fingerCount: live.current.fingerCount ?? 1,
           fingerSeparationMm: live.current.fingerSeparationMm ?? 50,
-          touchPressureGrams: live.current.touchPressureGrams ?? 80,
-          gestureVelocityMmS: live.current.gestureVelocityMmS ?? 15,
+          initialMotionAngleDeg: live.current.initialMotionAngleDeg ?? 15,
+          claim1HeuristicActive: live.current.claim1HeuristicActive ?? true,
         },
         simTimeRef.current,
         multiTouchStateRef.current,
@@ -104,9 +112,9 @@ export function MultiTouch3D() {
         machine: {
           poseXMeters: 0,
           poseYMeters: 0,
-          headingRad: (next.rotationAngleDeg * Math.PI) / 180,
+          headingRad: (next.initialMotionAngleDeg * Math.PI) / 180,
           modeLabel: next.gestureMode,
-          wheelSpeedMps: (live.current.gestureVelocityMmS ?? 15) / 1000,
+          wheelSpeedMps: 0,
         },
       };
     };
@@ -150,7 +158,7 @@ export function MultiTouch3D() {
         model.updateTouchContacts(
           { x: currentState.touch1X, y: currentState.touch1Y },
           { x: currentState.touch2X, y: currentState.touch2Y },
-          currentState.activeTouchCount >= 1,
+          currentState.activeTouchCount,
         );
 
         const targetScale = Math.max(0.5, Math.min(3.0, currentState.zoomScale));
@@ -158,11 +166,15 @@ export function MultiTouch3D() {
         const nextDocS = curDocS + (targetScale - curDocS) * 0.15;
         model.docGroup.scale.set(nextDocS, nextDocS, nextDocS);
 
-        if (currentState.gestureMode === "Two-Finger Rotate") {
-          model.docGroup.rotation.z = (currentState.rotationAngleDeg * Math.PI) / 180;
-        } else if (currentState.gestureMode === "Single-Finger Scroll") {
+        model.docGroup.rotation.z = 0;
+        if (currentState.gestureMode === "Vertical Screen Scroll") {
+          model.docGroup.position.x = 0;
+          model.docGroup.position.y = currentState.touch1Y * 0.5;
+        } else if (currentState.gestureMode === "Two-Dimensional Translation") {
           model.docGroup.position.x = currentState.touch1X * 0.5;
           model.docGroup.position.y = currentState.touch1Y * 0.5;
+        } else {
+          model.docGroup.position.set(0, 0, model.docGroup.position.z);
         }
 
         hudCounter += 1;
@@ -171,7 +183,7 @@ export function MultiTouch3D() {
             mode: currentState.gestureMode,
             zoom: Number(currentState.zoomScale.toFixed(2)),
             touchCount: currentState.activeTouchCount,
-            deltaC: currentState.mutualCapacitanceDeltaPf.toFixed(2),
+            initialAngleDeg: currentState.initialMotionAngleDeg,
           });
         }
       }
@@ -192,7 +204,7 @@ export function MultiTouch3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <div className="sr-only">Steve Jobs Apple Multi-Touch Gesture Detection 3D</div>
+      <div className="sr-only">US 7,479,949 touch-screen command heuristics 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
@@ -206,7 +218,7 @@ export function MultiTouch3D() {
               [
                 ["iso", "Isometric"],
                 ["touch_surface", "Glass Surface"],
-                ["sensor_grid", "ITO Sensor Matrix"],
+                ["command_flow", "Command Surface"],
                 ["top", "Plan View"],
               ] as [CameraPreset, string][]
             ).map(([preset, label]) => (
@@ -236,7 +248,7 @@ export function MultiTouch3D() {
             },
             isCutaway,
             onToggleCutaway: () => setIsCutaway(!isCutaway),
-            cutawayTitle: isCutaway ? "Collapse Stack Layers" : "Explode Capacitive Stack Layers",
+            cutawayTitle: isCutaway ? "Restore Device View" : "Separate Device View",
             showUiOverlay,
             onToggleUiOverlay: () => setShowUiOverlay(!showUiOverlay),
             onResetCamera: () => applyCameraPreset("iso"),
@@ -248,18 +260,18 @@ export function MultiTouch3D() {
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Gesture Mode:
+                Command result:
               </span>
               <span className="font-bold text-amber-700 dark:text-amber-400">{hud.mode}</span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Affine Scale Factor:</span>
+              <span className="text-ink-600 dark:text-ink-400">Claim 8 scale:</span>
               <span className="font-bold text-cyan-800 dark:text-cyan-400">{hud.zoom}x</span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Capacitance Shunt:</span>
+              <span className="text-ink-600 dark:text-ink-400">Initial angle:</span>
               <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                -{hud.deltaC} pF
+                {hud.initialAngleDeg.toFixed(0)}°
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
@@ -274,19 +286,25 @@ export function MultiTouch3D() {
         <StudioKernelChips
           visible={showUiOverlay}
           side="right"
-          title="MultiTouch Capacitive State"
+          title="Source-Bounded Command State"
           chips={[
             { label: "Gesture", value: hud.mode },
             { label: "Scale", value: `${hud.zoom}x` },
             { label: "Contacts", value: `${hud.touchCount}`, unit: "pts" },
-            { label: "ΔC", value: `-${hud.deltaC}`, unit: "pF" },
+            { label: "Initial θ", value: `${hud.initialAngleDeg.toFixed(0)}°` },
           ]}
         />
       </div>
 
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <p className="mb-3 text-xs leading-5 text-ink-600 dark:text-ink-300">
+          <span className="font-semibold">Source boundary:</span> this is a deterministic TypeScript
+          command-classification exhibit for the issued claims. It deliberately does not model a
+          capacitance stack, scan rate, pressure, or power budget that US 7,479,949 does not
+          disclose.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <SensitivitySlider
             id="multiTouchSeparation"
             patentId="us-7479949-multitouch"
@@ -314,21 +332,29 @@ export function MultiTouch3D() {
             onChange={(val) => updateParam("fingerCount", val)}
             allParams={params}
           />
+
+          <SensitivitySlider
+            id="multiTouchInitialAngle"
+            patentId="us-7479949-multitouch"
+            paramKey="initialMotionAngleDeg"
+            label="Initial Motion Angle (illustrative)"
+            value={initialMotionAngleDeg}
+            min={0}
+            max={90}
+            step={1}
+            unit="° from vertical"
+            onChange={(val) => updateParam("initialMotionAngleDeg", val)}
+            allParams={params}
+          />
         </div>
 
         <ClaimConstraintToggle
           patentId="us-7479949-multitouch"
           claimStates={claimStates}
           onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0)
           }
           className="mt-2"
-        />
-
-        <PortHamiltonianEnergyStrip
-          patentId="us-7479949-multitouch"
-          params={params}
-          className="mt-3"
         />
       </div>
     </div>

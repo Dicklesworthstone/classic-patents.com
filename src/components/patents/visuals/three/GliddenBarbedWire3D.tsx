@@ -149,8 +149,8 @@ export const GliddenBarbedWire3D = memo(() => {
     setActiveCamera(preset);
     const cfg = gliddenBarbedWireCameraForViewport(
       preset,
-      containerRef.current?.clientWidth ?? 1000,
-      containerRef.current?.clientHeight ?? 700,
+      containerRef.current?.clientWidth || window.innerWidth,
+      containerRef.current?.clientHeight || window.innerHeight,
     );
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
@@ -167,8 +167,8 @@ export const GliddenBarbedWire3D = memo(() => {
 
     const iso = gliddenBarbedWireCameraForViewport(
       "iso",
-      container.clientWidth,
-      container.clientHeight,
+      container.clientWidth || window.innerWidth,
+      container.clientHeight || window.innerHeight,
     );
     const studio = createThreeStudioScene({
       container,
@@ -183,9 +183,28 @@ export const GliddenBarbedWire3D = memo(() => {
     const { rootGroup, nodes, materials, dispose } = model;
     modelRef.current = model;
     model.setCompactClaimFocus(
-      isGliddenCompactClaimViewport(container.clientWidth, container.clientHeight),
+      isGliddenCompactClaimViewport(
+        container.clientWidth || window.innerWidth,
+        container.clientHeight || window.innerHeight,
+      ),
     );
     scene.add(rootGroup);
+
+    // An absolutely positioned studio can still measure 0 × 0 during the
+    // first effect. Reapply the overview after layout so compact claim focus
+    // is based on the physical canvas rather than the startup desktop view.
+    let initialOverviewFrame: number;
+    const synchronizeInitialOverview = () => {
+      const { clientWidth, clientHeight } = container;
+      if (clientWidth <= 0 || clientHeight <= 0) {
+        initialOverviewFrame = requestAnimationFrame(synchronizeInitialOverview);
+        return;
+      }
+      const view = gliddenBarbedWireCameraForViewport("iso", clientWidth, clientHeight);
+      model.setCompactClaimFocus(isGliddenCompactClaimViewport(clientWidth, clientHeight));
+      controls.setView(view.pos, view.target);
+    };
+    initialOverviewFrame = requestAnimationFrame(synchronizeInitialOverview);
 
     // Animation Loop
     let reqId: number;
@@ -216,6 +235,7 @@ export const GliddenBarbedWire3D = memo(() => {
 
     return () => {
       cancelAnimationFrame(reqId);
+      cancelAnimationFrame(initialOverviewFrame);
       dispose();
       studio.cleanup();
       studioRef.current = null;

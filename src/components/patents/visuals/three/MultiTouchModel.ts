@@ -11,7 +11,7 @@ export interface MultiTouchModel {
   updateTouchContacts: (
     t1: { x: number; y: number },
     t2: { x: number; y: number },
-    active: boolean,
+    contactCount: number,
   ) => void;
   setExplodedView?: (exploded: boolean) => void;
   dispose: () => void;
@@ -19,7 +19,7 @@ export interface MultiTouchModel {
 
 export function buildMultiTouchModel(): MultiTouchModel {
   const root = new THREE.Group();
-  root.name = "Apple iPhone Multi-Touch Stack Model";
+  root.name = "Touch-Screen Command-Heuristic Exhibit";
   const mainGroup = new THREE.Group();
   root.add(mainGroup);
 
@@ -62,15 +62,6 @@ export function buildMultiTouchModel(): MultiTouchModel {
       color: 0x090d16,
       roughness: 0.2,
       metalness: 0.8,
-    }),
-  );
-
-  const itoGridMat = trackMat(
-    new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
-      transparent: true,
-      opacity: 0.3,
-      wireframe: true,
     }),
   );
 
@@ -176,13 +167,9 @@ export function buildMultiTouchModel(): MultiTouchModel {
   glass.position.set(0, 0, 0.01);
   mainGroup.add(glass);
 
-  // 3. ITO Mutual Capacitance Diamond Grid Traces
-  const gridGeo = trackGeo(new THREE.PlaneGeometry(2.4, 3.8, 12, 18));
-  const grid = new THREE.Mesh(gridGeo, itoGridMat);
-  grid.position.set(0, 0, -0.015);
-  mainGroup.add(grid);
-
-  // 4. Transformable Document / Photo Card
+  // 3. Transformable document / photo card. The patent gives touch-screen
+  // command heuristics, not a display-stack construction, so this model does
+  // not invent ITO traces, a capacitive grid, or a sensing-layer dimension.
   const docGroup = new THREE.Group();
   docGroup.position.set(0, 0, -0.035);
   mainGroup.add(docGroup);
@@ -196,7 +183,7 @@ export function buildMultiTouchModel(): MultiTouchModel {
   photo.position.set(0, 0.18, 0.005);
   docGroup.add(photo);
 
-  // 5. Multi-Touch Contact Indicators
+  // 4. Touch-contact indicators
   const contactSphereGeo = trackGeo(new THREE.SphereGeometry(0.08, 16, 16));
   const contactRingGeo = trackGeo(new THREE.RingGeometry(0.12, 0.18, 32));
 
@@ -219,17 +206,17 @@ export function buildMultiTouchModel(): MultiTouchModel {
   const updateTouchContacts = (
     t1: { x: number; y: number },
     t2: { x: number; y: number },
-    active: boolean,
+    contactCount: number,
   ) => {
     touch1.position.set(t1.x, t1.y, 0.05);
     touch1Ring.position.set(t1.x, t1.y, 0.045);
     touch2.position.set(t2.x, t2.y, 0.05);
     touch2Ring.position.set(t2.x, t2.y, 0.045);
 
-    touch1.visible = active;
-    touch1Ring.visible = active;
-    touch2.visible = active;
-    touch2Ring.visible = active;
+    touch1.visible = contactCount >= 1;
+    touch1Ring.visible = contactCount >= 1;
+    touch2.visible = contactCount >= 2;
+    touch2Ring.visible = contactCount >= 2;
   };
 
   const setExplodedView = (exploded: boolean) => {
@@ -237,7 +224,6 @@ export function buildMultiTouchModel(): MultiTouchModel {
       glass.position.z = 0.65;
       speaker.position.z = 0.67;
       homeBtn.position.z = 0.67;
-      grid.position.z = 0.32;
       docGroup.position.z = 0.05;
       screenBack.position.z = -0.15;
       chassis.position.z = -0.45;
@@ -245,7 +231,6 @@ export function buildMultiTouchModel(): MultiTouchModel {
       glass.position.z = 0.01;
       speaker.position.z = -0.035;
       homeBtn.position.z = -0.035;
-      grid.position.z = -0.015;
       docGroup.position.z = -0.035;
       screenBack.position.z = -0.045;
       chassis.position.z = -0.16;

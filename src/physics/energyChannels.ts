@@ -70,6 +70,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 5,701,965 describes a motorized drive, control loop, cluster-wheel arrangement, and balance/transfer/climb modes, but gives no electrical input, motor rating, torque, speed, drivetrain loss, mass, force, or duty-cycle datum from which an SI energy channel can be derived.",
   "us-6594844-roomba":
     "US 6,594,844 prints optical emitter/detector geometry and redirect-circuit behavior but no battery voltage, current, robot mass, motor load, brush drag, vacuum flow, loss, or power datum from which an SI energy channel can be derived.",
+  "us-7479949-multitouch":
+    "US 7,479,949 claims a post-detection command heuristic—initial-motion classification and a two-contact zoom command—but does not disclose the touch-sensor construction, electrical input, stored charge, scan rate, controller power, thermal state, or loss datum required for an SI energy partition.",
   "us-4750-howe-sewing-machine":
     "US 4,750 prints the mechanism topology and two local dimensions but no force, torque, inertia, speed, friction, or power datum from which an SI energy channel can be derived.",
   "us-31128-otis-elevator":
@@ -300,7 +302,10 @@ export function energyChannelsFor(
       bathTemperatureCelsius: params.bathTemperatureCelsius,
       aluminaConcentrationPct: params.aluminaConcentrationPct,
     });
-    return [{ name: "Cell", watts: hall.electricalPowerKw * 1000, tone: "in" }];
+    return [
+      { name: "Cell", watts: hall.electricalInputWatts, tone: "in" },
+      { name: "Bath Joule heat", watts: hall.bathOhmicHeatingWatts, tone: "loss" },
+    ];
   }
   if (patentId === "us-879532-de-forest-audion") {
     const tube = stepDeForestAudion({
@@ -541,12 +546,9 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-7479949-multitouch") {
-    const scanW = 0.028;
-    return [
-      { name: "Capacitive Scan Drive", watts: scanW * 1000, tone: "in" },
-      { name: "Mutual Node Charge", watts: scanW * 1000 * 0.84, tone: "useful" },
-      { name: "Parasitic Trace Loss", watts: scanW * 1000 * 0.16, tone: "loss" },
-    ];
+    // The grant begins with contacts already detected. No source-backed
+    // electrical or thermal port is available for a power-flow strip.
+    return [];
   }
 
   if (patentId === "us-4750-howe-sewing-machine") {

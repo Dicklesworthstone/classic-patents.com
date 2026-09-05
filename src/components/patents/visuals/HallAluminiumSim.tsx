@@ -2,9 +2,11 @@
 
 import { Flame, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useMemo, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHallAluminium } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { PortHamiltonianEnergyStrip } from "./PortHamiltonianEnergyStrip";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function HallAluminiumSim() {
@@ -34,6 +36,7 @@ export function HallAluminiumSim() {
 
   return (
     <div className="w-full bg-parchment-50 dark:bg-ink-950 rounded-2xl border border-parchment-300 dark:border-ink-800 p-4 sm:p-6 shadow-xl text-ink-900 dark:text-parchment-100 font-sans space-y-6">
+      <PortHamiltonianEnergyStrip patentId="us-400766-hall-aluminium" params={params} />
       {/* Header & Tabs */}
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
@@ -471,81 +474,57 @@ export function HallAluminiumSim() {
       {/* Physics Control Sliders & Real-Time SI Telemetry Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Interactive Controls */}
-        <div className="lg:col-span-1 bg-ink-900/80 p-4 rounded-xl border border-ink-800 space-y-4">
-          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-amber-400 font-bold border-b border-ink-800 pb-2">
+        <div className="lg:col-span-1 bg-parchment-100 dark:bg-ink-900/80 p-4 rounded-xl border border-parchment-300 dark:border-ink-800 space-y-4">
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400 font-bold border-b border-parchment-300 dark:border-ink-800 pb-2">
             <Flame className="w-3.5 h-3.5" />
             Smelting Cell Controls
           </div>
 
-          {/* Current Control */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <span className="text-parchment-300">DC Cell Current</span>
-              <span className="font-bold text-cyan-400">
-                {(currentAmperes / 1000).toFixed(0)} kA
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Hall cell direct current in amperes"
-              min={100000}
-              max={500000}
-              step={10000}
-              value={currentAmperes}
-              onChange={(e) => updateParam("currentAmperes", Number(e.target.value))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-ink-800 dark:[&::-webkit-slider-runnable-track]:bg-ink-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-ink-800 dark:[&::-moz-range-track]:bg-ink-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-            <div className="flex justify-between text-[10px] text-ink-400 font-mono">
-              <span>100 kA (Pilot)</span>
-              <span>500 kA (Modern)</span>
-            </div>
-          </div>
-
-          {/* Bath Temperature */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <span className="text-parchment-300">Cryolite Bath Temp</span>
-              <span className="font-bold text-orange-400">{bathTemperatureCelsius} °C</span>
-            </div>
-            <input
-              type="range"
-              aria-label="Cryolite bath temperature in degrees Celsius"
-              min={920}
-              max={1020}
-              step={5}
-              value={bathTemperatureCelsius}
-              onChange={(e) => updateParam("bathTemperatureCelsius", Number(e.target.value))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-ink-800 dark:[&::-webkit-slider-runnable-track]:bg-ink-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-orange-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-ink-800 dark:[&::-moz-range-track]:bg-ink-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-orange-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-            <div className="flex justify-between text-[10px] text-ink-400 font-mono">
-              <span>920 °C (Freeze Risk)</span>
-              <span>1020 °C (Vapor Loss)</span>
-            </div>
-          </div>
-
-          {/* Alumina Concentration */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <span className="text-parchment-300">Alumina (Al₂O₃) Conc</span>
-              <span className="font-bold text-emerald-400">
-                {aluminaConcentrationPct.toFixed(1)} wt%
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Alumina concentration by weight percentage"
-              min={2.0}
-              max={8.0}
-              step={0.5}
-              value={aluminaConcentrationPct}
-              onChange={(e) => updateParam("aluminaConcentrationPct", Number(e.target.value))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-ink-800 dark:[&::-webkit-slider-runnable-track]:bg-ink-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-ink-800 dark:[&::-moz-range-track]:bg-ink-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-emerald-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-            <div className="flex justify-between text-[10px] text-ink-400 font-mono">
-              <span>2.0% (Anode Effect)</span>
-              <span>8.0% (Saturation)</span>
-            </div>
-          </div>
+          <SensitivitySlider
+            id="hall-2d-current"
+            patentId="us-400766-hall-aluminium"
+            paramKey="currentAmperes"
+            label="Hall cell direct current in amperes"
+            min={100000}
+            max={500000}
+            step={10000}
+            value={currentAmperes}
+            unit="A"
+            thumb="cyan"
+            allParams={params}
+            onChange={(value) => updateParam("currentAmperes", value)}
+          />
+          <SensitivitySlider
+            id="hall-2d-temperature"
+            patentId="us-400766-hall-aluminium"
+            paramKey="bathTemperatureCelsius"
+            label="Cryolite bath temperature in degrees Celsius"
+            min={920}
+            max={1020}
+            step={5}
+            value={bathTemperatureCelsius}
+            unit="°C"
+            allParams={params}
+            onChange={(value) => updateParam("bathTemperatureCelsius", value)}
+          />
+          <SensitivitySlider
+            id="hall-2d-alumina"
+            patentId="us-400766-hall-aluminium"
+            paramKey="aluminaConcentrationPct"
+            label="Alumina concentration by weight percentage"
+            min={2}
+            max={8}
+            step={0.5}
+            value={aluminaConcentrationPct}
+            unit="wt%"
+            allParams={params}
+            onChange={(value) => updateParam("aluminaConcentrationPct", value)}
+          />
+          <p className="text-xs leading-relaxed text-ink-600 dark:text-ink-300">
+            Slopes describe aluminium production in this modern teaching model, holding the other
+            controls fixed. At 960 °C or 4 wt% the corresponding efficiency curve has a corner, so
+            that control has no single local slope.
+          </p>
         </div>
 
         {/* Live Telemetry Display */}

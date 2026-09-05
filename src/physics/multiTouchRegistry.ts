@@ -1,11 +1,11 @@
 import { stepMultiTouch } from "./multiTouchKernel";
 
 export const multiTouchRegistryEntry = {
-  domain: "Human-Computer Interaction & Sensing",
-  domainTitle: "Mutual Capacitive Matrix & Gesture Heuristics",
-  equationName: "Multi-Touch Affine Transformation & Capacitance Shunt",
+  domain: "Human-Computer Interaction",
+  domainTitle: "Touch-gesture command heuristics",
+  equationName: "Initial-Motion Angle Classification",
   governingEquation:
-    "S(t) = \\frac{\\|\\mathbf{p}_2(t) - \\mathbf{p}_1(t)\\|}{\\|\\mathbf{p}_2(0) - \\mathbf{p}_1(0)\\|}, \\quad \\Delta C_m = -\\frac{\\varepsilon_0 \\varepsilon_r A_{finger}}{d}",
+    "\\theta = \\operatorname{atan2}(|\\Delta x|, |\\Delta y|), \\quad S = \\frac{d(t)}{d(0)}",
   engineMethod: "stepMultiTouch",
   controls: [
     {
@@ -27,13 +27,13 @@ export const multiTouchRegistryEntry = {
       unit: "pts",
     },
     {
-      id: "touchPressureGrams",
-      label: "Contact Force / Area",
-      min: 20,
-      max: 200,
-      step: 10,
-      defaultValue: 80,
-      unit: "g",
+      id: "initialMotionAngleDeg",
+      label: "Initial Motion Angle",
+      min: 0,
+      max: 90,
+      step: 1,
+      defaultValue: 15,
+      unit: "deg from vertical",
     },
   ],
   computeMetrics: (params: Record<string, number>) => {
@@ -43,29 +43,28 @@ export const multiTouchRegistryEntry = {
       {
         fingerCount: count,
         fingerSeparationMm: sep,
-        touchPressureGrams: params.touchPressureGrams ?? 80,
-        gestureVelocityMmS: 15,
+        initialMotionAngleDeg: params.initialMotionAngleDeg ?? 15,
       },
       0.0,
     );
 
     return [
       {
-        label: "Scale Factor",
+        label: "Claim 8 scale",
         value: `${out.zoomScale}x`,
         unit: "",
         badgeColor: "cyan" as const,
         progressPct: Math.min(100, (out.zoomScale / 2.5) * 100),
       },
       {
-        label: "Capacitance Shunt",
-        value: `-${out.mutualCapacitanceDeltaPf.toFixed(2)}`,
-        unit: "pF",
+        label: "Command class",
+        value: out.gestureMode,
+        unit: "",
         badgeColor: "emerald" as const,
-        progressPct: Math.min(100, (out.mutualCapacitanceDeltaPf / 1.5) * 100),
+        progressPct: 100,
       },
     ];
   },
   pedagogicalInsight:
-    "The iPhone multi-touch patent revolutionized modern computing by coupling mutual capacitance row-column scanning with geometric distance heuristics, turning finger divergence into an affine scale transformation (pinch-to-zoom) in real time without stylus or mechanical trackball.",
+    "US 7,479,949 claims the command-classification step after contacts are detected: an initial-motion heuristic can distinguish vertical scrolling from two-dimensional translation, while dependent Claim 8 covers pinch zoom. It does not disclose a capacitance sensor construction.",
 };

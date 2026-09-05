@@ -212,7 +212,9 @@ async function main() {
     {
       name: /^Full Original PDF\b/,
       view: "pdf-facsimile",
-      marker: iPage.locator('object[type="application/pdf"]'),
+      marker: iPage.locator(
+        '[data-testid="pinned-pdf-renderer"][data-render-state="ready"] canvas',
+      ),
     },
     {
       name: /^Dual Split-Screen\b/,

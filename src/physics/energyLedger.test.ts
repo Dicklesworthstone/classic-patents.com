@@ -1,11 +1,56 @@
 import { describe, expect, test } from "bun:test";
-import { stepGoodyearRubber } from "./catalogKernels";
+import { stepGoodyearRubber, stepHallAluminium } from "./catalogKernels";
 import { coupleEdgesFor } from "./coupleGraph";
 import { computePortHamiltonianEnergy, measureSteadyPowerBalance } from "./energyLedger";
 import { readWattCondenserControls, stepWattCondenser } from "./wattCondenserKernel";
 import { WRIGHT_GROSS_WEIGHT_N } from "./wrightKernel";
 
 describe("Energy readouts distinguish partial, steady and unavailable evidence", () => {
+  test("Hall admits current-cell input and bath heating, without time-invented chemical storage", () => {
+    for (const currentAmperes of [100000, 300000, 410000, 500000]) {
+      for (const bathTemperatureCelsius of [920, 990, 1020]) {
+        for (const aluminaConcentrationPct of [2, 5.5, 8]) {
+          const params = { currentAmperes, bathTemperatureCelsius, aluminaConcentrationPct };
+          const model = stepHallAluminium(params);
+          for (const time of [0, 1, 3600]) {
+            const report = computePortHamiltonianEnergy("us-400766-hall-aluminium", params, time);
+            expect(report.inputPowerWatts).toBeCloseTo(model.electricalInputWatts, 1);
+            expect(report.dissipatedPowerWatts).toBeCloseTo(model.bathOhmicHeatingWatts, 1);
+            expect(report.availability).toBe("kernel-partial");
+            expect(report.runtimeSource).toBe("ts-fallback");
+            expect(report.inputPowerAvailable).toBe(true);
+            expect(report.dissipatedPowerAvailable).toBe(true);
+            expect(report.dissipationLabel).toBe("Bath Joule heat");
+            expect(report.storedEnergyAvailable).toBe(false);
+            expect(report.energy.totalHamiltonianJoules).toBe(0);
+            expect(report.outputPowerWatts).toBeNull();
+            expect(report.balance.kind).toBe("unavailable");
+          }
+        }
+      }
+    }
+  });
+
+  test("Hall refuses out-of-domain controls instead of presenting an unsupported operating point", () => {
+    const invalid: Record<string, number>[] = [
+      { currentAmperes: 99999 },
+      { currentAmperes: 500001 },
+      { bathTemperatureCelsius: 919 },
+      { bathTemperatureCelsius: 1021 },
+      { aluminaConcentrationPct: 1.9 },
+      { aluminaConcentrationPct: 8.1 },
+      { currentAmperes: Number.NaN },
+      { bathTemperatureCelsius: Number.POSITIVE_INFINITY },
+    ];
+    for (const params of invalid) {
+      const report = computePortHamiltonianEnergy("us-400766-hall-aluminium", params);
+      expect(report.availability).toBe("unavailable");
+      expect(report.storedEnergyAvailable).toBe(false);
+      expect(report.inputPowerAvailable).toBe(false);
+      expect(report.dissipatedPowerAvailable).toBe(false);
+      expect(report.balance.kind).toBe("unavailable");
+    }
+  });
   test("Goodyear reports the same elastic density as its instrument without fabricated volume or power", () => {
     for (const vulcanTemp of [110, 145, 180]) {
       for (const sulfurPct of [0, 4, 8, 30]) {
@@ -204,6 +249,7 @@ describe("Energy readouts distinguish partial, steady and unavailable evidence",
       "us-381968-tesla-motor",
       "us-3671542-kwolek-kevlar",
       "us-1102653-goddard-rocket",
+      "us-7479949-multitouch",
     ]) {
       const report = computePortHamiltonianEnergy(id, {});
       expect(report.availability).toBe("unavailable");

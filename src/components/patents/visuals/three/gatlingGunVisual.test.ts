@@ -120,14 +120,17 @@ describe("US 36,836 Richard Gatling Revolving Battery Gun visual & ballistics bo
     }
   });
 
-  test("keeps the muzzle cluster fully visible at the independent 375 by 812px phone receipt", () => {
+  test("keeps the muzzle cluster fully visible in the live 375px reader canvas", () => {
     const model = buildGatlingGunModel();
     try {
-      const canvasWidth = 375;
-      const canvasHeight = 812;
+      // The 375px browser viewport is inset by the exhibit shell. Pin the
+      // actual 341 × 380px canvas rather than testing the outer viewport,
+      // which previously let the desktop startup camera evade this detector.
+      const canvasWidth = 341;
+      const canvasHeight = 380;
       const view = gatlingGunCameraForViewport("iso", canvasWidth, canvasHeight);
       expect(view).not.toEqual(GATLING_GUN_CAMERA_PRESETS.iso);
-      const camera = new THREE.PerspectiveCamera(42, canvasWidth / canvasHeight, 0.1, 1000);
+      const camera = new THREE.PerspectiveCamera(38, canvasWidth / canvasHeight, 0.1, 1000);
       camera.position.set(...view.pos);
       camera.lookAt(...view.target);
       camera.updateProjectionMatrix();
@@ -147,11 +150,11 @@ describe("US 36,836 Richard Gatling Revolving Battery Gun visual & ballistics bo
         model.nodes.crankGroup.rotation.x = state.phase;
         const frame = projectedMeshBounds(model.rootGroup, camera);
         expect(frame.minX, `${state.name} left envelope`).toBeGreaterThan(-0.7);
-        expect(frame.maxX, `${state.name} right muzzle envelope`).toBeLessThan(0.85);
-        expect(frame.minY, `${state.name} lower envelope`).toBeGreaterThan(-0.35);
-        expect(frame.maxY, `${state.name} upper envelope`).toBeLessThan(0.3);
-        expect(((frame.maxX - frame.minX) * canvasWidth) / 2).toBeGreaterThan(260);
-        expect(((frame.maxY - frame.minY) * canvasHeight) / 2).toBeGreaterThan(200);
+        expect(frame.maxX, `${state.name} right muzzle envelope`).toBeLessThan(0.8);
+        expect(frame.minY, `${state.name} lower envelope`).toBeGreaterThan(-0.65);
+        expect(frame.maxY, `${state.name} upper envelope`).toBeLessThan(0.45);
+        expect(((frame.maxX - frame.minX) * canvasWidth) / 2).toBeGreaterThan(200);
+        expect(((frame.maxY - frame.minY) * canvasHeight) / 2).toBeGreaterThan(150);
       }
 
       for (let phaseIndex = 0; phaseIndex < 72; phaseIndex++) {
@@ -159,7 +162,7 @@ describe("US 36,836 Richard Gatling Revolving Battery Gun visual & ballistics bo
         model.nodes.barrelClusterGroup.rotation.x = phase;
         model.nodes.crankGroup.rotation.x = phase;
         const frame = projectedMeshBounds(model.rootGroup, camera);
-        expect(frame.maxX, `swept phase ${phaseIndex} muzzle edge`).toBeLessThan(0.85);
+        expect(frame.maxX, `swept phase ${phaseIndex} muzzle edge`).toBeLessThan(0.8);
       }
     } finally {
       model.dispose();
@@ -180,6 +183,8 @@ describe("US 36,836 Richard Gatling Revolving Battery Gun visual & ballistics bo
     expect(source).toContain(
       'window.addEventListener("orientationchange", reselectResponsiveOverview)',
     );
+    expect(source).toContain("synchronizeInitialOverview");
+    expect(source).toContain("requestAnimationFrame(synchronizeInitialOverview)");
   });
 
   test("computes genuine Gatling rotary rate of fire and cooling intervals in SI units", () => {

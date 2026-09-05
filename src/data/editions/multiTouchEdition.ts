@@ -5,6 +5,44 @@ import type {
   CuratedSpecificationInlines,
 } from "@/types/patent";
 
+/**
+ * Retained crops whose source identity was checked directly against the pinned
+ * facsimile. They are preservation evidence only: the incomplete edition
+ * below does not cite them as archival-edition figures.
+ *
+ * The legacy asset filenames are intentionally retained. Renaming a crop
+ * would create a second derived asset and would not improve its provenance.
+ */
+export const MULTI_TOUCH_PRESERVED_SOURCE_CROPS = [
+  {
+    asset: "/patents/figures/us-7479949-multitouch/fig-1-source-crop-v1.png",
+    figure: "Figure 2",
+    sourcePdfPage: 5,
+    sourceSheet: "Sheet 3 of 293",
+    width: 2048,
+    height: 2310,
+    description: "Portable multifunction device 100 with a finger contact at touch screen 112.",
+  },
+  {
+    asset: "/patents/figures/us-7479949-multitouch/fig-2-source-crop-v1.png",
+    figure: "Figure 3A",
+    sourcePdfPage: 6,
+    sourceSheet: "Sheet 4 of 293",
+    width: 2048,
+    height: 2310,
+    description: "Exemplary unlocking interface 300A with the slide-to-unlock control.",
+  },
+  {
+    asset: "/patents/figures/us-7479949-multitouch/fig-3-source-crop-v1.png",
+    figure: "Figure 3B",
+    sourcePdfPage: 7,
+    sourceSheet: "Sheet 5 of 293",
+    width: 2048,
+    height: 2310,
+    description: "Exemplary unlocking interface 300B with device features shown behind the screen.",
+  },
+] as const;
+
 export const MULTI_TOUCH_FIGURE_DIMS: Record<number, { width: number; height: number }> = {
   1: { width: 2048, height: 2310 },
   2: { width: 2048, height: 2310 },

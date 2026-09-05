@@ -403,7 +403,12 @@ async function verifyOriginalPatentTextFace(args: {
   const transcriptCount = await transcript.count();
   const editionCount = await edition.count();
   const facsimileFallbackCount = await facsimileFallback.count();
-  const pdfEmbedCount = await viewer.locator('object[type="application/pdf"]').count();
+  if (facsimileFallbackCount > 0) {
+    await facsimileFallback
+      .locator('[data-testid="pinned-pdf-renderer"][data-render-state="ready"]')
+      .waitFor({ state: "visible" });
+  }
+  const pdfEmbedCount = await viewer.getByTestId("pinned-pdf-canvas").count();
   const transcriptText = transcriptCount > 0 ? await transcript.locator("pre").textContent() : null;
   const editionText = editionCount > 0 ? await edition.first().textContent() : null;
   const sourceDelivery =

@@ -16,7 +16,7 @@ import {
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 const COMPACT_AUDIT_VIEWPORT = { width: 286, height: 380 };
-const CLAIM_FOCUS_AUDIT_VIEWPORT = { width: 375, height: 812 };
+const CLAIM_FOCUS_AUDIT_VIEWPORT = { width: 341, height: 380 };
 const LANDSCAPE_AUDIT_VIEWPORT = { width: 639, height: 380 };
 const TABLET_AUDIT_VIEWPORT = { width: 718, height: 1024 };
 
@@ -233,7 +233,7 @@ describe("US 157,124 Joseph Glidden Twisted Wire Barbed Fence visual & kinematic
     }
   });
 
-  test("keeps the printed twisted strands and each barb legible at 375 by 812px", () => {
+  test("keeps the printed twisted strands and each barb legible in the live 375px reader canvas", () => {
     const { width, height } = CLAIM_FOCUS_AUDIT_VIEWPORT;
     expect(isGliddenCompactClaimViewport(width, height)).toBe(true);
     expect(
@@ -253,6 +253,7 @@ describe("US 157,124 Joseph Glidden Twisted Wire Barbed Fence visual & kinematic
       try {
         model.setCompactClaimFocus(true);
         expect(model.nodes.presentationPropsGroup.visible).toBe(false);
+        expect(model.nodes.fencePostGroup?.visible).toBe(false);
         const view = gliddenBarbedWireCameraForViewport("iso", width, height);
         const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 1000);
         camera.position.set(...view.pos);
@@ -275,20 +276,20 @@ describe("US 157,124 Joseph Glidden Twisted Wire Barbed Fence visual & kinematic
         model.rootGroup.updateMatrixWorld(true);
 
         const wire = projectedObjectBounds(model.nodes.wireAssemblyGroup, camera);
-        expect(wire.minX, `${state.name} strand left`).toBeGreaterThan(-0.75);
-        expect(wire.maxX, `${state.name} strand right`).toBeLessThan(0.9);
-        expect(wire.minY, `${state.name} strand lower`).toBeGreaterThan(-0.2);
-        expect(wire.maxY, `${state.name} strand upper`).toBeLessThan(0.2);
+        expect(wire.minX, `${state.name} strand left`).toBeGreaterThan(-0.65);
+        expect(wire.maxX, `${state.name} strand right`).toBeLessThan(0.87);
+        expect(wire.minY, `${state.name} strand lower`).toBeGreaterThan(-0.4);
+        expect(wire.maxY, `${state.name} strand upper`).toBeLessThan(0.32);
         const wirePixels = projectedPixels(wire, width, height);
-        expect(wirePixels.width, `${state.name} claimed strand width`).toBeGreaterThan(290);
-        expect(wirePixels.height, `${state.name} claimed strand height`).toBeGreaterThan(130);
+        expect(wirePixels.width, `${state.name} claimed strand width`).toBeGreaterThan(230);
+        expect(wirePixels.height, `${state.name} claimed strand height`).toBeGreaterThan(100);
 
         for (const [index, barb] of model.nodes.barbGroups.entries()) {
           const pixels = projectedPixels(projectedObjectBounds(barb, camera), width, height);
           expect(
             Math.max(pixels.width, pixels.height),
             `${state.name} barb ${index + 1} readable dimension`,
-          ).toBeGreaterThan(30);
+          ).toBeGreaterThan(26);
         }
       } finally {
         model.dispose();
@@ -301,6 +302,8 @@ describe("US 157,124 Joseph Glidden Twisted Wire Barbed Fence visual & kinematic
     );
     expect(threeSource).toContain("setCompactClaimFocus");
     expect(threeSource).toContain("isGliddenCompactClaimViewport");
+    expect(threeSource).toContain("synchronizeInitialOverview");
+    expect(threeSource).toContain("requestAnimationFrame(synchronizeInitialOverview)");
   });
 
   test("computes genuine catenary sag, barb slip threshold, and locked state in SI units", () => {

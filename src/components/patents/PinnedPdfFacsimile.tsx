@@ -112,7 +112,7 @@ function PinnedPdfControls({
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-parchment-300 bg-parchment-100/80 p-3 dark:border-ink-800 dark:bg-ink-900/70">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={() => onGoToPage(pageNumber - 1)}

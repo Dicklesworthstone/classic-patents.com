@@ -17,7 +17,12 @@ export type PhysicsDomain =
   | "continuum_elasticity"
   | "materials_kinetics"
   | "optics_waves"
-  | "solid_mechanics";
+  | "solid_mechanics"
+  /**
+   * A deterministic, source-bounded command-decision topology. It carries no
+   * inferred material, electrical, kinematic, or energy law.
+   */
+  | "source_bounded_command_classification";
 
 export interface RefusalBoundary {
   isRefused: boolean;

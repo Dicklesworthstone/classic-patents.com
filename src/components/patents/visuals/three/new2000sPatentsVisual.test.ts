@@ -11,6 +11,7 @@ import {
   ROOMBA_ROOM,
   stepRoomba,
 } from "@/physics/roombaKernel";
+import { PATENT_PHYSICS_REGISTRY } from "@/physics/telemetryData";
 import { buildDaVinciModel } from "./DaVinciModel";
 import { buildEInkModel } from "./EInkModel";
 import { buildMultiTouchModel } from "./MultiTouchModel";
@@ -497,34 +498,72 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
   });
 
   describe("US 7,479,949 Apple Multi-Touch Heuristics", () => {
-    test("calculates mutual capacitance shunt and pinch-to-zoom affine scale", () => {
+    test("classifies the claimed initial-motion rule and the Claim 8 pinch illustration", () => {
       const pinchZoom = stepMultiTouch(
         {
           fingerCount: 2,
           fingerSeparationMm: 100,
-          touchPressureGrams: 80,
-          gestureVelocityMmS: 15,
         },
         1.0,
       );
       expect(pinchZoom.gestureMode).toBe("Pinch-to-Zoom");
       expect(pinchZoom.zoomScale).toBe(2.0); // 100mm / 50mm baseline = 2.0x
-      expect(pinchZoom.sensorMatrix.length).toBe(4);
-      expect(pinchZoom.sensorMatrix[0].length).toBe(4);
+      expect(
+        stepMultiTouch({ fingerCount: 1, fingerSeparationMm: 50, initialMotionAngleDeg: 15 }, 1.0)
+          .gestureMode,
+      ).toBe("Vertical Screen Scroll");
+      expect(
+        stepMultiTouch({ fingerCount: 1, fingerSeparationMm: 50, initialMotionAngleDeg: 45 }, 1.0)
+          .gestureMode,
+      ).toBe("Two-Dimensional Translation");
+      expect(
+        stepMultiTouch(
+          {
+            fingerCount: 1,
+            fingerSeparationMm: 50,
+            initialMotionAngleDeg: 15,
+            claim1HeuristicActive: false,
+          },
+          1.0,
+        ).gestureMode,
+      ).toBe("Idle");
     });
 
-    test("2D gesture velocity is the registry seat, not leftover 25 mm/s", async () => {
+    test("2D exhibit reads its source-bounded motion-angle control", async () => {
       const simSource = await Bun.file(new URL("../MultiTouchSim.tsx", import.meta.url)).text();
-      expect(simSource).toContain("params.gestureVelocityMmS ?? 15");
-      expect(simSource).not.toContain("gestureVelocityMmS: 25");
+      const studioSource = await Bun.file(new URL("./MultiTouch3D.tsx", import.meta.url)).text();
+      expect(simSource).toContain("params.initialMotionAngleDeg ?? 15");
+      expect(simSource).not.toContain("mutualCapacitanceDeltaPf");
+      expect(studioSource).toContain('domain: "source_bounded_command_classification"');
+      expect(studioSource).not.toContain('domain: "aerodynamics_mbd"');
+      expect(studioSource).toContain("claimConstraintStateParamId(claimNo)");
     });
 
-    test("builds glass screen, ITO capacitive grid, dual touch rings, and document plane", () => {
+    test("keeps the public telemetry at the post-detection command boundary", () => {
+      const telemetry = PATENT_PHYSICS_REGISTRY["us-7479949-multitouch"];
+      expect(telemetry.domain).toBe("hci_command_heuristics");
+      expect(telemetry.engineMethod).toContain("no SI sensor, energy, or WASM model");
+      expect(telemetry.governingEquation).toContain("reader illustration");
+      expect(telemetry.governingEquation).not.toMatch(/capacitance|epsilon|sensor/i);
+      expect(telemetry.controls.map((control) => control.id)).toEqual([
+        "fingerSeparationMm",
+        "fingerCount",
+        "initialMotionAngleDeg",
+      ]);
+      expect(telemetry.pedagogicalInsight).toContain("does not claim a capacitive sensor stack");
+    });
+
+    test("builds a touch-screen command exhibit with source-bounded contact visibility", () => {
       const model = buildMultiTouchModel();
       expect(model.root).toBeDefined();
       expect(model.docGroup).toBeDefined();
       expect(model.touch1).toBeDefined();
       expect(model.touch2).toBeDefined();
+      model.updateTouchContacts({ x: 0, y: 0 }, { x: 0.5, y: 0 }, 1);
+      expect(model.touch1.visible).toBe(true);
+      expect(model.touch2.visible).toBe(false);
+      model.updateTouchContacts({ x: 0, y: 0 }, { x: 0.5, y: 0 }, 2);
+      expect(model.touch2.visible).toBe(true);
       expect(() => model.dispose()).not.toThrow();
     });
   });

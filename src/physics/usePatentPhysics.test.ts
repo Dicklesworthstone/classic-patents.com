@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { claimConstraintStateParamId } from "./claimConstraints";
+import { PATENT_PHYSICS_REGISTRY } from "./telemetryData";
 import {
   getEffectivePatentPhysicsParams,
   getLastParamChange,
@@ -68,6 +69,34 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
     const params = getPatentPhysicsParams(maximId);
     expect(params.firingRate).toBe(700);
     expect(params.fireRateRpm).toBe(700);
+  });
+
+  test("Diesel 3D compression changes the canonical control, subscriber and live model output", () => {
+    const id = "us-542846-diesel-engine";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) => observations.push(params.compRatio));
+    try {
+      setPatentPhysicsParam(id, "compressionRatio", 21.5);
+      const params = getPatentPhysicsParams(id);
+      expect(params.compRatio).toBe(21.5);
+      expect(params.compressionRatio).toBe(21.5);
+      expect(observations).toEqual([21.5]);
+      expect(getLastParamChange(id)?.id).toBe("compRatio");
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((metric) => metric.label === "Compression Temperature")?.value).not.toBe(
+        initial.find((metric) => metric.label === "Compression Temperature")?.value,
+      );
+      setPatentPhysicsParam(id, "compRatio", 12);
+      expect(getPatentPhysicsParams(id).compressionRatio).toBe(12);
+      setPatentPhysicsParam(id, "blastAirPressureBar", 75);
+      expect(getPatentPhysicsParams(id).blastAirPressure).toBe(75);
+      expect(getPatentPhysicsParams(id).blastAirPressureBar).toBe(75);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
   });
 
   test("shares claim state across subscribers while retaining raw controls and deriving effective topology", () => {

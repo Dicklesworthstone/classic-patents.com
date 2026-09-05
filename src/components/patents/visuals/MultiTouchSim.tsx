@@ -2,6 +2,7 @@
 
 import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { stepMultiTouch } from "@/physics/multiTouchKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -13,25 +14,26 @@ import { useOffscreenGate } from "./useOffscreenGate";
 interface MultiTouchSimProps {
   initialFingerCount?: number;
   initialSeparationMm?: number;
-  initialPressureGrams?: number;
 }
 
 export function MultiTouchSim({
-  initialFingerCount = 2,
+  initialFingerCount = 1,
   initialSeparationMm = 50,
-  initialPressureGrams = 80,
 }: MultiTouchSimProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sepId = useId();
-  const pressureId = useId();
+  const angleId = useId();
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const { params, updateParam, resetParams } = usePatentPhysics("us-7479949-multitouch");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const fingerCount = Math.round(params.fingerCount ?? initialFingerCount);
   const separationMm = params.fingerSeparationMm ?? initialSeparationMm;
-  const pressureGrams = params.touchPressureGrams ?? initialPressureGrams;
-  const gestureVelocityMmS = params.gestureVelocityMmS ?? 15;
+  const initialMotionAngleDeg = params.initialMotionAngleDeg ?? 15;
+  const claim1HeuristicActive = (params[claimConstraintStateParamId(1)] ?? 1) >= 0.5;
+  // US 7,479,949 says "a predetermined angle" but supplies no degree value.
+  // This fixed, conspicuously-labelled value is an exhibit choice, not a claim constant.
+  const initialAngleThresholdDeg = 30;
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
@@ -48,8 +50,9 @@ export function MultiTouchSim({
       {
         fingerCount,
         fingerSeparationMm: separationMm,
-        touchPressureGrams: pressureGrams,
-        gestureVelocityMmS,
+        initialMotionAngleDeg,
+        initialAngleThresholdDeg,
+        claim1HeuristicActive,
       },
       0,
     );
@@ -64,8 +67,9 @@ export function MultiTouchSim({
           {
             fingerCount,
             fingerSeparationMm: separationMm,
-            touchPressureGrams: pressureGrams,
-            gestureVelocityMmS,
+            initialMotionAngleDeg,
+            initialAngleThresholdDeg,
+            claim1HeuristicActive,
           },
           timeSec,
           state,
@@ -75,7 +79,7 @@ export function MultiTouchSim({
       const w = canvas.width;
       const h = canvas.height;
 
-      // Dark capacitive UI background
+      // Neutral display background. This exhibit deliberately models no sensor stack.
       ctx.fillStyle = "#0a0f1d";
       ctx.fillRect(0, 0, w, h);
 
@@ -98,11 +102,11 @@ export function MultiTouchSim({
       // Title & Masthead
       ctx.fillStyle = "#38bdf8";
       ctx.font = "bold 13px system-ui, -apple-system, sans-serif";
-      ctx.fillText("APPLE MULTI-TOUCH CAPACITIVE GESTURE HEURISTICS", 20, 26);
+      ctx.fillText("TOUCH-SCREEN COMMAND HEURISTICS", 20, 26);
       ctx.font = "11px monospace";
       ctx.fillStyle = "#94a3b8";
       ctx.fillText(
-        `US 7,479,949 • Mutual Capacitance Sensor Matrix • Fingers: ${fingerCount} • Separation: ${separationMm.toFixed(0)}mm • Mode: ${state.gestureMode}`,
+        `US 7,479,949 • Contacts: ${fingerCount} • Initial angle: ${initialMotionAngleDeg.toFixed(0)}° • Command: ${state.gestureMode}`,
         20,
         42,
       );
@@ -125,7 +129,7 @@ export function MultiTouchSim({
 
       ctx.fillStyle = "#38bdf8";
       ctx.font = "bold 11px system-ui, sans-serif";
-      ctx.fillText("CAPACITIVE TOUCH DISPLAY SURFACE", tX + 12, tY + 22);
+      ctx.fillText("TOUCH-SCREEN COMMAND SURFACE", tX + 12, tY + 22);
 
       // Screen center
       const sCenterX = tX + tW / 2;
@@ -139,9 +143,6 @@ export function MultiTouchSim({
 
       ctx.save();
       ctx.translate(sCenterX, sCenterY);
-      if (state.gestureMode === "Two-Finger Rotate") {
-        ctx.rotate((state.rotationAngleDeg * Math.PI) / 180);
-      }
 
       ctx.fillStyle = "rgba(59, 130, 246, 0.2)";
       ctx.fillRect(-curW / 2, -curH / 2, curW, curH);
@@ -170,7 +171,7 @@ export function MultiTouchSim({
         const p1x = mapX(state.touch1X);
         const p1y = mapY(state.touch1Y);
 
-        // Capacitive contact halo
+        // Contact halo is a visible interaction marker, not a sensor measurement.
         const haloGrad = ctx.createRadialGradient(p1x, p1y, 4, p1x, p1y, 24);
         haloGrad.addColorStop(0, "rgba(56, 189, 248, 0.9)");
         haloGrad.addColorStop(1, "rgba(56, 189, 248, 0.0)");
@@ -232,7 +233,7 @@ export function MultiTouchSim({
       }
 
       // ========================================================
-      // 2. MUTUAL CAPACITANCE SENSOR HEATMAP (Right Pane: x: 420 to 740, y: 65 to 325)
+      // 2. CLAIM 1 COMMAND DECISION (Right Pane: x: 420 to 740, y: 65 to 325)
       // ========================================================
       const mX = 420;
       const mY = 65;
@@ -249,71 +250,63 @@ export function MultiTouchSim({
 
       ctx.fillStyle = "#f8fafc";
       ctx.font = "bold 11px system-ui, sans-serif";
-      ctx.fillText("MUTUAL CAPACITANCE NODE MATRIX (4x4)", mX + 12, mY + 22);
+      ctx.fillText("CLAIM 1: APPLY A COMMAND HEURISTIC", mX + 12, mY + 22);
 
-      // 4x4 Grid Heatmap
-      const gSize = 38;
-      const gStartX = mX + 25;
-      const gStartY = mY + 45;
+      const cardX = mX + 18;
+      const cardW = mW - 36;
+      const drawStep = (y: number, number: string, text: string, active = false) => {
+        ctx.fillStyle = active ? "rgba(14, 116, 144, 0.42)" : "rgba(30, 41, 59, 0.72)";
+        ctx.fillRect(cardX, y, cardW, 38);
+        ctx.strokeStyle = active ? "#38bdf8" : "rgba(148, 163, 184, 0.5)";
+        ctx.strokeRect(cardX, y, cardW, 38);
+        ctx.fillStyle = active ? "#7dd3fc" : "#cbd5e1";
+        ctx.font = "bold 10px system-ui, sans-serif";
+        ctx.fillText(number, cardX + 10, y + 16);
+        ctx.font = "10px system-ui, sans-serif";
+        ctx.fillText(text, cardX + 34, y + 16);
+      };
+      drawStep(mY + 42, "1", `Detect ${fingerCount} contact${fingerCount === 1 ? "" : "s"}`);
+      drawStep(
+        mY + 88,
+        "2",
+        claim1HeuristicActive ? "Apply initial-motion heuristic" : "Claim 1 heuristic withheld",
+        claim1HeuristicActive,
+      );
+      drawStep(
+        mY + 134,
+        "3",
+        claim1HeuristicActive ? `Process: ${state.gestureMode}` : "No claimed command routed",
+        claim1HeuristicActive,
+      );
 
-      for (let r = 0; r < 4; r++) {
-        for (let col = 0; col < 4; col++) {
-          const val = state.sensorMatrix[r]?.[col] ?? 0.05;
-          const nodeX = gStartX + col * (gSize + 8);
-          const nodeY = gStartY + r * (gSize + 8);
-
-          // Heat color (blue -> cyan -> yellow -> red)
-          const heat = Math.min(1.0, val / 0.8);
-          const rCol = Math.round(heat * 240);
-          const gCol = Math.round(100 + heat * 100);
-          const bCol = Math.round((1.0 - heat) * 220);
-
-          ctx.fillStyle = `rgb(${rCol}, ${gCol}, ${bCol})`;
-          ctx.fillRect(nodeX, nodeY, gSize, gSize);
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
-          ctx.lineWidth = 1;
-          ctx.strokeRect(nodeX, nodeY, gSize, gSize);
-
-          ctx.fillStyle = heat > 0.4 ? "#000000" : "#ffffff";
-          ctx.font = "9px monospace";
-          ctx.fillText(`-${(val * 0.8).toFixed(2)}`, nodeX + 4, nodeY + gSize / 2 + 3);
-        }
-      }
-
-      // Telemetry Readouts beside matrix
-      const readX = mX + 215;
       ctx.fillStyle = "#94a3b8";
       ctx.font = "10px monospace";
-      ctx.fillText("Zoom Scale S(t):", readX, mY + 55);
+      ctx.fillText("Initial angle θ:", cardX, mY + 202);
       ctx.fillStyle = "#38bdf8";
       ctx.font = "bold 12px monospace";
-      ctx.fillText(`${state.zoomScale.toFixed(2)}x`, readX, mY + 70);
+      ctx.fillText(`${state.initialMotionAngleDeg.toFixed(0)}°`, cardX + 122, mY + 202);
 
       ctx.fillStyle = "#94a3b8";
       ctx.font = "10px monospace";
-      ctx.fillText("Rotation θ(t):", readX, mY + 95);
+      ctx.fillText("Illustrative boundary:", cardX, mY + 221);
       ctx.fillStyle = "#f59e0b";
       ctx.font = "bold 12px monospace";
-      ctx.fillText(`${state.rotationAngleDeg.toFixed(1)}°`, readX, mY + 110);
-
-      ctx.fillStyle = "#94a3b8";
-      ctx.font = "10px monospace";
-      ctx.fillText("Capacitive Shunt:", readX, mY + 135);
-      ctx.fillStyle = "#34d399";
-      ctx.font = "bold 12px monospace";
-      ctx.fillText(`-${state.mutualCapacitanceDeltaPf.toFixed(2)} pF`, readX, mY + 150);
-
-      ctx.fillStyle = "#94a3b8";
-      ctx.font = "10px monospace";
-      ctx.fillText("Gesture Mode:", readX, mY + 175);
-      ctx.fillStyle = "#a78bfa";
-      ctx.font = "bold 11px monospace";
-      ctx.fillText(state.gestureMode, readX, mY + 190);
+      ctx.fillText(`${state.initialAngleThresholdDeg.toFixed(0)}°`, cardX + 150, mY + 221);
+      ctx.fillStyle = "#64748b";
+      ctx.font = "9px system-ui, sans-serif";
+      ctx.fillText("No capacitance, pressure, or scan-rate value is claimed.", cardX, mY + 245);
     };
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [fingerCount, separationMm, pressureGrams, gestureVelocityMmS, isPlaying, onscreenRef]);
+  }, [
+    claim1HeuristicActive,
+    fingerCount,
+    separationMm,
+    initialMotionAngleDeg,
+    isPlaying,
+    onscreenRef,
+  ]);
 
   return (
     <div
@@ -321,8 +314,8 @@ export function MultiTouchSim({
       className="w-full flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-md"
     >
       <SimulationHeader
-        title="Steve Jobs et al. Multi-Touch Gesture UI (US 7,479,949)"
-        description="Interactive mutual capacitance sensor matrix, centroid tracking, pinch-to-zoom, and affine gesture heuristics."
+        title="Touch-Screen Command Heuristics (US 7,479,949)"
+        description="A source-bounded model of Claim 1's command decision. It shows contact geometry and a reader-selected angle boundary; it does not model or claim a sensor stack."
         playbackAction={{
           label: isPlaying ? "Pause Simulation" : "Play Simulation",
           icon: isPlaying ? (
@@ -387,26 +380,27 @@ export function MultiTouchSim({
           </span>
         </div>
 
-        {/* Touch Normal Pressure */}
+        {/* Claim 1's initial-motion direction */}
         <div className="flex flex-col gap-1.5">
           <div className="flex justify-between font-mono text-ink-700 dark:text-parchment-300">
-            <label htmlFor={pressureId}>Touch Contact Force:</label>
+            <label htmlFor={angleId}>Initial Motion Angle:</label>
             <span className="text-cyan-600 dark:text-cyan-400 font-bold">
-              {pressureGrams.toFixed(0)} grams
+              {initialMotionAngleDeg.toFixed(0)}° from vertical
             </span>
           </div>
           <input
-            id={pressureId}
+            id={angleId}
             type="range"
-            min="20"
-            max="200"
-            step="5"
-            value={pressureGrams}
-            onChange={(e) => updateParam("touchPressureGrams", parseFloat(e.target.value))}
+            min="0"
+            max="90"
+            step="1"
+            value={initialMotionAngleDeg}
+            onChange={(e) => updateParam("initialMotionAngleDeg", parseFloat(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
           <span className="text-[10px] text-ink-500 dark:text-ink-500">
-            Higher contact force expands finger flesh contact area, deepening capacitive shunt
+            The patent calls for a predetermined angle but prints no numerical cutoff; the 30°
+            boundary in this exhibit is explicitly illustrative.
           </span>
         </div>
       </div>
@@ -426,7 +420,7 @@ export function MultiTouchSim({
                 : "bg-parchment-100 dark:bg-ink-900 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-ink-400 hover:text-ink-900 dark:hover:text-neutral-200"
             }`}
           >
-            ☝️ 1 Finger: Scroll
+            ☝️ 1 Finger: Classify
           </button>
           <button
             type="button"
@@ -440,13 +434,13 @@ export function MultiTouchSim({
                 : "bg-parchment-100 dark:bg-ink-900 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-ink-400 hover:text-ink-900 dark:hover:text-neutral-200"
             }`}
           >
-            ✌️ 2 Fingers: Pinch & Rotate
+            ✌️ 2 Fingers: Claim 8 Pinch
           </button>
         </div>
 
         <span className="text-[11px] font-mono text-ink-500 dark:text-ink-400">
-          Transform Engine:{" "}
-          <span className="text-indigo-600 dark:text-indigo-400">Affine Matrix Interpolation</span>
+          Kernel:{" "}
+          <span className="text-indigo-600 dark:text-indigo-400">source-bounded TS rule</span>
         </span>
       </div>
     </div>

@@ -41,6 +41,10 @@ export const PortHamiltonianEnergyStrip: React.FC<PortHamiltonianEnergyStripProp
     <div
       data-energy-availability={ledger.availability}
       data-energy-runtime={ledger.runtimeSource}
+      data-energy-input-watts={ledger.inputPowerAvailable ? ledger.inputPowerWatts : undefined}
+      data-energy-dissipation-watts={
+        ledger.dissipatedPowerAvailable ? ledger.dissipatedPowerWatts : undefined
+      }
       data-strain-energy-density-j-per-m3={ledger.strainEnergyDensityJPerM3}
       className={`grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-between gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 bg-parchment-100/90 dark:bg-ink-950/90 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 text-[10px] sm:text-[11px] font-mono text-ink-800 dark:text-parchment-200 shadow-xs ${className}`}
     >

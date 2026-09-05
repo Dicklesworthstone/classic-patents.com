@@ -32,10 +32,10 @@ const NARROW_PHONE_ISO: WozniakAppleCameraView = {
 // RAM, slot, and top inspection views remain deliberately close.
 const COMPACT_PHONE_CANVAS_MAX_WIDTH_PX = 480;
 const COMPACT_PHONE_ISO: WozniakAppleCameraView = {
-  // The live 375px route gives the studio a 341 × 380px canvas. The same
-  // source-envelope view that is safe at 320px fills that actual canvas
-  // without cutting off the chassis, and keeps the board readable.
-  pos: [0, 18.0, 26.0],
+  // The live 375px route gives the studio a 341 × 380px canvas. This places
+  // the full source envelope inside that actual canvas while making the CPU,
+  // RAM matrix, and board traces meaningfully inspectable.
+  pos: [0, 14.992, 21.84],
   target: [0, -0.8, 0],
 };
 

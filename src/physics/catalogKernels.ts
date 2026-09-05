@@ -3334,17 +3334,32 @@ export function stepHallAluminium(params: {
 
   // Faraday's Constant F = 96485 C/mol, M(Al) = 26.9815 g/mol, z = 3
   // Theoretical Al yield = (I * 3600 * 26.9815) / (3 * 96485 * 1000) kg/hr = I * 0.0003355 kg/hr
-  const currentEfficiency = Math.max(
-    0.8,
-    Math.min(0.96, 0.94 - Math.max(0, T - 960) * 0.001 - Math.max(0, 4.0 - cAl2O3) * 0.02),
-  );
-  const alRateKgPerHour = I * 0.0003355 * currentEfficiency;
+  const unclampedEfficiency =
+    0.94 - Math.max(0, T - 960) * 0.001 - Math.max(0, 4.0 - cAl2O3) * 0.02;
+  const currentEfficiency = Math.max(0.8, Math.min(0.96, unclampedEfficiency));
+  const faradaicYieldKgPerAmpereHour = 0.0003355;
+  const alRateKgPerHour = I * faradaicYieldKgPerAmpereHour * currentEfficiency;
+  // Differentiate this teaching model before display rounding. Its empirical
+  // efficiency knees are not differentiable; do not average the two slopes.
+  const productionSlope = (efficiencySlope: number | null) => {
+    if (unclampedEfficiency < 0.8 || unclampedEfficiency > 0.96) return 0;
+    if (
+      efficiencySlope === null ||
+      ((unclampedEfficiency === 0.8 || unclampedEfficiency === 0.96) && efficiencySlope !== 0)
+    )
+      return null;
+    return I * faradaicYieldKgPerAmpereHour * efficiencySlope;
+  };
   const co2RateKgPerHour = (alRateKgPerHour * (3 * 44.01)) / (4 * 26.9815);
 
   // E_rev = 1.18 V (with carbon oxidation at 960 °C), overpotential eta = 0.55 V, R_bath ~ 9.0 uOhm
   const rBathOhm = 0.000009;
   const cellVoltage = 1.18 + 0.55 + I * rBathOhm;
   const electricalPowerKw = (I * cellVoltage) / 1000;
+  // Keep unrounded SI ports for every consumer. Whole-kW display rounding
+  // must not change VI or hide the bath's I²R heating at an intermediate current.
+  const electricalInputWatts = I * cellVoltage;
+  const bathOhmicHeatingWatts = I * I * rBathOhm;
   const specificEnergyKwhPerKg = electricalPowerKw / Math.max(1, alRateKgPerHour);
 
   return {
@@ -3353,9 +3368,17 @@ export function stepHallAluminium(params: {
     aluminaConcentrationPct: cAl2O3,
     currentEfficiencyPct: Number((currentEfficiency * 100).toFixed(1)),
     aluminiumProductionRateKgPerHour: Number(alRateKgPerHour.toFixed(1)),
+    aluminiumProductionKgPerHourUnrounded: alRateKgPerHour,
+    productionSlopeKgPerHourPerAmpere: faradaicYieldKgPerAmpereHour * currentEfficiency,
+    productionSlopeKgPerHourPerCelsius: productionSlope(T === 960 ? null : T > 960 ? -0.001 : 0),
+    productionSlopeKgPerHourPerAluminaPct: productionSlope(
+      cAl2O3 === 4 ? null : cAl2O3 < 4 ? 0.02 : 0,
+    ),
     co2EmissionRateKgPerHour: Number(co2RateKgPerHour.toFixed(1)),
     totalCellVoltage: Number(cellVoltage.toFixed(2)),
     electricalPowerKw: Math.round(electricalPowerKw),
+    electricalInputWatts,
+    bathOhmicHeatingWatts,
     specificEnergyKwhPerKg: Number(specificEnergyKwhPerKg.toFixed(2)),
     liquidAluminiumDensityGPerCm3: 2.28,
     moltenBathDensityGPerCm3: 2.1,

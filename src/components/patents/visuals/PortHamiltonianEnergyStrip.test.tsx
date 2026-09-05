@@ -3,6 +3,22 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { PortHamiltonianEnergyStrip } from "./PortHamiltonianEnergyStrip";
 
 describe("Energy strip evidence labels", () => {
+  test("Hall names partial bath heating and unknown storage without certifying a total balance", () => {
+    const html = renderToStaticMarkup(
+      <PortHamiltonianEnergyStrip patentId="us-400766-hall-aluminium" params={{}} />,
+    );
+    expect(html).toContain('data-energy-input-watts="1329000"');
+    expect(html).toContain('data-energy-dissipation-watts="810000"');
+    expect(html).toContain("1.33 MW");
+    expect(html).toContain("810.0 kW");
+    expect(html).toContain("Bath Joule heat:");
+    expect(html.match(/Unknown/g)?.length).toBe(1);
+    expect(html).toContain("Balance unmeasured");
+    expect(html).toContain("Modern teaching cell");
+    expect(html).not.toContain("Steady power balanced");
+    expect(html).not.toContain("Kinetic:");
+    expect(html).not.toContain("0.0 J");
+  });
   test("Goodyear displays energy density without relabeling it as total or kinetic energy", () => {
     const html = renderToStaticMarkup(
       <PortHamiltonianEnergyStrip

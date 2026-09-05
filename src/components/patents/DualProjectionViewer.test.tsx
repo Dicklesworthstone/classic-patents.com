@@ -130,12 +130,14 @@ describe("DualProjectionViewer component", () => {
     expect(html).toContain(
       "Complete patent text is available in this pinned primary-source facsimile.",
     );
-    expect(html).toContain("<object");
-    expect(html).toContain('type="application/pdf"');
+    expect(html).toContain('data-testid="pinned-pdf-renderer"');
+    expect(html).toContain("<canvas");
+    expect(html).toContain(`data-pdf-url="${patentWithoutTextReader.originalPdfUrl}"`);
+    expect(html).not.toContain("<object");
     expect(html).not.toContain('data-testid="source-text-excerpt"');
   });
 
-  test("uses Stackhouse clean replacement transcript instead of its quarantined legacy transcript", () => {
+  test("uses Stackhouse's clean replacement transcript rather than its quarantined legacy transcript", () => {
     const patent = patentForSourceReader(stackhouseManipulatorPatent);
     const transcript = reviewedLedgerTextForViewer(stackhouseManipulatorPatent);
     expect(transcript).toStartWith("--- REVIEWED TRANSCRIPTION PAGE 1 OF 8 ---");
@@ -150,10 +152,10 @@ describe("DualProjectionViewer component", () => {
       />,
     );
 
-    expect(html).toContain("data-source-delivery=\"transcript\"");
-    expect(html).toContain("data-testid=\"reviewed-transcript-fallback\"");
+    expect(html).toContain('data-source-delivery="transcript"');
+    expect(html).toContain('data-testid="reviewed-transcript-fallback"');
     expect(html).toContain("Complete patent transcript");
-    expect(html).toContain("href=\"/patents/pdfs/us-4068536-stackhouse-manipulator.pdf\"");
+    expect(html).toContain('href="/patents/pdfs/us-4068536-stackhouse-manipulator.pdf"');
     expect(html).not.toContain("linear invertible matrix transformation");
     expect(html).not.toContain("solid angle of 2*pi steradians");
   });

@@ -26,6 +26,7 @@ import { InteractiveDiagramViewer } from "./InteractiveDiagramViewer";
 import { KernelTickChip } from "./KernelTickChip";
 import { MuseumBroadsidePlaque } from "./MuseumBroadsidePlaque";
 import { PhysicsTelemetryBadge } from "./PhysicsTelemetryBadge";
+import { PinnedPdfFacsimile } from "./PinnedPdfFacsimile";
 import {
   applyPatentViewToUrl,
   isPatentViewMode,
@@ -79,15 +80,11 @@ function handlePrint() {
 /** Dedicated facsimile face. It is separate from the readable source-text faces. */
 function PinnedFacsimilePanel({
   patent,
-  pdfEmbedUnsupported,
   sourceFallback = false,
 }: {
   patent: Patent;
-  pdfEmbedUnsupported: boolean;
   sourceFallback?: boolean;
 }) {
-  const frameHeight = "h-[75dvh] sm:h-[80dvh] lg:h-[800px]";
-
   return (
     <section
       className="space-y-5"
@@ -127,57 +124,7 @@ function PinnedFacsimilePanel({
         </div>
       </div>
 
-      {pdfEmbedUnsupported ? (
-        <div className="flex flex-col items-center gap-4 rounded-2xl border border-parchment-300 bg-parchment-100/70 p-8 text-center dark:border-ink-800 dark:bg-ink-900/70 sm:p-10">
-          <FileText className="h-10 w-10 text-amber-700 dark:text-amber-400" aria-hidden />
-          <div className="max-w-md space-y-2">
-            <h4 className="font-serif text-xl font-bold text-ink-950 dark:text-parchment-100">
-              iOS does not display PDFs inline
-            </h4>
-            <p className="font-sans text-sm leading-relaxed text-ink-700 dark:text-parchment-300">
-              Open the pinned {patent.patentNumber} facsimile in a new tab, or download it for
-              offline reading. Curated-edition review does not change this pinned file.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <a
-              href={patent.originalPdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-xl bg-amber-700 px-4 py-2.5 text-sm font-mono font-bold text-white shadow-sm transition-colors hover:bg-amber-800"
-            >
-              <FileText className="h-4 w-4" /> Open Facsimile PDF
-            </a>
-            <a
-              href={patent.originalPdfUrl}
-              download
-              className="flex items-center gap-2 rounded-xl border border-parchment-300 bg-parchment-200 px-4 py-2.5 text-sm font-mono font-semibold text-ink-900 transition-colors hover:bg-parchment-300 dark:border-ink-700 dark:bg-ink-800 dark:text-parchment-100 dark:hover:bg-ink-700"
-            >
-              <Download className="h-4 w-4" /> Download
-            </a>
-          </div>
-        </div>
-      ) : (
-        <div
-          className={`w-full ${frameHeight} overflow-hidden rounded-2xl border border-parchment-300 bg-ink-900 shadow-inner dark:border-ink-800`}
-        >
-          <object
-            data={`${patent.originalPdfUrl}#toolbar=1&navpanes=0`}
-            type="application/pdf"
-            aria-label={`${patent.patentNumber} PDF Facsimile`}
-            className="h-full w-full border-none bg-ink-900"
-          >
-            <a
-              href={patent.originalPdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-full items-center justify-center text-sm font-sans text-parchment-100 underline"
-            >
-              Open the {patent.patentNumber} PDF facsimile
-            </a>
-          </object>
-        </div>
-      )}
+      <PinnedPdfFacsimile pdfUrl={patent.originalPdfUrl} patentNumber={patent.patentNumber} />
     </section>
   );
 }
@@ -214,15 +161,6 @@ export function DualProjectionViewer({
     isPatentViewMode(initialView) ? initialView : "plain-english",
   );
   const [hydrated, setHydrated] = useState(false);
-  // iOS Safari renders no inline plugin for <object type="application/pdf">,
-  // so the facsimile face swaps the empty frame for a purpose-built panel.
-  const [pdfEmbedUnsupported, setPdfEmbedUnsupported] = useState(false);
-  useEffect(() => {
-    const isIOS =
-      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    setPdfEmbedUnsupported(isIOS);
-  }, []);
   // A semantic edition stays visitor-facing whenever it exists. Parallel
   // readings enhance it but are never a condition for showing legal source
   // text. If an edition has not been authored yet, the server may supply a
@@ -437,7 +375,7 @@ export function DualProjectionViewer({
       {/* VIEW MODE: FULL ORIGINAL PDF FACSIMILE */}
       {viewMode === "pdf-facsimile" && (
         <div className="space-y-5 rounded-2xl border border-parchment-300 bg-parchment-50 p-6 shadow-patent dark:border-ink-800 dark:bg-ink-950 sm:p-8">
-          <PinnedFacsimilePanel patent={patent} pdfEmbedUnsupported={pdfEmbedUnsupported} />
+          <PinnedFacsimilePanel patent={patent} />
         </div>
       )}
 
@@ -529,11 +467,7 @@ export function DualProjectionViewer({
               ) : reviewedTranscript ? (
                 <ReviewedTranscript transcript={reviewedTranscript} />
               ) : (
-                <PinnedFacsimilePanel
-                  patent={patent}
-                  pdfEmbedUnsupported={pdfEmbedUnsupported}
-                  sourceFallback
-                />
+                <PinnedFacsimilePanel patent={patent} sourceFallback />
               )}
             </div>
           </div>
@@ -795,11 +729,7 @@ export function DualProjectionViewer({
             ) : reviewedTranscript ? (
               <ReviewedTranscript transcript={reviewedTranscript} />
             ) : (
-              <PinnedFacsimilePanel
-                patent={patent}
-                pdfEmbedUnsupported={pdfEmbedUnsupported}
-                sourceFallback
-              />
+              <PinnedFacsimilePanel patent={patent} sourceFallback />
             )}
           </div>
         </div>

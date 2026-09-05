@@ -9,6 +9,7 @@ import type {
 import { type FormEvent, useEffect, useReducer, useRef } from "react";
 import {
   createPinnedPdfFacsimileState,
+  PDFJS_WASM_URL,
   PDFJS_WORKER_URL,
   pinnedPdfFacsimileReducer,
 } from "./pinnedPdfFacsimileState";
@@ -127,6 +128,9 @@ export function usePinnedPdfFacsimile({
         pdfjs.GlobalWorkerOptions.workerSrc = PDFJS_WORKER_URL;
         const nextLoadingTask = pdfjs.getDocument({
           url: pdfUrl,
+          // Scanned patents use JBIG2/JPX images. Without the matching decoder
+          // files PDF.js can resolve a render task with an entirely white page.
+          wasmUrl: PDFJS_WASM_URL,
           disableAutoFetch: false,
           disableRange: false,
           disableStream: false,
@@ -211,7 +215,11 @@ export function usePinnedPdfFacsimile({
         if (cancelled) return;
         if (requestId !== renderRequestRef.current) return;
 
-        dispatch({ type: "render-ready" });
+        dispatch({
+          type: "render-ready",
+          pageNumber: state.pageNumber,
+          availableWidth: state.availableWidth,
+        });
       } catch (error) {
         if (cancelled) return;
         if (requestId !== renderRequestRef.current || isCancelledRender(error)) return;

@@ -3018,22 +3018,24 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-7479949-multitouch") {
-    const contacts = params.touchContactCount ?? 2;
+    const contacts = params.fingerCount ?? params.touchContactCount ?? 2;
+    const angle = params.initialMotionAngleDeg ?? 15;
+    const threshold = params.initialAngleThresholdDeg ?? 30;
+    const vertical = Math.abs(angle) <= threshold;
     return [
       {
         id: "touch-screen-display",
         phrase: "touch screen display",
         active: contacts > 0,
         tone: "live",
-        caption: `Touch Contacts=${contacts}: Mutual capacitive grid detects multiple distinct finger touch locations.`,
+        caption: `Touch contacts=${contacts}. The claim starts after detection and does not specify a capacitance matrix or sensing-stack construction.`,
       },
       {
         id: "applying-heuristics",
         phrase: "applying heuristics",
         active: true,
         tone: "held",
-        caption:
-          "Multi-touch gesture engine applies geometric heuristics to disambiguate pinch-zoom, pan, scroll, and tap.",
+        caption: `Reader-selected angle ${angle.toFixed(0)}° versus illustrative ${threshold.toFixed(0)}° boundary: ${vertical ? "vertical scrolling" : "two-dimensional translation"}. The grant names a predetermined angle but supplies no number.`,
       },
     ];
   }

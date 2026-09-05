@@ -144,9 +144,9 @@ export function buildWozniakAppleModel(): WozniakAppleModel {
     // Black epoxy DIPs are not mirrored metal. A cool charcoal dielectric
     // keeps their real package form distinguishable from the dark FR-4 board
     // under the studio's physically based lighting, including compact phones.
-    color: 0x64748b,
-    emissive: 0x162338,
-    emissiveIntensity: 0.22,
+    color: 0x7c8aa0,
+    emissive: 0x1e293b,
+    emissiveIntensity: 0.32,
     roughness: 0.48,
     metalness: 0.08,
   });
@@ -204,12 +204,28 @@ export function buildWozniakAppleModel(): WozniakAppleModel {
   motherboard.receiveShadow = true;
   computerGroup.add(motherboard);
 
-  // Gold-Plated Ground Ring Perimeter Trace
-  const traceGeo = new THREE.BoxGeometry(10.5, 0.14, 9.1);
-  disposables.push(traceGeo);
-  const traceRing = new THREE.Mesh(traceGeo, goldSlotMat);
-  traceRing.position.y = -0.54;
-  computerGroup.add(traceRing);
+  // Gold-plated ground-ring perimeter trace. Four narrow conductors preserve
+  // the FR-4 field inside the ring; a solid gold slab would obscure the board
+  // and falsely suggest a plated plane rather than a perimeter trace.
+  const tracePerimeterGroup = new THREE.Group();
+  tracePerimeterGroup.name = "apple-ii-ground-trace-perimeter";
+  computerGroup.add(tracePerimeterGroup);
+  const addTraceSegment = (width: number, depth: number) => {
+    const geometry = new THREE.BoxGeometry(width, 0.14, depth);
+    disposables.push(geometry);
+    const segment = new THREE.Mesh(geometry, goldSlotMat);
+    segment.position.y = -0.54;
+    tracePerimeterGroup.add(segment);
+    return segment;
+  };
+  const northTrace = addTraceSegment(10.5, 0.14);
+  northTrace.position.z = -4.48;
+  const southTrace = addTraceSegment(10.5, 0.14);
+  southTrace.position.z = 4.48;
+  const westTrace = addTraceSegment(0.14, 8.82);
+  westTrace.position.x = -5.18;
+  const eastTrace = addTraceSegment(0.14, 8.82);
+  eastTrace.position.x = 5.18;
 
   // ==========================================
   // MOS 6502 8-BIT CPU (CLAIM 1)

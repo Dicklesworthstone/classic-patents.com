@@ -7,7 +7,7 @@
  * shared steady radiative model currently provides a checked power balance.
  */
 
-import { stepGoodyearRubber, stepThomsonWelding } from "./catalogKernels";
+import { stepGoodyearRubber, stepHallAluminium, stepThomsonWelding } from "./catalogKernels";
 import { hostStateDigest } from "./deepWasm";
 import {
   EDISON_DECLARED_FILAMENT_LENGTH_CM,
@@ -229,15 +229,31 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-400766-hall-aluminium": {
-      const currentA = params.currentAmperes ?? 300000.0;
-      const bathTempC = params.bathTemperatureCelsius ?? 960.0;
-      const cellVoltageV = 4.2; // Typical Hall-Héroult cell operating voltage
-      const eDecompV = 2.14; // Reversible decomposition potential of Al2O3
-
-      powerIn = currentA * cellVoltageV; // Total electrical power input (1.26 MW)
-      dissipated = currentA * (cellVoltageV - eDecompV); // Ohmic Joule heating dissipated in bath (618 kW)
-      potential = currentA * eDecompV * 3600.0; // Stored chemical Gibbs free energy of reduced aluminium metal
-      thermal = 8000.0 * 1800.0 * (bathTempC + 273.15) * 0.001; // Molten electrolyte thermal mass
+      const current = params.currentAmperes ?? 300000;
+      const temperature = params.bathTemperatureCelsius ?? 960;
+      const concentration = params.aluminaConcentrationPct ?? 5.5;
+      if (
+        current < 100000 ||
+        current > 500000 ||
+        temperature < 920 ||
+        temperature > 1020 ||
+        concentration < 2 ||
+        concentration > 8
+      )
+        return unavailableEnergy("Controls are outside the Hall teaching cell's operating range.");
+      const hall = stepHallAluminium({
+        currentAmperes: current,
+        bathTemperatureCelsius: temperature,
+        aluminaConcentrationPct: concentration,
+      });
+      powerIn = hall.electricalInputWatts;
+      dissipated = hall.bathOhmicHeatingWatts;
+      dissipationLabel = "Bath Joule heat";
+      availability = "kernel-partial";
+      runtimeSource = "ts-fallback";
+      storedEnergyAvailable = false;
+      reason =
+        "Modern teaching cell: electrical input VI and bath Joule heating I²R come from the shared model (1.18 V reaction term, 0.55 V overpotential, 9 µΩ bath resistance). Bath heating is one internal dissipation term, not total heat rejection. Stored chemical/thermal energy and a complete transient balance are not solved; these are not operating values printed in US 400,766.";
       break;
     }
 
@@ -521,13 +537,10 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-7479949-multitouch": {
-      const touchPoints = params.touchPointCount ?? 2;
-      const _scanHz = params.scanRateHz ?? 120.0;
-      const touchGridCapFarads = 45.0e-12; // 45 pF mutual capacitance ITO matrix
-      em = 0.5 * 15 * 20 * touchGridCapFarads * 3.3 * 3.3; // Stored electrostatic touch sensing matrix energy
-      powerIn = 1.2 + touchPoints * 0.15; // Display controller + multi-touch ASIC power (Watts)
-      dissipated = powerIn; // ITO grid resistor Joule heat + chip dissipation
-      thermal = 0.12 * 720.0 * 25.0; // Cover glass and digitizer thermal capacity
+      // The omission registry returns before this switch for US 7,479,949.
+      // Retain an explicit empty branch as a second refusal boundary: the
+      // grant's post-detection command rules do not establish sensor charge,
+      // controller power, thermal capacity, or an SI energy trajectory.
       break;
     }
 

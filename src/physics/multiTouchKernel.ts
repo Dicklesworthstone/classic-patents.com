@@ -1,9 +1,39 @@
+/**
+ * Claim-bounded command classifier for US 7,479,949.
+ *
+ * The grant claims heuristics applied after one or more finger contacts are
+ * detected. It does not disclose a capacitance value, sensor-grid geometry,
+ * contact pressure, scan rate, or a numeric angular threshold. This kernel
+ * models only the transparent geometry of the claimed decision; the threshold
+ * and contact distances are reader-selected illustrations.
+ */
 export interface MultiTouchControls {
-  fingerCount: number; // 0, 1, or 2 fingers
-  fingerSeparationMm: number; // Distance between dual contact points [15mm .. 120mm]
-  touchPressureGrams: number; // Normal force / contact area [20g .. 200g]
-  gestureVelocityMmS: number; // Gesture velocity for momentum calculation
+  /** Number of contacts supplied to the command heuristic (0, 1, or 2). */
+  fingerCount: number;
+  /** Reader-selected distance used to illustrate the Claim 8 pinch command. */
+  fingerSeparationMm: number;
+  /** Angle from the screen's vertical direction, used for Claim 1's initial motion. */
+  initialMotionAngleDeg?: number;
+  /** Illustrative decision boundary; the grant does not print its value. */
+  initialAngleThresholdDeg?: number;
+  /**
+   * Claim 1 probe. When false, retain visible contacts but refuse to route
+   * them to one of the grant's command outcomes.
+   */
+  claim1HeuristicActive?: boolean;
+  /**
+   * Deprecated presentation inputs retained temporarily so older callers do
+   * not silently create a second simulation. Neither is read by this kernel.
+   */
+  touchPressureGrams?: number;
+  gestureVelocityMmS?: number;
 }
+
+export type MultiTouchGestureMode =
+  | "Vertical Screen Scroll"
+  | "Two-Dimensional Translation"
+  | "Pinch-to-Zoom"
+  | "Idle";
 
 export interface MultiTouchState {
   touch1X: number;
@@ -11,83 +41,100 @@ export interface MultiTouchState {
   touch2X: number;
   touch2Y: number;
   activeTouchCount: number;
-
-  gestureMode: "Single-Finger Scroll" | "Pinch-to-Zoom" | "Two-Finger Rotate" | "Idle";
+  gestureMode: MultiTouchGestureMode;
+  /** Angle from vertical, rather than a claim of a hardware-sensed angle. */
+  initialMotionAngleDeg: number;
+  /** Reader-selected comparison boundary, explicitly not a source constant. */
+  initialAngleThresholdDeg: number;
+  /** Claim 8 illustration: contact separation divided by a 50 mm display baseline. */
   zoomScale: number;
-  rotationAngleDeg: number;
-  mutualCapacitanceDeltaPf: number;
-
-  sensorMatrix: number[][];
 }
 
+const clamp = (value: number, lower: number, upper: number) =>
+  Math.min(upper, Math.max(lower, value));
+
+/**
+ * Returns a stable, replayable projection of the grant's decision topology.
+ * `timeSec` only advances the display position of a classified gesture; it
+ * never changes the classification. A caller that needs a different command
+ * changes a registered control, rather than waiting for an animation phase.
+ */
 export function stepMultiTouch(
-  c: MultiTouchControls,
+  controls: MultiTouchControls,
   timeSec: number,
-  prevState?: MultiTouchState,
+  _previousState?: MultiTouchState,
 ): MultiTouchState {
-  const count = Math.max(0, Math.min(2, Math.round(c.fingerCount ?? 2)));
-  const sep = Math.max(15, Math.min(120, c.fingerSeparationMm ?? 50));
-  const pressure = Math.max(10, Math.min(300, c.touchPressureGrams ?? 80));
+  const contactCount = clamp(Math.round(controls.fingerCount ?? 0), 0, 2);
+  const separationMm = clamp(controls.fingerSeparationMm ?? 50, 15, 120);
+  const initialMotionAngleDeg = clamp(Math.abs(controls.initialMotionAngleDeg ?? 15), 0, 90);
+  const initialAngleThresholdDeg = clamp(controls.initialAngleThresholdDeg ?? 30, 1, 89);
+  const claim1HeuristicActive = controls.claim1HeuristicActive ?? true;
 
-  const mutualCapDelta = (pressure / 100) * 0.85;
+  // The periodic position makes the source-topology decision legible in the
+  // studio. The direction is fully determined by the input angle, measured
+  // from the positive screen-vertical axis: Δx = r sin θ, Δy = r cos θ.
+  const travel = 0.38 * Math.sin(Math.max(0, timeSec) * 1.2);
+  const directionRad = (initialMotionAngleDeg * Math.PI) / 180;
+  const touch1X = travel * Math.sin(directionRad);
+  const touch1Y = travel * Math.cos(directionRad);
 
-  let t1x = 0;
-  let t1y = 0;
-  let t2x = 0;
-  let t2y = 0;
-  let mode: MultiTouchState["gestureMode"] = "Idle";
-  let zoom = prevState ? prevState.zoomScale : 1.0;
-  let rotDeg = 0;
-
-  if (count === 1) {
-    mode = "Single-Finger Scroll";
-    t1x = 0.4 * Math.sin(timeSec * 2.0);
-    t1y = 0.6 * Math.cos(timeSec * 2.0);
-    zoom = 1.0;
-  } else if (count === 2) {
-    const halfSep = (sep / 1000) * 8.0;
-    const centerShiftX = 0.2 * Math.sin(timeSec * 1.2);
-    const centerShiftY = 0.1 * Math.cos(timeSec * 1.2);
-
-    const angle = timeSec * 0.5;
-    t1x = centerShiftX + Math.cos(angle) * halfSep;
-    t1y = centerShiftY + Math.sin(angle) * halfSep;
-    t2x = centerShiftX - Math.cos(angle) * halfSep;
-    t2y = centerShiftY - Math.sin(angle) * halfSep;
-
-    rotDeg = (angle * 180) / Math.PI;
-    zoom = Number((sep / 50.0).toFixed(2));
-    mode = Math.abs(rotDeg % 90) > 35 ? "Two-Finger Rotate" : "Pinch-to-Zoom";
+  if (contactCount === 0) {
+    return {
+      touch1X: 0,
+      touch1Y: 0,
+      touch2X: 0,
+      touch2Y: 0,
+      activeTouchCount: 0,
+      gestureMode: "Idle",
+      initialMotionAngleDeg,
+      initialAngleThresholdDeg,
+      zoomScale: 1,
+    };
   }
 
-  const matrix: number[][] = Array.from({ length: 4 }, () => Array(4).fill(0.05));
+  if (!claim1HeuristicActive) {
+    return {
+      touch1X,
+      touch1Y,
+      touch2X: 0,
+      touch2Y: 0,
+      activeTouchCount: contactCount,
+      gestureMode: "Idle",
+      initialMotionAngleDeg,
+      initialAngleThresholdDeg,
+      zoomScale: 1,
+    };
+  }
 
-  const applyTouchToMatrix = (tx: number, ty: number) => {
-    const gx = ((tx + 1.0) / 2.0) * 3.0;
-    const gy = ((ty + 1.0) / 2.0) * 3.0;
+  if (contactCount === 1) {
+    return {
+      touch1X,
+      touch1Y,
+      touch2X: 0,
+      touch2Y: 0,
+      activeTouchCount: 1,
+      gestureMode:
+        initialMotionAngleDeg <= initialAngleThresholdDeg
+          ? "Vertical Screen Scroll"
+          : "Two-Dimensional Translation",
+      initialMotionAngleDeg,
+      initialAngleThresholdDeg,
+      zoomScale: 1,
+    };
+  }
 
-    for (let r = 0; r < 4; r++) {
-      for (let col = 0; col < 4; col++) {
-        const dist = Math.sqrt((r - gy) ** 2 + (col - gx) ** 2);
-        const signal = Math.max(0, 1.0 - dist * 0.7) * mutualCapDelta;
-        matrix[r][col] = Math.min(1.0, matrix[r][col] + signal);
-      }
-    }
-  };
-
-  if (count >= 1) applyTouchToMatrix(t1x, t1y);
-  if (count >= 2) applyTouchToMatrix(t2x, t2y);
-
+  // Claim 8 is a dependent two-finger pinch-to-zoom command. A 50 mm
+  // baseline is a readable exhibit scale, never an asserted historic value.
+  const halfSeparation = (separationMm / 50) * 0.4;
   return {
-    touch1X: t1x,
-    touch1Y: t1y,
-    touch2X: t2x,
-    touch2Y: t2y,
-    activeTouchCount: count,
-    gestureMode: mode,
-    zoomScale: zoom,
-    rotationAngleDeg: Number(rotDeg.toFixed(1)),
-    mutualCapacitanceDeltaPf: Number(mutualCapDelta.toFixed(2)),
-    sensorMatrix: matrix,
+    touch1X: -halfSeparation,
+    touch1Y: 0,
+    touch2X: halfSeparation,
+    touch2Y: 0,
+    activeTouchCount: 2,
+    gestureMode: "Pinch-to-Zoom",
+    initialMotionAngleDeg,
+    initialAngleThresholdDeg,
+    zoomScale: Number((separationMm / 50).toFixed(2)),
   };
 }

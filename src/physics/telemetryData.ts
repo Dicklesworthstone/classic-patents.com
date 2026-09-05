@@ -10300,22 +10300,25 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "E-Ink achieves bistable electronic paper by electrophoretically driving charged titanium dioxide white particles and carbon black pigment particles through a dielectric fluid inside microcapsules.",
   },
   "us-7479949-multitouch": {
-    domain: "hci_sensing",
-    domainTitle: "Mutual Capacitance Matrices & Gesture Affine Transformations",
-    equationName: "Multi-Touch Affine Scaling & Mutual Capacitance Shunt",
+    domain: "hci_command_heuristics",
+    domainTitle: "Source-Bounded Touch-Screen Command Heuristics",
+    equationName: "Illustrative Initial-Motion Classification & Claim 8 Pinch Command",
     governingEquation:
-      "S(t) = \\frac{\\|\\mathbf{p}_2(t) - \\mathbf{p}_1(t)\\|}{\\|\\mathbf{p}_2(0) - \\mathbf{p}_1(0)\\|}, \\quad \\Delta C_m = -\\frac{\\varepsilon_0 \\varepsilon_r A_{finger}}{d}",
-    engineMethod: "stepMultiTouch",
+      "\\theta = \\operatorname{atan2}(|\\Delta x|, |\\Delta y|), \\quad S = \\frac{d(t)}{d(0)} \\quad \\text{(reader illustration; the grant prints neither a numerical cutoff nor a sensing law)}",
+    engineMethod:
+      "stepMultiTouch (source-bounded TypeScript post-detection command classifier; no SI sensor, energy, or WASM model)",
     controls: [
       {
         id: "fingerSeparationMm",
-        label: "Finger Separation Distance",
+        label: "Illustrative Two-Contact Separation",
         min: 15,
         max: 120,
         step: 5,
         defaultValue: 50,
         unit: "mm",
         provenance: "scenario-reader",
+        provenanceCitation:
+          "Claim 8 describes two contacts moving closer together or farther apart, but prints no distance or sensor measurement.",
       },
       {
         id: "fingerCount",
@@ -10326,41 +10329,58 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 2,
         unit: "pts",
         provenance: "scenario-reader",
+        provenanceCitation:
+          "The claims begin after one or two contacts are detected; they do not specify the detecting hardware.",
+      },
+      {
+        id: "initialMotionAngleDeg",
+        label: "Initial Motion Angle (illustrative)",
+        min: 0,
+        max: 90,
+        step: 1,
+        defaultValue: 15,
+        unit: "° from vertical",
+        provenance: "scenario-reader",
+        provenanceCitation:
+          "Claim 1 calls for a predetermined angle but does not print a degree value; this is a conspicuously labelled reader setting.",
       },
     ],
     computeMetrics: (p) => {
       const sep = p.fingerSeparationMm ?? 50;
-      const count = p.fingerCount ?? 2;
+      const count = p.fingerCount ?? 1;
       const out = stepMultiTouch(
         {
           fingerCount: count,
           fingerSeparationMm: sep,
-          touchPressureGrams: 80,
-          gestureVelocityMmS: 15,
+          initialMotionAngleDeg: p.initialMotionAngleDeg ?? 15,
         },
         0.0,
       );
       return [
         {
-          label: "Affine Scale Factor",
+          label: "Claim 8 Scale Illustration",
           value: `${out.zoomScale.toFixed(2)}x`,
           unit: "S",
           badgeColor: "cyan",
           progressPct: clampProgress((out.zoomScale / 2.5) * 100),
           provenance: "scenario-modern",
+          provenanceCitation:
+            "A transparent modern rendering convention for Claim 8's zoom-in or zoom-out command; it is not a formula in the grant.",
         },
         {
-          label: "Command Mode",
+          label: "Command Classification",
           value: out.gestureMode,
           unit: "",
           badgeColor: "emerald",
           progressPct: 100,
           provenance: "scenario-reader",
+          provenanceCitation:
+            "Claim 1 distinguishes initial vertical movement from two-dimensional movement after contact detection.",
         },
       ];
     },
     pedagogicalInsight:
-      "The iPhone multi-touch architecture converts multi-point mutual capacitance drops into real-time affine transformations, enabling fluid pinch-to-zoom magnification and geometric gesture recognition.",
+      "US 7,479,949 addresses what software does after contacts are already detected: Claim 1 uses the initial direction of motion to choose a scrolling or two-dimensional command, and Claim 8 makes two contacts moving together or apart trigger zoom. It does not claim a capacitive sensor stack, scan rate, contact pressure, electrical power, or an energy model.",
   },
   "us-2717437-mestral-velcro": {
     domain: "materials_mechanics",

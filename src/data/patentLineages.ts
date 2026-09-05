@@ -273,9 +273,9 @@ export const ALL_PATENT_LINEAGES: PatentLineage[] = [
         patentId: "us-7479949-multitouch",
         year: "2009",
         role: "modern-culmination",
-        roleLabel: "Capacitive Gestural Surface",
+        roleLabel: "Touch-Screen Command Heuristic",
         technicalConcept:
-          "Mutual capacitance sensor matrix resolving concurrent discrete finger touch trajectories.",
+          "Post-detection heuristic that maps contact movement to scrolling, translation, navigation, or a Claim 8 pinch command without claiming a sensing-stack design.",
       },
     ],
   },

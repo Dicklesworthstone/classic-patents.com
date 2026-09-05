@@ -3282,15 +3282,15 @@ export function applySupplementalColorizedEquations(
     {
       id: "multitouch-pinch-zoom-scale",
       patentId: "us-7479949-multitouch",
-      title: "Pinch-to-Zoom Dynamic Euclidean Affine Scaling Factor",
+      title: "Illustrative Two-Finger Pinch Scale Ratio (Claim 8)",
       category: "Human-Computer Interaction & Touch Screen Heuristics",
       rawLatex:
         "S(t) = \\frac{\\|\\mathbf{p}_2(t) - \\mathbf{p}_1(t)\\|}{\\|\\mathbf{p}_2(0) - \\mathbf{p}_1(0)\\|}",
       colorizedLatex:
         "\\textcolor{#059669}{S(t)} = \\frac{\\textcolor{#ef4444}{\\|\\mathbf{p}_2(t) - \\mathbf{p}_1(t)\\|}}{\\textcolor{#2563eb}{\\|\\mathbf{p}_2(0) - \\mathbf{p}_1(0)\\|}}",
       plainEnglishSentence: [
-        { text: "The real-time " },
-        { text: "affine zoom magnification scale", variableId: "zoom_scale" },
+        { text: "This illustrative " },
+        { text: "pinch-to-zoom scale ratio", variableId: "zoom_scale" },
         { text: " is the ratio of instantaneous " },
         { text: "current dual-finger separation distance", variableId: "current_dist" },
         { text: " to the " },
@@ -3301,24 +3301,24 @@ export function applySupplementalColorizedEquations(
         {
           id: "zoom_scale",
           symbol: "S(t)",
-          name: "Affine Magnification Scale Factor",
+          name: "Illustrative Pinch Magnification Scale",
           color: "emerald",
-          role: "Multiplicative scaling factor applied to the graphical rendering matrix of the displayed document",
+          role: "Illustrative multiplicative scale applied to a displayed document after a Claim 8 pinch gesture is recognized",
           unit: "dimensionless",
           dimension: "1",
           explanation:
-            "Continuous updates at 60 Hz produce smooth, direct-manipulation zooming of web pages, photos, and maps.",
+            "This is a modern display model for the zoom-in or zoom-out command in Claim 8; the grant does not prescribe its update rate.",
         },
         {
           id: "current_dist",
           symbol: "\\|\\mathbf{p}_2(t) - \\mathbf{p}_1(t)\\|",
           name: "Current Inter-Touch Euclidean Distance",
           color: "crimson",
-          role: "Geometric separation distance between two concurrent capacitive contact centroids at time t",
+          role: "Geometric separation between two contact positions in an illustrative rendering at time t",
           unit: "m",
           dimension: "L",
           explanation:
-            "Calculated from mutual capacitance sensor grid scans using √((x2-x1)² + (y2-y1)²).",
+            "Calculated from illustrated contact positions using √((x2-x1)² + (y2-y1)²); the claim does not specify how the contacts are electrically sensed.",
         },
         {
           id: "initial_dist",
@@ -3333,10 +3333,10 @@ export function applySupplementalColorizedEquations(
         },
       ],
       pedagogicalNote:
-        "By eliminating modal zoom buttons and replacing them with continuous direct-finger affine scaling, multi-touch made interaction feel physical and elastic.",
-      claimRef: 1,
+        "The equation is a transparent modern rendering choice for dependent Claim 8's pinch-to-zoom command, not a formula printed in the grant or a claim to a sensor stack.",
+      claimRef: 8,
       historicalSignificance:
-        "Defined the smartphone user interface revolution that established the iPhone and modern mobile computing.",
+        "It makes the dependent pinch command legible while keeping the broader Claim 1 command-classification boundary distinct from underlying sensing hardware.",
     },
   ];
 

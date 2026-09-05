@@ -424,7 +424,24 @@ export function DieselEngine3D() {
 
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <p className="mb-3 text-xs leading-relaxed text-ink-600 dark:text-ink-300">
+          Ideal-gas teaching cycle with a 300 K intake, γ = 1.4, and an illustrative 0.68
+          brake-efficiency factor. Controls and local slopes describe this model, not measured
+          performance of Diesel&apos;s historic engine.
+        </p>
+        <dl className="mb-4 grid grid-cols-2 gap-3 text-xs font-mono">
+          <div className="min-w-0 rounded-lg border border-parchment-300 dark:border-ink-700 p-2.5">
+            <dt className="font-sans text-ink-600 dark:text-ink-300">Compression temperature</dt>
+            <dd className="mt-1 font-bold text-amber-800 dark:text-amber-400">{peakTempC} °C</dd>
+          </div>
+          <div className="min-w-0 rounded-lg border border-parchment-300 dark:border-ink-700 p-2.5">
+            <dt className="font-sans text-ink-600 dark:text-ink-300">Brake efficiency</dt>
+            <dd className="mt-1 font-bold text-sky-800 dark:text-sky-400">
+              {thermalEfficiencyPct}%
+            </dd>
+          </div>
+        </dl>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <SensitivitySlider
             id="dieselEngineRpm"
             patentId="us-542846-diesel-engine"
@@ -446,8 +463,8 @@ export function DieselEngine3D() {
             label="Compression Ratio"
             value={compressionRatio}
             min={12}
-            max={24}
-            step={1}
+            max={22}
+            step={0.5}
             unit=":1"
             onChange={(val) => updateParam("compressionRatio", val)}
             allParams={params}
@@ -459,11 +476,25 @@ export function DieselEngine3D() {
             paramKey="blastAirPressure"
             label="Air Blast Injection"
             value={blastAirPressure}
-            min={40}
-            max={90}
-            step={5}
+            min={45}
+            max={85}
+            step={2}
             unit="bar"
             onChange={(val) => updateParam("blastAirPressure", val)}
+            allParams={params}
+          />
+
+          <SensitivitySlider
+            id="dieselCutoffRatio"
+            patentId="us-542846-diesel-engine"
+            paramKey="cutoffRatio"
+            label="Fuel Cutoff Ratio"
+            value={cutoffRatio}
+            min={1.2}
+            max={2.2}
+            step={0.1}
+            unit="ratio"
+            onChange={(value) => updateParam("cutoffRatio", value)}
             allParams={params}
           />
         </div>

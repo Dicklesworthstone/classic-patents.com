@@ -17,6 +17,7 @@ import {
   stepEngelbartMouse,
   stepEricssonPropeller,
   stepGoodyearRubber,
+  stepHallAluminium,
   stepHewittMercuryLamp,
   stepHollerithTabulating,
   stepLandPolaroidInstantFilm,
@@ -31,6 +32,7 @@ import {
 } from "./clavelDeltaRobotKernel";
 import { stepColtLockwork } from "./coltRevolverKernel";
 import { readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
+import { stepDieselEngine } from "./dieselEngineKernel";
 import {
   EDISON_DECLARED_FILAMENT_LENGTH_CM,
   EDISON_DECLARED_HOT_RESISTANCE_OHM,
@@ -531,49 +533,62 @@ export function computeParameterSensitivity(
       const current = params.currentAmperes ?? params.current ?? 300000.0;
       const tempC =
         params.bathTemperatureCelsius ?? params.temperatureCelsius ?? params.tempC ?? 960;
-      const aluminaPct = params.aluminaConcentrationPct ?? params.aluminaPct ?? 3.5;
+      const aluminaPct = params.aluminaConcentrationPct ?? params.aluminaPct ?? 5.5;
 
       if (
         !Number.isFinite(current) ||
-        current < 50000 ||
+        current < 100000 ||
         current > 500000 ||
         !Number.isFinite(tempC) ||
         tempC < 920 ||
         tempC > 1020 ||
         !Number.isFinite(aluminaPct) ||
-        aluminaPct < 1.5 ||
+        aluminaPct < 2 ||
         aluminaPct > 8.0
       ) {
         return null;
       }
 
-      if (controlKey === "currentAmperes" || controlKey === "current") {
-        const dM_dI = 0.316; // kg / (kA · hr)
-        return {
-          metricName: "Faradaic Production Sensitivity",
-          derivativeSymbol: "∂ṁ_Al / ∂I",
-          derivativeValue: Number(dM_dI.toFixed(3)),
-          derivativeUnit: "kg / (kA·hr)",
-          interpretation:
-            "Faraday's law stoichiometric deposition rate at 94% cathodic current efficiency.",
-        };
-      }
-      if (
-        controlKey === "bathTemperatureCelsius" ||
-        controlKey === "temperatureCelsius" ||
-        controlKey === "tempC"
-      ) {
-        const dSigma_dT = 0.0028; // S/cm / °C
-        return {
-          metricName: "Bath Conductivity Sensitivity",
-          derivativeSymbol: "∂σ_bath / ∂T",
-          derivativeValue: Number(dSigma_dT.toFixed(4)),
-          derivativeUnit: "S/cm · °C",
-          interpretation:
-            "Ionic mobility increase in molten cryolite-alumina electrolyte reducing cell ohmic drop.",
-        };
-      }
-      break;
+      const hall = stepHallAluminium({
+        currentAmperes: current,
+        bathTemperatureCelsius: tempC,
+        aluminaConcentrationPct: aluminaPct,
+      });
+      const key =
+        controlKey === "current"
+          ? "currentAmperes"
+          : controlKey === "temperatureCelsius" || controlKey === "tempC"
+            ? "bathTemperatureCelsius"
+            : controlKey === "aluminaPct"
+              ? "aluminaConcentrationPct"
+              : controlKey;
+      const slopes: Record<string, { value: number | null; symbol: string; unit: string }> = {
+        currentAmperes: {
+          value: hall.productionSlopeKgPerHourPerAmpere,
+          symbol: "I",
+          unit: "A",
+        },
+        bathTemperatureCelsius: {
+          value: hall.productionSlopeKgPerHourPerCelsius,
+          symbol: "T",
+          unit: "°C",
+        },
+        aluminaConcentrationPct: {
+          value: hall.productionSlopeKgPerHourPerAluminaPct,
+          symbol: "c_Al₂O₃",
+          unit: "wt% point",
+        },
+      };
+      const slope = slopes[key];
+      if (!slope || slope.value === null) return null;
+      return {
+        metricName: "Aluminium Production (Model)",
+        derivativeSymbol: `∂ṁ_Al / ∂${slope.symbol}`,
+        derivativeValue: Number(slope.value.toPrecision(6)),
+        derivativeUnit: `kg / (h·${slope.unit})`,
+        interpretation:
+          "Local slope of the shared modern teaching cell's aluminium production before display rounding, holding the other controls fixed. Current efficiency follows the present temperature and alumina concentration; its coefficients are illustrative, not historic measurements. At a public range endpoint this is the admitted one-sided slope. No single slope is shown at the relevant efficiency knee (960 °C or 4 wt%).",
+      };
     }
 
     case "gb-913-watt-separate-condenser": {
@@ -3728,46 +3743,53 @@ export function computeParameterSensitivity(
     }
 
     case "us-542846-diesel-engine": {
-      const cr = params.compRatio ?? params.compressionRatio ?? 16;
-      const blast = params.blastAirPressure ?? params.blastPressure ?? 60;
-      const cutoff = params.cutoffRatio ?? params.cutoff ?? 2.0;
-      const rpm = params.engineRpm ?? params.rpm ?? 250;
+      const cr = params.compRatio ?? params.compressionRatio ?? 18;
+      const blast =
+        params.blastAirPressure ?? params.blastAirPressureBar ?? params.blastPressure ?? 65;
+      const cutoff = params.cutoffRatio ?? params.cutoff ?? 1.6;
+      const rpm = params.engineRpm ?? params.rpm ?? 150;
 
       if (
         !Number.isFinite(cr) ||
-        cr < 10 ||
+        cr < 12 ||
         cr > 22 ||
         !Number.isFinite(blast) ||
-        blast < 40 ||
-        blast > 80 ||
+        blast < 45 ||
+        blast > 85 ||
         !Number.isFinite(cutoff) ||
         cutoff < 1.2 ||
-        cutoff > 3.5 ||
+        cutoff > 2.2 ||
         !Number.isFinite(rpm) ||
-        rpm < 100 ||
-        rpm > 600
+        rpm < 60 ||
+        rpm > 300
       ) {
         return null;
       }
 
+      const diesel = stepDieselEngine({
+        compressionRatio: cr,
+        blastAirPressureBar: blast,
+        cutoffRatio: cutoff,
+        engineRpm: rpm,
+      });
       if (controlKey === "compRatio" || controlKey === "compressionRatio") {
         return {
-          metricName: "End-of-Compression Air Temperature",
+          metricName: "Compression Temperature (Model)",
           derivativeSymbol: "∂T_comp / ∂CR",
-          derivativeValue: 42.0,
-          derivativeUnit: "K / unit_CR",
+          derivativeValue: Number(diesel.compressionTemperatureSlopeKPerRatio.toPrecision(6)),
+          derivativeUnit: "°C / ratio",
           interpretation:
-            "Isentropic air compression heating cylinder air past fuel auto-ignition threshold without spark plugs.",
+            "Local derivative of the shared ideal-gas compression temperature before display rounding, with a declared 300 K intake and γ = 1.4. The same temperature increment applies in Celsius and kelvin. Public endpoints use the admitted one-sided slope; this is a teaching scenario, not a measured historic engine.",
         };
       }
       if (controlKey === "cutoffRatio" || controlKey === "cutoff") {
         return {
-          metricName: "Diesel Cycle Indicated Thermal Efficiency",
-          derivativeSymbol: "∂η_th / ∂r_c",
-          derivativeValue: -0.045,
-          derivativeUnit: "efficiency / unit_cutoff",
+          metricName: "Brake Efficiency (Model)",
+          derivativeSymbol: "∂η_brake / ∂r_c",
+          derivativeValue: Number(diesel.brakeEfficiencySlopePctPerCutoffRatio.toPrecision(6)),
+          derivativeUnit: "percentage points / ratio",
           interpretation:
-            "Thermodynamic expansion loss: longer combustion injection duration decreases effective expansion ratio.",
+            "Derivative of the shared teaching model at the current compression and cutoff ratios, before display rounding. It includes the same illustrative 0.68 brake-efficiency factor as the readout; γ = 1.4 and the other inputs are held fixed. Public endpoints use the admitted one-sided slope, not historic performance measurements.",
         };
       }
       break;

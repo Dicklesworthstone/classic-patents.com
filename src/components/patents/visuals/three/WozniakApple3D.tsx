@@ -116,8 +116,8 @@ export function WozniakApple3D() {
     const container = containerRef.current;
     const cfg = wozniakAppleCameraForViewport(
       preset,
-      container?.clientWidth ?? 0,
-      container?.clientHeight ?? 0,
+      container?.clientWidth || window.innerWidth,
+      container?.clientHeight || window.innerHeight,
     );
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
@@ -132,7 +132,11 @@ export function WozniakApple3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = wozniakAppleCameraForViewport("iso", container.clientWidth, container.clientHeight);
+    const iso = wozniakAppleCameraForViewport(
+      "iso",
+      container.clientWidth || window.innerWidth,
+      container.clientHeight || window.innerHeight,
+    );
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -140,10 +144,25 @@ export function WozniakApple3D() {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     const model = buildWozniakAppleModel();
     scene.add(model.root);
+
+    // The absolute canvas may report 0 × 0 during the first React effect.
+    // Reframe after layout settles so compact readers receive their real
+    // 341 × 380px overview without waiting for an unrelated resize.
+    let initialOverviewFrame: number;
+    const synchronizeInitialOverview = () => {
+      const { clientWidth, clientHeight } = container;
+      if (clientWidth <= 0 || clientHeight <= 0) {
+        initialOverviewFrame = requestAnimationFrame(synchronizeInitialOverview);
+        return;
+      }
+      const view = wozniakAppleCameraForViewport("iso", clientWidth, clientHeight);
+      controls.setView(view.pos, view.target);
+    };
+    initialOverviewFrame = requestAnimationFrame(synchronizeInitialOverview);
 
     let reqId: number;
     const clock = createStudioClock();
@@ -172,6 +191,7 @@ export function WozniakApple3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      cancelAnimationFrame(initialOverviewFrame);
       model.dispose();
       studio.cleanup();
       studioRef.current = null;

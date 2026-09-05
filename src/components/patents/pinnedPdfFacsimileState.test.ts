@@ -1,13 +1,55 @@
 import { describe, expect, test } from "bun:test";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   clampPdfPage,
   createPinnedPdfFacsimileState,
+  PDFJS_WASM_URL,
   pinnedPdfFacsimileReducer,
 } from "./pinnedPdfFacsimileState";
 
 describe("pinned PDF facsimile state", () => {
+  test("page changes and resize cannot label an earlier canvas ready", () => {
+    let state = createPinnedPdfFacsimileState(1);
+    state = pinnedPdfFacsimileReducer(state, { type: "document-loaded", pageCount: 8 });
+    state = pinnedPdfFacsimileReducer(state, { type: "set-available-width", availableWidth: 720 });
+    state = pinnedPdfFacsimileReducer(state, {
+      type: "render-ready",
+      pageNumber: 1,
+      availableWidth: 720,
+    });
+    expect(state.renderState).toBe("ready");
+    state = pinnedPdfFacsimileReducer(state, { type: "go-to-page", page: 8 });
+    expect(state.pageNumber).toBe(8);
+    expect(state.renderState).toBe("loading");
+    state = pinnedPdfFacsimileReducer(state, {
+      type: "render-ready",
+      pageNumber: 1,
+      availableWidth: 720,
+    });
+    expect(state.renderState).toBe("loading");
+    state = pinnedPdfFacsimileReducer(state, {
+      type: "render-ready",
+      pageNumber: 8,
+      availableWidth: 720,
+    });
+    expect(state.renderState).toBe("ready");
+    state = pinnedPdfFacsimileReducer(state, { type: "go-to-page", page: 8 });
+    expect(state.renderState).toBe("ready");
+    state = pinnedPdfFacsimileReducer(state, { type: "set-available-width", availableWidth: 280 });
+    state = pinnedPdfFacsimileReducer(state, {
+      type: "render-ready",
+      pageNumber: 8,
+      availableWidth: 720,
+    });
+    expect(state.renderState).toBe("loading");
+    state = pinnedPdfFacsimileReducer(state, {
+      type: "render-ready",
+      pageNumber: 8,
+      availableWidth: 280,
+    });
+    expect(state.renderState).toBe("ready");
+  });
   test("clamps page navigation and keeps the displayed input synchronized", () => {
     let state = createPinnedPdfFacsimileState(99);
     expect(state.pageNumber).toBe(1);
@@ -61,5 +103,20 @@ describe("pinned PDF facsimile state", () => {
     );
 
     expect(workerSource).toContain(`pdfjsVersion = ${packageMetadata.version}`);
+  });
+
+  test("ships the installed PDF.js image decoders, fallbacks, and licenses unchanged", () => {
+    const installedDirectory = join(process.cwd(), "node_modules/pdfjs-dist/wasm");
+    const servedDirectory = join(process.cwd(), "public", PDFJS_WASM_URL);
+    const installedFiles = readdirSync(installedDirectory).sort();
+
+    expect(readdirSync(servedDirectory).sort()).toEqual(installedFiles);
+    expect(installedFiles).toContain("jbig2.wasm");
+    expect(installedFiles).toContain("jbig2_nowasm_fallback.js");
+    for (const filename of installedFiles) {
+      expect(readFileSync(join(servedDirectory, filename))).toEqual(
+        readFileSync(join(installedDirectory, filename)),
+      );
+    }
   });
 });

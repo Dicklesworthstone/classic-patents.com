@@ -562,6 +562,10 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
 
   const setCompactClaimFocus = (enabled: boolean) => {
     presentationPropsGroup.visible = !enabled;
+    // The post and tension key provide Fig. 1 source context, but are outside
+    // the printed wire-and-barb claim. Hide that context with the workshop
+    // props in compact claim focus so it cannot overpower the claimed lock.
+    fencePostGroup.visible = !enabled;
   };
 
   return { rootGroup, nodes, materials, setCompactClaimFocus, dispose };

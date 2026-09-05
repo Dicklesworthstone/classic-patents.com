@@ -55,6 +55,35 @@ import {
 const USER_AGENT = "OpenAI File Downloader, XaiImageApiFetch/1.0";
 const ACTION_TIMEOUT_MS = 15_000;
 
+async function assertPaintedFacsimile(canvas: Locator) {
+  if (!(await canvas.isVisible())) throw new Error("The pinned PDF canvas is hidden.");
+  const pixels = await canvas.evaluate((element: HTMLCanvasElement) => {
+    const context = element.getContext("2d");
+    if (!context) throw new Error("The pinned PDF canvas has no 2D context.");
+    const { data } = context.getImageData(0, 0, element.width, element.height);
+    let inkSamples = 0;
+    let paperSamples = 0;
+    for (let offset = 0; offset < data.length; offset += 64) {
+      if (data[offset + 3] === 0) continue;
+      const sum = data[offset] + data[offset + 1] + data[offset + 2];
+      if (sum < 630) inkSamples++;
+      if (sum > 690) paperSamples++;
+    }
+    return { width: element.width, height: element.height, inkSamples, paperSamples };
+  });
+  // PDF.js can resolve a render promise after a missing image decoder produced
+  // a white page. These scans must contain both the printed instrument and paper.
+  if (
+    pixels.width <= 100 ||
+    pixels.height <= 100 ||
+    pixels.inkSamples <= 10 ||
+    pixels.paperSamples <= 100
+  ) {
+    throw new Error(`The pinned PDF page is blank or unpainted: ${JSON.stringify(pixels)}`);
+  }
+  return pixels;
+}
+
 interface ScenarioDiagnostics {
   consoleMessages: string[];
   consoleErrors: string[];
@@ -725,9 +754,10 @@ async function verifySourceFace(
       } else if (scenario.sourceState === "facsimile") {
         const facsimile = page.getByTestId("source-facsimile-fallback");
         await facsimile.waitFor({ state: "visible" });
-        if ((await facsimile.locator('object[type="application/pdf"]').count()) !== 1) {
-          throw new Error("Facsimile source fallback did not render the pinned patent PDF inline.");
-        }
+        await facsimile
+          .locator('[data-testid="pinned-pdf-renderer"][data-render-state="ready"]')
+          .waitFor({ state: "visible" });
+        await assertPaintedFacsimile(facsimile.getByTestId("pinned-pdf-canvas"));
       } else {
         await page
           .getByRole("heading", { name: /Specification of Letters Patent/ })
@@ -1323,15 +1353,19 @@ async function verifyRemainingFaces(
   });
   await checked(
     recorder,
-    meta(scenario, viewport, "pdf-facsimile", "embedded-or-linked-pdf"),
+    meta(scenario, viewport, "pdf-facsimile", "rendered-and-linked-pdf"),
     scenario.pdfUrl,
     async () => {
-      const object = page.locator(`object[data^="${scenario.pdfUrl}"]`);
+      const renderer = page.locator(
+        `[data-testid="pinned-pdf-renderer"][data-pdf-url="${scenario.pdfUrl}"][data-render-state="ready"]`,
+      );
+      await renderer.waitFor({ state: "visible" });
+      const pixels = await assertPaintedFacsimile(renderer.getByTestId("pinned-pdf-canvas"));
       const link = page.locator(`a[href="${scenario.pdfUrl}"]`);
-      if ((await object.count()) === 0 && (await link.count()) === 0) {
-        throw new Error("PDF face contains neither the pinned embed nor its accessible link.");
+      if ((await link.count()) === 0) {
+        throw new Error("PDF face must render the pinned source and retain its accessible link.");
       }
-      return { objectCount: await object.count(), linkCount: await link.count() };
+      return { rendererCount: await renderer.count(), linkCount: await link.count(), pixels };
     },
   );
 

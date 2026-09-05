@@ -32,7 +32,11 @@ const NARROW_PHONE_ISO: GatlingGunCameraView = {
 // and tablet widths.
 const COMPACT_PHONE_CANVAS_MAX_WIDTH_PX = 480;
 const COMPACT_PHONE_ISO: GatlingGunCameraView = {
-  pos: [17.3, 9.26, 18.9],
+  // The live 375px route has a 341 × 380px canvas, rather than a tall
+  // 375 × 812px projection. This is the closest full-envelope overview for
+  // that real canvas: it gives the muzzle cluster useful inspection size
+  // without allowing any legitimate barrel rotation to leave the frame.
+  pos: [12.5, 6.7, 13.5],
   target: [0.5, 0.3, 0],
 };
 

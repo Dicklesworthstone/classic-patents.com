@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { CuratedSpecificationEdition, Patent } from "@/types/patent";
 import { allPatents } from "../patents";
 import { kwolekKevlarPatent } from "../patents/kwolek-kevlar";
+import { legacyStackhouseManipulatorPatent as withdrawnStackhousePatent } from "../patents/stackhouse-manipulator";
 import { stackhouseManipulatorPatent } from "../patents/stackhouse-manipulator-source-bounded";
 import { wrightFlyerPatent } from "../patents/wright-flyer";
 import { completeArchivalEditionForViewer } from "./publicationApproval";
@@ -207,6 +208,21 @@ describe("reviewed-ledger publication evidence", () => {
     expect(reviewedLedgerTextForViewer(stackhouseManipulatorPatent)).toContain(
       "A remotely operable manipulator orients an end-effector",
     );
+  });
+
+  test("never reopens the withdrawn Stackhouse draft through stale explicit source metadata", () => {
+    const withdrawnAsset = withdrawnStackhousePatent.originalTextAsset;
+    if (!withdrawnAsset) throw new Error("The withdrawn record must retain its source metadata.");
+    expect(reviewedLedgerTextForViewer({ id: stackhouseManipulatorPatent.id })).toBeUndefined();
+    expect(
+      reviewedLedgerTextForViewer({
+        id: stackhouseManipulatorPatent.id,
+        originalTextAsset: {
+          ...withdrawnAsset,
+          kind: "reviewed-transcription",
+        },
+      }),
+    ).toBeUndefined();
   });
 
   test("keeps every catalogue record readable through its selected edition, local transcript, or pinned PDF", () => {

@@ -1498,7 +1498,14 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   }
   if (patentId.includes("multitouch") || patentId.includes("7479949")) {
     return [
-      { label: "Contacts", min: 1, max: 10, live: params.touchContactCount ?? 2, unit: "pts" },
+      { label: "Contacts", min: 0, max: 2, live: params.fingerCount ?? 2, unit: "pts" },
+      {
+        label: "Initial motion",
+        min: 0,
+        max: 90,
+        live: params.initialMotionAngleDeg ?? 15,
+        unit: "deg from vertical",
+      },
     ];
   }
   return [];
@@ -2195,13 +2202,7 @@ export function fidelityField(
     return null;
   }
   if (patentId.includes("multitouch") || patentId.includes("7479949")) {
-    return {
-      part: "Mutual capacitance scan latency vs Macworld 2007",
-      model: "8.3",
-      reference: "8.3",
-      residual: "0.0",
-      unit: "ms",
-    };
+    return null;
   }
   return null;
 }
@@ -3049,14 +3050,7 @@ export function datedScenarios(patentId: string): DatedScenario[] {
     ];
   }
   if (patentId.includes("multitouch") || patentId.includes("7479949")) {
-    return [
-      {
-        id: "macworld-2007",
-        date: "2007-01-09",
-        name: "Macworld 2007 capacitive multi-touch pinch-to-zoom",
-        writes: { touchContactCount: 2, scanRateHz: 120 },
-      },
-    ];
+    return [];
   }
   return [];
 }
@@ -3386,7 +3380,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [];
   }
   if (patentId.includes("multitouch") || patentId.includes("7479949")) {
-    return [{ from: "scan drive", to: "mutual capacitance charge", watts: 0.024 }];
+    return [];
   }
   if (patentId.includes("hopkins") || patentId.includes("x1")) {
     return [{ from: "combustion", to: "pearlash burnout", watts: 1680 }];

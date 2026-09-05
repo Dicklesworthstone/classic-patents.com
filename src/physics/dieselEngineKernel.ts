@@ -20,21 +20,33 @@ export function stepDieselEngine(params: DieselEngineStepParams) {
   const rpm = params.engineRpm ?? 150;
   const gamma = 1.4;
   const tIntakeK = 300;
-  const tCompressionK = Math.round(tIntakeK * r ** (gamma - 1));
+  const tCompressionKUnrounded = tIntakeK * r ** (gamma - 1);
+  const tCompressionK = Math.round(tCompressionKUnrounded);
   const tCompressionC = tCompressionK - 273;
   const pCompBar = Number((1.0 * r ** gamma).toFixed(1));
-  const idealEfficiencyPct = Number(
-    ((1 - (1 / r ** (gamma - 1)) * ((rc ** gamma - 1) / (gamma * (rc - 1)))) * 100).toFixed(1),
-  );
-  const brakeEfficiencyPct = Number((idealEfficiencyPct * 0.68).toFixed(1));
+  const idealEfficiencyPctUnrounded =
+    (1 - (1 / r ** (gamma - 1)) * ((rc ** gamma - 1) / (gamma * (rc - 1)))) * 100;
+  const idealEfficiencyPct = Number(idealEfficiencyPctUnrounded.toFixed(1));
+  const brakeEfficiencyFactor = 0.68;
+  const brakeEfficiencyPct = Number((idealEfficiencyPct * brakeEfficiencyFactor).toFixed(1));
+  // These derivatives describe the displayed ideal-gas teaching scenario, with
+  // its illustrative loss factor, before the legacy display rounding stages.
+  const compressionTemperatureSlopeKPerRatio = tIntakeK * (gamma - 1) * r ** (gamma - 2);
+  const brakeEfficiencySlopePctPerCutoffRatio =
+    (-100 * brakeEfficiencyFactor * (gamma * rc ** (gamma - 1) * (rc - 1) - (rc ** gamma - 1))) /
+    (r ** (gamma - 1) * gamma * (rc - 1) ** 2);
   const isAutoIgnition = tCompressionC > 210 && pBlast > pCompBar;
   const crank = rpmToOmega(rpm);
 
   return {
     tCompressionC,
+    tCompressionKUnrounded,
+    compressionTemperatureSlopeKPerRatio,
     pCompBar,
     idealEfficiencyPct,
     brakeEfficiencyPct,
+    brakeEfficiencyPctUnrounded: idealEfficiencyPctUnrounded * brakeEfficiencyFactor,
+    brakeEfficiencySlopePctPerCutoffRatio,
     isAutoIgnition,
     engineRpm: rpm,
     ...cycleHeatCrate(r),

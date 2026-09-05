@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import {
+  MULTI_TOUCH_PRESERVED_SOURCE_CROPS,
   manualMultiTouchClaimText,
   multiTouchArchivalEdition,
 } from "@/data/editions/multiTouchEdition";
@@ -64,7 +65,7 @@ describe("US 7,479,949 Apple Multi-Touch Heuristics Archival Edition Contract", 
     }
   });
 
-  test("keeps the active held packet source-bounded and preserves figure evidence on disk", () => {
+  test("keeps the active held packet source-bounded and preserves correctly identified crop evidence", () => {
     const figurePreviews = multiTouchArchivalEdition.blocks.flatMap((block) => {
       if (block.kind === "paragraph") {
         return block.inlines.flatMap((inline) =>
@@ -78,19 +79,37 @@ describe("US 7,479,949 Apple Multi-Touch Heuristics Archival Edition Contract", 
 
     expect(figurePreviews).toEqual([]);
 
-    for (const number of [1, 2, 3]) {
+    expect(MULTI_TOUCH_PRESERVED_SOURCE_CROPS).toEqual([
+      expect.objectContaining({
+        figure: "Figure 2",
+        sourcePdfPage: 5,
+        sourceSheet: "Sheet 3 of 293",
+      }),
+      expect.objectContaining({
+        figure: "Figure 3A",
+        sourcePdfPage: 6,
+        sourceSheet: "Sheet 4 of 293",
+      }),
+      expect.objectContaining({
+        figure: "Figure 3B",
+        sourcePdfPage: 7,
+        sourceSheet: "Sheet 5 of 293",
+      }),
+    ]);
+
+    for (const [index, crop] of MULTI_TOUCH_PRESERVED_SOURCE_CROPS.entries()) {
       const fullPath = path.join(
         process.cwd(),
         "public",
         "patents",
         "figures",
         "us-7479949-multitouch",
-        `fig-${number}-source-crop-v1.png`,
+        `fig-${index + 1}-source-crop-v1.png`,
       );
       expect(fs.existsSync(fullPath)).toBe(true);
       const buf = fs.readFileSync(fullPath);
-      expect(buf.readUInt32BE(16)).toBe(2048);
-      expect(buf.readUInt32BE(20)).toBe(2310);
+      expect(buf.readUInt32BE(16)).toBe(crop.width);
+      expect(buf.readUInt32BE(20)).toBe(crop.height);
     }
   });
 

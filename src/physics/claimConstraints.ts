@@ -264,14 +264,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-7479949-multitouch",
-      claimTitle: "Mutual Capacitance Multi-Point Touch Processing",
+      claimTitle: "Initial-motion command heuristics",
       activeDescription:
-        "Claim 1 detects multiple distinct concurrent touch nodes on a transparent mutual-capacitance grid without ghosting.",
+        "Claim 1 detects one or more finger contacts, applies heuristics, and processes a command. Its named outcomes include vertical scrolling, two-dimensional translation, and next-item navigation.",
       invertedDescription:
-        "Resistive single-touch membrane: dual touch points calculate ambiguous geometric centroid, creating false touch triggers.",
-      failureModeName: "Centroid Ghost-Touch Ambiguity",
+        "Command boundary withheld: without a heuristic that distinguishes the initial motion, the exhibit refuses to claim that the grant routes a contact into vertical scrolling or two-dimensional translation.",
+      failureModeName: "Claimed Command Heuristic Withheld",
       historicalPriorArt:
-        "Resistive touch screens could track only a single contact point with heavy stylus pressure.",
+        "The specification discusses the difficulty of mapping imprecise touch gestures on compact portable devices to their intended commands; it does not make the claim depend on a particular sensor-stack technology.",
     },
   ],
   "us-4750-howe-sewing-machine": [

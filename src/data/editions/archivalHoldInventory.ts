@@ -23,7 +23,7 @@ import {
   evaluateArchivalPublicationState,
   patentForSourceReader,
 } from "./publicationApproval";
-import { reviewedLedgerPublicationEvidenceFor } from "./reviewedLedgerPublicationEvidence.server";
+import { reviewedLedgerTextForViewer } from "./reviewedLedgerPublicationEvidence.server";
 
 export type HoldCategoryPartition =
   | "figure-related"
@@ -121,7 +121,9 @@ export function generateArchivalHoldInventory(
 
     const viewerPatent = patentForSourceReader(patent);
     const archivalSource = completeArchivalEditionForViewer(viewerPatent);
-    const hasLedger = Boolean(reviewedLedgerPublicationEvidenceFor(patent));
+    // The evidence evaluator returns an object even when no ledger exists.
+    // Count what the source reader can actually deliver.
+    const hasLedger = Boolean(reviewedLedgerTextForViewer(patent));
     const readerDeliveryMode = archivalSource ? "edition" : hasLedger ? "transcript" : "facsimile";
 
     const storedEditionState = !patent.archivalEdition

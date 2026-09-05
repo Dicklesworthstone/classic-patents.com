@@ -118,8 +118,8 @@ export function GatlingGun3D() {
     const container = containerRef.current;
     return gatlingGunCameraForViewport(
       preset,
-      container?.clientWidth ?? 0,
-      container?.clientHeight ?? 0,
+      container?.clientWidth || window.innerWidth,
+      container?.clientHeight || window.innerHeight,
     );
   };
 
@@ -133,7 +133,11 @@ export function GatlingGun3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = gatlingGunCameraForViewport("iso", container.clientWidth, container.clientHeight);
+    const iso = gatlingGunCameraForViewport(
+      "iso",
+      container.clientWidth || window.innerWidth,
+      container.clientHeight || window.innerHeight,
+    );
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -146,6 +150,21 @@ export function GatlingGun3D() {
     // Load High-Fidelity Gatling Gun Model
     const model = buildGatlingGunModel();
     scene.add(model.rootGroup);
+
+    // The absolutely positioned canvas can report 0 × 0 during React's
+    // first effect. Reframe once layout has settled so a compact reader never
+    // remains on the desktop overview until an unrelated window resize.
+    let initialOverviewFrame: number;
+    const synchronizeInitialOverview = () => {
+      const { clientWidth, clientHeight } = container;
+      if (clientWidth <= 0 || clientHeight <= 0) {
+        initialOverviewFrame = requestAnimationFrame(synchronizeInitialOverview);
+        return;
+      }
+      const view = gatlingGunCameraForViewport("iso", clientWidth, clientHeight);
+      controls.setView(view.pos, view.target);
+    };
+    initialOverviewFrame = requestAnimationFrame(synchronizeInitialOverview);
 
     // Animation Loop
     let reqId: number;
@@ -206,6 +225,7 @@ export function GatlingGun3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      cancelAnimationFrame(initialOverviewFrame);
       model.dispose();
       studio.cleanup();
       studioRef.current = null;

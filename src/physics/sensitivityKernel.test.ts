@@ -7,11 +7,13 @@ import {
   stepEngelbartMouse,
   stepEricssonPropeller,
   stepGoodyearRubber,
+  stepHallAluminium,
   stepHollerithTabulating,
   stepThomsonWelding,
   stepWozniakApple,
   stepZeppelinAirship,
 } from "./catalogKernels";
+import { stepDieselEngine } from "./dieselEngineKernel";
 
 describe("Thomson and Goodyear sensitivities use the displayed model", () => {
   test("welding current uses the current I²R derivative, including one-sided endpoints", () => {
@@ -2553,99 +2555,188 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
   });
 
-  test("Hall Aluminium derives Faradaic production and bath conductivity sensitivities", () => {
+  test("Hall differentiates the actual unrounded production at all public control regimes", () => {
     const id = "us-400766-hall-aluminium";
-
-    // Current sensitivity
-    const sensCurrent = computeParameterSensitivity(id, "currentAmperes", {
-      currentAmperes: 300000,
-      bathTemperatureCelsius: 960,
-      aluminaConcentrationPct: 3.5,
-    });
-    expect(sensCurrent).toBeDefined();
-    expect(sensCurrent?.metricName).toBe("Faradaic Production Sensitivity");
-    expect(sensCurrent?.derivativeSymbol).toBe("∂ṁ_Al / ∂I");
-    expect(sensCurrent?.derivativeUnit).toBe("kg / (kA·hr)");
-    expect(sensCurrent?.derivativeValue).toBe(0.316);
-
-    // Bath temperature sensitivity
-    const sensTemp = computeParameterSensitivity(id, "bathTemperatureCelsius", {
-      currentAmperes: 300000,
-      bathTemperatureCelsius: 960,
-      aluminaConcentrationPct: 3.5,
-    });
-    expect(sensTemp).toBeDefined();
-    expect(sensTemp?.metricName).toBe("Bath Conductivity Sensitivity");
-    expect(sensTemp?.derivativeSymbol).toBe("∂σ_bath / ∂T");
-    expect(sensTemp?.derivativeUnit).toBe("S/cm · °C");
-    expect(sensTemp?.derivativeValue).toBe(0.0028);
-
-    // Invalid bounds
-    for (const invalid of [49999, 500001, Number.NaN]) {
-      expect(
-        computeParameterSensitivity(id, "currentAmperes", { currentAmperes: invalid }),
-      ).toBeNull();
-    }
-    for (const invalid of [919, 1021, Number.NaN]) {
-      expect(
-        computeParameterSensitivity(id, "bathTemperatureCelsius", {
-          bathTemperatureCelsius: invalid,
-        }),
-      ).toBeNull();
-    }
-    for (const invalid of [1.4, 8.1, Number.NaN]) {
-      expect(
-        computeParameterSensitivity(id, "aluminaConcentrationPct", {
-          aluminaConcentrationPct: invalid,
-        }),
-      ).toBeNull();
+    const controls = [
+      { key: "currentAmperes", min: 100000, max: 500000, h: 10, unit: "A" },
+      { key: "bathTemperatureCelsius", min: 920, max: 1020, h: 0.001, unit: "°C" },
+      { key: "aluminaConcentrationPct", min: 2, max: 8, h: 0.0001, unit: "wt% point" },
+    ] as const;
+    for (const currentAmperes of [100000, 300000, 410000, 500000]) {
+      for (const bathTemperatureCelsius of [920, 950, 960, 990, 1020]) {
+        for (const aluminaConcentrationPct of [2, 2.5, 4, 5.5, 8]) {
+          const params = { currentAmperes, bathTemperatureCelsius, aluminaConcentrationPct };
+          for (const control of controls) {
+            const slope = computeParameterSensitivity(id, control.key, params);
+            const atKnee =
+              (control.key === "bathTemperatureCelsius" && bathTemperatureCelsius === 960) ||
+              (control.key === "aluminaConcentrationPct" && aluminaConcentrationPct === 4);
+            if (atKnee) {
+              expect(slope).toBeNull();
+              continue;
+            }
+            if (!slope)
+              throw new Error(`Missing ${control.key} slope at ${JSON.stringify(params)}`);
+            const low = Math.max(control.min, params[control.key] - control.h);
+            const high = Math.min(control.max, params[control.key] + control.h);
+            const production = (value: number) =>
+              stepHallAluminium({ ...params, [control.key]: value })
+                .aluminiumProductionKgPerHourUnrounded;
+            const numerical = (production(high) - production(low)) / (high - low);
+            expect(slope.derivativeValue).toBeCloseTo(numerical, 7);
+            expect(slope.metricName).toBe("Aluminium Production (Model)");
+            expect(slope.derivativeUnit).toBe(`kg / (h·${control.unit})`);
+            expect(slope.interpretation).toContain("illustrative");
+          }
+        }
+      }
     }
   });
 
-  test("Diesel Engine derives end-of-compression temperature and cutoff efficiency sensitivities", () => {
+  test("Hall current follows efficiency and all aliases preserve output identity", () => {
+    const id = "us-400766-hall-aluminium";
+    const hotLean = {
+      currentAmperes: 410000,
+      bathTemperatureCelsius: 990,
+      aluminaConcentrationPct: 2.5,
+    };
+    const current = computeParameterSensitivity(id, "currentAmperes", hotLean);
+    expect(current?.derivativeValue).toBeCloseTo(0.00029524, 10);
+    expect(current?.derivativeValue).not.toBe(0.316 / 1000);
+    expect(computeParameterSensitivity(id, "currentAmperes", {})?.derivativeValue).toBeCloseTo(
+      0.00031537,
+      10,
+    );
+    expect(
+      computeParameterSensitivity(id, "bathTemperatureCelsius", hotLean)?.derivativeValue,
+    ).toBeCloseTo(-0.137555, 8);
+    expect(
+      computeParameterSensitivity(id, "aluminaConcentrationPct", hotLean)?.derivativeValue,
+    ).toBeCloseTo(2.7511, 8);
+    const aliases = { current: 410000, tempC: 990, aluminaPct: 2.5 };
+    for (const [canonical, alias] of [
+      ["currentAmperes", "current"],
+      ["bathTemperatureCelsius", "tempC"],
+      ["aluminaConcentrationPct", "aluminaPct"],
+    ]) {
+      expect(computeParameterSensitivity(id, alias, aliases)).toEqual(
+        computeParameterSensitivity(id, canonical, hotLean),
+      );
+    }
+    expect(
+      computeParameterSensitivity(id, "temperatureCelsius", {
+        ...hotLean,
+        bathTemperatureCelsius: undefined,
+        temperatureCelsius: 990,
+      }),
+    ).toEqual(computeParameterSensitivity(id, "bathTemperatureCelsius", hotLean));
+  });
+
+  test("Hall refuses unsupported controls and inputs, including every public range violation", () => {
+    const id = "us-400766-hall-aluminium";
+    const invalidParams = [
+      { currentAmperes: 99999 },
+      { currentAmperes: 500001 },
+      { bathTemperatureCelsius: 919 },
+      { bathTemperatureCelsius: 1021 },
+      { aluminaConcentrationPct: 1.9 },
+      { aluminaConcentrationPct: 8.1 },
+      { currentAmperes: Number.NaN },
+      { bathTemperatureCelsius: Number.POSITIVE_INFINITY },
+      { aluminaConcentrationPct: Number.NEGATIVE_INFINITY },
+    ];
+    for (const params of invalidParams) {
+      for (const key of ["currentAmperes", "bathTemperatureCelsius", "aluminaConcentrationPct"]) {
+        expect(computeParameterSensitivity(id, key, params)).toBeNull();
+      }
+    }
+    expect(computeParameterSensitivity(id, "inventedConductivityControl", {})).toBeNull();
+  });
+
+  test("Diesel slopes follow unrounded temperature and displayed brake-efficiency model", () => {
     const id = "us-542846-diesel-engine";
+    for (const compRatio of [12, 14.5, 18, 21.5, 22]) {
+      for (const cutoffRatio of [1.2, 1.6, 2, 2.2]) {
+        const params = { compRatio, cutoffRatio, blastAirPressure: 65, engineRpm: 150 };
+        const temp = computeParameterSensitivity(id, "compRatio", params);
+        const efficiency = computeParameterSensitivity(id, "cutoffRatio", params);
+        if (!temp || !efficiency) throw new Error("Expected supported ideal-cycle derivatives");
+        const lowR = Math.max(12, compRatio - 0.00001),
+          highR = Math.min(22, compRatio + 0.00001);
+        const lowC = Math.max(1.2, cutoffRatio - 0.00001),
+          highC = Math.min(2.2, cutoffRatio + 0.00001);
+        const probe = (r: number, rc: number) =>
+          stepDieselEngine({ compressionRatio: r, cutoffRatio: rc });
+        const tempDifference =
+          (probe(highR, cutoffRatio).tCompressionKUnrounded -
+            probe(lowR, cutoffRatio).tCompressionKUnrounded) /
+          (highR - lowR);
+        const efficiencyDifference =
+          (probe(compRatio, highC).brakeEfficiencyPctUnrounded -
+            probe(compRatio, lowC).brakeEfficiencyPctUnrounded) /
+          (highC - lowC);
+        expect(temp.derivativeValue).toBeCloseTo(tempDifference, 4);
+        expect(efficiency.derivativeValue).toBeCloseTo(efficiencyDifference, 4);
+        expect(temp.metricName).toBe("Compression Temperature (Model)");
+        expect(temp.derivativeUnit).toBe("°C / ratio");
+        expect(efficiency.metricName).toBe("Brake Efficiency (Model)");
+        expect(efficiency.derivativeUnit).toBe("percentage points / ratio");
+        expect(efficiency.interpretation).toContain("0.68");
+        expect(
+          computeParameterSensitivity(id, "compressionRatio", {
+            compressionRatio: compRatio,
+            cutoffRatio,
+          }),
+        ).toEqual(temp);
+        expect(
+          computeParameterSensitivity(id, "cutoff", {
+            compressionRatio: compRatio,
+            cutoff: cutoffRatio,
+          }),
+        ).toEqual(efficiency);
+      }
+    }
+    expect(computeParameterSensitivity(id, "compRatio", {})).toEqual(
+      computeParameterSensitivity(id, "compRatio", {
+        compRatio: 18,
+        cutoffRatio: 1.6,
+        blastAirPressure: 65,
+        engineRpm: 150,
+      }),
+    );
+    expect(computeParameterSensitivity(id, "compRatio", {})?.derivativeValue).not.toBe(42);
+    const small = computeParameterSensitivity(id, "cutoffRatio", { compRatio: 12 });
+    const large = computeParameterSensitivity(id, "cutoffRatio", { compRatio: 22 });
+    expect(small?.derivativeValue).not.toBe(large?.derivativeValue);
+  });
 
-    // Compression ratio sensitivity
-    const sensCr = computeParameterSensitivity(id, "compRatio", {
-      compRatio: 16,
-      blastAirPressure: 60,
-      cutoffRatio: 2.0,
-      engineRpm: 250,
-    });
-    expect(sensCr).toBeDefined();
-    expect(sensCr?.metricName).toBe("End-of-Compression Air Temperature");
-    expect(sensCr?.derivativeSymbol).toBe("∂T_comp / ∂CR");
-    expect(sensCr?.derivativeUnit).toBe("K / unit_CR");
-    expect(sensCr?.derivativeValue).toBe(42.0);
-
-    // Cutoff ratio efficiency sensitivity
-    const sensCutoff = computeParameterSensitivity(id, "cutoffRatio", {
-      compRatio: 16,
-      blastAirPressure: 60,
-      cutoffRatio: 2.0,
-      engineRpm: 250,
-    });
-    expect(sensCutoff).toBeDefined();
-    expect(sensCutoff?.metricName).toBe("Diesel Cycle Indicated Thermal Efficiency");
-    expect(sensCutoff?.derivativeSymbol).toBe("∂η_th / ∂r_c");
-    expect(sensCutoff?.derivativeUnit).toBe("efficiency / unit_cutoff");
-    expect(sensCutoff?.derivativeValue).toBe(-0.045);
-
-    // Invalid bounds
-    for (const invalid of [9, 23, Number.NaN]) {
-      expect(computeParameterSensitivity(id, "compRatio", { compRatio: invalid })).toBeNull();
+  test("Diesel sensitivity domain follows every public control and declines unrelated quantities", () => {
+    const id = "us-542846-diesel-engine";
+    const invalid = [
+      { compRatio: 11.9 },
+      { compRatio: 22.1 },
+      { blastAirPressure: 44 },
+      { blastAirPressure: 86 },
+      { cutoffRatio: 1.19 },
+      { cutoffRatio: 2.21 },
+      { engineRpm: 59 },
+      { engineRpm: 301 },
+      { compRatio: Number.NaN },
+      { blastAirPressure: Number.POSITIVE_INFINITY },
+    ];
+    for (const params of invalid) {
+      expect(computeParameterSensitivity(id, "compRatio", params)).toBeNull();
+      expect(computeParameterSensitivity(id, "cutoffRatio", params)).toBeNull();
     }
-    for (const invalid of [39, 81, Number.NaN]) {
-      expect(
-        computeParameterSensitivity(id, "blastAirPressure", { blastAirPressure: invalid }),
-      ).toBeNull();
+    for (const blastAirPressure of [45, 85]) {
+      for (const engineRpm of [60, 300]) {
+        expect(
+          computeParameterSensitivity(id, "compRatio", { blastAirPressure, engineRpm }),
+        ).not.toBeNull();
+      }
     }
-    for (const invalid of [1.1, 3.6, Number.NaN]) {
-      expect(computeParameterSensitivity(id, "cutoffRatio", { cutoffRatio: invalid })).toBeNull();
-    }
-    for (const invalid of [99, 601, Number.NaN]) {
-      expect(computeParameterSensitivity(id, "engineRpm", { engineRpm: invalid })).toBeNull();
-    }
+    expect(computeParameterSensitivity(id, "blastAirPressure", {})).toBeNull();
+    expect(computeParameterSensitivity(id, "engineRpm", {})).toBeNull();
   });
 
   test("Linde Air Liquefaction derives Joule-Thomson throttling drop and cooler sensitivities", () => {
