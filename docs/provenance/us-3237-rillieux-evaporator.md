@@ -78,3 +78,17 @@ sheet. These corrections do not pretend that the draft edition is complete or
 that all of the raw recognition errors on source pages 7–11 are resolved.
 They remove a specific false “reviewed” placeholder while preserving every
 visitor's complete-ledger and PDF access.
+
+## Specification-page source audit — 2026-09-05
+
+PDF pages 7–11 were rendered directly from the pinned facsimile at 220 DPI
+and visually inspected in full, including both printed columns on each page.
+They contain the masthead and four improvement descriptions (p. 7), the first
+and second improvement apparatus (p. 8), the continued second and third
+improvements (p. 9), the fourth improvement's differential thermometer
+(p. 10), and all five printed claims, signature, and witness line (p. 11).
+The preserved ledger still contains column-order and recognition errors in
+these pages, and the short React draft remains incomplete. Those are now
+bounded line-by-line transcription work; they are not evidence that the
+source instrument is absent, and they do not alter the reader's full-ledger
+and PDF availability.
