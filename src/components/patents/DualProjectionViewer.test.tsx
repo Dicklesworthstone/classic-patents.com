@@ -135,10 +135,11 @@ describe("DualProjectionViewer component", () => {
     expect(html).not.toContain('data-testid="source-text-excerpt"');
   });
 
-  test("uses Stackhouse's pinned facsimile rather than its quarantined legacy transcript", () => {
+  test("uses Stackhouse clean replacement transcript instead of its quarantined legacy transcript", () => {
     const patent = patentForSourceReader(stackhouseManipulatorPatent);
     const transcript = reviewedLedgerTextForViewer(stackhouseManipulatorPatent);
-    expect(transcript).toBeUndefined();
+    expect(transcript).toStartWith("--- REVIEWED TRANSCRIPTION PAGE 1 OF 8 ---");
+    expect(transcript).toContain("A remotely operable manipulator orients an end-effector");
 
     const html = renderToStaticMarkup(
       <DualProjectionViewer
@@ -149,9 +150,10 @@ describe("DualProjectionViewer component", () => {
       />,
     );
 
-    expect(html).toContain('data-source-delivery="facsimile"');
-    expect(html).toContain('data-testid="source-facsimile-fallback"');
-    expect(html).toContain('href="/patents/pdfs/us-4068536-stackhouse-manipulator.pdf"');
+    expect(html).toContain("data-source-delivery=\"transcript\"");
+    expect(html).toContain("data-testid=\"reviewed-transcript-fallback\"");
+    expect(html).toContain("Complete patent transcript");
+    expect(html).toContain("href=\"/patents/pdfs/us-4068536-stackhouse-manipulator.pdf\"");
     expect(html).not.toContain("linear invertible matrix transformation");
     expect(html).not.toContain("solid angle of 2*pi steradians");
   });

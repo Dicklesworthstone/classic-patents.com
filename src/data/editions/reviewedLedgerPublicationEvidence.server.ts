@@ -9,7 +9,12 @@ import {
 } from "./reviewedLedgerPublicationEvidence";
 
 function publicLedgerPath(url: string): string | null {
-  if (!url.startsWith("/patents/transcripts/") || !url.endsWith("-reviewed.txt")) return null;
+  if (
+    !/^\/patents\/transcripts\/[a-z0-9]+(?:-[a-z0-9]+)*-reviewed(?:-v[1-9]\d*)?\.txt$/.test(
+      url,
+    )
+  )
+    return null;
   const relativePath = normalize(url.replace(/^\/+/, ""));
   if (
     isAbsolute(relativePath) ||
