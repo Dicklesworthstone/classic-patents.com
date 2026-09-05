@@ -31,7 +31,6 @@ import {
   stepParsonsTurbine,
   stepPasteurFermentation,
   stepThomsonWelding,
-  stepWattCondenser,
   stepWhitneyCottonGin,
   stepWozniakApple,
   stepZeppelinAirship,
@@ -50,6 +49,7 @@ import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
 import { stepSpencerMicrowaveSource } from "./spencerMicrowaveKernel";
 import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "./teslaKernel";
 import { readTeslaTransformerControls, stepTeslaTransformerSi } from "./teslaTransformerKernel";
+import { readWattCondenserControls, stepWattCondenser } from "./wattCondenserKernel";
 
 import { readWrightControls, stepWrightFlyerSi, WRIGHT_GROSS_WEIGHT_N } from "./wrightKernel";
 
@@ -3195,13 +3195,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "filament heat", to: "thermionic flux", watts: 6.75 }];
   }
   if (patentId.includes("gb-913") || patentId.includes("watt-separate-condenser")) {
-    const watt = stepWattCondenser({
-      boilerPressurePsi: params.boilerPressurePsi,
-      condenserTempC: params.condenserTempC,
-      cylinderBoreInches: params.cylinderBoreInches,
-      pistonStrokeFeet: params.pistonStrokeFeet,
-      strokesPerMinute: params.strokesPerMinute,
-    });
+    const watt = stepWattCondenser(readWattCondenserControls(params));
     return [{ from: "furnace", to: "indicated", watts: watt.indicatedPowerKw * 1000 }];
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {

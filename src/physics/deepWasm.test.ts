@@ -8,6 +8,36 @@ import {
   stepNoyceIC,
 } from "./catalogKernels";
 import { coupleEdgesFor } from "./coupleGraph";
+import { readWattCondenserControls, stepWattCondenser } from "./wattCondenserKernel";
+
+test("Watt fuel comparison uses current geometry and a jacketed reference at the same operating point", () => {
+  const params = {
+    boilerPressurePsi: 6,
+    condenserTempC: 50,
+    cylinderBoreInches: 60,
+    pistonStrokeFeet: 8,
+    strokesPerMinute: 20,
+  };
+  const reference = stepWattCondenser(readWattCondenserControls(params));
+  for (const hasSeparateCondenser of [0, 1]) {
+    for (const hasSteamJacket of [0, 1]) {
+      const p = { ...params, hasSeparateCondenser, hasSteamJacket };
+      const current = stepWattCondenser(readWattCondenserControls(p));
+      const edge = coupleEdgesFor("gb-913-watt-separate-condenser", p)[0];
+      expect(edge.gain).toBeCloseTo(
+        current.specificFuelConsumptionKgPerKwh / reference.specificFuelConsumptionKgPerKwh,
+        3,
+      );
+      expect(edge.unit).toBe("× fuel/kWh");
+      expect(edge.to).toContain("scenario");
+      expect(edge.source).toBe("ts-fallback");
+    }
+  }
+  expect(
+    coupleEdgesFor("gb-913-watt-separate-condenser", { ...params, hasSteamJacket: 0 })[0].gain,
+  ).toBeGreaterThan(1);
+});
+
 import {
   autodiffDerivatives,
   bardeenPointPotential,
