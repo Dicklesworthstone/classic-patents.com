@@ -2891,6 +2891,33 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeSymbol).toBe("∂n_G / ∂f");
       expect(sens?.derivativeUnit).toBe("RPM / Hz");
       expect(sens?.derivativeValue).toBe(60);
+
+      // Frequency alias invariance
+      for (const alias of ["freq", "freqHz", "frequencyHz", "lineFrequency", "lineFreq"]) {
+        const sensAlias = computeParameterSensitivity(id, alias, { [alias]: freq });
+        expect(sensAlias?.derivativeValue).toBe(60);
+      }
+    }
+
+    // AC Hum binary sonification toggle
+    for (const humVal of [0, 1, false, true]) {
+      const sensHum = computeParameterSensitivity(id, "acHum", { acHum: humVal });
+      expect(sensHum).toBeDefined();
+      expect(sensHum?.metricName).toBe("Acoustic Hum Modulation State");
+      expect(sensHum?.derivativeSymbol).toBe("ΔState / ΔHum");
+      expect(sensHum?.derivativeValue).toBe(0);
+      expect(sensHum?.derivativeUnit).toBe("state");
+
+      // AC Hum aliases
+      for (const alias of ["hum", "audioHum", "audio"]) {
+        const sensAlias = computeParameterSensitivity(id, alias, { [alias]: humVal });
+        expect(sensAlias?.derivativeValue).toBe(0);
+      }
+    }
+
+    // Refusal of unsupported parameters
+    for (const unsupported of ["voltage", "current", "poles", "fieldStrength"]) {
+      expect(computeParameterSensitivity(id, unsupported, { frequency: 60 })).toBeNull();
     }
 
     // Invalid parameters
@@ -4401,15 +4428,23 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(
       computeParameterSensitivity(id, "aluminaConcentrationPct", hotLean)?.derivativeValue,
     ).toBeCloseTo(2.7511, 8);
-    const aliases = { current: 410000, tempC: 990, aluminaPct: 2.5 };
     for (const [canonical, alias] of [
       ["currentAmperes", "current"],
+      ["currentAmperes", "amperes"],
+      ["currentAmperes", "currentA"],
       ["bathTemperatureCelsius", "tempC"],
+      ["bathTemperatureCelsius", "bathTemp"],
+      ["bathTemperatureCelsius", "bathTempC"],
       ["aluminaConcentrationPct", "aluminaPct"],
+      ["aluminaConcentrationPct", "aluminaConcentration"],
+      ["aluminaConcentrationPct", "alumina"],
     ]) {
-      expect(computeParameterSensitivity(id, alias, aliases)).toEqual(
-        computeParameterSensitivity(id, canonical, hotLean),
-      );
+      expect(
+        computeParameterSensitivity(id, alias, {
+          ...hotLean,
+          [alias]: (hotLean as any)[canonical],
+        }),
+      ).toEqual(computeParameterSensitivity(id, canonical, hotLean));
     }
     expect(
       computeParameterSensitivity(id, "temperatureCelsius", {
@@ -6018,6 +6053,81 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensDetuned).toBeDefined();
     expect(sensDetuned?.derivativeValue).toBe(0);
 
+    // Rudder steeringAngle alias
+    const sensSteering = computeParameterSensitivity(id, "steeringAngle", {
+      steeringAngle: 15,
+      rfFrequency: 150,
+    });
+    expect(sensSteering?.derivativeValue).toBe(
+      computeParameterSensitivity(id, "rudderAngle", { rudderAngle: 15, rfFrequency: 150 })
+        ?.derivativeValue,
+    );
+
+    // Pulse count stepping sensitivity (1 pos / pulse)
+    for (const pulses of [0, 3, 7, 15]) {
+      const sensPulse = computeParameterSensitivity(id, "pulseCount", { pulseCount: pulses });
+      expect(sensPulse).toBeDefined();
+      expect(sensPulse?.metricName).toBe("Escapement Contact Disk Stepping");
+      expect(sensPulse?.derivativeSymbol).toBe("ΔIndex / ΔPulse");
+      expect(sensPulse?.derivativeValue).toBe(1);
+      expect(sensPulse?.derivativeUnit).toBe("pos / pulse");
+
+      // Pulse aliases
+      for (const alias of ["pulses", "commandPulses", "pulsesCount", "steps"]) {
+        const sensAlias = computeParameterSensitivity(id, alias, { [alias]: pulses });
+        expect(sensAlias?.derivativeValue).toBe(1);
+      }
+
+      // Claim 1 refusal on pulse stepping
+      const sensPulseRefused = computeParameterSensitivity(id, "pulseCount", {
+        pulseCount: pulses,
+        claim1Active: false,
+      });
+      expect(sensPulseRefused?.derivativeValue).toBe(0);
+    }
+
+    // RF carrier frequency resonance passband sensitivity (state / kHz)
+    const sensRfTuned = computeParameterSensitivity(id, "rfFrequency", { rfFrequency: 150 });
+    expect(sensRfTuned).toBeDefined();
+    expect(sensRfTuned?.metricName).toBe("RF Resonance Reception State");
+    expect(sensRfTuned?.derivativeSymbol).toBe("∂State / ∂f");
+    expect(sensRfTuned?.derivativeValue).toBe(0);
+    expect(sensRfTuned?.derivativeUnit).toBe("state / kHz");
+    expect(sensRfTuned?.interpretation).toContain("tuned within the 150 ± 5 kHz resonant passband");
+
+    const sensRfDetuned = computeParameterSensitivity(id, "rfFrequency", { rfFrequency: 120 });
+    expect(sensRfDetuned?.interpretation).toContain("detuned outside the 150 ± 5 kHz passband");
+
+    // RF frequency aliases
+    for (const alias of [
+      "transmitterFreqKhz",
+      "carrierFreqKhz",
+      "freq",
+      "frequency",
+      "rfFreqKhz",
+      "carrierFrequency",
+    ]) {
+      const sensAlias = computeParameterSensitivity(id, alias, { [alias]: 150 });
+      expect(sensAlias?.derivativeValue).toBe(0);
+      expect(sensAlias?.metricName).toBe("RF Resonance Reception State");
+    }
+
+    // Claim 1 rotary commutator logic sensitivity
+    for (const claimKey of [
+      "claim1RotaryCommutatorPresent",
+      "claim1",
+      "claim1Active",
+      "commutatorPresent",
+      "rotaryCommutator",
+    ]) {
+      const sensClaim = computeParameterSensitivity(id, claimKey, { [claimKey]: 1 });
+      expect(sensClaim).toBeDefined();
+      expect(sensClaim?.metricName).toBe("Claim 1 Rotary Commutator Logic");
+      expect(sensClaim?.derivativeSymbol).toBe("ΔState / ΔClaim1");
+      expect(sensClaim?.derivativeValue).toBe(0);
+      expect(sensClaim?.derivativeUnit).toBe("state");
+    }
+
     // Bounds checking
     for (const invalid of [-1, 51, Number.NaN]) {
       expect(computeParameterSensitivity(id, "pulseCount", { pulseCount: invalid })).toBeNull();
@@ -6097,6 +6207,28 @@ describe("Sensitivities follow the current admitted operating point", () => {
         });
         expect(sensLenRefused?.derivativeValue).toBe(0);
       }
+    }
+
+    // 5. Claim 1 Common Node Connection sensitivity and aliases
+    for (const claimKey of [
+      "claim1CommonNodeConnected",
+      "claim1",
+      "claim1Active",
+      "commonNode",
+      "earthNode",
+      "groundNode",
+      "nodeConnected",
+    ]) {
+      const sensClaim = computeParameterSensitivity(id, claimKey, {
+        disturbanceFrequencyHz: 925,
+        secondaryLengthMiles: 50,
+        [claimKey]: 1,
+      });
+      expect(sensClaim).toBeDefined();
+      expect(sensClaim?.metricName).toBe("Claim 1 Common Node Connection");
+      expect(sensClaim?.derivativeSymbol).toBe("ΔState / ΔClaim1");
+      expect(sensClaim?.derivativeValue).toBe(0);
+      expect(sensClaim?.derivativeUnit).toBe("state");
     }
 
     // Bounds checking

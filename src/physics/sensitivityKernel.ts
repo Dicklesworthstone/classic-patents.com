@@ -179,8 +179,16 @@ export function computeParameterSensitivity(
     }
 
     case "us-381968-tesla-motor": {
-      const freq = params.frequency ?? params.frequencyHz ?? 60;
-      const acHum = params.acHum ?? 1;
+      const freq =
+        params.frequency ??
+        params.frequencyHz ??
+        params.freq ??
+        params.freqHz ??
+        params.lineFrequency ??
+        params.lineFreq ??
+        60;
+      const rawHum = params.acHum ?? params.hum ?? params.audioHum ?? params.audio ?? 0;
+      const acHum = typeof rawHum === "boolean" ? (rawHum ? 1 : 0) : Number(rawHum);
 
       if (
         !Number.isFinite(freq) ||
@@ -193,7 +201,14 @@ export function computeParameterSensitivity(
         return null;
       }
 
-      if (controlKey === "frequency" || controlKey === "frequencyHz") {
+      if (
+        controlKey === "frequency" ||
+        controlKey === "frequencyHz" ||
+        controlKey === "freq" ||
+        controlKey === "freqHz" ||
+        controlKey === "lineFrequency" ||
+        controlKey === "lineFreq"
+      ) {
         // Fig. 9's source relation: one generator revolution advances the
         // magnetic attraction once around ring R.
         const dGeneratorRpm_df = 60;
@@ -203,6 +218,21 @@ export function computeParameterSensitivity(
           derivativeValue: dGeneratorRpm_df,
           derivativeUnit: "RPM / Hz",
           interpretation: "Each generator cycle advances the Fig. 9 pole-shift relation once.",
+        };
+      }
+      if (
+        controlKey === "acHum" ||
+        controlKey === "hum" ||
+        controlKey === "audioHum" ||
+        controlKey === "audio"
+      ) {
+        return {
+          metricName: "Acoustic Hum Modulation State",
+          derivativeSymbol: "ΔState / ΔHum",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation:
+            "Binary synthesized AC line-frequency hum audio monitor (Claim 1 generator rotation sonification); state toggle has no physical motor kinematics effect.",
         };
       }
       break;
@@ -642,10 +672,21 @@ export function computeParameterSensitivity(
     }
 
     case "us-400766-hall-aluminium": {
-      const current = params.currentAmperes ?? params.current ?? 300000.0;
+      const current =
+        params.currentAmperes ?? params.current ?? params.amperes ?? params.currentA ?? 300000.0;
       const tempC =
-        params.bathTemperatureCelsius ?? params.temperatureCelsius ?? params.tempC ?? 960;
-      const aluminaPct = params.aluminaConcentrationPct ?? params.aluminaPct ?? 5.5;
+        params.bathTemperatureCelsius ??
+        params.temperatureCelsius ??
+        params.tempC ??
+        params.bathTemp ??
+        params.bathTempC ??
+        960;
+      const aluminaPct =
+        params.aluminaConcentrationPct ??
+        params.aluminaPct ??
+        params.aluminaConcentration ??
+        params.alumina ??
+        5.5;
 
       if (
         !Number.isFinite(current) ||
@@ -667,11 +708,16 @@ export function computeParameterSensitivity(
         aluminaConcentrationPct: aluminaPct,
       });
       const key =
-        controlKey === "current"
+        controlKey === "current" || controlKey === "amperes" || controlKey === "currentA"
           ? "currentAmperes"
-          : controlKey === "temperatureCelsius" || controlKey === "tempC"
+          : controlKey === "temperatureCelsius" ||
+              controlKey === "tempC" ||
+              controlKey === "bathTemp" ||
+              controlKey === "bathTempC"
             ? "bathTemperatureCelsius"
-            : controlKey === "aluminaPct"
+            : controlKey === "aluminaPct" ||
+                controlKey === "aluminaConcentration" ||
+                controlKey === "alumina"
               ? "aluminaConcentrationPct"
               : controlKey;
       const slopes: Record<string, { value: number | null; symbol: string; unit: string }> = {
@@ -2530,20 +2576,51 @@ export function computeParameterSensitivity(
           interpretation: `Distributed-wave electrical phase angle gradient ($(360 f) / v$) at $f = ${fHz}$ Hz and $v = 185,000$ mi/s.`,
         };
       }
+      if (
+        controlKey === "claim1CommonNodeConnected" ||
+        controlKey === "claim1" ||
+        controlKey === "claim1Active" ||
+        controlKey === "commonNode" ||
+        controlKey === "earthNode" ||
+        controlKey === "groundNode" ||
+        controlKey === "nodeConnected"
+      ) {
+        return {
+          metricName: "Claim 1 Common Node Connection",
+          derivativeSymbol: "ΔState / ΔClaim1",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation:
+            "Claim 1 protects the electrical transformer having primary and secondary coils connected at one end to a common terminal and to earth. Withholding this connection prevents quarter-wave standing resonance.",
+        };
+      }
       break;
     }
 
     case "us-613809-tesla-teleautomaton": {
-      const pulseCount = params.pulseCount ?? params.pulses ?? 0;
+      const pulseCount =
+        params.pulseCount ??
+        params.pulses ??
+        params.commandPulses ??
+        params.pulsesCount ??
+        params.steps ??
+        0;
       const rfFreq =
         params.rfFrequency ??
         params.transmitterFreqKhz ??
         params.carrierFreqKhz ??
         params.freq ??
         params.frequency ??
+        params.rfFreqKhz ??
+        params.carrierFrequency ??
         150;
       const rudder =
-        params.rudderAngle ?? params.rudderAngleDeg ?? params.rudder ?? params.rudderDeg ?? 0;
+        params.rudderAngle ??
+        params.rudderAngleDeg ??
+        params.rudder ??
+        params.rudderDeg ??
+        params.steeringAngle ??
+        0;
       const throttle =
         params.propellerThrottlePct ??
         params.throttlePct ??
@@ -2551,12 +2628,23 @@ export function computeParameterSensitivity(
         params.motorThrottle ??
         params.propellerThrottle ??
         75;
+      const claim1 =
+        params.claim1RotaryCommutatorPresent !== undefined
+          ? params.claim1RotaryCommutatorPresent
+          : params.claim1Active !== undefined
+            ? params.claim1Active
+            : params.claim1 !== undefined
+              ? params.claim1
+              : params.commutatorPresent !== undefined
+                ? params.commutatorPresent
+                : params.rotaryCommutator !== undefined
+                  ? params.rotaryCommutator
+                  : true;
       const claim1Active =
-        params.claim1RotaryCommutatorPresent === undefined && params.claim1Active === undefined
-          ? true
-          : params.claim1RotaryCommutatorPresent !== undefined
-            ? Number(params.claim1RotaryCommutatorPresent) >= 0.5
-            : Boolean(params.claim1Active);
+        claim1 === true ||
+        claim1 === 1 ||
+        claim1 === "1" ||
+        String(claim1).toLowerCase() === "true";
 
       if (
         !Number.isFinite(pulseCount) ||
@@ -2586,7 +2674,8 @@ export function computeParameterSensitivity(
         controlKey === "rudderAngle" ||
         controlKey === "rudderAngleDeg" ||
         controlKey === "rudder" ||
-        controlKey === "rudderDeg"
+        controlKey === "rudderDeg" ||
+        controlKey === "steeringAngle"
       ) {
         if (!claim1Active) {
           return {
@@ -2633,6 +2722,67 @@ export function computeParameterSensitivity(
           interpretation: tele.relayEnergized
             ? `Electric motor screw propeller thrust scaling ($85 \\text{ N} \\times \\text{throttle}/100$) under tuned carrier resonance (${rfFreq} kHz).`
             : `RF receiver is detuned from 150 kHz resonance ($f = ${rfFreq}$ kHz); coherer remains high-resistance (100 kΩ) and propulsion relay is de-energized (0 N/%).`,
+        };
+      }
+      if (
+        controlKey === "pulseCount" ||
+        controlKey === "pulses" ||
+        controlKey === "commandPulses" ||
+        controlKey === "pulsesCount" ||
+        controlKey === "steps"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Escapement Contact Disk Stepping",
+            derivativeSymbol: "ΔIndex / ΔPulse",
+            derivativeValue: 0,
+            derivativeUnit: "pos / pulse",
+            interpretation:
+              "Claim 1 rotary commutator logic is withheld; command pulses fail to step auxiliary circuits.",
+          };
+        }
+        return {
+          metricName: "Escapement Contact Disk Stepping",
+          derivativeSymbol: "ΔIndex / ΔPulse",
+          derivativeValue: 1,
+          derivativeUnit: "pos / pulse",
+          interpretation:
+            "Each transmitted command pulse trips the sensitive relay and anchor escapement, advancing contact cylinder 8 by one 45° step (8-position sequence).",
+        };
+      }
+      if (
+        controlKey === "rfFrequency" ||
+        controlKey === "transmitterFreqKhz" ||
+        controlKey === "carrierFreqKhz" ||
+        controlKey === "freq" ||
+        controlKey === "frequency" ||
+        controlKey === "rfFreqKhz" ||
+        controlKey === "carrierFrequency"
+      ) {
+        return {
+          metricName: "RF Resonance Reception State",
+          derivativeSymbol: "∂State / ∂f",
+          derivativeValue: 0,
+          derivativeUnit: "state / kHz",
+          interpretation: tele.isResonant
+            ? `Carrier frequency (f = ${rfFreq} kHz) is tuned within the 150 ± 5 kHz resonant passband of receiver tank L-C; coherer conducts at 45 Ω.`
+            : `Carrier frequency (f = ${rfFreq} kHz) is detuned outside the 150 ± 5 kHz passband; coherer remains de-energized at 100 kΩ.`,
+        };
+      }
+      if (
+        controlKey === "claim1RotaryCommutatorPresent" ||
+        controlKey === "claim1" ||
+        controlKey === "claim1Active" ||
+        controlKey === "commutatorPresent" ||
+        controlKey === "rotaryCommutator"
+      ) {
+        return {
+          metricName: "Claim 1 Rotary Commutator Logic",
+          derivativeSymbol: "ΔState / ΔClaim1",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation:
+            "Claim 1 protects the rotary contact cylinder stepping mechanism discriminating command pulses to selectively actuate steering, propulsion, and signaling.",
         };
       }
       break;

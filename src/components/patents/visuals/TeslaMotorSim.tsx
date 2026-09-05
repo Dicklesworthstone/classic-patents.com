@@ -2,6 +2,7 @@
 
 import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import {
   stepTeslaMotorFig9,
   TESLA_FIELD_DISPLAY_SLOWDOWN,
@@ -332,6 +333,23 @@ export function TeslaMotorSim() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Sensitivity Controls */}
+      <div className="pt-2 border-t border-parchment-200 dark:border-ink-800">
+        <SensitivitySlider
+          id="tesla-motor-frequency-2d"
+          patentId="us-381968-tesla-motor"
+          paramKey="frequency"
+          label="Generator Phase-Cycle Rate"
+          value={frequencyHz}
+          min={20}
+          max={120}
+          step={1}
+          unit="Hz"
+          onChange={(val) => updateParam("frequency", val)}
+          allParams={params}
+        />
       </div>
     </div>
   );

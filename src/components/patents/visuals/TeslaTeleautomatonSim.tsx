@@ -13,10 +13,12 @@ export function TeslaTeleautomatonSim() {
   const rudderAngleDeg = params.rudderAngle ?? 15;
   const propellerThrottlePct = params.propellerThrottlePct ?? 75;
   const pulseCount = params.pulseCount ?? 3;
+  const rfFrequencyKhz = params.rfFrequency ?? 150;
   const [isTransmitting, setIsTransmitting] = useState<boolean>(false);
 
   // Radio & coherer kinematics
-  const cohererSensitivityPct = 96;
+  const isResonant = Math.abs(rfFrequencyKhz - 150) <= 5;
+  const cohererSensitivityPct = isResonant ? 96 : 4;
   const rotarySteppingPosition = pulseCount % 8;
   const commandState =
     rotarySteppingPosition === 0
@@ -37,7 +39,9 @@ export function TeslaTeleautomatonSim() {
 
   const handleSendPulse = () => {
     setIsTransmitting(true);
-    updateParam("pulseCount", (pulseCount + 1) % 20);
+    if (isResonant) {
+      updateParam("pulseCount", (pulseCount + 1) % 20);
+    }
     soundEngine.playSwitchClick();
     setTimeout(() => setIsTransmitting(false), 400);
   };
@@ -269,7 +273,13 @@ export function TeslaTeleautomatonSim() {
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
             Coherer Sensitivity
           </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
+          <span
+            className={`font-mono text-sm sm:text-base font-bold ${
+              isResonant
+                ? "text-emerald-700 dark:text-emerald-500"
+                : "text-red-700 dark:text-red-500"
+            }`}
+          >
             {cohererSensitivityPct}%
           </span>
         </div>
@@ -278,13 +288,33 @@ export function TeslaTeleautomatonSim() {
             Logic Status
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {isTransmitting ? "Receiving Wave" : "Standby"}
+            {isTransmitting
+              ? isResonant
+                ? "Receiving Wave"
+                : "Detuned (Ignored)"
+              : isResonant
+                ? "Tuned Standby"
+                : "Detuned Tank"}
           </span>
         </div>
       </div>
 
       {/* Sliders */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
+        <SensitivitySlider
+          id="teleautomaton-carrier-freq"
+          patentId="us-613809-tesla-teleautomaton"
+          paramKey="rfFrequency"
+          label="RF Carrier Frequency"
+          value={rfFrequencyKhz}
+          min={120}
+          max={180}
+          step={2}
+          unit="kHz"
+          onChange={(val) => updateParam("rfFrequency", val)}
+          allParams={params}
+        />
+
         <SensitivitySlider
           id="teleautomaton-rudder"
           patentId="us-613809-tesla-teleautomaton"

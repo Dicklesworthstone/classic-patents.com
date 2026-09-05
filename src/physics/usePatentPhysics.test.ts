@@ -1749,4 +1749,145 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       resetPatentPhysicsParams(id);
     }
   });
+
+  test("Tesla AC Motor aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-381968-tesla-motor";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.frequency));
+
+    try {
+      setPatentPhysicsParam(id, "freq", 90);
+      const params = getPatentPhysicsParams(id);
+      expect(params.frequency).toBe(90);
+      expect(params.freq).toBe(90);
+      expect(params.freqHz).toBe(90);
+      expect(params.lineFrequency).toBe(90);
+      expect(observations).toEqual([90]);
+
+      setPatentPhysicsParam(id, "hum", 1);
+      expect(getPatentPhysicsParams(id).acHum).toBe(1);
+      expect(getPatentPhysicsParams(id).hum).toBe(1);
+      expect(getPatentPhysicsParams(id).audioHum).toBe(1);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Generator rotation")?.value).toBe(
+        (90 * 60).toLocaleString(),
+      );
+      expect(metrics.find((m) => m.label === "Pole shift around ring")?.value).toBe(
+        (90 * 60).toLocaleString(),
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Hall Aluminium aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-400766-hall-aluminium";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.currentAmperes));
+
+    try {
+      setPatentPhysicsParam(id, "current", 400000);
+      const params = getPatentPhysicsParams(id);
+      expect(params.currentAmperes).toBe(400000);
+      expect(params.current).toBe(400000);
+      expect(params.amperes).toBe(400000);
+      expect(params.currentA).toBe(400000);
+      expect(observations).toEqual([400000]);
+
+      setPatentPhysicsParam(id, "tempC", 980);
+      expect(getPatentPhysicsParams(id).bathTemperatureCelsius).toBe(980);
+      expect(getPatentPhysicsParams(id).tempC).toBe(980);
+      expect(getPatentPhysicsParams(id).bathTemp).toBe(980);
+
+      setPatentPhysicsParam(id, "aluminaPct", 4.5);
+      expect(getPatentPhysicsParams(id).aluminaConcentrationPct).toBe(4.5);
+      expect(getPatentPhysicsParams(id).aluminaPct).toBe(4.5);
+      expect(getPatentPhysicsParams(id).alumina).toBe(4.5);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Cell Electrical Input")?.value).toBeDefined();
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Tesla High-Potential Transformer/Coil aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-593138-tesla-coil";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) =>
+      observations.push(p.disturbanceFrequencyHz),
+    );
+
+    try {
+      setPatentPhysicsParam(id, "freq", 1000);
+      const params = getPatentPhysicsParams(id);
+      expect(params.disturbanceFrequencyHz).toBe(1000);
+      expect(params.freq).toBe(1000);
+      expect(params.frequency).toBe(1000);
+      expect(observations).toEqual([1000]);
+
+      setPatentPhysicsParam(id, "wireLength", 60);
+      expect(getPatentPhysicsParams(id).secondaryLengthMiles).toBe(60);
+      expect(getPatentPhysicsParams(id).wireLength).toBe(60);
+      expect(getPatentPhysicsParams(id).lengthMiles).toBe(60);
+
+      setPatentPhysicsParam(id, "commonNode", 0);
+      expect(getPatentPhysicsParams(id).claim1CommonNodeConnected).toBe(0);
+      expect(getPatentPhysicsParams(id).commonNode).toBe(0);
+      expect(getPatentPhysicsParams(id).earthNode).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Electrical Length")?.value).toBeDefined();
+      expect(metrics.find((m) => m.label === "Quarter-Wave Target")?.value).toBeDefined();
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Tesla Teleautomaton Vessel aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-613809-tesla-teleautomaton";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.pulseCount));
+
+    try {
+      setPatentPhysicsParam(id, "steps", 5);
+      const params = getPatentPhysicsParams(id);
+      expect(params.pulseCount).toBe(5);
+      expect(params.steps).toBe(5);
+      expect(params.pulses).toBe(5);
+      expect(params.commandPulses).toBe(5);
+      expect(observations).toEqual([5]);
+
+      setPatentPhysicsParam(id, "carrierFrequency", 140);
+      expect(getPatentPhysicsParams(id).rfFrequency).toBe(140);
+      expect(getPatentPhysicsParams(id).carrierFrequency).toBe(140);
+      expect(getPatentPhysicsParams(id).transmitterFreqKhz).toBe(140);
+
+      setPatentPhysicsParam(id, "steeringAngle", 25);
+      expect(getPatentPhysicsParams(id).rudderAngle).toBe(25);
+      expect(getPatentPhysicsParams(id).steeringAngle).toBe(25);
+      expect(getPatentPhysicsParams(id).rudderDeg).toBe(25);
+
+      setPatentPhysicsParam(id, "motorThrottle", 90);
+      expect(getPatentPhysicsParams(id).propellerThrottlePct).toBe(90);
+      expect(getPatentPhysicsParams(id).motorThrottle).toBe(90);
+      expect(getPatentPhysicsParams(id).throttle).toBe(90);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Command State")?.value).toBe(
+        "COMMAND-STEPPED CONTROLLER",
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
 });
