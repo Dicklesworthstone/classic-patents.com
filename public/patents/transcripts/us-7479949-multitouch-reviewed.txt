@@ -1,5 +1,15 @@
 --- REVIEWED TRANSCRIPTION PAGE 1 OF 364 ---
 
+United States Patent
+Jobs et al.
+Patent No.: US 7,479,949 B2
+Date of Patent: *Jan. 20, 2009
+TOUCH SCREEN DEVICE, METHOD, AND GRAPHICAL USER INTERFACE FOR DETERMINING COMMANDS BY APPLYING HEURISTICS
+Assignee: Apple Inc., Cupertino, CA (US)
+This patent is subject to a terminal disclaimer.
+Appl. No.: 12/101,832
+Filed: Apr. 11, 2008
+
 Sheet 1 of 297 - Figures
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 364 ---

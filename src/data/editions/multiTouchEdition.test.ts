@@ -108,9 +108,14 @@ describe("US 7,479,949 Apple Multi-Touch Heuristics Archival Edition Contract", 
       "Appl. No.: 12/101,832",
       "Filed: Apr. 11, 2008",
     ]);
-    expect(multiTouchArchivalEdition.blocks.every((block) => block.kind !== "paragraph")).toBe(
-      true,
+    const paragraphIndexes = multiTouchArchivalEdition.blocks.flatMap((block, index) =>
+      block.kind === "paragraph" ? [index] : [],
     );
+    expect(paragraphIndexes).toEqual([1]);
+    expect(multiTouchArchivalEdition.blocks[1]).toMatchObject({
+      kind: "paragraph",
+      inlines: [{ text: "This patent is subject to a terminal disclaimer." }],
+    });
     const ledger = reviewedLedgerTextForViewer(multiTouchPatent);
     const evidence = evaluateReviewedLedgerTextEvidence(multiTouchPatent, ledger ?? "");
     expect(evidence).toMatchObject({ valid: true, coverageFraction: 1, missingClaimNumbers: [] });
