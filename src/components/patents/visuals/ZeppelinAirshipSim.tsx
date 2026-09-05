@@ -2,9 +2,12 @@
 
 import { Compass, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepZeppelinAirship } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function ZeppelinAirshipSim() {
@@ -15,12 +18,16 @@ export function ZeppelinAirshipSim() {
   const trimWeight = params.trimWeight ?? 5;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [pitchDeg, setPitchDeg] = useState<number>(0);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({
+    1: (params.claim1Active ?? 1) >= 0.5,
+  });
 
   const zep = stepZeppelinAirship({
     gasInflation: gasCellPurityPct,
     flightAlt: params.flightAlt ?? 300,
     flightSpeedKnots,
     trimWeight,
+    claim1Active: claimStates[1] ?? true,
   });
   const usefulPayloadKg = zep.usefulPayloadKg;
   const pitchTrimDeg = zep.pitchTrimDeg;
@@ -253,42 +260,43 @@ export function ZeppelinAirshipSim() {
 
       {/* Sliders */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Sliding Trim Weight Position (Keel)</span>
-            <span className="font-mono">
-              {trimWeight} ({pitchTrimDeg}°{" "}
-              {trimWeight < 0 ? "bow" : trimWeight > 0 ? "stern" : "level"})
-            </span>
-          </div>
-          <input
-            type="range"
-            aria-label="Sliding keel trim-weight position"
-            min="-15"
-            max="15"
-            step="1"
-            value={trimWeight}
-            onChange={(e) => updateParam("trimWeight", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Gas Cell Hydrogen Purity / Inflation</span>
-            <span className="font-mono">{gasCellPurityPct}%</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Hydrogen gas-cell purity and inflation percentage"
-            min="75"
-            max="100"
-            step="1"
-            value={gasCellPurityPct}
-            onChange={(e) => updateParam("gasInflation", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="zeppelinTrimWeight"
+          patentId="us-621195-zeppelin-airship"
+          paramKey="trimWeight"
+          label="Sliding Trim Weight Position (Keel)"
+          value={trimWeight}
+          min={-15}
+          max={15}
+          step={1}
+          unit=" m"
+          onChange={(val) => updateParam("trimWeight", val)}
+          allParams={params}
+        />
+        <SensitivitySlider
+          id="zeppelinGasInflation"
+          patentId="us-621195-zeppelin-airship"
+          paramKey="gasInflation"
+          label="Gas Cell Hydrogen Inflation"
+          value={gasCellPurityPct}
+          min={75}
+          max={100}
+          step={1}
+          unit="%"
+          onChange={(val) => updateParam("gasInflation", val)}
+          allParams={params}
+        />
       </div>
+
+      <ClaimConstraintToggle
+        patentId="us-621195-zeppelin-airship"
+        claimStates={claimStates}
+        onToggleClaim={(claimNo, active) => {
+          setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
+          updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0);
+        }}
+        className="mt-4"
+      />
     </div>
   );
 }

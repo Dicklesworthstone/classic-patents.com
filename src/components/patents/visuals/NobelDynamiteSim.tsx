@@ -2,9 +2,12 @@
 
 import { Flame, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { nobelKieselguhrSvg, stepNobelDynamite } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function NobelDynamiteSim() {
@@ -13,10 +16,14 @@ export function NobelDynamiteSim() {
   const nitroglycerinRatioPct = params.ngConcentrationPct ?? 75;
   const capEnergyJoules = params.capEnergyJoules ?? 1.2;
   const [isDetonated, setIsDetonated] = useState<boolean>(false);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({
+    1: (params.claim1Active ?? 1) >= 0.5,
+  });
 
   const nobel = stepNobelDynamite({
     ngConcentrationPct: nitroglycerinRatioPct,
     capEnergyJoules,
+    claim1Active: claimStates[1] ?? true,
   });
   const detonationVelocityMps = nobel.detonationVelocityMps;
   const peakPressureGpa = nobel.blastOverpressureGpa;
@@ -243,41 +250,43 @@ export function NobelDynamiteSim() {
 
       {/* Sliders */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Nitroglycerin Mass Ratio</span>
-            <span className="font-mono">
-              {nitroglycerinRatioPct}% GTN / {100 - nitroglycerinRatioPct}% Earth
-            </span>
-          </div>
-          <input
-            type="range"
-            aria-label="Nitroglycerin mass ratio percentage"
-            min="50"
-            max="85"
-            step="1"
-            value={nitroglycerinRatioPct}
-            onChange={(e) => updateParam("ngConcentrationPct", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Blasting Cap Primer Energy</span>
-            <span className="font-mono">{capEnergyJoules} Joules</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Blasting cap primer energy in joules"
-            min="0.1"
-            max="2.5"
-            step="0.1"
-            value={capEnergyJoules}
-            onChange={(e) => updateParam("capEnergyJoules", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="nobelNgRatio"
+          patentId="us-78317-nobel-dynamite"
+          paramKey="ngConcentrationPct"
+          label="Nitroglycerin Mass Ratio"
+          value={nitroglycerinRatioPct}
+          min={50}
+          max={85}
+          step={1}
+          unit="% GTN"
+          onChange={(val) => updateParam("ngConcentrationPct", val)}
+          allParams={params}
+        />
+        <SensitivitySlider
+          id="nobelCapEnergy"
+          patentId="us-78317-nobel-dynamite"
+          paramKey="capEnergyJoules"
+          label="Blasting Cap Primer Energy"
+          value={capEnergyJoules}
+          min={0.2}
+          max={3.0}
+          step={0.1}
+          unit=" J"
+          onChange={(val) => updateParam("capEnergyJoules", val)}
+          allParams={params}
+        />
       </div>
+
+      <ClaimConstraintToggle
+        patentId="us-78317-nobel-dynamite"
+        claimStates={claimStates}
+        onToggleClaim={(claimNo, active) => {
+          setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
+          updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0);
+        }}
+        className="mt-4"
+      />
     </div>
   );
 }

@@ -86,6 +86,9 @@ export interface BardeenPointContactState {
   readonly sample: BardeenOperatingSample;
   readonly pointSpacingMils: number;
   readonly pointSpacingMicrometers: number;
+  readonly pointSpacingMicrometersUnrounded: number;
+  readonly pointSpacingSlopeUmPerMil: number;
+  readonly pointGapSvgPxSlope: number;
   readonly withinPreferredSpacing: boolean;
   readonly claim1Active: boolean;
   readonly collectorCollectionActive: boolean;
@@ -117,11 +120,15 @@ export function stepBardeenPointContact(
   const sample = BARDEEN_REPORTED_SAMPLES[sampleNumber(controls.operatingSample)];
   const pointSpacingMils = clamp(controls.pointSpacingMils ?? 2, 1, 10);
   const claim1Active = controls.claim1Active ?? true;
+  const pointSpacingMicrometersUnrounded = pointSpacingMils * 25.4;
 
   return {
     sample,
     pointSpacingMils,
-    pointSpacingMicrometers: Number((pointSpacingMils * 25.4).toFixed(1)),
+    pointSpacingMicrometers: Number(pointSpacingMicrometersUnrounded.toFixed(1)),
+    pointSpacingMicrometersUnrounded,
+    pointSpacingSlopeUmPerMil: 25.4,
+    pointGapSvgPxSlope: 4.2,
     withinPreferredSpacing: pointSpacingMils >= 1 && pointSpacingMils <= 10,
     claim1Active,
     collectorCollectionActive: claim1Active,

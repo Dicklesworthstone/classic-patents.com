@@ -740,19 +740,40 @@ export function delavalSchematicDiscY(index: number, originY = 100, pitchY = 20)
 export function stepNobelDynamite(params: {
   ngConcentrationPct?: number;
   capEnergyJoules?: number;
+  claim1Active?: boolean | number;
 }) {
+  const claim1 =
+    params.claim1Active !== undefined
+      ? typeof params.claim1Active === "number"
+        ? params.claim1Active >= 0.5
+        : Boolean(params.claim1Active)
+      : true;
   const ng = params.ngConcentrationPct ?? 75;
   const cap = params.capEnergyJoules ?? 1.2;
-  const isInitiated = cap >= 0.4;
-  const blastOverpressureMpa = isInitiated ? Math.round(4500 + (ng - 50) * 120) : 0;
-  const detonationVelocityMps = isInitiated ? Math.round(5500 + (ng - 50) * 80) : 0;
+  const isInitiated = claim1 && cap >= 0.4;
+  const blastOverpressureMpaUnrounded = isInitiated ? 4500 + (ng - 50) * 120 : 0;
+  const blastOverpressureMpa = Math.round(blastOverpressureMpaUnrounded);
+  const detonationVelocityMpsUnrounded = isInitiated ? 5500 + (ng - 50) * 80 : 0;
+  const detonationVelocityMps = Math.round(detonationVelocityMpsUnrounded);
+  const blastOverpressureGpaUnrounded = blastOverpressureMpaUnrounded / 1000;
+  const detonationVelocitySlopeMpsPerPct = isInitiated ? 80.0 : 0;
+  const blastOverpressureSlopeGpaPerPct = isInitiated ? 0.12 : 0;
+  const energyMjPerKgUnrounded = (ng / 100) * 6.3;
+  const energySlopeMjPerKgPerPct = 0.063;
   return {
     capEnergyJoules: cap,
     detonationVelocityMps,
+    detonationVelocityMpsUnrounded,
+    detonationVelocitySlopeMpsPerPct,
     isInitiated,
     blastOverpressureMpa,
+    blastOverpressureMpaUnrounded,
     blastOverpressureGpa: Number((blastOverpressureMpa / 1000).toFixed(1)),
-    energyMjPerKg: Number(((ng / 100) * 6.3).toFixed(2)),
+    blastOverpressureGpaUnrounded,
+    blastOverpressureSlopeGpaPerPct,
+    energyMjPerKg: Number(energyMjPerKgUnrounded.toFixed(2)),
+    energyMjPerKgUnrounded,
+    energySlopeMjPerKgPerPct,
     // Free NG vs kieselguhr dough: more dry meal → higher drop-hammer margin.
     cushionFactor: Number((1 + (100 - ng) / 8.9).toFixed(1)),
     isSensitiveUnsafe: ng > 82,
@@ -1743,7 +1764,14 @@ export function stepZeppelinAirship(params: {
   forwardSpeedKmh?: number;
   trimWeight?: number;
   trimWeightPosM?: number;
+  claim1Active?: boolean | number;
 }) {
+  const claim1 =
+    params.claim1Active !== undefined
+      ? typeof params.claim1Active === "number"
+        ? params.claim1Active >= 0.5
+        : Boolean(params.claim1Active)
+      : true;
   const inflation = params.gasInflation ?? params.gasInflationPct ?? 95;
   const alt = params.flightAlt ?? params.altitudeM ?? 300;
   const speedKmh = params.forwardSpeedKmh ?? (params.flightSpeedKnots ?? 28) * 1.852;
@@ -1751,18 +1779,32 @@ export function stepZeppelinAirship(params: {
   const rhoAir = 1.225 * Math.exp(-alt / 8400);
   const rhoH2 = 0.089 * Math.exp(-alt / 8400);
   const totalVolumeM3 = 11300 * (inflation / 100);
-  const grossBuoyancyKn = Number(((totalVolumeM3 * 9.81 * (rhoAir - rhoH2)) / 1000).toFixed(1));
-  const netLiftKn = Number((grossBuoyancyKn - 98.0).toFixed(1));
+  const grossBuoyancyKnUnrounded = (totalVolumeM3 * 9.81 * (rhoAir - rhoH2)) / 1000;
+  const grossBuoyancyKn = Number(grossBuoyancyKnUnrounded.toFixed(1));
+  const netLiftKnUnrounded = grossBuoyancyKnUnrounded - 98.0;
+  const netLiftKn = Number(netLiftKnUnrounded.toFixed(1));
   const propellerRpm = Math.round((speedKmh / 1.60934 / 17.5) * 1000);
   const buoyantSlopeNPerPct = 113 * 9.81 * (rhoAir - rhoH2);
-  const pitchTrimSlopeDegPerM = (300 * 9.81) / 15000;
+  const altitudeLiftSlopeKnPerM = -(grossBuoyancyKnUnrounded / 8400);
+  const pitchTrimSlopeDegPerM = claim1 ? (300 * 9.81) / 15000 : 0;
+  const speedMps = speedKmh / 3.6;
+  const parasiteDragKnUnrounded = (0.5 * rhoAir * speedMps ** 2 * 85 * 0.025) / 1000;
+  const parasiteDragKn = Number(parasiteDragKnUnrounded.toFixed(2));
+  const dragSlopeKnPerKmh = (rhoAir * speedMps * (1 / 3.6) * 85 * 0.025) / 1000;
+  const dragSlopeKnPerKnot = dragSlopeKnPerKmh * 1.852;
   return {
     grossBuoyancyKn,
+    grossBuoyancyKnUnrounded,
     netLiftKn,
+    netLiftKnUnrounded,
     buoyantSlopeNPerPct,
+    altitudeLiftSlopeKnPerM,
     pitchTrimSlopeDegPerM,
-    pitchTrimDeg: Number(((trimM * 300 * 9.81) / 15000).toFixed(1)),
-    parasiteDragKn: Number(((0.5 * rhoAir * (speedKmh / 3.6) ** 2 * 85 * 0.025) / 1000).toFixed(2)),
+    pitchTrimDeg: Number((trimM * pitchTrimSlopeDegPerM).toFixed(1)),
+    parasiteDragKn,
+    parasiteDragKnUnrounded,
+    dragSlopeKnPerKmh,
+    dragSlopeKnPerKnot,
     ambientAirDensityKgM3: Number(rhoAir.toFixed(3)),
     hydrogenVolumeM3: totalVolumeM3,
     ...liftHeatCrate(totalVolumeM3),

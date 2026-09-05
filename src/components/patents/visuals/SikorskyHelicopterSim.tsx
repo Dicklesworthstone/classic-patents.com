@@ -3,7 +3,11 @@
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
-import { applyClaimConstraintModifications } from "@/physics/claimConstraints";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import {
+  applyClaimConstraintModifications,
+  claimConstraintStateParamId,
+} from "@/physics/claimConstraints";
 import {
   DEFAULT_SIKORSKY_CONTROLS,
   INITIAL_SIKORSKY_STATE,
@@ -151,43 +155,33 @@ export const SikorskyHelicopterSim: React.FC = () => {
             </span>
           </div>
 
-          <div>
-            <div className="flex justify-between text-stone-400 mb-1">
-              <span>Collective Pitch Lever (Vertical Lift)</span>
-            </div>
-            <input
-              type="range"
-              aria-label="Collective pitch lever angle in degrees"
-              min={2.0}
-              max={16.0}
-              step={0.2}
-              value={controls.collectivePitchDeg}
-              onChange={(e) => setControl("collectivePitchDeg", parseFloat(e.target.value))}
-              className="w-full accent-amber-500 bg-stone-800 rounded h-1.5 cursor-pointer"
-            />
-            <div className="flex justify-between text-[10px] text-stone-500 mt-0.5">
-              <span>2° (Descent)</span>
-              <span>6.8° (Scenario Trim)</span>
-              <span>16° (High Pitch)</span>
-            </div>
-          </div>
+          <SensitivitySlider
+            id="sikorskySimCollective"
+            patentId={PATENT_ID}
+            paramKey="collectivePitchDeg"
+            label="Collective Pitch Lever (Vertical Lift)"
+            value={controls.collectivePitchDeg}
+            min={2.0}
+            max={16.0}
+            step={0.2}
+            unit="°"
+            onChange={(val) => setControl("collectivePitchDeg", val)}
+            allParams={params}
+          />
 
-          <div>
-            <div className="flex justify-between text-stone-400 mb-1">
-              <span>Engine Throttle Base</span>
-              <span className="font-mono text-stone-300">{controls.engineThrottlePercent}%</span>
-            </div>
-            <input
-              type="range"
-              aria-label="Engine throttle base percentage"
-              min={0}
-              max={100}
-              step={1}
-              value={controls.engineThrottlePercent}
-              onChange={(e) => setControl("engineThrottlePercent", parseFloat(e.target.value))}
-              className="w-full accent-teal-500 bg-stone-800 rounded h-1.5 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="sikorskySimThrottle"
+            patentId={PATENT_ID}
+            paramKey="engineThrottlePercent"
+            label="Engine Throttle Base"
+            value={controls.engineThrottlePercent}
+            min={0}
+            max={100}
+            step={1}
+            unit="%"
+            onChange={(val) => setControl("engineThrottlePercent", val)}
+            allParams={params}
+          />
 
           <div className="flex items-center justify-between pt-1">
             <span className="text-stone-400">Engine Ignition State</span>
@@ -215,48 +209,33 @@ export const SikorskyHelicopterSim: React.FC = () => {
             </span>
           </div>
 
-          <div>
-            <div className="flex justify-between text-stone-400 mb-1">
-              <span>Fore/Aft Cyclic (Pitch Stick)</span>
-            </div>
-            <input
-              type="range"
-              aria-label="Fore and aft cyclic pitch angle in degrees"
-              min={-10.0}
-              max={10.0}
-              step={0.5}
-              value={controls.cyclicPitchForwardDeg}
-              onChange={(e) => setControl("cyclicPitchForwardDeg", parseFloat(e.target.value))}
-              className="w-full accent-cyan-500 bg-stone-800 rounded h-1.5 cursor-pointer"
-            />
-            <div className="flex justify-between text-[10px] text-stone-500 mt-0.5">
-              <span>-10° (Aft/Brake)</span>
-              <span>0° (Level)</span>
-              <span>+10° (Forward)</span>
-            </div>
-          </div>
+          <SensitivitySlider
+            id="sikorskySimCyclicPitch"
+            patentId={PATENT_ID}
+            paramKey="cyclicPitchForwardDeg"
+            label="Fore/Aft Cyclic (Pitch Stick)"
+            value={controls.cyclicPitchForwardDeg}
+            min={-10.0}
+            max={10.0}
+            step={0.5}
+            unit="°"
+            onChange={(val) => setControl("cyclicPitchForwardDeg", val)}
+            allParams={params}
+          />
 
-          <div>
-            <div className="flex justify-between text-stone-400 mb-1">
-              <span>Anti-Torque Rudder Pedals (Yaw)</span>
-              <span className="font-mono text-stone-300">{controls.tailRotorPedalPercent}%</span>
-            </div>
-            <input
-              type="range"
-              aria-label="Anti-torque rudder pedal percentage"
-              min={-100}
-              max={100}
-              step={5}
-              value={controls.tailRotorPedalPercent}
-              onChange={(e) => setControl("tailRotorPedalPercent", parseFloat(e.target.value))}
-              className="w-full accent-purple-500 bg-stone-800 rounded h-1.5 cursor-pointer"
-            />
-            <div className="flex justify-between text-[10px] text-stone-500 mt-0.5">
-              <span>Left Turn</span>
-              <span>Trim Balanced</span>
-              <span>Right Turn</span>
-            </div>
-          </div>
+          <SensitivitySlider
+            id="sikorskySimPedals"
+            patentId={PATENT_ID}
+            paramKey="tailRotorPedalPercent"
+            label="Anti-Torque Rudder Pedals (Yaw)"
+            value={controls.tailRotorPedalPercent}
+            min={-100}
+            max={100}
+            step={5}
+            unit="%"
+            onChange={(val) => setControl("tailRotorPedalPercent", val)}
+            allParams={params}
+          />
 
           <div className="flex justify-between items-center text-[11px] text-stone-400 pt-1">
             <span>Correlated Throttle:</span>
@@ -345,9 +324,10 @@ export const SikorskyHelicopterSim: React.FC = () => {
         <ClaimConstraintToggle
           patentId={PATENT_ID}
           claimStates={claimStates}
-          onClaimStateChange={(num, active) =>
-            setClaimStates((prev) => ({ ...prev, [num]: active }))
-          }
+          onClaimStateChange={(num, active) => {
+            setClaimStates((prev) => ({ ...prev, [num]: active }));
+            updateParam(claimConstraintStateParamId(num), active ? 1 : 0);
+          }}
         />
       </div>
     </div>

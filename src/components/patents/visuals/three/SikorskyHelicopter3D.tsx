@@ -3,7 +3,11 @@
 import { Eye, EyeOff, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
-import { applyClaimConstraintModifications } from "@/physics/claimConstraints";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import {
+  applyClaimConstraintModifications,
+  claimConstraintStateParamId,
+} from "@/physics/claimConstraints";
 import {
   INITIAL_SIKORSKY_STATE,
   readSikorskyControls,
@@ -198,73 +202,61 @@ export function SikorskyHelicopter3D({ patentId = PATENT_ID }: { patentId?: stri
         {/* Interactive Controls Overlay */}
         {interfaceVisible && (
           <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl bg-stone-950/85 border border-stone-800/80 backdrop-blur-md z-10 flex flex-col md:flex-row gap-4 justify-between items-center text-xs text-stone-200">
-            <div className="flex-1 w-full space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-amber-400">Collective Pitch Lever</span>
-                <span className="font-mono text-emerald-400">{collective.toFixed(1)}°</span>
-              </div>
-              <input
-                type="range"
-                aria-label="Collective pitch lever"
-                min={2.0}
-                max={16.0}
-                step={0.2}
-                value={collective}
-                onChange={(e) => updateParam("collectivePitchDeg", parseFloat(e.target.value))}
-                className="w-full accent-amber-500 bg-stone-800 rounded h-1.5 cursor-pointer"
-              />
-            </div>
+            <SensitivitySlider
+              id="sikorsky3dCollective"
+              patentId={patentId}
+              paramKey="collectivePitchDeg"
+              label="Collective Pitch Lever"
+              value={collective}
+              min={2.0}
+              max={16.0}
+              step={0.2}
+              unit="°"
+              onChange={(val) => updateParam("collectivePitchDeg", val)}
+              allParams={params}
+            />
 
-            <div className="flex-1 w-full space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-cyan-400">Fore/Aft Cyclic Stick</span>
-                <span className="font-mono text-cyan-400">{cyclicPitch.toFixed(1)}°</span>
-              </div>
-              <input
-                type="range"
-                aria-label="Fore and aft cyclic stick"
-                min={-10.0}
-                max={10.0}
-                step={0.5}
-                value={cyclicPitch}
-                onChange={(e) => updateParam("cyclicPitchForwardDeg", parseFloat(e.target.value))}
-                className="w-full accent-cyan-500 bg-stone-800 rounded h-1.5 cursor-pointer"
-              />
-            </div>
+            <SensitivitySlider
+              id="sikorsky3dCyclicPitch"
+              patentId={patentId}
+              paramKey="cyclicPitchForwardDeg"
+              label="Fore/Aft Cyclic Stick"
+              value={cyclicPitch}
+              min={-10.0}
+              max={10.0}
+              step={0.5}
+              unit="°"
+              onChange={(val) => updateParam("cyclicPitchForwardDeg", val)}
+              allParams={params}
+            />
 
-            <div className="flex-1 w-full space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-sky-400">Lateral Cyclic Roll</span>
-                <span className="font-mono text-sky-400">{cyclicRoll.toFixed(1)}°</span>
-              </div>
-              <input
-                type="range"
-                aria-label="Lateral cyclic roll"
-                min={-10.0}
-                max={10.0}
-                step={0.5}
-                value={cyclicRoll}
-                onChange={(e) => updateParam("cyclicRollRightDeg", parseFloat(e.target.value))}
-                className="w-full accent-sky-500 bg-stone-800 rounded h-1.5 cursor-pointer"
-              />
-            </div>
+            <SensitivitySlider
+              id="sikorsky3dCyclicRoll"
+              patentId={patentId}
+              paramKey="cyclicRollRightDeg"
+              label="Lateral Cyclic Roll"
+              value={cyclicRoll}
+              min={-10.0}
+              max={10.0}
+              step={0.5}
+              unit="°"
+              onChange={(val) => updateParam("cyclicRollRightDeg", val)}
+              allParams={params}
+            />
 
-            <div className="flex-1 w-full space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-purple-400">Anti-Torque Rudder Pedals</span>
-                <span className="font-mono text-purple-400">{pedals.toFixed(0)}%</span>
-              </div>
-              <input
-                type="range"
-                aria-label="Anti-torque rudder pedals"
-                min={-100}
-                max={100}
-                step={5}
-                value={pedals}
-                onChange={(e) => updateParam("tailRotorPedalPercent", parseFloat(e.target.value))}
-                className="w-full accent-purple-500 bg-stone-800 rounded h-1.5 cursor-pointer"
-              />
-            </div>
+            <SensitivitySlider
+              id="sikorsky3dPedals"
+              patentId={patentId}
+              paramKey="tailRotorPedalPercent"
+              label="Anti-Torque Rudder Pedals"
+              value={pedals}
+              min={-100}
+              max={100}
+              step={5}
+              unit="%"
+              onChange={(val) => updateParam("tailRotorPedalPercent", val)}
+              allParams={params}
+            />
 
             <div className="flex items-center gap-2">
               <button
@@ -304,9 +296,10 @@ export function SikorskyHelicopter3D({ patentId = PATENT_ID }: { patentId?: stri
         <ClaimConstraintToggle
           patentId={patentId}
           claimStates={claimStates}
-          onClaimStateChange={(num, active) =>
-            setClaimStates((prev) => ({ ...prev, [num]: active }))
-          }
+          onClaimStateChange={(num, active) => {
+            setClaimStates((prev) => ({ ...prev, [num]: active }));
+            updateParam(claimConstraintStateParamId(num), active ? 1 : 0);
+          }}
         />
       </div>
     </section>

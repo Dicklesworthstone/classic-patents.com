@@ -61,6 +61,10 @@ export interface SikorskyHelicopterMetrics {
   isHovering: boolean;
   isInGroundEffect: boolean;
   autorotationState: boolean;
+  mainRotorThrustNewtonsUnrounded?: number;
+  mainRotorThrustSlopeNPerDeg?: number;
+  antiTorqueYawMomentSlopeNmPerPct?: number;
+  engineThrottleRpmSlope?: number;
 }
 
 export const DEFAULT_SIKORSKY_CONTROLS: SikorskyHelicopterControls = {
@@ -377,8 +381,21 @@ export function stepSikorskyHelicopterSi(
     clutchEngaged,
   };
 
+  const mainRotorThrustSlopeNPerDeg =
+    0.00055 *
+    SIKORSKY_SCENARIO.airDensityKgM3 *
+    MAIN_ROTOR_DISK_AREA *
+    (tipSpeed * tipSpeed) *
+    igeMultiplier;
+  const antiTorqueYawMomentSlopeNmPerPct = controls.auxiliaryRotorEnabled ? -21.6 : 0;
+  const engineThrottleRpmSlope = controls.engineRunning ? 0.8 : 0;
+
   const metrics: SikorskyHelicopterMetrics = {
     mainRotorThrustNewtons: thrustN,
+    mainRotorThrustNewtonsUnrounded: thrustN,
+    mainRotorThrustSlopeNPerDeg,
+    antiTorqueYawMomentSlopeNmPerPct,
+    engineThrottleRpmSlope,
     mainRotorTorqueNm,
     mainRotorPowerWatts: mainRotorPower,
     tailRotorThrustNewtons: tailRotorThrustN,

@@ -1,13 +1,16 @@
 "use client";
 
 import { Cpu, RotateCcw } from "lucide-react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import {
   BARDEEN_REPORTED_SAMPLES,
   type BardeenOperatingSampleNumber,
   bardeenCarrierPath,
   stepBardeenPointContact,
 } from "@/physics/bardeenPointContactKernel";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
 
 export function BardeenTransistorSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-2524035-bardeen-transistor");
@@ -283,47 +286,27 @@ export function BardeenTransistorSim() {
               </div>
             </div>
 
-            {/* Contact Spacing Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Preferred contact spacing
-                </span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {state.pointSpacingMils} mils ({state.pointSpacingMicrometers} µm)
-                </span>
-              </div>
-              <input
-                type="range"
-                aria-label="Point Contact Spacing"
-                min="1"
-                max="10"
-                step="0.5"
-                value={state.pointSpacingMils}
-                onChange={(e) => updateParam("pointSpacingMils", Number(e.target.value))}
-                className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-              />
-            </div>
+            <SensitivitySlider
+              id="bardeenSimPointSpacing"
+              patentId="us-2524035-bardeen-transistor"
+              paramKey="pointSpacingMils"
+              label="Preferred Contact Spacing"
+              value={state.pointSpacingMils}
+              min={1}
+              max={10}
+              step={0.5}
+              unit=" mils"
+              onChange={(val) => updateParam("pointSpacingMils", val)}
+              allParams={params}
+            />
 
-            <button
-              type="button"
-              aria-pressed={claim1Active}
-              onClick={() => updateParam("claim1Active", claim1Active ? 0 : 1)}
-              className={`w-full rounded-xl border px-4 py-3 text-left transition-colors ${
-                claim1Active
-                  ? "border-blue-600 bg-blue-600 text-white"
-                  : "border-parchment-300 dark:border-ink-700 text-ink-800 dark:text-parchment-200"
-              }`}
-            >
-              <span className="block font-mono text-xs uppercase tracking-wide">
-                Claim 1 collection topology
-              </span>
-              <span className="mt-1 block text-sm">
-                {claim1Active
-                  ? "Emitter current can spread through the surface layer to the nearby collector."
-                  : "Collector path removed: the claimed three-electrode combination is incomplete."}
-              </span>
-            </button>
+            <ClaimConstraintToggle
+              patentId="us-2524035-bardeen-transistor"
+              claimStates={{ 1: claim1Active }}
+              onToggleClaim={(claimNo, active) => {
+                updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0);
+              }}
+            />
 
             <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-ink-950 dark:text-parchment-100 text-xs sm:text-sm font-sans">
               <span className="font-bold text-emerald-900 dark:text-emerald-300 block font-mono text-xs uppercase tracking-wider mb-1">

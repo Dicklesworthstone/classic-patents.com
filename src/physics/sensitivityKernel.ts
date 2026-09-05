@@ -10,6 +10,7 @@
  * use automatic differentiation; the unused Dual class was removed.
  */
 
+import { stepBardeenPointContact } from "./bardeenPointContactKernel";
 import {
   stepBaekelandBakelite,
   stepBellTelephone,
@@ -35,6 +36,7 @@ import {
   stepLandPolaroidInstantFilm,
   stepLincolnBuoy,
   stepMorseTelegraph,
+  stepNobelDynamite,
   stepOttoEngine,
   stepParsonsTurbine,
   stepTeslaTeleautomaton,
@@ -2767,6 +2769,61 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-2524035-bardeen-transistor": {
+      const spacing =
+        params.pointSpacingMils ??
+        params.pointSpacing ??
+        params.spacing ??
+        params.spacingMils ??
+        params.contactSpacing ??
+        2;
+      const sample =
+        params.operatingSample ?? params.sample ?? params.sampleNumber ?? params.tableSample ?? 1;
+      const claim1Active =
+        params.claim1Active !== undefined
+          ? typeof params.claim1Active === "number"
+            ? params.claim1Active >= 0.5
+            : Boolean(params.claim1Active)
+          : true;
+
+      if (
+        !Number.isFinite(spacing) ||
+        spacing < 1 ||
+        spacing > 10 ||
+        !Number.isFinite(sample) ||
+        sample < 1 ||
+        sample > 3
+      ) {
+        return null;
+      }
+
+      const state = stepBardeenPointContact({
+        operatingSample: sample,
+        pointSpacingMils: spacing,
+        claim1Active,
+      });
+
+      if (
+        controlKey === "pointSpacingMils" ||
+        controlKey === "pointSpacing" ||
+        controlKey === "spacing" ||
+        controlKey === "spacingMils" ||
+        controlKey === "contactSpacing" ||
+        controlKey === "pointSpacingMicrons"
+      ) {
+        return {
+          metricName: "Point Contact Spacing",
+          derivativeSymbol: "∂d / ∂s",
+          derivativeValue: claim1Active ? state.pointSpacingSlopeUmPerMil : 0,
+          derivativeUnit: "µm / mil",
+          interpretation: claim1Active
+            ? "Linear mechanical-to-metric conversion of gold point contact spacing on the germanium crystal surface (25.4 µm/mil)."
+            : "Claim 1 withheld: collector electrode path removed; transistor action and minority carrier collection across the point contact gap are disabled (0 µm / mil).",
+        };
+      }
+      break;
+    }
+
     case "us-2543181-land-polaroid": {
       const rawTime = params.developmentTimeSec ?? params.devTimeSec ?? params.time;
       if (rawTime !== undefined && (!Number.isFinite(rawTime) || rawTime < 0 || rawTime > 60)) {
@@ -3469,10 +3526,28 @@ export function computeParameterSensitivity(
     }
 
     case "us-621195-zeppelin-airship": {
-      const inflation = params.gasInflation ?? params.gasInflationPct ?? 95;
-      const alt = params.flightAlt ?? params.altitudeM ?? 300;
-      const speed = params.flightSpeedKnots ?? 28;
-      const trimM = params.trimWeight ?? params.trimWeightPosM ?? 5;
+      const inflation =
+        params.gasInflation ??
+        params.gasInflationPct ??
+        params.inflation ??
+        params.inflationPct ??
+        95;
+      const alt = params.flightAlt ?? params.altitude ?? params.altitudeM ?? params.alt ?? 300;
+      const speed =
+        params.flightSpeedKnots ??
+        params.speed ??
+        params.speedKnots ??
+        params.airspeedKnots ??
+        params.flightSpeed ??
+        28;
+      const trimM =
+        params.trimWeight ?? params.trimWeightPosM ?? params.trim ?? params.ballast ?? 5;
+      const claim1Active =
+        params.claim1Active !== undefined
+          ? typeof params.claim1Active === "number"
+            ? params.claim1Active >= 0.5
+            : Boolean(params.claim1Active)
+          : true;
 
       if (
         !Number.isFinite(inflation) ||
@@ -3496,25 +3571,73 @@ export function computeParameterSensitivity(
         flightAlt: alt,
         flightSpeedKnots: speed,
         trimWeight: trimM,
+        claim1Active,
       });
 
-      if (controlKey === "gasInflation" || controlKey === "gasInflationPct") {
+      if (
+        controlKey === "gasInflation" ||
+        controlKey === "gasInflationPct" ||
+        controlKey === "inflation" ||
+        controlKey === "inflationPct"
+      ) {
         return {
           metricName: "Gross Aerostatic Buoyant Lift",
           derivativeSymbol: "∂L_buoy / ∂%_inflation",
-          derivativeValue: Number(zep.buoyantSlopeNPerPct.toPrecision(6)),
+          derivativeValue: claim1Active ? Number(zep.buoyantSlopeNPerPct.toPrecision(6)) : 0,
           derivativeUnit: "N / %",
-          interpretation: `Archimedes aerostatic displacement: local air-hydrogen density differential at altitude ${alt} m over 11,300 m³ nominal envelope. Endpoints use the admitted one-sided slope.`,
+          interpretation: claim1Active
+            ? `Archimedes aerostatic displacement: local air-hydrogen density differential at altitude ${alt} m over 11,300 m³ nominal envelope. Endpoints use the admitted one-sided slope.`
+            : "Claim 1 withheld: rigid structural framework omitted; flexible gas envelope deforms and loses aerostatic buoyancy displacement authority (0 N / %).",
         };
       }
-      if (controlKey === "trimWeight" || controlKey === "trimWeightPosM") {
+      if (
+        controlKey === "trimWeight" ||
+        controlKey === "trimWeightPosM" ||
+        controlKey === "trim" ||
+        controlKey === "ballast"
+      ) {
         return {
           metricName: "Longitudinal Pitch Trim",
           derivativeSymbol: "∂θ_pitch / ∂x_trim",
-          derivativeValue: Number(zep.pitchTrimSlopeDegPerM.toPrecision(6)),
+          derivativeValue: claim1Active ? Number(zep.pitchTrimSlopeDegPerM.toPrecision(6)) : 0,
           derivativeUnit: "deg / m",
-          interpretation:
-            "Longitudinal trim angle variation per meter of keel running weight translation.",
+          interpretation: claim1Active
+            ? "Longitudinal trim angle variation per meter of keel running weight translation."
+            : "Claim 1 withheld: unbraced flexible envelope deforms under running ballast weight, extinguishing longitudinal trim authority (0 deg / m).",
+        };
+      }
+      if (
+        controlKey === "flightSpeedKnots" ||
+        controlKey === "speed" ||
+        controlKey === "speedKnots" ||
+        controlKey === "airspeedKnots" ||
+        controlKey === "flightSpeed" ||
+        controlKey === "airspeedMph"
+      ) {
+        return {
+          metricName: "Parasite Aerodynamic Drag",
+          derivativeSymbol: "∂D / ∂v_knot",
+          derivativeValue: claim1Active ? Number(zep.dragSlopeKnPerKnot.toPrecision(6)) : 0,
+          derivativeUnit: "kN / knot",
+          interpretation: claim1Active
+            ? "Quadratic hull aerodynamic drag gradient with airspeed at current atmospheric air density."
+            : "Claim 1 withheld: unbraced flexible envelope suffers dynamic buckling under cruising aerodynamic loads (0 kN / knot).",
+        };
+      }
+      if (
+        controlKey === "flightAlt" ||
+        controlKey === "altitude" ||
+        controlKey === "altitudeM" ||
+        controlKey === "alt"
+      ) {
+        return {
+          metricName: "Barometric Aerostatic Lift Decay",
+          derivativeSymbol: "∂L_gross / ∂h",
+          derivativeValue: claim1Active ? Number(zep.altitudeLiftSlopeKnPerM.toPrecision(6)) : 0,
+          derivativeUnit: "kN / m",
+          interpretation: claim1Active
+            ? "Barometric scale height (H = 8,400 m) exponential atmospheric density lapse reducing gross buoyant lift."
+            : "Claim 1 withheld: rigid framework omitted; structural envelope collapse halts controlled altitude operation (0 kN / m).",
         };
       }
       break;
@@ -3605,11 +3728,41 @@ export function computeParameterSensitivity(
     }
 
     case "us-2318259-sikorsky-helicopter": {
-      const coll = params.collectivePitchDeg ?? 6.8;
-      const pitchStick = params.cyclicPitchForwardDeg ?? 0;
-      const rollStick = params.cyclicRollRightDeg ?? 0;
-      const pedal = params.tailRotorPedalPercent ?? 0;
-      const throttle = params.engineThrottlePercent ?? 85;
+      const coll =
+        params.collectivePitchDeg ??
+        params.collective ??
+        params.collectivePitch ??
+        params.pitchDeg ??
+        6.8;
+      const pitchStick =
+        params.cyclicPitchForwardDeg ?? params.cyclicPitch ?? params.cyclicPitchDeg ?? 0;
+      const rollStick = params.cyclicRollRightDeg ?? params.cyclicRoll ?? params.cyclicRollDeg ?? 0;
+      const pedal =
+        params.tailRotorPedalPercent ??
+        params.pedal ??
+        params.pedals ??
+        params.tailPedal ??
+        params.rudderPedals ??
+        params.pedalPercent ??
+        0;
+      const throttle =
+        params.engineThrottlePercent ??
+        params.throttle ??
+        params.throttlePercent ??
+        params.engineThrottle ??
+        85;
+      const claim1Active =
+        params.claim1Active !== undefined
+          ? typeof params.claim1Active === "number"
+            ? params.claim1Active >= 0.5
+            : Boolean(params.claim1Active)
+          : true;
+      const claim2Active =
+        params.claim2Active !== undefined
+          ? typeof params.claim2Active === "number"
+            ? params.claim2Active >= 0.5
+            : Boolean(params.claim2Active)
+          : true;
 
       if (
         !Number.isFinite(coll) ||
@@ -3631,23 +3784,26 @@ export function computeParameterSensitivity(
         return null;
       }
 
-      const controls = readSikorskyControls(params);
+      const controls = readSikorskyControls({
+        ...params,
+        collectivePitchDeg: coll,
+        cyclicPitchForwardDeg: pitchStick,
+        cyclicRollRightDeg: rollStick,
+        tailRotorPedalPercent: pedal,
+        engineThrottlePercent: throttle,
+        collectiveThrottleLinked: claim1Active ? (params.collectiveThrottleLinked ?? 1) : 0,
+        auxiliaryRotorEnabled: claim2Active ? (params.auxiliaryRotorEnabled ?? 1) : 0,
+      });
 
-      if (controlKey === "collectivePitchDeg") {
-        const eps = 1e-3;
-        const lo = Math.max(2, coll - eps);
-        const hi = Math.min(16, coll + eps);
-        const loThrust = stepSikorskyHelicopterSi(
-          INITIAL_SIKORSKY_STATE,
-          { ...controls, collectivePitchDeg: lo },
-          1 / 60,
-        ).metrics.mainRotorThrustNewtons;
-        const hiThrust = stepSikorskyHelicopterSi(
-          INITIAL_SIKORSKY_STATE,
-          { ...controls, collectivePitchDeg: hi },
-          1 / 60,
-        ).metrics.mainRotorThrustNewtons;
-        const slope = (hiThrust - loThrust) / (hi - lo);
+      const stepped = stepSikorskyHelicopterSi(INITIAL_SIKORSKY_STATE, controls, 1 / 60);
+
+      if (
+        controlKey === "collectivePitchDeg" ||
+        controlKey === "collective" ||
+        controlKey === "collectivePitch" ||
+        controlKey === "pitchDeg"
+      ) {
+        const slope = stepped.metrics.mainRotorThrustSlopeNPerDeg ?? 0;
         return {
           metricName: "Main Rotor Thrust",
           derivativeSymbol: "∂T_main / ∂θ_coll",
@@ -3657,20 +3813,36 @@ export function computeParameterSensitivity(
             "Momentum and blade-element aerodynamic lift slope at current rotor speed and ground-effect proximity. Endpoints use the admitted one-sided slope.",
         };
       }
-      if (controlKey === "tailRotorPedalPercent") {
-        const dYaw = controls.auxiliaryRotorEnabled ? -21.6 : 0;
+      if (
+        controlKey === "tailRotorPedalPercent" ||
+        controlKey === "pedal" ||
+        controlKey === "pedals" ||
+        controlKey === "tailPedal" ||
+        controlKey === "rudderPedals" ||
+        controlKey === "pedalPercent"
+      ) {
+        const dYaw =
+          claim2Active && controls.auxiliaryRotorEnabled
+            ? (stepped.metrics.antiTorqueYawMomentSlopeNmPerPct ?? -21.6)
+            : 0;
         return {
           metricName: "Anti-Torque Yaw Moment",
           derivativeSymbol: "∂M_yaw / ∂pedal",
           derivativeValue: dYaw,
           derivativeUnit: "N·m / %",
-          interpretation: controls.auxiliaryRotorEnabled
-            ? "Deflecting tail rotor rudder pedals alters auxiliary propeller pitch, modulating lateral anti-torque thrust moment."
-            : "Auxiliary tail rotor is disabled; yaw anti-torque pedal modulation is 0 N·m / %.",
+          interpretation:
+            claim2Active && controls.auxiliaryRotorEnabled
+              ? "Deflecting tail rotor rudder pedals alters auxiliary propeller pitch, modulating lateral anti-torque thrust moment."
+              : "Claim 2 withheld or auxiliary tail rotor is disabled; yaw anti-torque pedal modulation is 0 N·m / %.",
         };
       }
-      if (controlKey === "engineThrottlePercent") {
-        const dRpm = controls.engineRunning ? 0.8 : 0;
+      if (
+        controlKey === "engineThrottlePercent" ||
+        controlKey === "throttle" ||
+        controlKey === "throttlePercent" ||
+        controlKey === "engineThrottle"
+      ) {
+        const dRpm = controls.engineRunning ? (stepped.metrics.engineThrottleRpmSlope ?? 0.8) : 0;
         return {
           metricName: "Rotor Rotational Speed",
           derivativeSymbol: "∂Ω / ∂throttle",
@@ -3679,6 +3851,34 @@ export function computeParameterSensitivity(
           interpretation: controls.engineRunning
             ? "Correlated target rotor RPM sensitivity with engine throttle under mechanical governor law."
             : "Engine is shut down (autorotation); engine throttle sensitivity is 0 RPM / %.",
+        };
+      }
+      if (
+        controlKey === "cyclicPitchForwardDeg" ||
+        controlKey === "cyclicPitch" ||
+        controlKey === "cyclicPitchDeg"
+      ) {
+        return {
+          metricName: "Cyclic Pitch Swashplate Tilt",
+          derivativeSymbol: "∂θ_swash / ∂δ_pitch",
+          derivativeValue: 1.0,
+          derivativeUnit: "deg / deg",
+          interpretation:
+            "Direct 1:1 mechanical swashplate longitudinal tilt per degree of fore/aft cyclic control displacement.",
+        };
+      }
+      if (
+        controlKey === "cyclicRollRightDeg" ||
+        controlKey === "cyclicRoll" ||
+        controlKey === "cyclicRollDeg"
+      ) {
+        return {
+          metricName: "Cyclic Roll Swashplate Tilt",
+          derivativeSymbol: "∂φ_swash / ∂δ_roll",
+          derivativeValue: 1.0,
+          derivativeUnit: "deg / deg",
+          interpretation:
+            "Direct 1:1 mechanical swashplate lateral tilt per degree of left/right cyclic roll control displacement.",
         };
       }
       break;
@@ -4444,38 +4644,78 @@ export function computeParameterSensitivity(
     }
 
     case "us-78317-nobel-dynamite": {
-      const ngPct = params.ngConcentrationPct ?? params.ngPct ?? 75;
-      const capEnergy = params.capEnergyJoules ?? params.capEnergy ?? 15;
+      const ngPct =
+        params.ngConcentrationPct ??
+        params.ngPercentage ??
+        params.ngPct ??
+        params.nitroglycerinRatioPct ??
+        params.absorption ??
+        75;
+      const capEnergy =
+        params.capEnergyJoules ??
+        params.capEnergy ??
+        params.capEnergyJ ??
+        params.capJoules ??
+        params.primerEnergy ??
+        1.2;
+      const claim1Active =
+        params.claim1Active !== undefined
+          ? typeof params.claim1Active === "number"
+            ? params.claim1Active >= 0.5
+            : Boolean(params.claim1Active)
+          : true;
 
       if (
         !Number.isFinite(ngPct) ||
         ngPct < 50 ||
-        ngPct > 80 ||
+        ngPct > 85 ||
         !Number.isFinite(capEnergy) ||
-        capEnergy < 5 ||
-        capEnergy > 50
+        capEnergy < 0.2 ||
+        capEnergy > 3.0
       ) {
         return null;
       }
 
-      if (controlKey === "ngConcentrationPct" || controlKey === "ngPct") {
+      const nobel = stepNobelDynamite({
+        ngConcentrationPct: ngPct,
+        capEnergyJoules: capEnergy,
+        claim1Active,
+      });
+
+      if (
+        controlKey === "ngConcentrationPct" ||
+        controlKey === "ngPercentage" ||
+        controlKey === "ngPct" ||
+        controlKey === "nitroglycerinRatioPct" ||
+        controlKey === "absorption"
+      ) {
         return {
           metricName: "Detonation Shock Front Velocity",
           derivativeSymbol: "∂v_det / ∂%_NG",
-          derivativeValue: 45.0,
+          derivativeValue: claim1Active ? nobel.detonationVelocitySlopeMpsPerPct : 0,
           derivativeUnit: "m/s / %",
-          interpretation:
-            "Chapman-Jouguet detonation wave speed through kieselguhr-stabilized nitroglycerin.",
+          interpretation: claim1Active
+            ? nobel.isInitiated
+              ? "Chapman-Jouguet detonation wave speed through kieselguhr-stabilized nitroglycerin."
+              : "Blasting cap energy is below the 0.4 J shock-initiation threshold; detonation velocity is 0 m/s."
+            : "Claim 1 withheld: unabsorbed liquid nitroglycerin is unconfined and leaks from borehole; solid powder detonation cannot propagate (0 m/s / %).",
         };
       }
-      if (controlKey === "capEnergyJoules" || controlKey === "capEnergy") {
+      if (
+        controlKey === "capEnergyJoules" ||
+        controlKey === "capEnergy" ||
+        controlKey === "capEnergyJ" ||
+        controlKey === "capJoules" ||
+        controlKey === "primerEnergy"
+      ) {
         return {
           metricName: "Blasting Cap Initiation Energy",
           derivativeSymbol: "∂E_det / ∂E_cap",
-          derivativeValue: 1.0,
+          derivativeValue: claim1Active ? 1.0 : 0,
           derivativeUnit: "J / J",
-          interpretation:
-            "Mercury fulminate detonator shock initiation wave energy coupling into stabilized porous absorbent.",
+          interpretation: claim1Active
+            ? "Mercury fulminate detonator shock initiation wave energy coupling into stabilized porous absorbent."
+            : "Claim 1 withheld: without porous silicious earth absorbent, detonator shock fails to couple into stabilized powder charge (0 J / J).",
         };
       }
       break;

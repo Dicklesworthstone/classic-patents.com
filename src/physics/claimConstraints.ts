@@ -2001,6 +2001,46 @@ export function applyClaimConstraintModifications(
       break;
     }
 
+    case "us-78317-nobel-dynamite": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.claim1Active = 0;
+        modified.isInitiated = 0;
+        activeFailures.push(
+          "Unabsorbed Liquid Nitro-Glycerine Leakage & Voiding: Without porous silicious earth absorbent, liquid nitroglycerin remains an unconfined fluid subject to leakage and poor borehole retention.",
+        );
+        refusalWarning =
+          "CLAIM 1 INVERTED: porous earth absorbent omitted; unconfined liquid nitroglycerin is subject to hazardous leakage and failed solid detonation.";
+      }
+      break;
+    }
+
+    case "us-2524035-bardeen-transistor": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.claim1Active = 0;
+        activeFailures.push(
+          "Recombination Gain Quenching: Without emitter and collector contacts placed within minority carrier diffusion length on germanium crystal, injected holes recombine before collection.",
+        );
+        refusalWarning =
+          "CLAIM 1 INVERTED: collector electrode path removed; transistor action and minority carrier collection across the point contact gap are disabled.";
+      }
+      break;
+    }
+
+    case "us-621195-zeppelin-airship": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.claim1Active = 0;
+        activeFailures.push(
+          "Envelope Dynamic Buckling & Structural Aerodynamic Collapse: Without the rigid longitudinal truss framework encasing independent gas cells, aerodynamic loads buckle the envelope and destroy pitch control.",
+        );
+        refusalWarning =
+          "CLAIM 1 INVERTED: rigid structural framework omitted; flexible gas envelope deforms and loses aerostatic pitch and speed authority.";
+      }
+      break;
+    }
+
     case "us-3138743-kilby-integrated-circuit": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {

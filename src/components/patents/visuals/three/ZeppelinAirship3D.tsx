@@ -2,7 +2,9 @@
 
 import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepZeppelinAirship } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { createStudioClock } from "@/physics/tickScheduler";
 import {
   globalTransportBus,
@@ -317,74 +319,54 @@ export function ZeppelinAirship3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Hydrogen Cell Inflation
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {gasInflation}%
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Hydrogen cell inflation"
-              min="75"
-              max="100"
-              step="1"
-              value={gasInflation}
-              onChange={(e) => updateParam("gasInflation", Number.parseInt(e.target.value, 10))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Keel Sliding Ballast
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {trimWeightPosM} m
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Keel sliding ballast position"
-              min="-15"
-              max="15"
-              step="1"
-              value={trimWeightPosM}
-              onChange={(e) => updateParam("trimWeight", Number.parseInt(e.target.value, 10))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Cruising Airspeed</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {flightSpeedKnots} knots
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Cruising airspeed"
-              min="10"
-              max="45"
-              step="1"
-              value={flightSpeedKnots}
-              onChange={(e) => updateParam("flightSpeedKnots", Number.parseInt(e.target.value, 10))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-purple-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
+          <SensitivitySlider
+            id="zeppelin3dGasInflation"
+            patentId="us-621195-zeppelin-airship"
+            paramKey="gasInflation"
+            label="Hydrogen Cell Inflation"
+            value={gasInflation}
+            min={75}
+            max={100}
+            step={1}
+            unit="%"
+            onChange={(val) => updateParam("gasInflation", val)}
+            allParams={params}
+          />
+          <SensitivitySlider
+            id="zeppelin3dTrimWeight"
+            patentId="us-621195-zeppelin-airship"
+            paramKey="trimWeight"
+            label="Keel Sliding Ballast"
+            value={trimWeightPosM}
+            min={-15}
+            max={15}
+            step={1}
+            unit=" m"
+            onChange={(val) => updateParam("trimWeight", val)}
+            allParams={params}
+          />
+          <SensitivitySlider
+            id="zeppelin3dAirspeed"
+            patentId="us-621195-zeppelin-airship"
+            paramKey="flightSpeedKnots"
+            label="Cruising Airspeed"
+            value={flightSpeedKnots}
+            min={10}
+            max={45}
+            step={1}
+            unit=" knots"
+            onChange={(val) => updateParam("flightSpeedKnots", val)}
+            allParams={params}
+          />
         </div>
 
         <ClaimConstraintToggle
           patentId="us-621195-zeppelin-airship"
           claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
+          onToggleClaim={(claimNo, active) => {
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0);
+          }}
           className="mt-2"
         />
 

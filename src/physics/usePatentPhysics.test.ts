@@ -1031,4 +1031,210 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       resetPatentPhysicsParams(id);
     }
   });
+
+  test("Nobel Dynamite aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-78317-nobel-dynamite";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.ngConcentrationPct),
+    );
+    try {
+      setPatentPhysicsParam(id, "absorption", 80);
+      const params = getPatentPhysicsParams(id);
+      expect(params.ngConcentrationPct).toBe(80);
+      expect(params.ngPercentage).toBe(80);
+      expect(params.ngPct).toBe(80);
+      expect(params.nitroglycerinRatioPct).toBe(80);
+      expect(params.absorption).toBe(80);
+      expect(observations).toEqual([80]);
+      expect(getLastParamChange(id)?.id).toBe("ngConcentrationPct");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Detonation Velocity")?.value).not.toBe(
+        initial.find((m) => m.label === "Detonation Velocity")?.value,
+      );
+
+      setPatentPhysicsParam(id, "primerEnergy", 2.4);
+      expect(getPatentPhysicsParams(id).capEnergyJoules).toBe(2.4);
+      expect(getPatentPhysicsParams(id).capEnergy).toBe(2.4);
+      expect(getPatentPhysicsParams(id).capEnergyJ).toBe(2.4);
+      expect(getPatentPhysicsParams(id).capJoules).toBe(2.4);
+      expect(getPatentPhysicsParams(id).primerEnergy).toBe(2.4);
+
+      // Claim 1 constraint toggle
+      const claim1Param = claimConstraintStateParamId(1);
+      setPatentPhysicsParam(id, claim1Param, 0);
+      expect(getPatentPhysicsParams(id)[claim1Param]).toBe(0);
+      expect(getEffectivePatentPhysicsParams(id).claim1Active).toBe(0);
+      expect(getEffectivePatentPhysicsParams(id).isInitiated).toBe(0);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Bardeen Transistor aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-2524035-bardeen-transistor";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.pointSpacingMils),
+    );
+    try {
+      setPatentPhysicsParam(id, "contactSpacing", 4.5);
+      const params = getPatentPhysicsParams(id);
+      expect(params.pointSpacingMils).toBe(4.5);
+      expect(params.pointSpacing).toBe(4.5);
+      expect(params.spacing).toBe(4.5);
+      expect(params.spacingMils).toBe(4.5);
+      expect(params.contactSpacing).toBe(4.5);
+      expect(observations).toEqual([4.5]);
+      expect(getLastParamChange(id)?.id).toBe("pointSpacingMils");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Selected Contact Gap")?.value).not.toBe(
+        initial.find((m) => m.label === "Selected Contact Gap")?.value,
+      );
+
+      setPatentPhysicsParam(id, "sample", 2);
+      expect(getPatentPhysicsParams(id).operatingSample).toBe(2);
+      expect(getPatentPhysicsParams(id).sample).toBe(2);
+      expect(getPatentPhysicsParams(id).sampleNumber).toBe(2);
+      expect(getPatentPhysicsParams(id).tableSample).toBe(2);
+
+      const changedSample = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(changedSample.find((m) => m.label === "Reported Voltage Gain")?.value).not.toBe(
+        initial.find((m) => m.label === "Reported Voltage Gain")?.value,
+      );
+
+      // Claim 1 constraint toggle
+      const claim1Param = claimConstraintStateParamId(1);
+      setPatentPhysicsParam(id, claim1Param, 0);
+      expect(getPatentPhysicsParams(id)[claim1Param]).toBe(0);
+      expect(getEffectivePatentPhysicsParams(id).claim1Active).toBe(0);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Zeppelin Airship aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-621195-zeppelin-airship";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.gasInflation),
+    );
+    try {
+      setPatentPhysicsParam(id, "inflation", 88);
+      const params = getPatentPhysicsParams(id);
+      expect(params.gasInflation).toBe(88);
+      expect(params.gasInflationPct).toBe(88);
+      expect(params.inflation).toBe(88);
+      expect(params.inflationPct).toBe(88);
+      expect(observations).toEqual([88]);
+      expect(getLastParamChange(id)?.id).toBe("gasInflation");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Gross Buoyancy")?.value).not.toBe(
+        initial.find((m) => m.label === "Gross Buoyancy")?.value,
+      );
+
+      setPatentPhysicsParam(id, "speed", 35);
+      expect(getPatentPhysicsParams(id).flightSpeedKnots).toBe(35);
+      expect(getPatentPhysicsParams(id).speed).toBe(35);
+      expect(getPatentPhysicsParams(id).speedKnots).toBe(35);
+      expect(getPatentPhysicsParams(id).airspeedKnots).toBe(35);
+      expect(getPatentPhysicsParams(id).flightSpeed).toBe(35);
+
+      setPatentPhysicsParam(id, "altitude", 800);
+      expect(getPatentPhysicsParams(id).flightAlt).toBe(800);
+      expect(getPatentPhysicsParams(id).altitude).toBe(800);
+      expect(getPatentPhysicsParams(id).altitudeM).toBe(800);
+      expect(getPatentPhysicsParams(id).alt).toBe(800);
+
+      setPatentPhysicsParam(id, "ballast", -8);
+      expect(getPatentPhysicsParams(id).trimWeight).toBe(-8);
+      expect(getPatentPhysicsParams(id).trimWeightPosM).toBe(-8);
+      expect(getPatentPhysicsParams(id).trim).toBe(-8);
+      expect(getPatentPhysicsParams(id).ballast).toBe(-8);
+
+      // Claim 1 constraint toggle
+      const claim1Param = claimConstraintStateParamId(1);
+      setPatentPhysicsParam(id, claim1Param, 0);
+      expect(getPatentPhysicsParams(id)[claim1Param]).toBe(0);
+      expect(getEffectivePatentPhysicsParams(id).claim1Active).toBe(0);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Sikorsky Helicopter aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-2318259-sikorsky-helicopter";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.collectivePitchDeg),
+    );
+    try {
+      setPatentPhysicsParam(id, "collective", 9.5);
+      const params = getPatentPhysicsParams(id);
+      expect(params.collectivePitchDeg).toBe(9.5);
+      expect(params.collective).toBe(9.5);
+      expect(params.collectivePitch).toBe(9.5);
+      expect(params.pitchDeg).toBe(9.5);
+      expect(observations).toEqual([9.5]);
+      expect(getLastParamChange(id)?.id).toBe("collectivePitchDeg");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Main Rotor Thrust")?.value).not.toBe(
+        initial.find((m) => m.label === "Main Rotor Thrust")?.value,
+      );
+
+      setPatentPhysicsParam(id, "pedal", 25);
+      expect(getPatentPhysicsParams(id).tailRotorPedalPercent).toBe(25);
+      expect(getPatentPhysicsParams(id).pedal).toBe(25);
+      expect(getPatentPhysicsParams(id).pedals).toBe(25);
+      expect(getPatentPhysicsParams(id).tailPedal).toBe(25);
+      expect(getPatentPhysicsParams(id).rudderPedals).toBe(25);
+      expect(getPatentPhysicsParams(id).pedalPercent).toBe(25);
+
+      setPatentPhysicsParam(id, "throttle", 92);
+      expect(getPatentPhysicsParams(id).engineThrottlePercent).toBe(92);
+      expect(getPatentPhysicsParams(id).throttle).toBe(92);
+      expect(getPatentPhysicsParams(id).throttlePercent).toBe(92);
+      expect(getPatentPhysicsParams(id).engineThrottle).toBe(92);
+
+      setPatentPhysicsParam(id, "cyclicPitch", -3.5);
+      expect(getPatentPhysicsParams(id).cyclicPitchForwardDeg).toBe(-3.5);
+      expect(getPatentPhysicsParams(id).cyclicPitch).toBe(-3.5);
+      expect(getPatentPhysicsParams(id).cyclicPitchDeg).toBe(-3.5);
+
+      setPatentPhysicsParam(id, "cyclicRoll", 4.0);
+      expect(getPatentPhysicsParams(id).cyclicRollRightDeg).toBe(4.0);
+      expect(getPatentPhysicsParams(id).cyclicRoll).toBe(4.0);
+      expect(getPatentPhysicsParams(id).cyclicRollDeg).toBe(4.0);
+
+      // Claim 1 and Claim 2 constraint toggles
+      const claim1Param = claimConstraintStateParamId(1);
+      const claim2Param = claimConstraintStateParamId(2);
+
+      setPatentPhysicsParam(id, claim1Param, 0);
+      expect(getPatentPhysicsParams(id)[claim1Param]).toBe(0);
+      expect(getEffectivePatentPhysicsParams(id).collectiveThrottleLinked).toBe(0);
+
+      setPatentPhysicsParam(id, claim2Param, 0);
+      expect(getPatentPhysicsParams(id)[claim2Param]).toBe(0);
+      expect(getEffectivePatentPhysicsParams(id).auxiliaryRotorEnabled).toBe(0);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
 });

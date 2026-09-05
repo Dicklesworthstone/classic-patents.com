@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { allPatents } from "@/data/patents";
+import { stepBardeenPointContact } from "./bardeenPointContactKernel";
 import {
   stepBaekelandBakelite,
   stepBellTelephone,
@@ -24,6 +25,7 @@ import {
   stepLamarrRecordControl,
   stepLincolnBuoy,
   stepMorseTelegraph,
+  stepNobelDynamite,
   stepOttoEngine,
   stepParsonsTurbine,
   stepTeslaTeleautomaton,
@@ -34,6 +36,11 @@ import {
 import { stepDieselEngine } from "./dieselEngineKernel";
 import { FrankenSimEngine } from "./engine";
 import { stepHoweSewingMachine } from "./machineKernels";
+import {
+  INITIAL_SIKORSKY_STATE,
+  readSikorskyControls,
+  stepSikorskyHelicopterSi,
+} from "./sikorskyHelicopterKernel";
 
 describe("Thomson and Goodyear sensitivities use the displayed model", () => {
   test("welding current uses the current I²R derivative, including one-sided endpoints", () => {
@@ -358,15 +365,70 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
     expect(sens?.derivativeValue).toBeGreaterThan(0);
   });
 
-  test("Bardeen refuses derivatives absent from the source-reported samples", () => {
-    for (const control of [
-      "operatingSample",
-      "pointSpacingMils",
-      "claim1Active",
-      "emitterCurrent",
+  test("Bardeen derives exact point-contact spacing conversion and gates on Claim 1", () => {
+    const id = "us-2524035-bardeen-transistor";
+    const h = 1e-4;
+
+    for (const spacing of [1.5, 2.0, 5.0, 9.0]) {
+      const sens = computeParameterSensitivity(id, "pointSpacingMils", {
+        pointSpacingMils: spacing,
+        operatingSample: 1,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Point Contact Spacing");
+      expect(sens?.derivativeSymbol).toBe("∂d / ∂s");
+      expect(sens?.derivativeUnit).toBe("µm / mil");
+      expect(sens?.derivativeValue).toBe(25.4);
+
+      // Finite difference verification
+      const forward = stepBardeenPointContact({
+        pointSpacingMils: spacing + h,
+        operatingSample: 1,
+      });
+      const backward = stepBardeenPointContact({
+        pointSpacingMils: spacing - h,
+        operatingSample: 1,
+      });
+      const numSlope =
+        (forward.pointSpacingMicrometersUnrounded - backward.pointSpacingMicrometersUnrounded) /
+        (2 * h);
+      expect(sens?.derivativeValue).toBeCloseTo(numSlope, 4);
+    }
+
+    // Aliases
+    for (const alias of [
       "pointSpacing",
+      "spacing",
+      "spacingMils",
+      "contactSpacing",
+      "pointSpacingMicrons",
     ]) {
-      expect(computeParameterSensitivity("us-2524035-bardeen-transistor", control, {})).toBeNull();
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 3.5 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(25.4);
+    }
+
+    // Claim 1 gating
+    const gated = computeParameterSensitivity(id, "pointSpacingMils", { claim1Active: false });
+    expect(gated).toBeDefined();
+    expect(gated?.derivativeValue).toBe(0);
+    expect(gated?.interpretation).toContain("Claim 1 withheld");
+
+    // Unadmitted controls remain refused
+    for (const refusedControl of [
+      "operatingSample",
+      "emitterCurrent",
+      "collectorVoltage",
+      "carrierLifetime",
+    ]) {
+      expect(computeParameterSensitivity(id, refusedControl, {})).toBeNull();
+    }
+
+    // Out of bounds
+    for (const invalid of [0.5, 10.5, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "pointSpacingMils", { pointSpacingMils: invalid }),
+      ).toBeNull();
     }
   });
 
@@ -443,7 +505,6 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
       "us-307031-edison-indicator",
       "us-361931-daimler-engine",
       "us-2495429-spencer-microwave",
-      "us-2524035-bardeen-transistor",
       "us-2988237-devol-programmed-transfer",
       "us-3081379-lemelson-machine-vision",
       "us-3313014-lemelson-automatic-production",
@@ -747,8 +808,11 @@ describe("Sensitivities follow the current admitted operating point", () => {
     ).toBeNull();
   });
 
-  test("Zeppelin airship derives buoyant lift and pitch trim from admitted model", () => {
+  test("Zeppelin airship derives buoyant lift, pitch trim, drag, and lapse from admitted model", () => {
     const id = "us-621195-zeppelin-airship";
+    const h = 1e-4;
+
+    // 1. Gas inflation sensitivity (Gross aerostatic buoyant lift)
     for (const alt of [0, 300, 1000, 2000]) {
       for (const inflation of [75, 85, 95, 100]) {
         const params = { flightAlt: alt, gasInflation: inflation };
@@ -758,11 +822,25 @@ describe("Sensitivities follow the current admitted operating point", () => {
         expect(sens?.derivativeSymbol).toBe("∂L_buoy / ∂%_inflation");
         expect(sens?.derivativeUnit).toBe("N / %");
         const zep = stepZeppelinAirship(params);
-        expect(sens?.derivativeValue).toBeCloseTo(zep.buoyantSlopeNPerPct, 1);
+        expect(sens?.derivativeValue).toBeCloseTo(zep.buoyantSlopeNPerPct, 2);
+
+        // Finite difference check against unrounded buoyancy
+        const fwd = stepZeppelinAirship({ ...params, gasInflation: inflation + h });
+        const bwd = stepZeppelinAirship({ ...params, gasInflation: inflation - h });
+        const numSlope =
+          ((fwd.grossBuoyancyKnUnrounded - bwd.grossBuoyancyKnUnrounded) * 1000) / (2 * h);
+        expect(sens?.derivativeValue).toBeCloseTo(numSlope, 2);
       }
     }
 
-    // Trim weight sensitivity
+    // Inflation aliases
+    for (const alias of ["gasInflationPct", "inflation", "inflationPct"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 90 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBeGreaterThan(0);
+    }
+
+    // 2. Trim weight sensitivity
     const trimSens = computeParameterSensitivity(id, "trimWeight", { trimWeight: 5 });
     expect(trimSens).toBeDefined();
     expect(trimSens?.metricName).toBe("Longitudinal Pitch Trim");
@@ -770,25 +848,109 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(trimSens?.derivativeUnit).toBe("deg / m");
     expect(trimSens?.derivativeValue).toBeCloseTo((300 * 9.81) / 15000, 4);
 
+    // Trim aliases
+    for (const alias of ["trimWeightPosM", "trim", "ballast"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 2 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBeCloseTo((300 * 9.81) / 15000, 4);
+    }
+
+    // 3. Airspeed parasite drag sensitivity
+    for (const speed of [15, 28, 40]) {
+      const params = { flightSpeedKnots: speed, flightAlt: 500 };
+      const sens = computeParameterSensitivity(id, "flightSpeedKnots", params);
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Parasite Aerodynamic Drag");
+      expect(sens?.derivativeSymbol).toBe("∂D / ∂v_knot");
+      expect(sens?.derivativeUnit).toBe("kN / knot");
+      const zep = stepZeppelinAirship(params);
+      expect(sens?.derivativeValue).toBeCloseTo(zep.dragSlopeKnPerKnot, 4);
+
+      const fwd = stepZeppelinAirship({ ...params, flightSpeedKnots: speed + h });
+      const bwd = stepZeppelinAirship({ ...params, flightSpeedKnots: speed - h });
+      const numSlope = (fwd.parasiteDragKnUnrounded - bwd.parasiteDragKnUnrounded) / (2 * h);
+      expect(sens?.derivativeValue).toBeCloseTo(numSlope, 4);
+    }
+
+    // Speed aliases
+    for (const alias of ["speed", "speedKnots", "airspeedKnots", "flightSpeed", "airspeedMph"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 25 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBeGreaterThan(0);
+    }
+
+    // 4. Flight altitude barometric decay sensitivity
+    for (const alt of [100, 800, 1500]) {
+      const params = { flightAlt: alt, gasInflation: 90 };
+      const sens = computeParameterSensitivity(id, "flightAlt", params);
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Barometric Aerostatic Lift Decay");
+      expect(sens?.derivativeSymbol).toBe("∂L_gross / ∂h");
+      expect(sens?.derivativeUnit).toBe("kN / m");
+      const zep = stepZeppelinAirship(params);
+      expect(sens?.derivativeValue).toBeCloseTo(zep.altitudeLiftSlopeKnPerM, 4);
+
+      const fwd = stepZeppelinAirship({ ...params, flightAlt: alt + h });
+      const bwd = stepZeppelinAirship({ ...params, flightAlt: alt - h });
+      const numSlope = (fwd.grossBuoyancyKnUnrounded - bwd.grossBuoyancyKnUnrounded) / (2 * h);
+      expect(sens?.derivativeValue).toBeCloseTo(numSlope, 3);
+    }
+
+    // Altitude aliases
+    for (const alias of ["altitude", "altitudeM", "alt"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 400 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBeLessThan(0);
+    }
+
+    // Claim 1 gating: zero derivatives when rigid framework omitted
+    for (const control of ["gasInflation", "trimWeight", "flightSpeedKnots", "flightAlt"]) {
+      const gated = computeParameterSensitivity(id, control, { claim1Active: false });
+      expect(gated).toBeDefined();
+      expect(gated?.derivativeValue).toBe(0);
+      expect(gated?.interpretation).toContain("Claim 1 withheld");
+    }
+
     // Invalid parameters
     for (const invalid of [74, 101, Number.NaN]) {
       expect(computeParameterSensitivity(id, "gasInflation", { gasInflation: invalid })).toBeNull();
     }
     expect(computeParameterSensitivity(id, "gasInflation", { flightAlt: -1 })).toBeNull();
+    expect(computeParameterSensitivity(id, "flightAlt", { flightAlt: 2100 })).toBeNull();
+    expect(computeParameterSensitivity(id, "flightSpeedKnots", { flightSpeedKnots: 5 })).toBeNull();
     expect(computeParameterSensitivity(id, "trimWeight", { trimWeight: 20 })).toBeNull();
   });
 
-  test("Sikorsky helicopter derives thrust and yaw sensitivity from scenario state", () => {
+  test("Sikorsky helicopter derives thrust, yaw, throttle, and cyclic sensitivity from scenario state", () => {
     const id = "us-2318259-sikorsky-helicopter";
-    // Baseline collective pitch sensitivity
-    const collSens = computeParameterSensitivity(id, "collectivePitchDeg", {});
-    expect(collSens).toBeDefined();
-    expect(collSens?.metricName).toBe("Main Rotor Thrust");
-    expect(collSens?.derivativeSymbol).toBe("∂T_main / ∂θ_coll");
-    expect(collSens?.derivativeUnit).toBe("N / deg");
-    expect(collSens?.derivativeValue).toBeGreaterThan(500);
 
-    // Tail rotor anti-torque sensitivity when enabled vs disabled
+    // 1. Collective pitch sensitivity
+    for (const pitch of [3.0, 6.8, 12.0, 15.0]) {
+      const params = { collectivePitchDeg: pitch };
+      const collSens = computeParameterSensitivity(id, "collectivePitchDeg", params);
+      expect(collSens).toBeDefined();
+      expect(collSens?.metricName).toBe("Main Rotor Thrust");
+      expect(collSens?.derivativeSymbol).toBe("∂T_main / ∂θ_coll");
+      expect(collSens?.derivativeUnit).toBe("N / deg");
+      expect(collSens?.derivativeValue).toBeGreaterThan(500);
+
+      // Aerodynamic derivative check against model metrics
+      const controls = readSikorskyControls(params);
+      const stepped = stepSikorskyHelicopterSi(INITIAL_SIKORSKY_STATE, controls, 1 / 60);
+      expect(collSens?.derivativeValue).toBeCloseTo(
+        stepped.metrics.mainRotorThrustSlopeNPerDeg ?? 0,
+        1,
+      );
+    }
+
+    // Collective aliases
+    for (const alias of ["collective", "collectivePitch", "pitchDeg"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 8.0 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBeGreaterThan(500);
+    }
+
+    // 2. Tail rotor anti-torque sensitivity when enabled vs disabled
     const pedalEnabled = computeParameterSensitivity(id, "tailRotorPedalPercent", {
       auxiliaryRotorEnabled: 1,
     });
@@ -803,12 +965,20 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(pedalDisabled?.derivativeValue).toBe(0);
     expect(pedalDisabled?.interpretation).toContain("disabled");
 
-    // Engine throttle sensitivity when running vs autorotating
+    // Pedal aliases
+    for (const alias of ["pedal", "pedals", "tailPedal", "rudderPedals", "pedalPercent"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 10 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(-21.6);
+    }
+
+    // 3. Engine throttle sensitivity when running vs autorotating
     const throttleRunning = computeParameterSensitivity(id, "engineThrottlePercent", {
       engineRunning: 1,
     });
     expect(throttleRunning).toBeDefined();
     expect(throttleRunning?.derivativeValue).toBe(0.8);
+    expect(throttleRunning?.derivativeUnit).toBe("RPM / %");
 
     const throttleOff = computeParameterSensitivity(id, "engineThrottlePercent", {
       engineRunning: 0,
@@ -816,6 +986,44 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(throttleOff).toBeDefined();
     expect(throttleOff?.derivativeValue).toBe(0);
     expect(throttleOff?.interpretation).toContain("autorotation");
+
+    // Throttle aliases
+    for (const alias of ["throttle", "throttlePercent", "engineThrottle"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 80 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(0.8);
+    }
+
+    // 4. Cyclic swashplate tilts
+    const cyclicPitch = computeParameterSensitivity(id, "cyclicPitchForwardDeg", {
+      cyclicPitchForwardDeg: 2,
+    });
+    expect(cyclicPitch).toBeDefined();
+    expect(cyclicPitch?.derivativeValue).toBe(1.0);
+    expect(cyclicPitch?.derivativeUnit).toBe("deg / deg");
+
+    for (const alias of ["cyclicPitch", "cyclicPitchDeg"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(1.0);
+    }
+
+    const cyclicRoll = computeParameterSensitivity(id, "cyclicRollRightDeg", {
+      cyclicRollRightDeg: 3,
+    });
+    expect(cyclicRoll).toBeDefined();
+    expect(cyclicRoll?.derivativeValue).toBe(1.0);
+    expect(cyclicRoll?.derivativeUnit).toBe("deg / deg");
+
+    for (const alias of ["cyclicRoll", "cyclicRollDeg"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(1.0);
+    }
+
+    // 5. Claim 2 gating: auxiliary rotor withheld
+    const claim2Withheld = computeParameterSensitivity(id, "tailRotorPedalPercent", {
+      claim2Active: false,
+    });
+    expect(claim2Withheld).toBeDefined();
+    expect(claim2Withheld?.derivativeValue).toBe(0);
+    expect(claim2Withheld?.interpretation).toContain("Claim 2 withheld");
 
     // Invalid parameters
     for (const invalid of [1.9, 16.1, Number.NaN]) {
@@ -825,6 +1033,12 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
     expect(
       computeParameterSensitivity(id, "tailRotorPedalPercent", { tailRotorPedalPercent: 105 }),
+    ).toBeNull();
+    expect(
+      computeParameterSensitivity(id, "engineThrottlePercent", { engineThrottlePercent: -5 }),
+    ).toBeNull();
+    expect(
+      computeParameterSensitivity(id, "cyclicPitchForwardDeg", { cyclicPitchForwardDeg: 12 }),
     ).toBeNull();
   });
 
@@ -3102,36 +3316,82 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("Nobel Dynamite derives detonation shock front and cap initiation sensitivities", () => {
     const id = "us-78317-nobel-dynamite";
+    const h = 1e-4;
 
-    // NG concentration sensitivity
-    const sensNg = computeParameterSensitivity(id, "ngConcentrationPct", {
-      ngConcentrationPct: 75,
-      capEnergyJoules: 15,
-    });
-    expect(sensNg).toBeDefined();
-    expect(sensNg?.metricName).toBe("Detonation Shock Front Velocity");
-    expect(sensNg?.derivativeSymbol).toBe("∂v_det / ∂%_NG");
-    expect(sensNg?.derivativeUnit).toBe("m/s / %");
-    expect(sensNg?.derivativeValue).toBe(45.0);
+    // 1. NG concentration sensitivity
+    for (const ng of [55, 75, 80]) {
+      const sensNg = computeParameterSensitivity(id, "ngConcentrationPct", {
+        ngConcentrationPct: ng,
+        capEnergyJoules: 1.2,
+      });
+      expect(sensNg).toBeDefined();
+      expect(sensNg?.metricName).toBe("Detonation Shock Front Velocity");
+      expect(sensNg?.derivativeSymbol).toBe("∂v_det / ∂%_NG");
+      expect(sensNg?.derivativeUnit).toBe("m/s / %");
+      expect(sensNg?.derivativeValue).toBe(80.0);
 
-    // Blasting cap energy sensitivity
-    const sensCap = computeParameterSensitivity(id, "capEnergyJoules", {
+      // Finite difference check against unrounded detonation velocity
+      const fwd = stepNobelDynamite({ ngConcentrationPct: ng + h, capEnergyJoules: 1.2 });
+      const bwd = stepNobelDynamite({ ngConcentrationPct: ng - h, capEnergyJoules: 1.2 });
+      const numSlope =
+        (fwd.detonationVelocityMpsUnrounded - bwd.detonationVelocityMpsUnrounded) / (2 * h);
+      expect(sensNg?.derivativeValue).toBeCloseTo(numSlope, 4);
+    }
+
+    // NG concentration aliases
+    for (const alias of ["ngPercentage", "ngPct", "nitroglycerinRatioPct", "absorption"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 70 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(80.0);
+    }
+
+    // Sub-threshold cap energy: no detonation shock wave initiates
+    const subThreshold = computeParameterSensitivity(id, "ngConcentrationPct", {
       ngConcentrationPct: 75,
-      capEnergyJoules: 15,
+      capEnergyJoules: 0.3,
     });
-    expect(sensCap).toBeDefined();
-    expect(sensCap?.metricName).toBe("Blasting Cap Initiation Energy");
-    expect(sensCap?.derivativeSymbol).toBe("∂E_det / ∂E_cap");
-    expect(sensCap?.derivativeUnit).toBe("J / J");
-    expect(sensCap?.derivativeValue).toBe(1.0);
+    expect(subThreshold).toBeDefined();
+    expect(subThreshold?.derivativeValue).toBe(0);
+    expect(subThreshold?.interpretation).toContain("below the 0.4 J shock-initiation threshold");
+
+    // 2. Blasting cap energy sensitivity
+    for (const cap of [0.5, 1.2, 2.5]) {
+      const sensCap = computeParameterSensitivity(id, "capEnergyJoules", {
+        ngConcentrationPct: 75,
+        capEnergyJoules: cap,
+      });
+      expect(sensCap).toBeDefined();
+      expect(sensCap?.metricName).toBe("Blasting Cap Initiation Energy");
+      expect(sensCap?.derivativeSymbol).toBe("∂E_det / ∂E_cap");
+      expect(sensCap?.derivativeUnit).toBe("J / J");
+      expect(sensCap?.derivativeValue).toBe(1.0);
+    }
+
+    // Cap energy aliases
+    for (const alias of ["capEnergy", "capEnergyJ", "capJoules", "primerEnergy"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 1.5 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(1.0);
+    }
+
+    // Claim 1 gating
+    const gatedNg = computeParameterSensitivity(id, "ngConcentrationPct", { claim1Active: false });
+    expect(gatedNg).toBeDefined();
+    expect(gatedNg?.derivativeValue).toBe(0);
+    expect(gatedNg?.interpretation).toContain("Claim 1 withheld");
+
+    const gatedCap = computeParameterSensitivity(id, "capEnergyJoules", { claim1Active: false });
+    expect(gatedCap).toBeDefined();
+    expect(gatedCap?.derivativeValue).toBe(0);
+    expect(gatedCap?.interpretation).toContain("Claim 1 withheld");
 
     // Invalid bounds
-    for (const invalid of [49, 81, Number.NaN]) {
+    for (const invalid of [49, 86, Number.NaN]) {
       expect(
         computeParameterSensitivity(id, "ngConcentrationPct", { ngConcentrationPct: invalid }),
       ).toBeNull();
     }
-    for (const invalid of [4, 51, Number.NaN]) {
+    for (const invalid of [0.1, 3.1, Number.NaN]) {
       expect(
         computeParameterSensitivity(id, "capEnergyJoules", { capEnergyJoules: invalid }),
       ).toBeNull();
