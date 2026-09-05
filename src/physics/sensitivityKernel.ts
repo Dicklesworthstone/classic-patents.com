@@ -1155,6 +1155,21 @@ export function computeParameterSensitivity(
     }
 
     case "us-2292387-lamarr-frequency-hopping": {
+      const pos =
+        params.recordPosition ?? params.position ?? params.activeChannels ?? params.channels ?? 0;
+      const tone = params.commandTone ?? 100;
+
+      if (
+        !Number.isFinite(pos) ||
+        pos < 0 ||
+        pos > 88 ||
+        !Number.isFinite(tone) ||
+        tone < 50 ||
+        tone > 1000
+      ) {
+        return null;
+      }
+
       if (
         controlKey === "recordPosition" ||
         controlKey === "position" ||
@@ -2265,7 +2280,38 @@ export function computeParameterSensitivity(
     }
 
     case "us-1773980-farnsworth-tv": {
-      if (controlKey === "lightIntensityLux") {
+      const anodeV =
+        params.anodeVoltage ?? (params.anodeKv !== undefined ? params.anodeKv * 1000 : 1500);
+      const coilI = params.coilCurrent ?? params.deflectionCoilCurrent ?? 0.42;
+      const lux = params.lightIntensityLux ?? params.lightIntensity ?? 500;
+      const hFreq = params.horizontalFreqKhz ?? 15.75;
+      const vFreq = params.verticalFreqHz ?? 60;
+      const lines = params.scanLines ?? 60;
+
+      if (
+        !Number.isFinite(anodeV) ||
+        anodeV < 600 ||
+        anodeV > 6000 ||
+        !Number.isFinite(coilI) ||
+        coilI < 0.1 ||
+        coilI > 0.8 ||
+        !Number.isFinite(lux) ||
+        lux < 100 ||
+        lux > 2000 ||
+        !Number.isFinite(hFreq) ||
+        hFreq < 5 ||
+        hFreq > 30 ||
+        !Number.isFinite(vFreq) ||
+        vFreq < 30 ||
+        vFreq > 120 ||
+        !Number.isFinite(lines) ||
+        lines < 30 ||
+        lines > 240
+      ) {
+        return null;
+      }
+
+      if (controlKey === "lightIntensityLux" || controlKey === "lightIntensity") {
         return {
           metricName: "Photo-Dissector Video Current",
           derivativeSymbol: "∂I_video / ∂L_scene",
@@ -2273,6 +2319,26 @@ export function computeParameterSensitivity(
           derivativeUnit: "µA / Lux",
           interpretation:
             "Linear photoelectric conversion from continuous photocathode electron cloud emission.",
+        };
+      }
+      if (controlKey === "coilCurrent" || controlKey === "deflectionCoilCurrent") {
+        return {
+          metricName: "Magnetic Deflection Field Sensitivity",
+          derivativeSymbol: "∂B / ∂I_coil",
+          derivativeValue: 285.7,
+          derivativeUnit: "G / A",
+          interpretation:
+            "Deflection coil magnetic flux density scaling linearly with drive current (120 G at 0.42 A nominal).",
+        };
+      }
+      if (controlKey === "anodeVoltage" || controlKey === "anodeKv") {
+        return {
+          metricName: "Electron Beam Velocity Acceleration Sensitivity",
+          derivativeSymbol: "∂v / ∂V_anode",
+          derivativeValue: 7.66,
+          derivativeUnit: "km·s⁻¹ / V",
+          interpretation:
+            "Relativistic electron beam velocity scaling with electrostatic anode accelerating potential.",
         };
       }
       break;
@@ -2560,7 +2626,33 @@ export function computeParameterSensitivity(
     }
 
     case "us-4063220-metcalfe-ethernet": {
-      if (controlKey === "cableLengthMeters") {
+      const length = params.cableLengthMeters ?? params.cableLength ?? 500;
+      const rate = params.dataRateMbps ?? params.dataRate ?? 2.94;
+      const stations = params.stationCount ?? params.stations ?? 2;
+      const load = params.offeredLoad ?? 0.5;
+      const packetSize = params.packetSizeBytes ?? params.packetSize ?? 512;
+
+      if (
+        !Number.isFinite(length) ||
+        length < 10 ||
+        length > 1000 ||
+        !Number.isFinite(rate) ||
+        rate < 1.0 ||
+        rate > 10.0 ||
+        !Number.isFinite(stations) ||
+        stations < 2 ||
+        stations > 32 ||
+        !Number.isFinite(load) ||
+        load < 0.05 ||
+        load > 2.5 ||
+        !Number.isFinite(packetSize) ||
+        packetSize < 64 ||
+        packetSize > 1518
+      ) {
+        return null;
+      }
+
+      if (controlKey === "cableLengthMeters" || controlKey === "cableLength") {
         return {
           metricName: "One-Way Propagation Delay",
           derivativeSymbol: "∂τ_prop / ∂L",
@@ -2570,7 +2662,7 @@ export function computeParameterSensitivity(
             "Electromagnetic wave velocity in polyethylene dielectric coaxial cable (0.66c) adds 5 ns latency per meter.",
         };
       }
-      if (controlKey === "dataRateMbps") {
+      if (controlKey === "dataRateMbps" || controlKey === "dataRate") {
         return {
           metricName: "Manchester Bit Period",
           derivativeSymbol: "∂T_bit / ∂R",

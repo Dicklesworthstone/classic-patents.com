@@ -132,6 +132,13 @@ import {
   type MestralVelcroTelemetry,
   stepMestralVelcroSi,
 } from "./mestralVelcroKernel";
+import {
+  INITIAL_ETHERNET_STATE,
+  type MetcalfeEthernetControls,
+  type MetcalfeEthernetState,
+  readMetcalfeEthernetControls,
+  stepMetcalfeEthernetSi,
+} from "./metcalfeEthernetKernel";
 import { stepParsonsMarine } from "./parsonsMarineKernel";
 import { stepRillieuxEvaporator } from "./rillieuxEvaporatorKernel";
 import { stepRobotEndEffectorSi } from "./robotEndEffectorKernel";
@@ -1558,6 +1565,16 @@ export const FrankenSimEngine = {
   /** US 879,532 De Forest Audion thermionic triode vacuum tube & electrostatic grid control. */
   stepDeForestAudion(params: DeForestAudionKernelInput = {}): DeForestAudionKernelOutput {
     return stepDeForestAudion(params);
+  },
+
+  /** US 4,063,220 Metcalfe Ethernet CSMA/CD coaxial propagation & collision detection */
+  stepMetcalfeEthernet(
+    state: MetcalfeEthernetState = INITIAL_ETHERNET_STATE,
+    controls: Partial<MetcalfeEthernetControls> = {},
+    dtSec: number = 0.016,
+  ) {
+    const parsed = readMetcalfeEthernetControls(controls);
+    return stepMetcalfeEthernetSi(state, parsed, dtSec);
   },
 
   createTelemetryEnvelope(

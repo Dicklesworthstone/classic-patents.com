@@ -169,6 +169,8 @@ export function readEthernetControls(
   };
 }
 
+export const readMetcalfeEthernetControls = readEthernetControls;
+
 export function stepMetcalfeEthernetSi(
   prevState: MetcalfeEthernetState,
   controls: MetcalfeEthernetControls,

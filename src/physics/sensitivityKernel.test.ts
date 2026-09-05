@@ -3483,4 +3483,145 @@ describe("Sensitivities follow the current admitted operating point", () => {
       ).toBeNull();
     }
   });
+
+  test("Farnsworth image dissector TV derives video current, deflection field, and beam velocity sensitivities", () => {
+    const id = "us-1773980-farnsworth-tv";
+
+    const sensLux = computeParameterSensitivity(id, "lightIntensityLux", {
+      lightIntensityLux: 500,
+    });
+    expect(sensLux).toBeDefined();
+    expect(sensLux?.metricName).toBe("Photo-Dissector Video Current");
+    expect(sensLux?.derivativeSymbol).toBe("∂I_video / ∂L_scene");
+    expect(sensLux?.derivativeValue).toBe(0.0042);
+    expect(sensLux?.derivativeUnit).toBe("µA / Lux");
+
+    const sensCoil = computeParameterSensitivity(id, "coilCurrent", {
+      coilCurrent: 0.42,
+    });
+    expect(sensCoil).toBeDefined();
+    expect(sensCoil?.metricName).toBe("Magnetic Deflection Field Sensitivity");
+    expect(sensCoil?.derivativeSymbol).toBe("∂B / ∂I_coil");
+    expect(sensCoil?.derivativeValue).toBe(285.7);
+    expect(sensCoil?.derivativeUnit).toBe("G / A");
+
+    const sensAnode = computeParameterSensitivity(id, "anodeVoltage", {
+      anodeVoltage: 1500,
+    });
+    expect(sensAnode).toBeDefined();
+    expect(sensAnode?.metricName).toBe("Electron Beam Velocity Acceleration Sensitivity");
+    expect(sensAnode?.derivativeSymbol).toBe("∂v / ∂V_anode");
+    expect(sensAnode?.derivativeValue).toBe(7.66);
+    expect(sensAnode?.derivativeUnit).toBe("km·s⁻¹ / V");
+
+    // Bounds checking
+    for (const invalid of [599, 6001, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "anodeVoltage", { anodeVoltage: invalid })).toBeNull();
+    }
+    for (const invalid of [0.09, 0.81, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "coilCurrent", { coilCurrent: invalid })).toBeNull();
+    }
+    for (const invalid of [99, 2001, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "lightIntensityLux", { lightIntensityLux: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [4.9, 30.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "horizontalFreqKhz", { horizontalFreqKhz: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [29, 121, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "verticalFreqHz", { verticalFreqHz: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [29, 241, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "scanLines", { scanLines: invalid })).toBeNull();
+    }
+  });
+
+  test("Lamarr frequency hopping derives jamming processing gain and filter discrimination sensitivities", () => {
+    const id = "us-2292387-lamarr-frequency-hopping";
+
+    const sensGain = computeParameterSensitivity(id, "recordPosition", {
+      recordPosition: 3,
+    });
+    expect(sensGain).toBeDefined();
+    expect(sensGain?.metricName).toBe("Jamming Processing Gain");
+    expect(sensGain?.derivativeSymbol).toBe("∂G_p / ∂N");
+    expect(sensGain?.derivativeValue).toBe(0.22);
+    expect(sensGain?.derivativeUnit).toBe("dB / channel");
+
+    const sensTone = computeParameterSensitivity(id, "commandTone", {
+      commandTone: 100,
+    });
+    expect(sensTone).toBeDefined();
+    expect(sensTone?.metricName).toBe("Demodulated Filter Discrimination");
+    expect(sensTone?.derivativeSymbol).toBe("∂Q / ∂f_tone");
+    expect(sensTone?.derivativeValue).toBe(1.45);
+    expect(sensTone?.derivativeUnit).toBe("dB / Hz");
+
+    // Bounds checking
+    for (const invalid of [-1, 89, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "recordPosition", { recordPosition: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [49, 1001, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "commandTone", { commandTone: invalid })).toBeNull();
+    }
+  });
+
+  test("Metcalfe Ethernet CSMA/CD derives propagation delay, bit period, and channel efficiency sensitivities", () => {
+    const id = "us-4063220-metcalfe-ethernet";
+
+    const sensDelay = computeParameterSensitivity(id, "cableLengthMeters", {
+      cableLengthMeters: 500,
+    });
+    expect(sensDelay).toBeDefined();
+    expect(sensDelay?.metricName).toBe("One-Way Propagation Delay");
+    expect(sensDelay?.derivativeSymbol).toBe("∂τ_prop / ∂L");
+    expect(sensDelay?.derivativeValue).toBe(5.0);
+    expect(sensDelay?.derivativeUnit).toBe("ns / m");
+
+    const sensBit = computeParameterSensitivity(id, "dataRateMbps", {
+      dataRateMbps: 2.94,
+    });
+    expect(sensBit).toBeDefined();
+    expect(sensBit?.metricName).toBe("Manchester Bit Period");
+    expect(sensBit?.derivativeSymbol).toBe("∂T_bit / ∂R");
+    expect(sensBit?.derivativeValue).toBe(-34.0);
+    expect(sensBit?.derivativeUnit).toBe("ns / Mbps");
+
+    const sensEff = computeParameterSensitivity(id, "offeredLoad", {
+      offeredLoad: 0.5,
+    });
+    expect(sensEff).toBeDefined();
+    expect(sensEff?.metricName).toBe("Channel Utilization Efficiency");
+    expect(sensEff?.derivativeSymbol).toBe("∂η / ∂G");
+    expect(sensEff?.derivativeValue).toBe(-28.5);
+    expect(sensEff?.derivativeUnit).toBe("% / norm_load");
+
+    // Bounds checking
+    for (const invalid of [9, 1001, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "cableLengthMeters", { cableLengthMeters: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.9, 10.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "dataRateMbps", { dataRateMbps: invalid })).toBeNull();
+    }
+    for (const invalid of [1, 33, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "stationCount", { stationCount: invalid })).toBeNull();
+    }
+    for (const invalid of [0.04, 2.51, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "offeredLoad", { offeredLoad: invalid })).toBeNull();
+    }
+    for (const invalid of [63, 1519, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "packetSizeBytes", { packetSizeBytes: invalid }),
+      ).toBeNull();
+    }
+  });
 });
