@@ -29,10 +29,9 @@ acceptance. No legacy text layer was used to author visitor-facing source text.
   correction certificates. The historical patent text and drawings are public
   domain United States Government material.
 
-The local PDF's front sheet and the public record both identify application
-`US827345A` and the May 23, 1969 filing date. The current canonical record's
-`1968-06-18` field is not supported by these reviewed primary records; it must
-be corrected only as part of a later complete source-authoring pass.
+The local PDF's front sheet and the current canonical record both identify
+application `US827345A` and the May 23, 1969 filing date. The source-backed
+canonical field is `1969-05-23`.
 
 ## Full-facsimile map
 
