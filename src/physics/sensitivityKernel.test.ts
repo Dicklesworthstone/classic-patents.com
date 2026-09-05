@@ -4,6 +4,7 @@ import {
   stepBellTelephone,
   stepEinsteinRefrigerator,
   stepGoodyearRubber,
+  stepHollerithTabulating,
   stepThomsonWelding,
   stepZeppelinAirship,
 } from "./catalogKernels";
@@ -799,5 +800,46 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(
       computeParameterSensitivity(id, "tailRotorPedalPercent", { tailRotorPedalPercent: 105 }),
     ).toBeNull();
+  });
+
+  test("Hollerith tabulator derives tally rate, solenoid force, and voltage sensitivities", () => {
+    const id = "us-395781-hollerith-tabulating";
+
+    for (const cpm of [20, 40, 60, 90]) {
+      const sens = computeParameterSensitivity(id, "cardsPerMin", { cardsPerMin: cpm });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Electromechanical Dial Tally Rate");
+      expect(sens?.derivativeValue).toBe(1.0);
+      expect(sens?.derivativeUnit).toBe("tallies/min / (card/min)");
+    }
+
+    for (const v of [6, 12, 18, 24]) {
+      const sens = computeParameterSensitivity(id, "batteryVolts", { batteryVolts: v });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Solenoid Electromagnetic Tractive Force");
+      expect(sens?.derivativeUnit).toBe("N / V");
+      const hol = stepHollerithTabulating({ supplyVoltageV: v });
+      expect(sens?.derivativeValue).toBeCloseTo(hol.forceVoltageSlopeNPerV, 2);
+    }
+
+    for (const relays of [1, 10, 16, 32, 40]) {
+      const sens = computeParameterSensitivity(id, "activeRelays", { activeRelays: relays });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Solenoid Total Attraction Force");
+      expect(sens?.derivativeUnit).toBe("N / relay");
+      const hol = stepHollerithTabulating({ activeRelays: relays });
+      expect(sens?.derivativeValue).toBeCloseTo(hol.forceRelaySlopeNPerRelay, 2);
+    }
+
+    // Invalid parameters
+    for (const invalid of [19, 91, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "cardsPerMin", { cardsPerMin: invalid })).toBeNull();
+    }
+    for (const invalid of [5, 25, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "batteryVolts", { batteryVolts: invalid })).toBeNull();
+    }
+    for (const invalid of [0, 41, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "activeRelays", { activeRelays: invalid })).toBeNull();
+    }
   });
 });

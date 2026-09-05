@@ -14,6 +14,7 @@ import {
   stepBellTelephone,
   stepEinsteinRefrigerator,
   stepGoodyearRubber,
+  stepHollerithTabulating,
   stepLandPolaroidInstantFilm,
   stepThomsonWelding,
   stepZeppelinAirship,
@@ -1940,14 +1941,58 @@ export function computeParameterSensitivity(
     }
 
     case "us-395781-hollerith-tabulating": {
+      const cpm = params.cardsPerMin ?? 60;
+      const v = params.batteryVolts ?? params.supplyVoltageV ?? 12;
+      const relays = params.activeRelays ?? 16;
+
+      if (
+        !Number.isFinite(cpm) ||
+        cpm < 20 ||
+        cpm > 90 ||
+        !Number.isFinite(v) ||
+        v < 6 ||
+        v > 24 ||
+        !Number.isFinite(relays) ||
+        relays < 1 ||
+        relays > 40
+      ) {
+        return null;
+      }
+
+      const hol = stepHollerithTabulating({
+        cardsPerMin: cpm,
+        supplyVoltageV: v,
+        activeRelays: relays,
+      });
+
       if (controlKey === "cardsPerMin") {
         return {
           metricName: "Electromechanical Dial Tally Rate",
           derivativeSymbol: "∂Count / ∂Speed",
-          derivativeValue: 1.0,
+          derivativeValue: hol.tallyRateSlopePerCpm,
           derivativeUnit: "tallies/min / (card/min)",
           interpretation:
             "Punched-hole mercury sensing pins closing relay circuits to advance electromechanical counters.",
+        };
+      }
+      if (controlKey === "batteryVolts" || controlKey === "supplyVoltageV") {
+        return {
+          metricName: "Solenoid Electromagnetic Tractive Force",
+          derivativeSymbol: "∂F_mag / ∂V_supply",
+          derivativeValue: hol.forceVoltageSlopeNPerV,
+          derivativeUnit: "N / V",
+          interpretation:
+            "Quadratic solenoid tractive force gradient with supply voltage: F_mag ∝ V² across relay coils.",
+        };
+      }
+      if (controlKey === "activeRelays") {
+        return {
+          metricName: "Solenoid Total Attraction Force",
+          derivativeSymbol: "∂F_mag / ∂N_relays",
+          derivativeValue: hol.forceRelaySlopeNPerRelay,
+          derivativeUnit: "N / relay",
+          interpretation:
+            "Cumulative tractive force gradient with the number of concurrently engaged accumulator relay circuits.",
         };
       }
       break;

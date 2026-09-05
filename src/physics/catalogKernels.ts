@@ -1818,12 +1818,16 @@ export function stepHollerithTabulating(params: {
   const registerDialCount = 40;
   const relays = params.activeRelays ?? sensingPinCount;
   const press = rpmToOmega(cpm);
-  const solenoidForceN = Number(
-    (((relays * (v / 12) * 45) ** 2 * 1.256e-6 * 0.0004) / (2 * 0.002 ** 2)).toFixed(2),
-  );
+  const rawForce = ((relays * (v / 12) * 45) ** 2 * 1.256e-6 * 0.0004) / (2 * 0.002 ** 2);
+  const solenoidForceN = Number(rawForce.toFixed(2));
+  const forceVoltageSlopeNPerV = Number(((2 * rawForce) / v).toFixed(3));
+  const forceRelaySlopeNPerRelay = Number(((2 * rawForce) / relays).toFixed(3));
   return {
     cycleTimeMs: Math.round(60000 / cpm),
     solenoidForceN,
+    forceVoltageSlopeNPerV,
+    forceRelaySlopeNPerRelay,
+    tallyRateSlopePerCpm: 1.0,
     inductiveTauMs: Number(((0.08 / (v / 2.4)) * 1000).toFixed(1)),
     contactResistanceOhms: 0.08,
     sensingPinCount,
