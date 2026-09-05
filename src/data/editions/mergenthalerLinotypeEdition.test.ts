@@ -76,7 +76,7 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
     }
   });
 
-  test("records the known figure-preview deficit and validates every attached crop", () => {
+  test("binds every staged figure citation to a visually reviewed source crop", () => {
     const references = mergenthalerLinotypeArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
         ? block.inlines.filter(
@@ -98,9 +98,8 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
       ),
     );
     expect(references).toHaveLength(36);
-    expect(referencesWithPreviews).toHaveLength(9);
-    expect(references.length - referencesWithPreviews.length).toBe(27);
-    expect(uniquePreviewPaths.size).toBe(3);
+    expect(referencesWithPreviews).toHaveLength(references.length);
+    expect(uniquePreviewPaths.size).toBeGreaterThanOrEqual(13);
     for (const reference of references) {
       if (reference.kind !== "reference" || reference.referenceType !== "figure") continue;
       for (const preview of reference.figurePreviews ?? []) {

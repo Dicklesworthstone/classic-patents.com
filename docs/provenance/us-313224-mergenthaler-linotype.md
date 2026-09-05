@@ -102,6 +102,30 @@ complete original sheets remain directly readable in the pinned facsimile,
 while literal drawing transcription and crop acceptance remain strict-audit
 work.
 
+The direct visual review also established this figure-to-sheet locator. It is
+an aid to inspecting the source; it is not a reconstructed drawing or a
+claim that each figure has received a separate editorial crop.
+
+| Source sheet (PDF page) | Printed figure labels present |
+| --- | --- |
+| 1 | 1 |
+| 2 | 2 |
+| 3 | 3 |
+| 4 | 4–10 |
+| 5 | 11 |
+| 6 | 12, 12a, 13, 14 |
+| 7 | 15 |
+| 8 | 16–18 |
+| 9 | 19–25 |
+| 10 | 26–28 |
+| 11 | 29–31 |
+| 12 | 32, 33, 50 |
+| 13 | 34, 35 |
+| 14 | 36–44 |
+| 15 | 45, 49 |
+| 16 | 46, 47 |
+| 17 | 48, 51 |
+
 ### Bounded opening-specification review (2026-09-05)
 
 Pages 18 through 21 were rendered from the pinned PDF at 180 DPI and read

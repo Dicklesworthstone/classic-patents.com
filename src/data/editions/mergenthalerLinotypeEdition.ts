@@ -26,45 +26,131 @@ const linotypeFigDims: Record<number, { width: number; height: number }> = {
   4: { width: 470, height: 2200 },
 };
 
-const figure = (num: number, label: string): CuratedSpecificationInline => ({
-  kind: "reference",
-  text: label,
-  href: `#mergenthaler-fig-${num}`,
-  referenceType: "figure",
-  label: `Preview ${label} of US 313,224`,
-  ...(linotypeFigDims[num]
-    ? {
-        figurePreviews: [
-          {
-            src: `/patents/figures/us-313224-mergenthaler-linotype/fig-${num}-source-crop-v1.png`,
-            alt: `US 313,224 ${label}`,
-            width: linotypeFigDims[num].width,
-            height: linotypeFigDims[num].height,
-          },
-        ],
-      }
-    : {}),
-});
+/**
+ * Exact source-sheet location for every printed figure. Figures 1–4 retain
+ * their tighter existing crops; later citations use a full, unaltered source
+ * sheet so a visitor can inspect the printed figure label and its neighbors.
+ */
+const linotypeFigureSheets: Record<number, number> = {
+  5: 4,
+  6: 4,
+  7: 4,
+  8: 4,
+  9: 4,
+  10: 4,
+  11: 5,
+  12: 6,
+  13: 6,
+  14: 6,
+  15: 7,
+  16: 8,
+  17: 8,
+  18: 8,
+  19: 9,
+  20: 9,
+  21: 9,
+  22: 9,
+  23: 9,
+  24: 9,
+  25: 9,
+  26: 10,
+  27: 10,
+  28: 10,
+  29: 11,
+  30: 11,
+  31: 11,
+  32: 12,
+  33: 12,
+  34: 13,
+  35: 13,
+  36: 14,
+  37: 14,
+  38: 14,
+  39: 14,
+  40: 14,
+  41: 14,
+  42: 14,
+  43: 14,
+  44: 14,
+  45: 15,
+  46: 16,
+  47: 16,
+  48: 17,
+  49: 15,
+  50: 12,
+  51: 17,
+};
+
+type FigurePreview = {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+};
+
+const figurePreview = (number: number, label: string): FigurePreview | undefined => {
+  const crop = linotypeFigDims[number];
+  if (crop) {
+    return {
+      src: `/patents/figures/us-313224-mergenthaler-linotype/fig-${number}-source-crop-v1.png`,
+      alt: `US 313,224 ${label}`,
+      ...crop,
+    };
+  }
+
+  const sheet = linotypeFigureSheets[number];
+  if (!sheet) return undefined;
+  return {
+    src: `/patents/figures/us-313224-mergenthaler-linotype/sheet-${String(sheet).padStart(2, "0")}-source-crop-v1.png`,
+    alt: `US 313,224 drawing sheet ${sheet}, containing Fig. ${number}`,
+    width: 1547,
+    height: 2272,
+  };
+};
+
+const citationFigureNumbers = (citation: string): number[] => {
+  const numbers = Array.from(citation.matchAll(/\d+/g), (match) => Number(match[0]));
+  if (citation.includes(" to ") && numbers.length === 2) {
+    const [first, last] = numbers;
+    return Array.from({ length: last - first + 1 }, (_, index) => first + index);
+  }
+  return numbers;
+};
+
+const citationPreviews = (citation: string): FigurePreview[] => {
+  const previews = citationFigureNumbers(citation).flatMap((number) => {
+    const preview = figurePreview(number, `Fig. ${number}`);
+    return preview ? [preview] : [];
+  });
+  return previews.filter(
+    (preview, index) => previews.findIndex((candidate) => candidate.src === preview.src) === index,
+  );
+};
+
+const figure = (num: number, label: string): CuratedSpecificationInline => {
+  const preview = figurePreview(num, label);
+  return {
+    kind: "reference",
+    text: label,
+    href: `#mergenthaler-fig-${num}`,
+    referenceType: "figure",
+    label: `Preview ${label} of US 313,224`,
+    ...(preview ? { figurePreviews: [preview] } : {}),
+  };
+};
 
 const sourceFigure = (citation: string): CuratedSpecificationInline => {
-  const number = Number(citation.match(/\d+/)?.[0] ?? 0);
-  const dimensions = linotypeFigDims[number];
+  const number = citationFigureNumbers(citation)[0] ?? 0;
+  const previews = citationPreviews(citation);
   return {
     kind: "reference",
     text: citation,
     href: `#mergenthaler-fig-${number}`,
     referenceType: "figure",
     label: `Source-facsimile reference ${citation} of US 313,224`,
-    ...(dimensions
+    ...(previews.length > 0
       ? {
-          figurePreviews: [
-            {
-              src: `/patents/figures/us-313224-mergenthaler-linotype/fig-${number}-source-crop-v1.png`,
-              alt: `US 313,224 ${citation}`,
-              width: dimensions.width,
-              height: dimensions.height,
-            },
-          ],
+          figurePreviews: previews,
         }
       : {}),
   };
