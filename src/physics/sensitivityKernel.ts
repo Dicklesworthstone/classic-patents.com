@@ -373,14 +373,42 @@ export function computeParameterSensitivity(
     }
 
     case "us-2708656-fermi-reactor": {
+      const rod =
+        params.rodWithdrawal ?? params.controlRodWithdrawalPct ?? params.rodPosition ?? 83.5;
+      const moderatorPurity = params.moderatorPurity ?? 99.5;
+      const claim1 = params.claim1Active ?? 1;
+
+      if (
+        !Number.isFinite(rod) ||
+        rod < 0 ||
+        rod > 100 ||
+        !Number.isFinite(moderatorPurity) ||
+        moderatorPurity < 95 ||
+        moderatorPurity > 100 ||
+        !Number.isFinite(claim1) ||
+        claim1 < 0 ||
+        claim1 > 1
+      ) {
+        return null;
+      }
+
+      const isClaim1Active = claim1 >= 0.5;
+
       if (
         controlKey === "rodWithdrawal" ||
         controlKey === "controlRodWithdrawalPct" ||
         controlKey === "rodPosition"
       ) {
-        const rod =
-          params.rodWithdrawal ?? params.controlRodWithdrawalPct ?? params.rodPosition ?? 65.0;
-        const moderatorPurity = params.moderatorPurity ?? 99.5;
+        if (!isClaim1Active) {
+          return {
+            metricName: "Normalized Multiplication Lens",
+            derivativeSymbol: "∂k_eff / ∂x_absorber",
+            derivativeValue: 0,
+            derivativeUnit: "k / % normalized travel",
+            interpretation:
+              "Absorber rod movement produces zero neutron multiplication sensitivity when the Claim 1 natural-uranium lattice is withheld.",
+          };
+        }
         const lower = Math.max(0, rod - 0.5);
         const upper = Math.min(100, rod + 0.5);
         const dKeffDx =
@@ -395,6 +423,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "k / % normalized travel",
           interpretation:
             "Central difference over the same explicitly normalized absorber lens used by the visual. It is not a source-calibrated cadmium worth curve.",
+        };
+      }
+      if (controlKey === "claim1Active") {
+        return {
+          metricName: "Claim 1 Lattice Geometry Visibility",
+          derivativeSymbol: "∂q_{lattice} / ∂u_{claim}",
+          derivativeValue: 1,
+          derivativeUnit: "topology fraction / claim fraction",
+          interpretation:
+            "Discrete topological gating of the natural-uranium and graphite multiplying structure under Claim 1.",
         };
       }
       break;

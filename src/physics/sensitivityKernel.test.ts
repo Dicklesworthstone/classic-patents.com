@@ -2112,4 +2112,54 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(computeParameterSensitivity(id, "anodeVoltage", { anodeVoltage: invalid })).toBeNull();
     }
   });
+
+  test("Fermi Reactor derives normalized multiplication lens sensitivity and enforces Claim 1 lattice gating", () => {
+    const id = "us-2708656-fermi-reactor";
+
+    for (const rod of [50, 83.5, 95]) {
+      const sens = computeParameterSensitivity(id, "rodWithdrawal", {
+        rodWithdrawal: rod,
+        moderatorPurity: 99.5,
+        claim1Active: 1,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Normalized Multiplication Lens");
+      expect(sens?.derivativeSymbol).toBe("∂k_eff / ∂x_absorber");
+      expect(sens?.derivativeUnit).toBe("k / % normalized travel");
+      expect(sens?.derivativeValue).toBeCloseTo(0.0003, 4);
+    }
+
+    // With Claim 1 lattice withheld, multiplication sensitivity must be zero
+    const decoupledSens = computeParameterSensitivity(id, "rodWithdrawal", {
+      rodWithdrawal: 83.5,
+      moderatorPurity: 99.5,
+      claim1Active: 0,
+    });
+    expect(decoupledSens).toBeDefined();
+    expect(decoupledSens?.derivativeValue).toBe(0);
+    expect(decoupledSens?.interpretation).toContain("zero neutron multiplication sensitivity");
+
+    // Claim 1 visibility control
+    for (const claim of [0, 1]) {
+      const sensClaim = computeParameterSensitivity(id, "claim1Active", { claim1Active: claim });
+      expect(sensClaim).toBeDefined();
+      expect(sensClaim?.metricName).toBe("Claim 1 Lattice Geometry Visibility");
+      expect(sensClaim?.derivativeValue).toBe(1);
+    }
+
+    // Invalid parameters
+    for (const invalid of [-1, 101, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "rodWithdrawal", { rodWithdrawal: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [94.9, 100.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "moderatorPurity", { moderatorPurity: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "claim1Active", { claim1Active: invalid })).toBeNull();
+    }
+  });
 });

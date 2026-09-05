@@ -375,6 +375,7 @@ export const FrankenSimEngine = {
   stepParsonsMarine,
   stepHewittMercuryLamp,
   stepSpencerMicrowaveSource,
+  stepFermiKinetics,
 
   /** US 6,331,181 illustrative tool-interface and contact model. */
   stepDaVinci(
