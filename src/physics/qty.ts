@@ -52,6 +52,8 @@ export const DIM_MAGNETIC_FLUX_DENSITY: SiDimensionVector = Object.freeze([0, 1,
 export const DIM_FREQUENCY: SiDimensionVector = Object.freeze([0, 0, -1, 0, 0, 0]);
 export const DIM_ENERGY_DENSITY: SiDimensionVector = Object.freeze([-1, 1, -2, 0, 0, 0]); // J/m³
 export const DIM_DENSITY: SiDimensionVector = Object.freeze([-3, 1, 0, 0, 0, 0]); // kg/m³
+export const DIM_VOLUME_FLOW: SiDimensionVector = Object.freeze([3, 0, -1, 0, 0, 0]); // m³/s
+export const DIM_ENTROPY_FLOW: SiDimensionVector = Object.freeze([2, 1, -3, -1, 0, 0]); // W/K
 
 /** Coarse SI dimension tag for the live HUD. Not a full unit algebra. */
 export function qtyDimension(unit: string): string {
@@ -282,7 +284,7 @@ export function parseUnitToDimension(unit: string): SiDimensionVector {
   // Acceleration
   if (u === "m/s²" || u === "m/s2" || u === "g") return DIM_ACCELERATION;
 
-  // Frequency
+  // Frequency & Angular Velocity
   if (
     u === "hz" ||
     u === "khz" ||
@@ -290,9 +292,17 @@ export function parseUnitToDimension(unit: string): SiDimensionVector {
     u === "ghz" ||
     u === "rpm" ||
     u === "1/s" ||
-    u === "rps"
+    u === "rps" ||
+    u === "rad/s" ||
+    u === "rad/sec"
   )
     return DIM_FREQUENCY;
+
+  // Volume Flow Rate
+  if (u === "m³/s" || u === "m3/s" || u === "l/s" || u === "m3/sec") return DIM_VOLUME_FLOW;
+
+  // Entropy Flow Rate / Thermal Conductance
+  if (u === "w/k" || u === "w/kelvin") return DIM_ENTROPY_FLOW;
 
   // Temperature
   if (u === "k" || u === "°c" || u === "c" || u === "°f" || u === "f") return DIM_TEMPERATURE;

@@ -10,6 +10,37 @@
  */
 
 import * as THREE from "three";
+import { blackbodyRgb } from "./blackbody";
+import { BoundedBufferPool, type BufferShape } from "./transport";
+
+export { blackbodyRgb };
+
+const FIELD_BUFFER_POOLS = new Map<string, BoundedBufferPool>();
+
+/**
+ * Manages fixed-capacity bounded buffer pools for field textures.
+ * Guarantees zero heap allocations during high-frequency 60 FPS animation loops.
+ */
+export function getFieldBufferPool(
+  key: string,
+  width: number,
+  height: number,
+  capacity = 3,
+  useSharedMemory = false,
+): BoundedBufferPool {
+  const mapKey = `${key}:${width}x${height}:${capacity}:${useSharedMemory}`;
+  let pool = FIELD_BUFFER_POOLS.get(mapKey);
+  if (!pool) {
+    const shape: BufferShape = {
+      dimensions: [width, height],
+      totalElements: width * height,
+      bytesPerElement: 4,
+    };
+    pool = new BoundedBufferPool(shape, capacity, useSharedMemory);
+    FIELD_BUFFER_POOLS.set(mapKey, pool);
+  }
+  return pool;
+}
 
 /**
  * Creates a Three.js DataTexture from a normalized Float32Array or Uint8Array scalar field.
@@ -35,6 +66,20 @@ export function createScalarDataTexture(
   texture.wrapT = THREE.ClampToEdgeWrapping;
   texture.generateMipmaps = false;
   return texture;
+}
+
+/**
+ * Updates an existing colormapped DataTexture in place from a live scalar field.
+ */
+export function updateColormappedFieldTexture(
+  texture: THREE.DataTexture,
+  scalarField: Float64Array | Float32Array,
+  width: number,
+  height: number,
+): void {
+  const rgba = texture.image.data as Uint8Array;
+  writeColormappedField(rgba, scalarField, width, height);
+  texture.needsUpdate = true;
 }
 
 /**
@@ -102,8 +147,10 @@ export function computeEdisonFilamentThermalField(
   _mainsVoltageV: number,
   vacuumQualityTorr: number,
   gridSize = 64,
+  target?: Float32Array,
 ): Float32Array {
-  const grid = new Float32Array(gridSize * gridSize);
+  const reqLen = gridSize * gridSize;
+  const grid = target?.length === reqLen ? target : new Float32Array(reqLen);
   const centerI = gridSize / 2;
   const centerJ = gridSize / 2;
   const loopRadius = gridSize * 0.22;
@@ -153,8 +200,10 @@ export function computeCcdPotentialWellField(
   numStages = 8,
   width = 64,
   height = 32,
+  target?: Float32Array,
 ): Float32Array {
-  const grid = new Float32Array(width * height);
+  const reqLen = width * height;
+  const grid = target?.length === reqLen ? target : new Float32Array(reqLen);
   const stages = Math.max(1, Math.min(16, numStages));
 
   for (let y = 0; y < height; y++) {
@@ -245,8 +294,13 @@ export function generateVectorStreamlines(
 }
 
 /** Rotating Tesla B-field magnitude on a plane (Fig. 9's two circuits). */
-export function computeTeslaRotatingBField(omegaT: number, gridSize = 32): Float32Array {
-  const grid = new Float32Array(gridSize * gridSize);
+export function computeTeslaRotatingBField(
+  omegaT: number,
+  gridSize = 32,
+  target?: Float32Array,
+): Float32Array {
+  const reqLen = gridSize * gridSize;
+  const grid = target?.length === reqLen ? target : new Float32Array(reqLen);
   const coilCount = 4;
   for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++) {
@@ -275,8 +329,13 @@ export function computeTeslaRotatingBField(omegaT: number, gridSize = 32): Float
 }
 
 /** Noyce planar junction potential from a live reverse-bias blob. */
-export function computeNoyceDepletionField(reverseBiasV: number, gridSize = 32): Float32Array {
-  const grid = new Float32Array(gridSize * gridSize);
+export function computeNoyceDepletionField(
+  reverseBiasV: number,
+  gridSize = 32,
+  target?: Float32Array,
+): Float32Array {
+  const reqLen = gridSize * gridSize;
+  const grid = target?.length === reqLen ? target : new Float32Array(reqLen);
   const w = Math.max(0.08, Math.min(0.45, 0.12 * Math.sqrt(0.7 + reverseBiasV)));
   for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++) {
@@ -323,8 +382,10 @@ export function computeSpencerPathFieldDisplay(
   pathActivity: number,
   displayPhaseRad: number,
   gridSize = 32,
+  target?: Float32Array,
 ): Float32Array {
-  const grid = new Float32Array(gridSize * gridSize);
+  const reqLen = gridSize * gridSize;
+  const grid = target?.length === reqLen ? target : new Float32Array(reqLen);
   const amp = Math.max(0, Math.min(1, pathActivity));
   for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++) {
@@ -338,8 +399,13 @@ export function computeSpencerPathFieldDisplay(
 }
 
 /** Carrier spray-chamber droplet density from live airflow. */
-export function computeCarrierSprayField(airflowCfm: number, gridSize = 32): Float32Array {
-  const grid = new Float32Array(gridSize * gridSize);
+export function computeCarrierSprayField(
+  airflowCfm: number,
+  gridSize = 32,
+  target?: Float32Array,
+): Float32Array {
+  const reqLen = gridSize * gridSize;
+  const grid = target?.length === reqLen ? target : new Float32Array(reqLen);
   const jet = Math.max(0.15, Math.min(1, airflowCfm / 15000));
   for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++) {
@@ -409,11 +475,13 @@ export function computeFermiNormalizedDisplayField(
 /** Goddard supersonic rocket de Laval expansion plume with periodic Mach diamonds. */
 export function computeGoddardPlumeField(
   chamberPressurePsi: number,
-  expansionRatio: number,
-  timeSec: number,
+  expansionRatio = 4,
+  timeSec = 0,
   gridSize = 32,
+  target?: Float32Array,
 ): Float32Array {
-  const grid = new Float32Array(gridSize * gridSize);
+  const reqLen = gridSize * gridSize;
+  const grid = target?.length === reqLen ? target : new Float32Array(reqLen);
   const pressureFactor = Math.max(0.1, Math.min(1.0, chamberPressurePsi / 300));
   const machWavelength = Math.max(0.15, Math.min(0.35, 0.2 * Math.sqrt(expansionRatio / 4)));
 
@@ -445,8 +513,10 @@ export function computeLaserCavityField(
   pumpEnergyJoules: number,
   inversionFraction: number,
   gridSize = 32,
+  target?: Float32Array,
 ): Float32Array {
-  const grid = new Float32Array(gridSize * gridSize);
+  const reqLen = gridSize * gridSize;
+  const grid = target?.length === reqLen ? target : new Float32Array(reqLen);
   const gain = Math.max(0, Math.min(1.0, (pumpEnergyJoules / 2000) * inversionFraction));
 
   for (let y = 0; y < gridSize; y++) {
@@ -473,8 +543,10 @@ export function computeJouleThomsonThermalField(
   inletPressureBar: number,
   throttleTempK: number,
   gridSize = 32,
+  target?: Float32Array,
 ): Float32Array {
-  const grid = new Float32Array(gridSize * gridSize);
+  const reqLen = gridSize * gridSize;
+  const grid = target?.length === reqLen ? target : new Float32Array(reqLen);
   const jtDeltaT = Math.max(5, Math.min(80, inletPressureBar * 0.28));
   const coldRatio = Math.max(0, Math.min(1.0, (300 - throttleTempK + jtDeltaT) / 250));
 
@@ -500,8 +572,10 @@ export function computeSteamEnthalpyField(
   inletPressurePsi: number,
   stages = 48,
   gridSize = 32,
+  target?: Float32Array,
 ): Float32Array {
-  const grid = new Float32Array(gridSize * gridSize);
+  const reqLen = gridSize * gridSize;
+  const grid = target?.length === reqLen ? target : new Float32Array(reqLen);
   const pr = Math.max(2, Math.min(25, inletPressurePsi / 14.7));
 
   for (let y = 0; y < gridSize; y++) {
@@ -524,5 +598,152 @@ export function computeSteamEnthalpyField(
       grid[y * gridSize + x] = Math.max(0, Math.min(1, intensity));
     }
   }
+  return grid;
+}
+
+export interface WrightAirflowParams {
+  airspeedMps: number;
+  angleOfAttackRad?: number;
+  wingWarpDeg?: number;
+  elevatorPitchDeg?: number;
+  rudderYawDeg?: number;
+  coupled?: boolean;
+}
+
+/**
+ * Evaluates the 3D velocity vector [vx, vy, vz] in SI m/s at spatial coordinate (x, y, z)
+ * around the Wright Flyer biplane. Governed by biplane bound vortex circulation,
+ * downwash f_downwash, differential wing warping tip circulation, canard pitch, and rudder yaw.
+ */
+export function evaluateWrightAirflowVelocityVector(
+  x: number,
+  y: number,
+  z: number,
+  params: WrightAirflowParams,
+): [number, number, number] {
+  const vInf = Math.max(0.1, params.airspeedMps);
+  const alpha = params.angleOfAttackRad ?? (5 * Math.PI) / 180;
+  const chord = 1.98; // meters
+  const halfSpan = 12.29 / 2; // meters
+  const halfGap = 1.88 / 2; // meters
+  const ar = 12.29 / chord;
+
+  // Base lift coefficient from angle of attack + camber offset
+  const cl0 = Math.max(0, 2 * Math.PI * (alpha + 0.05));
+
+  // Differential circulation from wing warp across span z
+  const zNorm = Math.max(-1, Math.min(1, z / halfSpan));
+  const warpDeg = params.wingWarpDeg ?? 0;
+  const deltaClWarp = warpDeg * (Math.PI / 180) * 1.6 * zNorm;
+  const clLocal = Math.max(0, cl0 + deltaClWarp);
+
+  // Biplane upper and lower wing bound circulations (upper wing carries ~55% of load)
+  const gamma1 = 0.55 * clLocal * vInf * chord;
+  const gamma2 = 0.45 * clLocal * vInf * chord;
+
+  // Upper wing at (0, +halfGap), Lower wing at (0, -halfGap)
+  const core2 = 0.08;
+  const r1sq = x * x + (y - halfGap) * (y - halfGap) + core2;
+  const u1 = (gamma1 / (2 * Math.PI)) * ((y - halfGap) / r1sq);
+  const v1 = -(gamma1 / (2 * Math.PI)) * (x / r1sq);
+
+  const r2sq = x * x + (y + halfGap) * (y + halfGap) + core2;
+  const u2 = (gamma2 / (2 * Math.PI)) * ((y + halfGap) / r2sq);
+  const v2 = -(gamma2 / (2 * Math.PI)) * (x / r2sq);
+
+  // Downwash behind the biplane wings (x > 0)
+  let vDownwash = 0;
+  if (x > 0) {
+    const w0 = (2 * clLocal * vInf) / (Math.PI * ar);
+    const downstreamDecay = Math.exp(-x / 14);
+    const verticalDecay = Math.exp(-(y * y) / (halfGap * halfGap * 1.8));
+    vDownwash = -w0 * downstreamDecay * verticalDecay;
+  }
+
+  // Canard elevator at x = -3.5, y = 0
+  const canardDeg = params.elevatorPitchDeg ?? 0;
+  const gammaCanard = 0.18 * (canardDeg * (Math.PI / 180)) * vInf;
+  const rcsq = (x + 3.5) * (x + 3.5) + y * y + 0.12;
+  const uc = (gammaCanard / (2 * Math.PI)) * (y / rcsq);
+  const vc = -(gammaCanard / (2 * Math.PI)) * ((x + 3.5) / rcsq);
+
+  // Vertical rudder at x = +3.0
+  const rudderDeg = params.rudderYawDeg ?? 0;
+  const rudderEffect =
+    -(rudderDeg * (Math.PI / 180)) *
+    vInf *
+    0.6 *
+    Math.exp(-((x - 3.0) * (x - 3.0) + y * y + z * z) / 3.5);
+
+  const vx = vInf * Math.cos(alpha) + u1 + u2 + uc;
+  const vy = vInf * Math.sin(alpha) + v1 + v2 + vc + vDownwash;
+  const vz = rudderEffect;
+
+  return [vx, vy, vz];
+}
+
+/**
+ * Computes a 2D scalar velocity magnitude / pressure field for the Wright Flyer biplane.
+ * Normalized to [0..1] range representing Bernoulli pressure or kinetic energy perturbation.
+ */
+export function computeWrightAirflowVelocityField(
+  params: WrightAirflowParams,
+  width = 32,
+  height = 32,
+  target?: Float32Array,
+): Float32Array {
+  const reqLen = width * height;
+  const grid = target?.length === reqLen ? target : new Float32Array(reqLen);
+  const vInf = Math.max(0.1, params.airspeedMps);
+
+  for (let j = 0; j < height; j++) {
+    // Vertical domain y in [-2.5, 2.5] meters
+    const y = 2.5 - (j / (height - 1)) * 5.0;
+    for (let i = 0; i < width; i++) {
+      // Axial domain x in [-4.0, 5.0] meters
+      const x = -4.0 + (i / (width - 1)) * 9.0;
+      const [vx, vy] = evaluateWrightAirflowVelocityVector(x, y, 0, params);
+      const vMag = Math.hypot(vx, vy);
+      // Normalized Bernoulli surface pressure perturbation
+      const speedRatio = vMag / vInf;
+      const normalized = Math.max(0, Math.min(1, (speedRatio - 0.5) / 1.2));
+      grid[j * width + i] = normalized;
+    }
+  }
+
+  return grid;
+}
+
+/**
+ * Computes the 2D resonant quarter-wave electric field around Tesla's conical secondary transformer (US 593,138).
+ */
+export function computeTeslaCoilEField(
+  disturbanceFrequencyHz: number,
+  secondaryLengthMiles: number,
+  gridSize = 32,
+  target?: Float32Array,
+): Float32Array {
+  const reqLen = gridSize * gridSize;
+  const grid = target?.length === reqLen ? target : new Float32Array(reqLen);
+  const vProp = 3e8 * 0.65; // Helical propagation speed (~65% c)
+  const wireLengthM = Math.max(10, secondaryLengthMiles * 1609.344);
+  const electricalLengthRad = (2 * Math.PI * disturbanceFrequencyHz * wireLengthM) / vProp;
+
+  for (let y = 0; y < gridSize; y++) {
+    const v = y / (gridSize - 1); // Axial position: 0 (ground) to 1 (high terminal)
+    // Quarter-wave distributed potential profile
+    const potential = Math.abs(Math.sin(electricalLengthRad * v));
+    // Conical secondary outer radius narrows from bottom to top
+    const coneRadius = 0.45 * (1 - 0.6 * v);
+
+    for (let x = 0; x < gridSize; x++) {
+      const u = (x / (gridSize - 1)) * 2 - 1; // Radial position [-1..1]
+      const r = Math.abs(u);
+      const distFromWinding = Math.abs(r - coneRadius);
+      const eField = potential * Math.exp(-distFromWinding * 3.8);
+      grid[y * gridSize + x] = Math.max(0, Math.min(1, eField));
+    }
+  }
+
   return grid;
 }

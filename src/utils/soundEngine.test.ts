@@ -77,5 +77,6 @@ describe("Procedural Sound Synthesizer Engine (soundEngine.ts)", () => {
     expect(() => soundEngine.playWrightPropellerPass(1020, 28)).not.toThrow();
 
     soundEngine.stopAll();
+    soundEngine.setMuted(true);
   });
 });

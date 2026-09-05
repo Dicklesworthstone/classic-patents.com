@@ -10,7 +10,7 @@ class SoundEngine {
   private ctx: AudioContext | null = null;
   private oscillator: OscillatorNode | null = null;
   private gainNode: GainNode | null = null;
-  private isMuted: boolean = false;
+  private isMuted: boolean = true;
   private activeTimers: Set<number> = new Set();
   private transientNodes: Set<AudioNode> = new Set();
 
@@ -33,7 +33,9 @@ class SoundEngine {
       }
     }
     if (this.ctx && this.ctx.state === "suspended") {
-      this.ctx.resume();
+      this.ctx.resume().catch(() => {
+        // Stale-promise protection: browser autoplay policy guards
+      });
     }
   }
 
@@ -515,6 +517,119 @@ class SoundEngine {
     const dopplerShift = 1 + (airspeedKts / 60) * 0.08;
 
     this.playTone(bpfHz * 4 * dopplerShift, 0.08, "triangle", 0.06);
+  }
+
+  /**
+   * Tesla Resonant High-Potential Streamer Discharge (US 593,138)
+   * Atmospheric ionization streamer buzz modulated at the break rate with plasma harmonics.
+   */
+  public playTeslaCoilDischarge(breakRateHz = 120, intensity = 1.0) {
+    if (this.isMuted) return;
+    const safeIntensity = Math.max(0.05, Math.min(1.5, intensity));
+    const fBreak = Math.max(30, Math.min(360, breakRateHz));
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(fBreak, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(fBreak * 1.5, ctx.currentTime + 0.06);
+
+      gain.gain.setValueAtTime(0.18 * safeIntensity, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+      return 0.08;
+    });
+  }
+
+  /**
+   * Morse Electro-Magnetic Sounder Strike & Release (US 1,647)
+   * Armature impact on front-stop (strike) or back-stop (release) scaled by loop current.
+   */
+  public playMorseSounder(action: "strike" | "release" = "strike", loopCurrentMa = 50) {
+    if (this.isMuted) return;
+    const currentScale = Math.sqrt(Math.max(10, Math.min(120, loopCurrentMa)) / 50);
+    const isStrike = action === "strike";
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = isStrike ? "triangle" : "sine";
+      const startPitch = isStrike ? 850 : 360;
+      const endPitch = isStrike ? 140 : 90;
+      const dur = isStrike ? 0.016 : 0.022;
+
+      osc.frequency.setValueAtTime(startPitch, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(endPitch, ctx.currentTime + dur);
+
+      const peakGain = (isStrike ? 0.24 : 0.12) * currentScale;
+      gain.gain.setValueAtTime(peakGain, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+      return dur + 0.01;
+    });
+  }
+
+  /**
+   * Lamarr-Antheil 88-Key Carrier Hop Sounder (US 2,292,387)
+   * Plays the exact piano frequency corresponding to slit channel 0..87 or illustrated row A-G.
+   */
+  public playLamarrHop(channel: number | string, durationSec = 0.12) {
+    if (this.isMuted) return;
+    let channelIndex = 49; // Default A4 (440 Hz)
+    if (typeof channel === "number") {
+      channelIndex = Math.max(0, Math.min(87, channel));
+    } else if (typeof channel === "string") {
+      const rowMap: Record<string, number> = {
+        A: 40, // C4 (261.6 Hz)
+        B: 42, // D4 (293.7 Hz)
+        C: 44, // E4 (329.6 Hz)
+        D: 45, // F4 (349.2 Hz)
+        E: 47, // G4 (392.0 Hz)
+        F: 49, // A4 (440.0 Hz)
+        G: 51, // B4 (493.9 Hz)
+      };
+      channelIndex = rowMap[channel.toUpperCase()] ?? channel.charCodeAt(0) % 88;
+    }
+    // 88 piano frequencies: f = 440 * 2^((channelIndex - 49) / 12)
+    const frequencyHz = 440 * 2 ** ((channelIndex - 49) / 12);
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(frequencyHz, ctx.currentTime);
+
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + durationSec);
+      return durationSec + 0.02;
+    });
+  }
+
+  /**
+   * Plays a pre-rendered discrete PCM audio buffer with transient node tracking and cleanup.
+   */
+  public playDeterministicBuffer(bufferData: Float32Array, sampleRate = 44100) {
+    if (this.isMuted) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    const audioBuffer = this.ctx.createBuffer(1, bufferData.length, sampleRate);
+    audioBuffer.copyToChannel(bufferData as Float32Array<ArrayBuffer>, 0);
+
+    const source = this.ctx.createBufferSource();
+    source.buffer = audioBuffer;
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.8, this.ctx.currentTime);
+
+    source.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    this.transientNodes.add(source);
+    this.transientNodes.add(gain);
+
+    source.onended = () => {
+      try {
+        source.disconnect();
+        gain.disconnect();
+      } catch {
+        // Ignored
+      }
+      this.transientNodes.delete(source);
+      this.transientNodes.delete(gain);
+    };
+
+    source.start();
   }
 }
 

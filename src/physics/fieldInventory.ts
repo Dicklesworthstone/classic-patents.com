@@ -10,6 +10,7 @@
 import { allPatents } from "@/data/patents";
 import { wasmSurfaceForPatent } from "./coverageManifest";
 import { ENERGY_CHANNEL_OMISSION_REASONS, energyChannelsFor } from "./energyChannels";
+import { getSpatialFieldDescriptor } from "./spatialFieldInventory";
 import { PATENT_PHYSICS_REGISTRY, type PhysicsControl, type PhysicsMetric } from "./telemetryData";
 import type {
   FieldInventoryControl,
@@ -419,6 +420,7 @@ export function buildFieldInventoryForPatent(patentId: string): PatentFieldInven
       hasEnergyChannels,
       omissionReason,
     },
+    spatialField: getSpatialFieldDescriptor(patentId),
   };
 }
 
@@ -485,4 +487,14 @@ export function verifyFieldInventoryCompleteness(inventory: PatentFieldInventory
   };
 }
 
+export {
+  type BlockerTracking,
+  getAllSpatialFieldDescriptors,
+  getSpatialFieldBlocker,
+  getSpatialFieldDescriptor,
+  isSpatialFieldAdmitted,
+  SPATIAL_FIELD_REGISTRY,
+  type SpatialFieldDescriptor,
+  type SpatialFieldModelStatus,
+} from "./spatialFieldInventory";
 export type { FieldInventoryControl, FieldInventoryOutput, PatentFieldInventory };

@@ -126,6 +126,7 @@ export interface PatentFieldInventory {
     hasEnergyChannels: boolean;
     omissionReason?: string;
   };
+  spatialField?: import("./spatialFieldInventory").SpatialFieldDescriptor;
 }
 
 // 1. Aerodynamics & 6-DoF Multi-Body Dynamics
