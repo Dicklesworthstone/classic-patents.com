@@ -2848,4 +2848,169 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       resetPatentPhysicsParams(id);
     }
   });
+
+  test("Stackhouse Manipulator aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-4068536-stackhouse-manipulator";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.forearmRollDeg));
+
+    try {
+      setPatentPhysicsParam(id, "theta1", 25);
+      const params = getPatentPhysicsParams(id);
+      expect(params.forearmRollDeg).toBe(25);
+      expect(params.theta1).toBe(25);
+      expect(params.forearmRoll).toBe(25);
+      expect(observations).toEqual([25]);
+      expect(getLastParamChange(id)?.id).toBe("forearmRollDeg");
+
+      setPatentPhysicsParam(id, "theta2", 80);
+      expect(getPatentPhysicsParams(id).intermediateRollDeg).toBe(80);
+      expect(getPatentPhysicsParams(id).theta2).toBe(80);
+
+      setPatentPhysicsParam(id, "toolRoll", 15);
+      expect(getPatentPhysicsParams(id).toolRollDeg).toBe(15);
+      expect(getPatentPhysicsParams(id).toolRoll).toBe(15);
+
+      setPatentPhysicsParam(id, "firstOblique", 60);
+      expect(getPatentPhysicsParams(id).firstObliqueAngleDeg).toBe(60);
+      expect(getPatentPhysicsParams(id).firstOblique).toBe(60);
+
+      setPatentPhysicsParam(id, "secondOblique", 65);
+      expect(getPatentPhysicsParams(id).secondObliqueAngleDeg).toBe(65);
+      expect(getPatentPhysicsParams(id).secondOblique).toBe(65);
+
+      setPatentPhysicsParam(id, "pointP", 0);
+      expect(getPatentPhysicsParams(id).singleIntersection).toBe(0);
+      expect(getPatentPhysicsParams(id).pointP).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Axis Intersection")?.value).toBe("OFFSET CONTRAST");
+      expect(metrics.find((m) => m.label === "Axis Intersection")?.value).not.toBe(
+        initial.find((m) => m.label === "Axis Intersection")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Watson RCC aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-4098001-watson-rcc";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) =>
+      observations.push(p.lateralContactFraction),
+    );
+
+    try {
+      setPatentPhysicsParam(id, "contact", 0.4);
+      const params = getPatentPhysicsParams(id);
+      expect(params.lateralContactFraction).toBe(0.4);
+      expect(params.contact).toBe(0.4);
+      expect(params.lateralContact).toBe(0.4);
+      expect(observations).toEqual([0.4]);
+      expect(getLastParamChange(id)?.id).toBe("lateralContactFraction");
+
+      setPatentPhysicsParam(id, "mismatch", 0.3);
+      expect(getPatentPhysicsParams(id).axisMismatchFraction).toBe(0.3);
+      expect(getPatentPhysicsParams(id).mismatch).toBe(0.3);
+
+      setPatentPhysicsParam(id, "remoteCenter", 0);
+      expect(getPatentPhysicsParams(id).remoteCenterTopology).toBe(0);
+      expect(getPatentPhysicsParams(id).remoteCenter).toBe(0);
+
+      setPatentPhysicsParam(id, "antiTwist", 0);
+      expect(getPatentPhysicsParams(id).antiTwistConstraint).toBe(0);
+      expect(getPatentPhysicsParams(id).antiTwist).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Remote Center")?.value).toBe("LOCAL CONTRAST");
+      expect(metrics.find((m) => m.label === "Remote Center")?.value).not.toBe(
+        initial.find((m) => m.label === "Remote Center")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Makino SCARA aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-4341502-makino-scara";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.firstLinkAngleDeg));
+
+    try {
+      setPatentPhysicsParam(id, "firstLinkAngle", 45);
+      const params = getPatentPhysicsParams(id);
+      expect(params.firstLinkAngleDeg).toBe(45);
+      expect(params.firstLinkAngle).toBe(45);
+      expect(params.theta1).toBe(45);
+      expect(observations).toEqual([45]);
+      expect(getLastParamChange(id)?.id).toBe("firstLinkAngleDeg");
+
+      setPatentPhysicsParam(id, "theta4", -20);
+      expect(getPatentPhysicsParams(id).fourthLinkAngleDeg).toBe(-20);
+      expect(getPatentPhysicsParams(id).theta4).toBe(-20);
+
+      setPatentPhysicsParam(id, "attitude", 15);
+      expect(getPatentPhysicsParams(id).toolAttitudeDeg).toBe(15);
+      expect(getPatentPhysicsParams(id).attitude).toBe(15);
+
+      setPatentPhysicsParam(id, "variant", 3);
+      expect(getPatentPhysicsParams(id).topologyVariant).toBe(3);
+      expect(getPatentPhysicsParams(id).variant).toBe(3);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Independent Claim")?.value).toBe("CLAIM 6");
+      expect(metrics.find((m) => m.label === "Independent Claim")?.value).not.toBe(
+        initial.find((m) => m.label === "Independent Claim")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Crump FDM aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-5121329-crump-fdm";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.nozzleTempC));
+
+    try {
+      setPatentPhysicsParam(id, "tempC", 240);
+      const params = getPatentPhysicsParams(id);
+      expect(params.nozzleTempC).toBe(240);
+      expect(params.tempC).toBe(240);
+      expect(params.nozzleTemp).toBe(240);
+      expect(observations).toEqual([240]);
+      expect(getLastParamChange(id)?.id).toBe("nozzleTempC");
+
+      setPatentPhysicsParam(id, "printSpeed", 60);
+      expect(getPatentPhysicsParams(id).printSpeedMmS).toBe(60);
+      expect(getPatentPhysicsParams(id).printSpeed).toBe(60);
+
+      setPatentPhysicsParam(id, "layerHeight", 0.25);
+      expect(getPatentPhysicsParams(id).layerHeightMm).toBe(0.25);
+      expect(getPatentPhysicsParams(id).layerHeight).toBe(0.25);
+
+      setPatentPhysicsParam(id, "roadWidth", 0.5);
+      expect(getPatentPhysicsParams(id).roadWidthMm).toBe(0.5);
+      expect(getPatentPhysicsParams(id).roadWidth).toBe(0.5);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Volumetric Flow Rate (Q)")?.value).not.toBe(
+        initial.find((m) => m.label === "Volumetric Flow Rate (Q)")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
 });

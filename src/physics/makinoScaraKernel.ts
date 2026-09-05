@@ -38,9 +38,23 @@ export const MAKINO_SCARA_DEFAULT_CONTROLS: MakinoScaraControls = {
 
 export interface MakinoScaraControlParams {
   firstLinkAngleDeg?: number;
+  firstLinkAngle?: number;
+  theta1?: number;
+  link1Angle?: number;
   fourthLinkAngleDeg?: number;
+  fourthLinkAngle?: number;
+  theta2?: number;
+  theta4?: number;
+  link4Angle?: number;
   toolAttitudeDeg?: number;
+  toolAttitude?: number;
+  phi?: number;
+  attitude?: number;
   topologyVariant?: number;
+  topology?: number;
+  claimTopology?: number;
+  variant?: number;
+  claim?: number;
 }
 
 export type MakinoTopology = "claim-1-concentric" | "claim-3-offset" | "claim-6-y-link";
@@ -145,23 +159,24 @@ function solveOffsetToolJoint(
   return firstCandidate[0] < secondCandidate[0] ? firstCandidate : secondCandidate;
 }
 
-export function readMakinoScaraControls(params: MakinoScaraControlParams): MakinoScaraControls {
+export function readMakinoScaraControls(
+  params: MakinoScaraControlParams | Record<string, number | undefined>,
+): MakinoScaraControls {
+  const p = params as Record<string, number | undefined>;
+  const theta1 = p.firstLinkAngleDeg ?? p.firstLinkAngle ?? p.theta1 ?? p.link1Angle;
+  const theta4 = p.fourthLinkAngleDeg ?? p.fourthLinkAngle ?? p.theta2 ?? p.theta4 ?? p.link4Angle;
+  const attitude = p.toolAttitudeDeg ?? p.toolAttitude ?? p.phi ?? p.attitude;
+  const variant = p.topologyVariant ?? p.topology ?? p.claimTopology ?? p.variant ?? p.claim;
+
   return {
-    firstLinkAngleDeg: clampAngle(
-      finite(params.firstLinkAngleDeg, MAKINO_SCARA_DEFAULT_CONTROLS.firstLinkAngleDeg),
-    ),
+    firstLinkAngleDeg: clampAngle(finite(theta1, MAKINO_SCARA_DEFAULT_CONTROLS.firstLinkAngleDeg)),
     fourthLinkAngleDeg: clampAngle(
-      finite(params.fourthLinkAngleDeg, MAKINO_SCARA_DEFAULT_CONTROLS.fourthLinkAngleDeg),
+      finite(theta4, MAKINO_SCARA_DEFAULT_CONTROLS.fourthLinkAngleDeg),
     ),
-    toolAttitudeDeg: clampAngle(
-      finite(params.toolAttitudeDeg, MAKINO_SCARA_DEFAULT_CONTROLS.toolAttitudeDeg),
-    ),
+    toolAttitudeDeg: clampAngle(finite(attitude, MAKINO_SCARA_DEFAULT_CONTROLS.toolAttitudeDeg)),
     topologyVariant: Math.max(
       1,
-      Math.min(
-        3,
-        Math.round(finite(params.topologyVariant, MAKINO_SCARA_DEFAULT_CONTROLS.topologyVariant)),
-      ),
+      Math.min(3, Math.round(finite(variant, MAKINO_SCARA_DEFAULT_CONTROLS.topologyVariant))),
     ),
   };
 }

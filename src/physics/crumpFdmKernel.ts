@@ -166,26 +166,51 @@ export function readCrumpFdmControls(
       params?.claim39PlanarNozzleEnabled ?? dynamicParam(params, "claim39ConstraintActive"),
       CRUMP_FDM_DEFAULT_CONTROLS.claim39PlanarNozzleEnabled,
     ),
-    nozzleTempC:
-      typeof params?.nozzleTempC === "number"
-        ? Math.max(100, Math.min(300, params.nozzleTempC))
-        : CRUMP_FDM_DEFAULT_CONTROLS.nozzleTempC,
-    printSpeedMmS:
-      typeof params?.printSpeedMmS === "number"
-        ? Math.max(5, Math.min(250, params.printSpeedMmS))
-        : CRUMP_FDM_DEFAULT_CONTROLS.printSpeedMmS,
+    nozzleTempC: (() => {
+      const raw =
+        params?.nozzleTempC ??
+        dynamicParam(params, "nozzleTemp") ??
+        dynamicParam(params, "tempC") ??
+        dynamicParam(params, "temperature");
+      return typeof raw === "number"
+        ? Math.max(100, Math.min(300, raw))
+        : CRUMP_FDM_DEFAULT_CONTROLS.nozzleTempC;
+    })(),
+    printSpeedMmS: (() => {
+      const raw =
+        params?.printSpeedMmS ??
+        dynamicParam(params, "printSpeed") ??
+        dynamicParam(params, "speedMmS") ??
+        dynamicParam(params, "feedSpeed");
+      return typeof raw === "number"
+        ? Math.max(5, Math.min(250, raw))
+        : CRUMP_FDM_DEFAULT_CONTROLS.printSpeedMmS;
+    })(),
     nozzleDiameterMm:
       typeof params?.nozzleDiameterMm === "number"
         ? Math.max(0.15, Math.min(1.2, params.nozzleDiameterMm))
         : CRUMP_FDM_DEFAULT_CONTROLS.nozzleDiameterMm,
-    layerHeightMm:
-      typeof params?.layerHeightMm === "number"
-        ? Math.max(0.05, Math.min(0.8, params.layerHeightMm))
-        : CRUMP_FDM_DEFAULT_CONTROLS.layerHeightMm,
-    roadWidthMm:
-      typeof params?.roadWidthMm === "number"
-        ? Math.max(0.15, Math.min(1.8, params.roadWidthMm))
-        : CRUMP_FDM_DEFAULT_CONTROLS.roadWidthMm,
+    layerHeightMm: (() => {
+      const raw =
+        params?.layerHeightMm ??
+        dynamicParam(params, "layerHeight") ??
+        dynamicParam(params, "sliceHeight") ??
+        dynamicParam(params, "heightMm");
+      return typeof raw === "number"
+        ? Math.max(0.05, Math.min(0.8, raw))
+        : CRUMP_FDM_DEFAULT_CONTROLS.layerHeightMm;
+    })(),
+    roadWidthMm: (() => {
+      const raw =
+        params?.roadWidthMm ??
+        dynamicParam(params, "roadWidth") ??
+        dynamicParam(params, "beadWidth") ??
+        dynamicParam(params, "extrusionWidth") ??
+        dynamicParam(params, "widthMm");
+      return typeof raw === "number"
+        ? Math.max(0.15, Math.min(1.8, raw))
+        : CRUMP_FDM_DEFAULT_CONTROLS.roadWidthMm;
+    })(),
     filamentDiameterMm:
       typeof params?.filamentDiameterMm === "number"
         ? Math.max(1.0, Math.min(3.5, params.filamentDiameterMm))

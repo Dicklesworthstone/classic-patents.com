@@ -67,21 +67,28 @@ function unit(value: number | undefined, fallback: number): number {
 export function readWatsonRemoteCenterComplianceControls(
   params: Partial<WatsonRemoteCenterComplianceControls> | Record<string, number | undefined>,
 ): WatsonRemoteCenterComplianceControls {
+  const p = params as Record<string, number | undefined>;
+  const lateral = p.lateralContactFraction ?? p.lateralContact ?? p.contactFraction ?? p.contact;
+  const mismatch = p.axisMismatchFraction ?? p.axisMismatch ?? p.mismatchFraction ?? p.mismatch;
+  const remote = p.remoteCenterTopology ?? p.remoteCenter ?? p.claim1Topology ?? p.topology;
+  const antiTwist =
+    p.antiTwistConstraint ?? p.antiTwist ?? p.claim2Constraint ?? p.torqueConstraint;
+
   return {
     lateralContactFraction: unit(
-      params.lateralContactFraction,
+      lateral,
       WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.lateralContactFraction,
     ),
     axisMismatchFraction: unit(
-      params.axisMismatchFraction,
+      mismatch,
       WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.axisMismatchFraction,
     ),
     remoteCenterTopology: unit(
-      params.remoteCenterTopology,
+      remote,
       WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.remoteCenterTopology,
     ),
     antiTwistConstraint: unit(
-      params.antiTwistConstraint,
+      antiTwist,
       WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.antiTwistConstraint,
     ),
   };

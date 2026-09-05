@@ -130,39 +130,37 @@ function orthonormalityError(matrix: Matrix3): number {
 export function readStackhouseSourceControls(
   params: Partial<StackhouseSourceControls> | Record<string, number | undefined>,
 ): StackhouseSourceControls {
+  const p = params as Record<string, number | undefined>;
+  const forearm = p.forearmRollDeg ?? p.forearmRoll ?? p.theta1 ?? p.roll1;
+  const intermediate = p.intermediateRollDeg ?? p.intermediateRoll ?? p.theta2 ?? p.roll2;
+  const tool = p.toolRollDeg ?? p.toolRoll ?? p.theta3 ?? p.roll3;
+  const oblique1 = p.firstObliqueAngleDeg ?? p.firstOblique ?? p.alphaAB ?? p.alpha1;
+  const oblique2 = p.secondObliqueAngleDeg ?? p.secondOblique ?? p.alphaBC ?? p.alpha2;
+  const intersection = p.singleIntersection ?? p.pointP ?? p.exactIntersection ?? p.preferredPointP;
+
   return {
-    forearmRollDeg: clamp(
-      params.forearmRollDeg,
-      STACKHOUSE_SOURCE_DEFAULT_CONTROLS.forearmRollDeg,
-      -180,
-      180,
-    ),
+    forearmRollDeg: clamp(forearm, STACKHOUSE_SOURCE_DEFAULT_CONTROLS.forearmRollDeg, -180, 180),
     intermediateRollDeg: clamp(
-      params.intermediateRollDeg,
+      intermediate,
       STACKHOUSE_SOURCE_DEFAULT_CONTROLS.intermediateRollDeg,
       -180,
       180,
     ),
-    toolRollDeg: clamp(
-      params.toolRollDeg,
-      STACKHOUSE_SOURCE_DEFAULT_CONTROLS.toolRollDeg,
-      -180,
-      180,
-    ),
+    toolRollDeg: clamp(tool, STACKHOUSE_SOURCE_DEFAULT_CONTROLS.toolRollDeg, -180, 180),
     firstObliqueAngleDeg: clamp(
-      params.firstObliqueAngleDeg,
+      oblique1,
       STACKHOUSE_SOURCE_DEFAULT_CONTROLS.firstObliqueAngleDeg,
       46,
       80,
     ),
     secondObliqueAngleDeg: clamp(
-      params.secondObliqueAngleDeg,
+      oblique2,
       STACKHOUSE_SOURCE_DEFAULT_CONTROLS.secondObliqueAngleDeg,
       46,
       80,
     ),
     singleIntersection: clamp(
-      params.singleIntersection,
+      intersection,
       STACKHOUSE_SOURCE_DEFAULT_CONTROLS.singleIntersection,
       0,
       1,

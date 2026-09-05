@@ -885,11 +885,7 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
       "us-2495429-spencer-microwave",
       "us-2988237-devol-programmed-transfer",
       "us-3081379-lemelson-machine-vision",
-      "us-3313014-lemelson-automatic-production",
       "us-3858232-boyle-smith-ccd",
-      "us-3858581-kamen-medication-injection-device",
-      "us-4098001-watson-remote-center-compliance",
-      "us-4098001-watson-rcc",
       "us-4512709-milacron-robot-toolchanger",
       "us-5701965-kamen-transporter",
       "us-586193-marconi-radio",
@@ -8551,6 +8547,382 @@ describe("Sensitivities follow the current admitted operating point", () => {
       ).toBeNull();
       expect(
         computeParameterSensitivity(id, "cycleProgress", { cycleProgress: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Stackhouse Manipulator derives forearm azimuth, tool bend invariance, point-P coincidence, and oblique bend sensitivities", () => {
+    const id = "us-4068536-stackhouse-manipulator";
+
+    // 1. Forearm roll azimuth sensitivity & aliases
+    const sensForearm = computeParameterSensitivity(id, "forearmRollDeg", { forearmRollDeg: 15 });
+    expect(sensForearm).toBeDefined();
+    expect(sensForearm?.metricName).toBe("Selected Display-Azimuth Sensitivity");
+    expect(sensForearm?.derivativeSymbol).toBe("∂ψ_display / ∂θ_1");
+    expect(sensForearm?.derivativeValue).toBe(1.0);
+    expect(sensForearm?.derivativeUnit).toBe("display deg / deg");
+    for (const alias of ["forearmRoll", "theta1", "roll1"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 20 })?.derivativeValue).toBe(1.0);
+    }
+
+    // 2. Tool spin roll bend invariance & aliases
+    const sensTool = computeParameterSensitivity(id, "toolRollDeg", { toolRollDeg: 30 });
+    expect(sensTool).toBeDefined();
+    expect(sensTool?.metricName).toBe("Selected Display-Bend Sensitivity");
+    expect(sensTool?.derivativeSymbol).toBe("∂β_display / ∂θ_3");
+    expect(sensTool?.derivativeValue).toBe(0.0);
+    expect(sensTool?.derivativeUnit).toBe("display deg / deg");
+    for (const alias of ["toolRoll", "theta3", "roll3"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 45 })?.derivativeValue).toBe(0.0);
+    }
+
+    // 3. Preferred common point P coincidence & aliases
+    const sensIntersection = computeParameterSensitivity(id, "singleIntersection", {
+      singleIntersection: 1,
+    });
+    expect(sensIntersection).toBeDefined();
+    expect(sensIntersection?.metricName).toBe("Axis Coincidence at Point P");
+    expect(sensIntersection?.derivativeSymbol).toBe("Δcoincidence / ΔP");
+    expect(sensIntersection?.derivativeValue).toBe(1.0);
+    expect(sensIntersection?.derivativeUnit).toBe("coincidence / state");
+    for (const alias of ["pointP", "exactIntersection", "preferredPointP"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(1.0);
+    }
+
+    // 4. Intermediate oblique roll & aliases
+    const sensIntermediate = computeParameterSensitivity(id, "intermediateRollDeg", {
+      intermediateRollDeg: 72,
+    });
+    expect(sensIntermediate).toBeDefined();
+    expect(sensIntermediate?.metricName).toBe("Selected Display-Bend Sensitivity");
+    expect(sensIntermediate?.derivativeSymbol).toBe("∂β_display / ∂q");
+    for (const alias of ["intermediateRoll", "theta2", "roll2"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 72 })?.derivativeValue).toBe(
+        sensIntermediate?.derivativeValue,
+      );
+    }
+
+    // 5. First & second oblique angle display sensitivities & aliases
+    const sensOblique1 = computeParameterSensitivity(id, "firstObliqueAngleDeg", {
+      firstObliqueAngleDeg: 55,
+    });
+    expect(sensOblique1).toBeDefined();
+    for (const alias of ["firstOblique", "alphaAB", "alpha1"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 55 })?.derivativeValue).toBe(
+        sensOblique1?.derivativeValue,
+      );
+    }
+    const sensOblique2 = computeParameterSensitivity(id, "secondObliqueAngleDeg", {
+      secondObliqueAngleDeg: 55,
+    });
+    expect(sensOblique2).toBeDefined();
+    for (const alias of ["secondOblique", "alphaBC", "alpha2"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 55 })?.derivativeValue).toBe(
+        sensOblique2?.derivativeValue,
+      );
+    }
+
+    // 6. Bounds checks
+    for (const invalidRoll of [-181, 181, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "forearmRollDeg", { forearmRollDeg: invalidRoll }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "intermediateRollDeg", {
+          intermediateRollDeg: invalidRoll,
+        }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "toolRollDeg", { toolRollDeg: invalidRoll }),
+      ).toBeNull();
+    }
+    for (const invalidOblique of [45, 81, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "firstObliqueAngleDeg", {
+          firstObliqueAngleDeg: invalidOblique,
+        }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "secondObliqueAngleDeg", {
+          secondObliqueAngleDeg: invalidOblique,
+        }),
+      ).toBeNull();
+    }
+    for (const invalidIntersection of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "singleIntersection", {
+          singleIntersection: invalidIntersection,
+        }),
+      ).toBeNull();
+    }
+  });
+
+  test("Watson RCC derives translation phase, axis mismatch, remote center projection, and anti-twist engagement sensitivities", () => {
+    const id = "us-4098001-watson-rcc";
+
+    // 1. Lateral contact translation phase & aliases
+    const sensLateral = computeParameterSensitivity(id, "lateralContactFraction", {
+      lateralContactFraction: 0.3,
+    });
+    expect(sensLateral).toBeDefined();
+    expect(sensLateral?.metricName).toBe("Figure 4 Translation Phase");
+    expect(sensLateral?.derivativeSymbol).toBe("∂q_t / ∂q_c");
+    expect(sensLateral?.derivativeUnit).toBe("display fraction / contact fraction");
+    for (const alias of ["lateralContact", "contactFraction", "contact"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 0.3 })?.derivativeValue).toBe(
+        sensLateral?.derivativeValue,
+      );
+    }
+
+    // 2. Axis mismatch & aliases
+    const sensMismatch = computeParameterSensitivity(id, "axisMismatchFraction", {
+      axisMismatchFraction: 0.44,
+    });
+    expect(sensMismatch).toBeDefined();
+    expect(sensMismatch?.metricName).toBe("Remaining Axis Mismatch");
+    expect(sensMismatch?.derivativeSymbol).toBe("∂q_e / ∂q_m");
+    expect(sensMismatch?.derivativeUnit).toBe("normalized / normalized");
+    for (const alias of ["axisMismatch", "mismatchFraction", "mismatch"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 0.44 })?.derivativeValue).toBe(
+        sensMismatch?.derivativeValue,
+      );
+    }
+
+    // 3. Remote center projection & aliases
+    const sensRemote = computeParameterSensitivity(id, "remoteCenterTopology", {
+      remoteCenterTopology: 1,
+    });
+    expect(sensRemote).toBeDefined();
+    expect(sensRemote?.metricName).toBe("Remote Center Projection");
+    expect(sensRemote?.derivativeSymbol).toBe("ΔP_remote / Δtopology");
+    expect(sensRemote?.derivativeValue).toBe(1.0);
+    expect(sensRemote?.derivativeUnit).toBe("projection / state");
+    for (const alias of ["remoteCenter", "claim1Topology", "topology"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(1.0);
+    }
+
+    // 4. Anti-twist constraint engagement & aliases
+    const sensTwist = computeParameterSensitivity(id, "antiTwistConstraint", {
+      remoteCenterTopology: 1,
+      antiTwistConstraint: 1,
+    });
+    expect(sensTwist).toBeDefined();
+    expect(sensTwist?.metricName).toBe("Claim 2 Anti-Twist Engagement");
+    expect(sensTwist?.derivativeSymbol).toBe("ΔC_twist / ΔantiTwist");
+    expect(sensTwist?.derivativeValue).toBe(1.0);
+    expect(sensTwist?.derivativeUnit).toBe("engagement / state");
+    for (const alias of ["antiTwist", "claim2Constraint", "torqueConstraint"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { remoteCenterTopology: 1, [alias]: 1 })
+          ?.derivativeValue,
+      ).toBe(1.0);
+    }
+    // Disabled remote center disables anti-twist effect
+    const sensTwistNoRemote = computeParameterSensitivity(id, "antiTwistConstraint", {
+      remoteCenterTopology: 0,
+      antiTwistConstraint: 1,
+    });
+    expect(sensTwistNoRemote?.derivativeValue).toBe(0.0);
+
+    // 5. Bounds checks
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "lateralContactFraction", {
+          lateralContactFraction: invalid,
+        }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "axisMismatchFraction", {
+          axisMismatchFraction: invalid,
+        }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "remoteCenterTopology", {
+          remoteCenterTopology: invalid,
+        }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "antiTwistConstraint", {
+          antiTwistConstraint: invalid,
+        }),
+      ).toBeNull();
+    }
+  });
+
+  test("Makino SCARA derives link angles, tool attitude, and topology variant sensitivities with bounds and aliases", () => {
+    const id = "us-4341502-makino-scara";
+
+    // 1. First link angle & aliases
+    const sensTheta1 = computeParameterSensitivity(id, "firstLinkAngleDeg", {
+      firstLinkAngleDeg: 32,
+    });
+    expect(sensTheta1).toBeDefined();
+    expect(sensTheta1?.metricName).toBe("End-Effector X Coordinate");
+    expect(sensTheta1?.derivativeSymbol).toBe("∂X_tool / ∂θ_1");
+    expect(sensTheta1?.derivativeUnit).toBe("norm / deg");
+    for (const alias of ["firstLinkAngle", "theta1", "link1Angle"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 32 })?.derivativeValue).toBe(
+        sensTheta1?.derivativeValue,
+      );
+    }
+
+    // 2. Fourth link angle & aliases
+    const sensTheta4 = computeParameterSensitivity(id, "fourthLinkAngleDeg", {
+      fourthLinkAngleDeg: -38,
+    });
+    expect(sensTheta4).toBeDefined();
+    expect(sensTheta4?.metricName).toBe("End-Effector Y Coordinate");
+    expect(sensTheta4?.derivativeSymbol).toBe("∂Y_tool / ∂θ_4");
+    expect(sensTheta4?.derivativeUnit).toBe("norm / deg");
+    for (const alias of ["fourthLinkAngle", "theta2", "theta4", "link4Angle"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: -38 })?.derivativeValue).toBe(
+        sensTheta4?.derivativeValue,
+      );
+    }
+
+    // 3. Tool attitude & aliases
+    const sensAttitude = computeParameterSensitivity(id, "toolAttitudeDeg", {
+      topologyVariant: 1,
+      toolAttitudeDeg: 10,
+    });
+    expect(sensAttitude).toBeDefined();
+    expect(sensAttitude?.derivativeValue).toBe(1.0);
+    for (const alias of ["toolAttitude", "phi", "attitude"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { topologyVariant: 1, [alias]: 10 })
+          ?.derivativeValue,
+      ).toBe(1.0);
+    }
+    // Fixed attitude in Claim 6 Y-link
+    expect(
+      computeParameterSensitivity(id, "toolAttitudeDeg", {
+        topologyVariant: 3,
+        toolAttitudeDeg: 10,
+      })?.derivativeValue,
+    ).toBe(0.0);
+
+    // 4. Topology variant & aliases
+    const sensVariant = computeParameterSensitivity(id, "topologyVariant", {
+      topologyVariant: 1,
+    });
+    expect(sensVariant).toBeDefined();
+    expect(sensVariant?.metricName).toBe("Independent Claim Variant");
+    expect(sensVariant?.derivativeSymbol).toBe("Δclaim / Δvariant");
+    expect(sensVariant?.derivativeValue).toBe(1.0);
+    expect(sensVariant?.derivativeUnit).toBe("claim mode / step");
+    for (const alias of ["topology", "claimTopology", "variant", "claim"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(1.0);
+    }
+
+    // 5. Bounds checks
+    for (const invalidAngle of [-181, 181, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "firstLinkAngleDeg", { firstLinkAngleDeg: invalidAngle }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "fourthLinkAngleDeg", {
+          fourthLinkAngleDeg: invalidAngle,
+        }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "toolAttitudeDeg", { toolAttitudeDeg: invalidAngle }),
+      ).toBeNull();
+    }
+    for (const invalidVariant of [0, 4, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "topologyVariant", { topologyVariant: invalidVariant }),
+      ).toBeNull();
+    }
+  });
+
+  test("Crump FDM derives road width flow sensitivity alongside nozzle temp, print speed, and layer height", () => {
+    const id = "us-5121329-crump-fdm";
+    const baseParams = {
+      nozzleTempC: 225,
+      printSpeedMmS: 45,
+      layerHeightMm: 0.2,
+      roadWidthMm: 0.45,
+    };
+
+    // 1. Road width volumetric flow rate derivative ∂Q / ∂w = h * v_head = 0.2 * 45 = 9.0
+    const sensRoadWidth = computeParameterSensitivity(id, "roadWidthMm", baseParams);
+    expect(sensRoadWidth).toBeDefined();
+    expect(sensRoadWidth?.metricName).toBe("Volumetric Extrusion Flow Rate");
+    expect(sensRoadWidth?.derivativeSymbol).toBe("∂Q / ∂w");
+    expect(sensRoadWidth?.derivativeUnit).toBe("mm³/s / mm");
+    expect(sensRoadWidth?.derivativeValue).toBeCloseTo(0.2 * 45, 4);
+    for (const alias of ["roadWidth", "beadWidth", "extrusionWidth", "widthMm"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 0.45 })?.derivativeValue,
+      ).toBeCloseTo(9.0, 4);
+    }
+
+    // 2. Print speed volumetric flow rate derivative ∂Q / ∂v_head = w * h = 0.45 * 0.2 = 0.09
+    const sensSpeed = computeParameterSensitivity(id, "printSpeedMmS", baseParams);
+    expect(sensSpeed).toBeDefined();
+    expect(sensSpeed?.metricName).toBe("Volumetric Extrusion Flow Rate");
+    expect(sensSpeed?.derivativeSymbol).toBe("∂Q / ∂v_head");
+    expect(sensSpeed?.derivativeValue).toBeCloseTo(0.45 * 0.2, 4);
+    for (const alias of ["printSpeed", "speedMmS", "feedSpeed"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 45 })?.derivativeValue,
+      ).toBeCloseTo(0.09, 4);
+    }
+
+    // 3. Nozzle temp melt viscosity derivative ∂μ / ∂T
+    const sensTemp = computeParameterSensitivity(id, "nozzleTempC", baseParams);
+    expect(sensTemp).toBeDefined();
+    expect(sensTemp?.metricName).toBe("Apparent Melt Viscosity");
+    expect(sensTemp?.derivativeSymbol).toBe("∂μ / ∂T");
+    expect(sensTemp?.derivativeUnit).toBe("Pa·s / °C");
+    expect(sensTemp?.derivativeValue).toBeLessThan(0); // Heating lowers viscosity
+    for (const alias of ["nozzleTemp", "tempC", "temperature"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 225 })?.derivativeValue,
+      ).toBe(sensTemp?.derivativeValue);
+    }
+
+    // 4. Layer height cooling time constant derivative ∂τ / ∂h
+    const sensHeight = computeParameterSensitivity(id, "layerHeightMm", baseParams);
+    expect(sensHeight).toBeDefined();
+    expect(sensHeight?.metricName).toBe("Road Thermal Cooling Time Constant");
+    expect(sensHeight?.derivativeSymbol).toBe("∂τ / ∂h");
+    expect(sensHeight?.derivativeUnit).toBe("s / mm");
+    expect(sensHeight?.derivativeValue).toBeGreaterThan(0); // Thicker layer = slower cooling
+    for (const alias of ["layerHeight", "sliceHeight", "heightMm"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 0.2 })?.derivativeValue,
+      ).toBe(sensHeight?.derivativeValue);
+    }
+
+    // 5. Bounds checks
+    for (const invalidTemp of [99, 301, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "nozzleTempC", { ...baseParams, nozzleTempC: invalidTemp }),
+      ).toBeNull();
+    }
+    for (const invalidSpeed of [4, 251, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "printSpeedMmS", {
+          ...baseParams,
+          printSpeedMmS: invalidSpeed,
+        }),
+      ).toBeNull();
+    }
+    for (const invalidHeight of [0.04, 0.81, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "layerHeightMm", {
+          ...baseParams,
+          layerHeightMm: invalidHeight,
+        }),
+      ).toBeNull();
+    }
+    for (const invalidWidth of [0.14, 1.81, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "roadWidthMm", {
+          ...baseParams,
+          roadWidthMm: invalidWidth,
+        }),
       ).toBeNull();
     }
   });

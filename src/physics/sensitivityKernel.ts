@@ -8209,17 +8209,70 @@ export function computeParameterSensitivity(
     }
 
     case "us-4341502-makino-scara": {
+      const rawTheta1 =
+        params.firstLinkAngleDeg ?? params.firstLinkAngle ?? params.theta1 ?? params.link1Angle;
+      if (
+        rawTheta1 !== undefined &&
+        (!Number.isFinite(rawTheta1) || rawTheta1 < -180 || rawTheta1 > 180)
+      ) {
+        return null;
+      }
+      const rawTheta4 =
+        params.fourthLinkAngleDeg ??
+        params.fourthLinkAngle ??
+        params.theta2 ??
+        params.theta4 ??
+        params.link4Angle;
+      if (
+        rawTheta4 !== undefined &&
+        (!Number.isFinite(rawTheta4) || rawTheta4 < -180 || rawTheta4 > 180)
+      ) {
+        return null;
+      }
+      const rawAttitude =
+        params.toolAttitudeDeg ?? params.toolAttitude ?? params.phi ?? params.attitude;
+      if (
+        rawAttitude !== undefined &&
+        (!Number.isFinite(rawAttitude) || rawAttitude < -180 || rawAttitude > 180)
+      ) {
+        return null;
+      }
+      const rawTopology =
+        params.topologyVariant ??
+        params.topology ??
+        params.claimTopology ??
+        params.variant ??
+        params.claim;
+      if (
+        rawTopology !== undefined &&
+        (!Number.isFinite(rawTopology) || rawTopology < 1 || rawTopology > 3)
+      ) {
+        return null;
+      }
+
       const centralDifference = (
         control: "firstLinkAngleDeg" | "fourthLinkAngleDeg",
         coordinate: 0 | 1,
       ) => {
-        const center = params[control] ?? (control === "firstLinkAngleDeg" ? 32 : -38);
+        const center = control === "firstLinkAngleDeg" ? (rawTheta1 ?? 32) : (rawTheta4 ?? -38);
         const deltaDeg = 0.01;
-        const high = stepMakinoScaraTopology({ ...params, [control]: center + deltaDeg });
-        const low = stepMakinoScaraTopology({ ...params, [control]: center - deltaDeg });
+        const high = stepMakinoScaraTopology({
+          ...params,
+          [control]: center + deltaDeg,
+        });
+        const low = stepMakinoScaraTopology({
+          ...params,
+          [control]: center - deltaDeg,
+        });
         return (high.tool[coordinate] - low.tool[coordinate]) / (2 * deltaDeg);
       };
-      if (controlKey === "firstLinkAngleDeg" || controlKey === "theta1") {
+
+      if (
+        controlKey === "firstLinkAngleDeg" ||
+        controlKey === "firstLinkAngle" ||
+        controlKey === "theta1" ||
+        controlKey === "link1Angle"
+      ) {
         const derivative = centralDifference("firstLinkAngleDeg", 0);
         return {
           metricName: "End-Effector X Coordinate",
@@ -8230,7 +8283,14 @@ export function computeParameterSensitivity(
             "Central difference through the selected normalized closed-chain branch; it is a display-coordinate derivative, not metres per degree.",
         };
       }
-      if (controlKey === "fourthLinkAngleDeg" || controlKey === "theta4") {
+
+      if (
+        controlKey === "fourthLinkAngleDeg" ||
+        controlKey === "fourthLinkAngle" ||
+        controlKey === "theta2" ||
+        controlKey === "theta4" ||
+        controlKey === "link4Angle"
+      ) {
         const derivative = centralDifference("fourthLinkAngleDeg", 1);
         return {
           metricName: "End-Effector Y Coordinate",
@@ -8241,7 +8301,13 @@ export function computeParameterSensitivity(
             "Central difference through the selected normalized closed-chain branch; it preserves fixed member lengths but makes no SI motion claim.",
         };
       }
-      if (controlKey === "toolAttitudeDeg" || controlKey === "toolAttitude") {
+
+      if (
+        controlKey === "toolAttitudeDeg" ||
+        controlKey === "toolAttitude" ||
+        controlKey === "phi" ||
+        controlKey === "attitude"
+      ) {
         const pose = stepMakinoScaraTopology(params);
         return {
           metricName: "Tool Attitude",
@@ -8254,6 +8320,24 @@ export function computeParameterSensitivity(
               : "Claims 2/5 add motor 10 and belts 11/12 as a distinct attitude coordinate; the normalized exhibit maps that source-named coordinate directly.",
         };
       }
+
+      if (
+        controlKey === "topologyVariant" ||
+        controlKey === "topology" ||
+        controlKey === "claimTopology" ||
+        controlKey === "variant" ||
+        controlKey === "claim"
+      ) {
+        return {
+          metricName: "Independent Claim Variant",
+          derivativeSymbol: "Δclaim / Δvariant",
+          derivativeValue: 1.0,
+          derivativeUnit: "claim mode / step",
+          interpretation:
+            "Selects among Claim 1 (concentric coaxial drive), Claim 3 (offset base shafts), and Claim 6 (parallel Y-link constraint fixing tool orientation).",
+        };
+      }
+
       break;
     }
 
@@ -9239,11 +9323,62 @@ export function computeParameterSensitivity(
     }
 
     case "us-4098001-watson-rcc": {
+      const rawLateral =
+        params.lateralContactFraction ??
+        params.lateralContact ??
+        params.contactFraction ??
+        params.contact;
+      if (
+        rawLateral !== undefined &&
+        (!Number.isFinite(rawLateral) || rawLateral < 0 || rawLateral > 1)
+      ) {
+        return null;
+      }
+      const rawMismatch =
+        params.axisMismatchFraction ??
+        params.axisMismatch ??
+        params.mismatchFraction ??
+        params.mismatch;
+      if (
+        rawMismatch !== undefined &&
+        (!Number.isFinite(rawMismatch) || rawMismatch < 0 || rawMismatch > 1)
+      ) {
+        return null;
+      }
+      const rawRemote =
+        params.remoteCenterTopology ??
+        params.remoteCenter ??
+        params.claim1Topology ??
+        params.topology;
+      if (
+        rawRemote !== undefined &&
+        (!Number.isFinite(rawRemote) || rawRemote < 0 || rawRemote > 1)
+      ) {
+        return null;
+      }
+      const rawAntiTwist =
+        params.antiTwistConstraint ??
+        params.antiTwist ??
+        params.claim2Constraint ??
+        params.torqueConstraint;
+      if (
+        rawAntiTwist !== undefined &&
+        (!Number.isFinite(rawAntiTwist) || rawAntiTwist < 0 || rawAntiTwist > 1)
+      ) {
+        return null;
+      }
+
       const probe = (key: "lateralContactFraction" | "axisMismatchFraction", value: number) =>
         stepWatsonRemoteCenterComplianceTopology({ ...params, [key]: value });
       const h = 0.001;
-      if (controlKey === "lateralContactFraction") {
-        const contact = params.lateralContactFraction ?? 0.62;
+
+      if (
+        controlKey === "lateralContactFraction" ||
+        controlKey === "lateralContact" ||
+        controlKey === "contactFraction" ||
+        controlKey === "contact"
+      ) {
+        const contact = rawLateral ?? 0.62;
         const derivative =
           (probe("lateralContactFraction", contact + h).translationOffset -
             probe("lateralContactFraction", contact - h).translationOffset) /
@@ -9257,8 +9392,14 @@ export function computeParameterSensitivity(
             "Slope of the normalized Figure 4 sequence coordinate. The phase reaches one before Figure 5 rotation begins; it is not a force-compliance or dimensional prediction.",
         };
       }
-      if (controlKey === "axisMismatchFraction") {
-        const mismatch = params.axisMismatchFraction ?? 0.44;
+
+      if (
+        controlKey === "axisMismatchFraction" ||
+        controlKey === "axisMismatch" ||
+        controlKey === "mismatchFraction" ||
+        controlKey === "mismatch"
+      ) {
+        const mismatch = rawMismatch ?? 0.44;
         const derivative =
           (probe("axisMismatchFraction", mismatch + h).remainingAxisMismatch -
             probe("axisMismatchFraction", mismatch - h).remainingAxisMismatch) /
@@ -9272,6 +9413,40 @@ export function computeParameterSensitivity(
             "Slope of the source-illustrative alignment cue. The grant does not provide a convergence rate or controller gain.",
         };
       }
+
+      if (
+        controlKey === "remoteCenterTopology" ||
+        controlKey === "remoteCenter" ||
+        controlKey === "claim1Topology" ||
+        controlKey === "topology"
+      ) {
+        return {
+          metricName: "Remote Center Projection",
+          derivativeSymbol: "ΔP_remote / Δtopology",
+          derivativeValue: 1.0,
+          derivativeUnit: "projection / state",
+          interpretation:
+            "Claim 1 projects the elastic compliance center forward to tool tip 52 rather than keeping it at the wrist.",
+        };
+      }
+
+      if (
+        controlKey === "antiTwistConstraint" ||
+        controlKey === "antiTwist" ||
+        controlKey === "claim2Constraint" ||
+        controlKey === "torqueConstraint"
+      ) {
+        const remoteEnabled = (rawRemote ?? 1) >= 0.5;
+        return {
+          metricName: "Claim 2 Anti-Twist Engagement",
+          derivativeSymbol: "ΔC_twist / ΔantiTwist",
+          derivativeValue: remoteEnabled ? 1.0 : 0.0,
+          derivativeUnit: "engagement / state",
+          interpretation:
+            "Claim 2 provides a torque-resistant member preventing rotational deflection about the insertion axis.",
+        };
+      }
+
       break;
     }
 
@@ -9414,14 +9589,134 @@ export function computeParameterSensitivity(
     }
 
     case "us-4068536-stackhouse-manipulator": {
+      const rawForearm =
+        params.forearmRollDeg ?? params.forearmRoll ?? params.theta1 ?? params.roll1;
+      if (
+        rawForearm !== undefined &&
+        (!Number.isFinite(rawForearm) || rawForearm < -180 || rawForearm > 180)
+      ) {
+        return null;
+      }
+      const rawIntermediate =
+        params.intermediateRollDeg ?? params.intermediateRoll ?? params.theta2 ?? params.roll2;
+      if (
+        rawIntermediate !== undefined &&
+        (!Number.isFinite(rawIntermediate) || rawIntermediate < -180 || rawIntermediate > 180)
+      ) {
+        return null;
+      }
+      const rawTool = params.toolRollDeg ?? params.toolRoll ?? params.theta3 ?? params.roll3;
+      if (rawTool !== undefined && (!Number.isFinite(rawTool) || rawTool < -180 || rawTool > 180)) {
+        return null;
+      }
+      const rawOblique1 =
+        params.firstObliqueAngleDeg ?? params.firstOblique ?? params.alphaAB ?? params.alpha1;
+      if (
+        rawOblique1 !== undefined &&
+        (!Number.isFinite(rawOblique1) || rawOblique1 < 46 || rawOblique1 > 80)
+      ) {
+        return null;
+      }
+      const rawOblique2 =
+        params.secondObliqueAngleDeg ?? params.secondOblique ?? params.alphaBC ?? params.alpha2;
+      if (
+        rawOblique2 !== undefined &&
+        (!Number.isFinite(rawOblique2) || rawOblique2 < 46 || rawOblique2 > 80)
+      ) {
+        return null;
+      }
+      const rawIntersection =
+        params.singleIntersection ??
+        params.pointP ??
+        params.exactIntersection ??
+        params.preferredPointP;
+      if (
+        rawIntersection !== undefined &&
+        (!Number.isFinite(rawIntersection) || rawIntersection < 0 || rawIntersection > 1)
+      ) {
+        return null;
+      }
+
+      if (
+        controlKey === "forearmRollDeg" ||
+        controlKey === "forearmRoll" ||
+        controlKey === "theta1" ||
+        controlKey === "roll1"
+      ) {
+        return {
+          metricName: "Selected Display-Azimuth Sensitivity",
+          derivativeSymbol: "∂ψ_display / ∂θ_1",
+          derivativeValue: 1.0,
+          derivativeUnit: "display deg / deg",
+          interpretation:
+            "Forearm roll rotates the entire wrist assembly azimuthally about base axis A-A' by exactly 1° per 1°.",
+        };
+      }
+
+      if (
+        controlKey === "toolRollDeg" ||
+        controlKey === "toolRoll" ||
+        controlKey === "theta3" ||
+        controlKey === "roll3"
+      ) {
+        return {
+          metricName: "Selected Display-Bend Sensitivity",
+          derivativeSymbol: "∂β_display / ∂θ_3",
+          derivativeValue: 0.0,
+          derivativeUnit: "display deg / deg",
+          interpretation:
+            "Tool spin roll rotates the end-effector about its terminal axis without altering the overall display bend angle.",
+        };
+      }
+
+      if (
+        controlKey === "singleIntersection" ||
+        controlKey === "pointP" ||
+        controlKey === "exactIntersection" ||
+        controlKey === "preferredPointP"
+      ) {
+        return {
+          metricName: "Axis Coincidence at Point P",
+          derivativeSymbol: "Δcoincidence / ΔP",
+          derivativeValue: 1.0,
+          derivativeUnit: "coincidence / state",
+          interpretation:
+            "Preferred Stackhouse topology aligns all three axes to intersect at common point P, eliminating the 0.12 offset contrast seen in non-intersecting wrist designs.",
+        };
+      }
+
       if (
         controlKey === "intermediateRollDeg" ||
+        controlKey === "intermediateRoll" ||
+        controlKey === "theta2" ||
+        controlKey === "roll2" ||
         controlKey === "firstObliqueAngleDeg" ||
-        controlKey === "secondObliqueAngleDeg"
+        controlKey === "firstOblique" ||
+        controlKey === "alphaAB" ||
+        controlKey === "alpha1" ||
+        controlKey === "secondObliqueAngleDeg" ||
+        controlKey === "secondOblique" ||
+        controlKey === "alphaBC" ||
+        controlKey === "alpha2"
       ) {
-        const baseline = params[controlKey] ?? 55;
+        const canonicalKey =
+          controlKey === "intermediateRollDeg" ||
+          controlKey === "intermediateRoll" ||
+          controlKey === "theta2" ||
+          controlKey === "roll2"
+            ? "intermediateRollDeg"
+            : controlKey === "firstObliqueAngleDeg" ||
+                controlKey === "firstOblique" ||
+                controlKey === "alphaAB" ||
+                controlKey === "alpha1"
+              ? "firstObliqueAngleDeg"
+              : "secondObliqueAngleDeg";
+        const baseline =
+          params[canonicalKey] ??
+          params[controlKey] ??
+          (canonicalKey === "intermediateRollDeg" ? 72 : 55);
         const probe = (value: number) =>
-          stepStackhouseSourceTopology({ ...params, [controlKey]: value }).bendAngleDeg;
+          stepStackhouseSourceTopology({ ...params, [canonicalKey]: value }).bendAngleDeg;
         const derivative = (probe(baseline + 0.25) - probe(baseline - 0.25)) / 0.5;
         return {
           metricName: "Selected Display-Bend Sensitivity",
@@ -9691,19 +9986,55 @@ export function computeParameterSensitivity(
     }
 
     case "us-5121329-crump-fdm": {
+      const rawTemp = params.nozzleTempC ?? params.nozzleTemp ?? params.tempC ?? params.temperature;
+      if (rawTemp !== undefined && (!Number.isFinite(rawTemp) || rawTemp < 100 || rawTemp > 300)) {
+        return null;
+      }
+      const rawSpeed =
+        params.printSpeedMmS ?? params.printSpeed ?? params.speedMmS ?? params.feedSpeed;
+      if (
+        rawSpeed !== undefined &&
+        (!Number.isFinite(rawSpeed) || rawSpeed < 5 || rawSpeed > 250)
+      ) {
+        return null;
+      }
+      const rawHeight =
+        params.layerHeightMm ?? params.layerHeight ?? params.sliceHeight ?? params.heightMm;
+      if (
+        rawHeight !== undefined &&
+        (!Number.isFinite(rawHeight) || rawHeight < 0.05 || rawHeight > 0.8)
+      ) {
+        return null;
+      }
+      const rawWidth =
+        params.roadWidthMm ??
+        params.roadWidth ??
+        params.beadWidth ??
+        params.extrusionWidth ??
+        params.widthMm;
+      if (
+        rawWidth !== undefined &&
+        (!Number.isFinite(rawWidth) || rawWidth < 0.15 || rawWidth > 1.8)
+      ) {
+        return null;
+      }
+
       const controls = readCrumpFdmControls(params);
-      const probe = (key: "printSpeedMmS" | "nozzleTempC" | "layerHeightMm", value: number) =>
-        stepCrumpFdmSi({ ...controls, [key]: value });
-      if (controlKey === "printSpeedMmS") {
-        const derivative = kernelDerivative(
-          params.printSpeedMmS ?? controls.printSpeedMmS,
-          5,
-          250,
-          (value) => {
-            const state = probe("printSpeedMmS", value);
-            return state.refusalReason ? null : state.volumetricFlowRateMm3S;
-          },
-        );
+      const probe = (
+        key: "printSpeedMmS" | "nozzleTempC" | "layerHeightMm" | "roadWidthMm",
+        value: number,
+      ) => stepCrumpFdmSi({ ...controls, [key]: value });
+
+      if (
+        controlKey === "printSpeedMmS" ||
+        controlKey === "printSpeed" ||
+        controlKey === "speedMmS" ||
+        controlKey === "feedSpeed"
+      ) {
+        const derivative = kernelDerivative(rawSpeed ?? controls.printSpeedMmS, 5, 250, (value) => {
+          const state = probe("printSpeedMmS", value);
+          return state.refusalReason ? null : state.volumetricFlowRateMm3S;
+        });
         if (derivative === null) return null;
         return {
           metricName: "Volumetric Extrusion Flow Rate",
@@ -9714,16 +10045,16 @@ export function computeParameterSensitivity(
             "Volumetric extrusion demand scales linearly with toolhead print velocity, requiring proportional filament feed motor stepping.",
         };
       }
-      if (controlKey === "nozzleTempC") {
-        const derivative = kernelDerivative(
-          params.nozzleTempC ?? controls.nozzleTempC,
-          100,
-          300,
-          (value) => {
-            const state = probe("nozzleTempC", value);
-            return state.refusalReason ? null : state.apparentViscosityPaS;
-          },
-        );
+      if (
+        controlKey === "nozzleTempC" ||
+        controlKey === "nozzleTemp" ||
+        controlKey === "tempC" ||
+        controlKey === "temperature"
+      ) {
+        const derivative = kernelDerivative(rawTemp ?? controls.nozzleTempC, 100, 300, (value) => {
+          const state = probe("nozzleTempC", value);
+          return state.refusalReason ? null : state.apparentViscosityPaS;
+        });
         if (derivative === null) return null;
         return {
           metricName: "Apparent Melt Viscosity",
@@ -9734,9 +10065,14 @@ export function computeParameterSensitivity(
             "Central difference of the shared illustrative modern ABS screen at the current temperature and reference viscosity. Heating lowers the apparent viscosity; this is not a historical material measurement.",
         };
       }
-      if (controlKey === "layerHeightMm") {
+      if (
+        controlKey === "layerHeightMm" ||
+        controlKey === "layerHeight" ||
+        controlKey === "sliceHeight" ||
+        controlKey === "heightMm"
+      ) {
         const derivative = kernelDerivative(
-          params.layerHeightMm ?? controls.layerHeightMm,
+          rawHeight ?? controls.layerHeightMm,
           0.05,
           0.8,
           (value) => {
@@ -9752,6 +10088,32 @@ export function computeParameterSensitivity(
           derivativeUnit: "s / mm",
           interpretation:
             "Cooling time scales quadratically with layer thickness: thicker slices retain thermal energy longer before freezing below Tg.",
+        };
+      }
+      if (
+        controlKey === "roadWidthMm" ||
+        controlKey === "roadWidth" ||
+        controlKey === "beadWidth" ||
+        controlKey === "extrusionWidth" ||
+        controlKey === "widthMm"
+      ) {
+        const derivative = kernelDerivative(
+          rawWidth ?? controls.roadWidthMm,
+          0.15,
+          1.8,
+          (value) => {
+            const state = probe("roadWidthMm", value);
+            return state.refusalReason ? null : state.volumetricFlowRateMm3S;
+          },
+        );
+        if (derivative === null) return null;
+        return {
+          metricName: "Volumetric Extrusion Flow Rate",
+          derivativeSymbol: "∂Q / ∂w",
+          derivativeValue: derivative,
+          derivativeUnit: "mm³/s / mm",
+          interpretation:
+            "Volumetric extrusion demand scales linearly with extruded road width for a given layer slice height and toolhead velocity.",
         };
       }
       break;
