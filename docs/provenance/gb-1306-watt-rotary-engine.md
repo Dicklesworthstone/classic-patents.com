@@ -35,3 +35,47 @@
 ## 4. Root Source-Identity Hold (2026-08-20)
 
 The pinned PDF is not a historical Chancery facsimile. `pdfinfo` identifies `Typst 0.14.2` as its creator and gives creation and modification time `2026-08-19 21:59:49`; both A4 pages are visibly modern typesetting, and page 2 embeds a modern color reconstruction. The page table above inventories only what this reconstruction asserts and is not primary-source proof. The canonical record therefore has no `archivalEdition` or `originalTextAsset` binding. The PDF, ledger, edition, and crop remain preserved as research evidence until a genuine primary facsimile is pinned and reviewed.
+
+## 5. Historical printed-witness audit — 2026-09-05
+
+An independently inspected candidate witness is available at
+`https://monaco-patents.com/fileadmin/user_upload/website-common/Patent_specifications/UK_1781_-_1306_-Watt_s_Improvement_in_Steam_Engines.pdf`.
+It is an eleven-page Google digitisation of a historical printed specification,
+not the 1781 parchment letters patent. The printed pages identify themselves as
+``A.D. 1781 — No. 1306`` and page 9 identifies the historical printing as
+London: George Edward Eyre and William Spottiswoode, Printers to the Queen's
+Most Excellent Majesty, 1855. The page 10 drawing plate bears the same 1855
+imprint; page 11 is modern source/catalogue matter and is not part of the
+historical specification.
+
+The retrieved bytes had SHA-256
+`bb31b839f4b4f0ca6222d87ecbeb724d708ca7b37f06a42cf722e2d51a246c60` and
+were rendered and visually inspected page by page. The physical map is:
+
+| Candidate PDF page | Checked historical content |
+|---|---|
+| 1 | Crown-device heading, title, Watt's Chancery preamble. |
+| 2–3 | Opening technical description and first method: an obliquely cut wheel with friction wheels and a heavy arch. |
+| 4–5 | Second method using an eccentric wheel; third method using a rod and weighted wheel. |
+| 6–7 | Fourth method using two phase-offset engines; beginning of fifth method. |
+| 8 | Completion of fifth method, including the equal-tooth two-revolutions-per-stroke relation, variations, and directionality. |
+| 9 | February 13, 1782 execution, witnesses, Chancery acknowledgement, and 1855 printing imprint. |
+| 10 | Historical drawing sheet: Drawings 1–5, including the fifth-method exterior and internal-tooth arrangements. |
+| 11 | Modern Google Books source note; excluded from the historical instrument. |
+
+This witness proves that the two-page Typst reconstruction materially changes
+the source: the sun-and-planet arrangement is the **fifth** method rather than
+the first; the historical specification describes five methods rather than a
+modern ``Claims and Summary`` section with four numbered claims; and the
+execution/acknowledgement date printed in this witness is February 13, 1782,
+not the reconstruction's February 23 date. It also supplies a real historical
+drawing plate rather than the reconstruction's color schematic.
+
+This is a strong restoration lead, but it has **not** been promoted to the
+pinned source or used to claim complete archival acceptance. It has not yet
+been independently matched to the original parchment or accessioned from the
+holding archive; nor has its full 1855 text, drawing sheet, and page map been
+transcribed and checked into a reviewed ledger. The existing two-page
+reconstruction and its reader ledger remain preserved and available to visitors
+while that work is done. Nothing in this finding suppresses the source reader
+or the pinned PDF.
