@@ -34,6 +34,7 @@ import {
   stepGliddenBarbedWire,
   stepGoodyearRubber as stepGoodyearRubberCatalog,
   stepGrammeDynamo,
+  stepHewittMercuryLamp,
   stepHyattCelluloid,
   stepLandPolaroidInstantFilm,
   stepMarconiRadio as stepMarconiRadioCatalog,
@@ -111,9 +112,11 @@ import {
   type MestralVelcroTelemetry,
   stepMestralVelcroSi,
 } from "./mestralVelcroKernel";
+import { stepParsonsMarine } from "./parsonsMarineKernel";
 import { stepRobotEndEffectorSi } from "./robotEndEffectorKernel";
 import type { SalisburyRobotHandControls } from "./salisburyRobotHandKernel";
 import { type SalisburyMechanismState, stepSalisburyTopology } from "./salisburyWasm";
+import { stepSpencerMicrowaveSource } from "./spencerMicrowaveKernel";
 import {
   type StackhouseSourceControls,
   type StackhouseSourcePose,
@@ -369,6 +372,9 @@ export const FrankenSimEngine = {
   },
 
   stepTeslaMotorFig9,
+  stepParsonsMarine,
+  stepHewittMercuryLamp,
+  stepSpencerMicrowaveSource,
 
   /** US 6,331,181 illustrative tool-interface and contact model. */
   stepDaVinci(

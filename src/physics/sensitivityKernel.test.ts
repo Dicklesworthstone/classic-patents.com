@@ -1863,4 +1863,253 @@ describe("Sensitivities follow the current admitted operating point", () => {
       ).toBeNull();
     }
   });
+
+  test("Davenport Electric Motor derives commutated speed and load droop sensitivities", () => {
+    const id = "us-132-davenport-electric-motor";
+
+    for (const v of [6, 12, 24]) {
+      for (const load of [0.5, 0.8, 2.0]) {
+        const sensV = computeParameterSensitivity(id, "batteryVoltage", {
+          batteryVoltage: v,
+          loadTorque: load,
+        });
+        expect(sensV).toBeDefined();
+        expect(sensV?.metricName).toBe("Armature Commutated Rotational Speed");
+        expect(sensV?.derivativeSymbol).toBe("∂RPM / ∂V_batt");
+        expect(sensV?.derivativeUnit).toBe("RPM / V");
+        expect(sensV?.derivativeValue).toBeCloseTo(37.5 / Math.max(0.5, load), 3);
+
+        const sensLoad = computeParameterSensitivity(id, "loadTorque", {
+          batteryVoltage: v,
+          loadTorque: load,
+        });
+        expect(sensLoad).toBeDefined();
+        expect(sensLoad?.metricName).toBe("Armature Speed Load Droop");
+        expect(sensLoad?.derivativeSymbol).toBe("∂RPM / ∂τ_load");
+        expect(sensLoad?.derivativeUnit).toBe("RPM / (N·m)");
+        const expectedDroop = load > 0.5 ? -(v * 37.5) / load ** 2 : 0;
+        expect(sensLoad?.derivativeValue).toBeCloseTo(expectedDroop, 3);
+      }
+    }
+
+    // Invalid parameters
+    for (const invalid of [3.9, 24.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "batteryVoltage", { batteryVoltage: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.19, 2.51, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "loadTorque", { loadTorque: invalid })).toBeNull();
+    }
+  });
+
+  test("Gramme Dynamo derives continuous generated DC voltage sensitivity", () => {
+    const id = "us-120057-gramme-dynamo";
+
+    for (const rate of [0.5, 1.0, 1.5]) {
+      const sens = computeParameterSensitivity(id, "shaftRate", { shaftRate: rate });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Continuous Generated DC Voltage");
+      expect(sens?.derivativeSymbol).toBe("∂V_gen / ∂ω_shaft");
+      expect(sens?.derivativeUnit).toBe("V / (rad·s⁻¹)");
+      expect(sens?.derivativeValue).toBe(1.25);
+    }
+
+    // Invalid parameters
+    for (const invalid of [0.39, 1.61, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "shaftRate", { shaftRate: invalid })).toBeNull();
+    }
+  });
+
+  test("Pelton Water Wheel derives source water-path visibility and enforces apparatus bounds", () => {
+    const id = "us-233692-pelton-water-wheel";
+
+    for (const flow of [0, 1]) {
+      const sens = computeParameterSensitivity(id, "sourceFlowVisible", {
+        sourceFlowVisible: flow,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(1);
+    }
+    for (const claim of [0, 1]) {
+      const sens = computeParameterSensitivity(id, "claim1Active", { claim1Active: claim });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(1);
+    }
+
+    // Invalid parameters
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "sourceFlowVisible", { sourceFlowVisible: invalid }),
+      ).toBeNull();
+      expect(computeParameterSensitivity(id, "claim1Active", { claim1Active: invalid })).toBeNull();
+    }
+  });
+
+  test("Edison Electrical Indicator derives circuit state display sensitivity and enforces polarity bounds", () => {
+    const id = "us-307031-edison-indicator";
+
+    for (const pol of [0, 1]) {
+      const sens = computeParameterSensitivity(id, "plateBiasPolarity", {
+        plateBiasPolarity: pol,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("External-Connection Reader State");
+      expect(sens?.derivativeSymbol).toBe("∂q_{circuit} / ∂u_{polarity}");
+      expect(sens?.derivativeValue).toBe(1);
+    }
+
+    // Invalid parameters
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "plateBiasPolarity", { plateBiasPolarity: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Tesla AC Motor derives generator pole-shift rotation sensitivity and validates line frequency bounds", () => {
+    const id = "us-381968-tesla-motor";
+
+    for (const freq of [30, 60, 120]) {
+      const sens = computeParameterSensitivity(id, "frequency", { frequency: freq });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Generator Rotation");
+      expect(sens?.derivativeSymbol).toBe("∂n_G / ∂f");
+      expect(sens?.derivativeUnit).toBe("RPM / Hz");
+      expect(sens?.derivativeValue).toBe(60);
+    }
+
+    // Invalid parameters
+    for (const invalid of [19, 121, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "frequency", { frequency: invalid })).toBeNull();
+    }
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "frequency", { acHum: invalid })).toBeNull();
+    }
+  });
+
+  test("Parsons Marine Steam Turbine derives routing, reversing, and throttle sensitivities", () => {
+    const id = "us-608969-parsons-turbine";
+
+    for (const route of [0, 1, 2]) {
+      const sens = computeParameterSensitivity(id, "routing", { routing: route });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Steam Flow Path & Staged Expansion");
+      expect(sens?.derivativeValue).toBe(1.0);
+    }
+
+    for (const rev of [0, 1]) {
+      const sens = computeParameterSensitivity(id, "reversing", { reversing: rev });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Propulsion Direction");
+      expect(sens?.derivativeValue).toBe(1.0);
+    }
+
+    for (const thr of [0.2, 0.5, 1.0]) {
+      const sens = computeParameterSensitivity(id, "throttle", { throttle: thr });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Relative Steam Flow");
+      expect(sens?.derivativeValue).toBe(1.0);
+    }
+
+    // Invalid parameters
+    for (const invalid of [-1, 3, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "routing", { routing: invalid })).toBeNull();
+    }
+    for (const invalid of [-1, 2, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "reversing", { reversing: invalid })).toBeNull();
+    }
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "throttle", { throttle: invalid })).toBeNull();
+    }
+  });
+
+  test("Hewitt Mercury Vapor Lamp derives luminous flux, ballast quenching, and column field gradient sensitivities", () => {
+    const id = "us-682690-hewitt-mercury-lamp";
+
+    for (const v of [80, 110, 180]) {
+      const sensV = computeParameterSensitivity(id, "mainsVoltageV", { mainsVoltageV: v });
+      expect(sensV).toBeDefined();
+      expect(sensV?.metricName).toBe("Arc Luminous Flux Output");
+      expect(sensV?.derivativeSymbol).toBe("∂Φ / ∂V_supply");
+      expect(sensV?.derivativeUnit).toBe("lm / V");
+      expect(sensV?.derivativeValue).toBe(18.5);
+    }
+
+    for (const r of [10, 20, 35]) {
+      const sensR = computeParameterSensitivity(id, "ballastResistanceOhms", {
+        ballastResistanceOhms: r,
+      });
+      expect(sensR).toBeDefined();
+      expect(sensR?.metricName).toBe("Ballast Luminous Flux Quenching");
+      expect(sensR?.derivativeSymbol).toBe("∂Φ / ∂R_ballast");
+      expect(sensR?.derivativeUnit).toBe("lm / Ω");
+      expect(sensR?.derivativeValue).toBeLessThanOrEqual(0); // Quenches arc or clamps at extinction floor
+    }
+
+    for (const len of [50, 100, 140]) {
+      const sensL = computeParameterSensitivity(id, "tubeLengthCm", { tubeLengthCm: len });
+      expect(sensL).toBeDefined();
+      expect(sensL?.metricName).toBe("Positive Column Voltage Gradient");
+      expect(sensL?.derivativeSymbol).toBe("∂V_arc / ∂L_tube");
+      expect(sensL?.derivativeUnit).toBe("V / cm");
+      expect(sensL?.derivativeValue).toBeGreaterThan(0.2);
+    }
+
+    const sensI = computeParameterSensitivity(id, "arcCurrent", {});
+    expect(sensI).toBeDefined();
+    expect(sensI?.derivativeValue).toBe(420.0);
+
+    // Invalid parameters
+    for (const invalid of [59, 201, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "mainsVoltageV", { mainsVoltageV: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [4, 51, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "ballastResistanceOhms", {
+          ballastResistanceOhms: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [29, 151, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "tubeLengthCm", { tubeLengthCm: invalid })).toBeNull();
+    }
+    for (const invalid of [14, 51, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "tubeDiameterMm", { tubeDiameterMm: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Spencer Microwave Cavity Magnetron derives Hull cutoff field and waveguide path sensitivities", () => {
+    const id = "us-2495429-spencer-microwave";
+
+    for (const rf of [0, 1]) {
+      const sens = computeParameterSensitivity(id, "rfPowerSetting", { rfPowerSetting: rf });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Waveguide Energy-Path Display");
+      expect(sens?.derivativeValue).toBe(1);
+    }
+
+    for (const va of [1200, 2200, 3500]) {
+      const sens = computeParameterSensitivity(id, "anodeVoltage", { anodeVoltage: va });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Hull Cutoff Field");
+      expect(sens?.derivativeSymbol).toBe("∂B_c / ∂V_a");
+      expect(sens?.derivativeUnit).toBe("Gauss / V");
+      expect(sens?.derivativeValue).toBeGreaterThan(0);
+    }
+
+    // Invalid parameters
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "rfPowerSetting", { rfPowerSetting: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [499, 5001, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "anodeVoltage", { anodeVoltage: invalid })).toBeNull();
+    }
+  });
 });

@@ -17,6 +17,7 @@ import {
   stepEngelbartMouse,
   stepEricssonPropeller,
   stepGoodyearRubber,
+  stepHewittMercuryLamp,
   stepHollerithTabulating,
   stepLandPolaroidInstantFilm,
   stepThomsonWelding,
@@ -144,7 +145,21 @@ export function computeParameterSensitivity(
     }
 
     case "us-381968-tesla-motor": {
-      if (controlKey === "frequency") {
+      const freq = params.frequency ?? params.frequencyHz ?? 60;
+      const acHum = params.acHum ?? 1;
+
+      if (
+        !Number.isFinite(freq) ||
+        freq < 20 ||
+        freq > 120 ||
+        !Number.isFinite(acHum) ||
+        acHum < 0 ||
+        acHum > 1
+      ) {
+        return null;
+      }
+
+      if (controlKey === "frequency" || controlKey === "frequencyHz") {
         // Fig. 9's source relation: one generator revolution advances the
         // magnetic attraction once around ring R.
         const dGeneratorRpm_df = 60;
@@ -194,8 +209,21 @@ export function computeParameterSensitivity(
     }
 
     case "us-2495429-spencer-microwave": {
+      const rf = params.rfPowerSetting ?? 1;
+      const va = params.anodeVoltage ?? params.anodeVoltageVolts ?? 2200.0;
+
+      if (
+        !Number.isFinite(rf) ||
+        rf < 0 ||
+        rf > 1 ||
+        !Number.isFinite(va) ||
+        va < 500 ||
+        va > 5000
+      ) {
+        return null;
+      }
+
       if (controlKey === "anodeVoltage" || controlKey === "anodeVoltageVolts") {
-        const va = params.anodeVoltage ?? params.anodeVoltageVolts ?? 2200.0;
         // Hull cutoff field sensitivity: B_c ~ sqrt(V_a) -> dBc/dVa = B_c / (2 * V_a)
         const bc = 1350.0 * Math.sqrt(va / 2200.0);
         const dBc_dva = bc / (2 * va);
@@ -265,6 +293,20 @@ export function computeParameterSensitivity(
     }
 
     case "us-233692-pelton-water-wheel": {
+      const flow = params.sourceFlowVisible ?? 1;
+      const claim1 = params.claim1Active ?? 1;
+
+      if (
+        !Number.isFinite(flow) ||
+        flow < 0 ||
+        flow > 1 ||
+        !Number.isFinite(claim1) ||
+        claim1 < 0 ||
+        claim1 > 1
+      ) {
+        return null;
+      }
+
       if (controlKey === "sourceFlowVisible" || controlKey === "claim1Active") {
         return {
           metricName:
@@ -537,6 +579,24 @@ export function computeParameterSensitivity(
     }
 
     case "us-608969-parsons-turbine": {
+      const routing = params.routing ?? params.pipingMode ?? 0;
+      const reversing = params.reversing ?? params.astern ?? 0;
+      const throttle = params.throttle ?? 0.8;
+
+      if (
+        !Number.isFinite(routing) ||
+        routing < 0 ||
+        routing > 2 ||
+        !Number.isFinite(reversing) ||
+        reversing < 0 ||
+        reversing > 1 ||
+        !Number.isFinite(throttle) ||
+        throttle < 0 ||
+        throttle > 1
+      ) {
+        return null;
+      }
+
       if (controlKey === "routing" || controlKey === "pipingMode") {
         return {
           metricName: "Steam Flow Path & Staged Expansion",
@@ -720,6 +780,28 @@ export function computeParameterSensitivity(
     }
 
     case "us-682690-hewitt-mercury-lamp": {
+      const vMains = params.mainsVoltageV ?? params.voltage ?? 110;
+      const rBallast = params.ballastResistanceOhms ?? params.ballast ?? 12;
+      const lenCm = params.tubeLengthCm ?? params.tubeLength ?? 100;
+      const diamMm = params.tubeDiameterMm ?? params.diameter ?? 25;
+
+      if (
+        !Number.isFinite(vMains) ||
+        vMains < 60 ||
+        vMains > 200 ||
+        !Number.isFinite(rBallast) ||
+        rBallast < 5 ||
+        rBallast > 50 ||
+        !Number.isFinite(lenCm) ||
+        lenCm < 30 ||
+        lenCm > 150 ||
+        !Number.isFinite(diamMm) ||
+        diamMm < 15 ||
+        diamMm > 50
+      ) {
+        return null;
+      }
+
       if (controlKey === "mainsVoltageV" || controlKey === "voltage") {
         return {
           metricName: "Arc Luminous Flux Output",
@@ -728,6 +810,48 @@ export function computeParameterSensitivity(
           derivativeUnit: "lm / V",
           interpretation:
             "Positive column gas discharge ionization and mercury spectral line excitation.",
+        };
+      }
+      if (controlKey === "ballastResistanceOhms" || controlKey === "ballast") {
+        const base = stepHewittMercuryLamp({
+          mainsVoltageV: vMains,
+          ballastResistanceOhms: rBallast,
+          tubeLengthCm: lenCm,
+          tubeDiameterMm: diamMm,
+        });
+        const delta = rBallast < 50 ? 1 : -1;
+        const perturbed = stepHewittMercuryLamp({
+          mainsVoltageV: vMains,
+          ballastResistanceOhms: rBallast + delta,
+          tubeLengthCm: lenCm,
+          tubeDiameterMm: diamMm,
+        });
+        const dPhi_dR = Number(
+          ((perturbed.luminousFluxLumens - base.luminousFluxLumens) / delta).toFixed(1),
+        );
+        return {
+          metricName: "Ballast Luminous Flux Quenching",
+          derivativeSymbol: "∂Φ / ∂R_ballast",
+          derivativeValue: dPhi_dR,
+          derivativeUnit: "lm / Ω",
+          interpretation:
+            "Series ballast resistance limits runaway negative-differential arc current, lowering equilibrium luminous flux.",
+        };
+      }
+      if (controlKey === "tubeLengthCm" || controlKey === "tubeLength") {
+        const base = stepHewittMercuryLamp({
+          mainsVoltageV: vMains,
+          ballastResistanceOhms: rBallast,
+          tubeLengthCm: lenCm,
+          tubeDiameterMm: diamMm,
+        });
+        return {
+          metricName: "Positive Column Voltage Gradient",
+          derivativeSymbol: "∂V_arc / ∂L_tube",
+          derivativeValue: base.electricFieldVPerCm,
+          derivativeUnit: "V / cm",
+          interpretation:
+            "Uniform electric field gradient in the ionized positive column across tube elongation.",
         };
       }
       if (controlKey === "arcCurrent" || controlKey === "current") {
@@ -1041,6 +1165,11 @@ export function computeParameterSensitivity(
     }
 
     case "us-307031-edison-indicator": {
+      const polarity = params.plateBiasPolarity ?? 1;
+      if (!Number.isFinite(polarity) || polarity < 0 || polarity > 1) {
+        return null;
+      }
+
       if (controlKey === "plateBiasPolarity") {
         return {
           metricName: "External-Connection Reader State",
@@ -1701,7 +1830,12 @@ export function computeParameterSensitivity(
     }
 
     case "us-120057-gramme-dynamo": {
-      if (controlKey === "shaftRate") {
+      const shaftRate = params.shaftRate ?? params.rate ?? 1.0;
+      if (!Number.isFinite(shaftRate) || shaftRate < 0.4 || shaftRate > 1.6) {
+        return null;
+      }
+
+      if (controlKey === "shaftRate" || controlKey === "rate") {
         return {
           metricName: "Continuous Generated DC Voltage",
           derivativeSymbol: "∂V_gen / ∂ω_shaft",
@@ -2279,13 +2413,40 @@ export function computeParameterSensitivity(
     }
 
     case "us-132-davenport-electric-motor": {
-      if (controlKey === "batteryVoltage") {
+      const v = params.batteryVoltage ?? params.voltage ?? 12;
+      const load = params.loadTorque ?? params.torque ?? 0.8;
+
+      if (
+        !Number.isFinite(v) ||
+        v < 4 ||
+        v > 24 ||
+        !Number.isFinite(load) ||
+        load < 0.2 ||
+        load > 2.5
+      ) {
+        return null;
+      }
+
+      if (controlKey === "batteryVoltage" || controlKey === "voltage") {
+        const dRpm_dV = Number((37.5 / Math.max(0.5, load)).toFixed(3));
         return {
-          metricName: "Armature No-Load Speed",
+          metricName: "Armature Commutated Rotational Speed",
           derivativeSymbol: "∂RPM / ∂V_batt",
-          derivativeValue: 45.0,
+          derivativeValue: dRpm_dV,
           derivativeUnit: "RPM / V",
-          interpretation: "Back-EMF linear speed scaling across commutated rotary electromagnets.",
+          interpretation:
+            "Commutated rotor speed scaling with applied galvanic battery voltage across the Lorentz electromagnetic torque loop.",
+        };
+      }
+      if (controlKey === "loadTorque" || controlKey === "torque") {
+        const dRpm_dLoad = load > 0.5 ? Number((-(v * 37.5) / load ** 2).toFixed(3)) : 0;
+        return {
+          metricName: "Armature Speed Load Droop",
+          derivativeSymbol: "∂RPM / ∂τ_load",
+          derivativeValue: dRpm_dLoad,
+          derivativeUnit: "RPM / (N·m)",
+          interpretation:
+            "Inverse rotational speed droop under mechanical shaft resisting load torque.",
         };
       }
       break;
