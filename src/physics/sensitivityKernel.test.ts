@@ -2162,4 +2162,277 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(computeParameterSensitivity(id, "claim1Active", { claim1Active: invalid })).toBeNull();
     }
   });
+
+  test("Arkwright Water Frame derives flyer spindle speed and draft attenuation sensitivities", () => {
+    const id = "gb-931-arkwright-water-frame";
+
+    // Flyer spindle speed sensitivity (18.5 RPM / RPM)
+    for (const rpm of [60, 120, 180, 260]) {
+      const sens = computeParameterSensitivity(id, "waterWheelRpm", { waterWheelRpm: rpm });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Flyer Spindle Rotation Speed");
+      expect(sens?.derivativeSymbol).toBe("∂N_spindle / ∂RPM_wheel");
+      expect(sens?.derivativeUnit).toBe("RPM / RPM");
+      expect(sens?.derivativeValue).toBe(18.5);
+    }
+
+    // Draft ratio attenuation sensitivity
+    for (const draft of [3.0, 6.0, 10.0]) {
+      const sens = computeParameterSensitivity(id, "totalDraftRatio", {
+        totalDraftRatio: draft,
+        inputRovingCountNe: 1.5,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Yarn Count Attenuation");
+      expect(sens?.derivativeSymbol).toBe("∂Ne / ∂Draft");
+      expect(sens?.derivativeUnit).toBe("count / ratio");
+      expect(sens?.derivativeValue).toBe(1.5);
+    }
+
+    // Invalid bounds
+    for (const invalid of [59, 261, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "waterWheelRpm", { waterWheelRpm: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [2.9, 10.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "totalDraftRatio", { totalDraftRatio: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.9, 6.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "rollerClampingWeightKg", {
+          rollerClampingWeightKg: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [19, 39, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "stapleLengthMm", { stapleLengthMm: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.4, 2.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "inputRovingCountNe", { inputRovingCountNe: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Watt Rotary Engine derives epicyclic speed multiplication and gear ratio sensitivities", () => {
+    const id = "gb-1306-watt-rotary-engine";
+
+    // Stroke rate sensitivity
+    for (const ratio of [0.5, 1.0, 1.5, 2.0]) {
+      const sens = computeParameterSensitivity(id, "strokeRateSpm", {
+        strokeRateSpm: 20,
+        gearRatioNpOverNs: ratio,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Shaft Rotational Speed");
+      expect(sens?.derivativeSymbol).toBe("∂RPM / ∂SPM");
+      expect(sens?.derivativeUnit).toBe("RPM / SPM");
+      expect(sens?.derivativeValue).toBeCloseTo(1.0 + ratio, 3);
+    }
+
+    // Gear ratio sensitivity
+    const sensRatio = computeParameterSensitivity(id, "gearRatioNpOverNs", {
+      gearRatioNpOverNs: 1.0,
+    });
+    expect(sensRatio).toBeDefined();
+    expect(sensRatio?.metricName).toBe("Shaft Speed Multiplier");
+    expect(sensRatio?.derivativeSymbol).toBe("∂Mult / ∂Ratio");
+    expect(sensRatio?.derivativeUnit).toBe("multiplier / ratio");
+    expect(sensRatio?.derivativeValue).toBe(1.0);
+
+    // Invalid bounds
+    for (const invalid of [9, 31, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "strokeRateSpm", { strokeRateSpm: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [39, 121, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "boilerPressureKpa", { boilerPressureKpa: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.4, 2.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "gearRatioNpOverNs", { gearRatioNpOverNs: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [999, 6001, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "flywheelMassKg", { flywheelMassKg: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Cort Puddling & Rolling derives decarburization rate and rabble stirring sensitivities", () => {
+    const id = "gb-1420-cort-puddling-rolling";
+
+    // Furnace temperature sensitivity
+    const sensTemp = computeParameterSensitivity(id, "furnaceTemperatureCelsius", {
+      furnaceTemperatureCelsius: 1350,
+    });
+    expect(sensTemp).toBeDefined();
+    expect(sensTemp?.metricName).toBe("Decarburization Oxidation Rate");
+    expect(sensTemp?.derivativeSymbol).toBe("∂Rate_decarb / ∂T");
+    expect(sensTemp?.derivativeUnit).toBe("%/min / °C");
+    expect(sensTemp?.derivativeValue).toBe(0.015);
+
+    // Rabble stirring sensitivity
+    const sensRabble = computeParameterSensitivity(id, "rabbleStirringRpm", {
+      rabbleStirringRpm: 15,
+    });
+    expect(sensRabble).toBeDefined();
+    expect(sensRabble?.metricName).toBe("Slag Contact Decarburization Enhancement");
+    expect(sensRabble?.derivativeSymbol).toBe("∂Rate_decarb / ∂RPM_rabble");
+    expect(sensRabble?.derivativeUnit).toBe("%/min / RPM");
+    expect(sensRabble?.derivativeValue).toBe(0.022);
+
+    // Invalid bounds
+    for (const invalid of [1149, 1551, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "furnaceTemperatureCelsius", {
+          furnaceTemperatureCelsius: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [2.7, 4.6, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "initialCarbonPercent", { initialCarbonPercent: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-1, 26, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "rabbleStirringRpm", { rabbleStirringRpm: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [29, 151, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "puddlingDurationMinutes", {
+          puddlingDurationMinutes: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [0, 9, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "rollerPassCount", { rollerPassCount: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Hopkins Potash derives calcination purity and leaching solubility sensitivities", () => {
+    const id = "us-x1-hopkins-potash";
+
+    // Roasting temperature sensitivity
+    const sensRoast = computeParameterSensitivity(id, "roastTempC", { roastTempC: 750 });
+    expect(sensRoast).toBeDefined();
+    expect(sensRoast?.metricName).toBe("Potash Carbon Burnout Purity");
+    expect(sensRoast?.derivativeSymbol).toBe("∂Purity / ∂T_roast");
+    expect(sensRoast?.derivativeUnit).toBe("% / °C");
+    expect(sensRoast?.derivativeValue).toBe(0.05);
+
+    // Leaching water temperature sensitivity
+    const sensWater = computeParameterSensitivity(id, "waterTempC", { waterTempC: 80 });
+    expect(sensWater).toBeDefined();
+    expect(sensWater?.metricName).toBe("Potassium Carbonate Leaching Solubility");
+    expect(sensWater?.derivativeSymbol).toBe("∂C_sat / ∂T_water");
+    expect(sensWater?.derivativeUnit).toBe("(g/L) / °C");
+    expect(sensWater?.derivativeValue).toBe(4.4);
+
+    // Invalid bounds
+    for (const invalid of [499, 951, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "roastTempC", { roastTempC: invalid })).toBeNull();
+    }
+    for (const invalid of [0.4, 6.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "roastTimeHours", { roastTimeHours: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [49, 501, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "ashBatchKg", { ashBatchKg: invalid })).toBeNull();
+    }
+    for (const invalid of [19, 101, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "waterTempC", { waterTempC: invalid })).toBeNull();
+    }
+  });
+
+  test("Rillieux Multi-Effect Evaporator derives steam economy and feed rate sensitivities", () => {
+    const id = "us-3237-rillieux-evaporator";
+
+    // Number of effects sensitivity
+    const sensEffects = computeParameterSensitivity(id, "numberOfEffects", { numberOfEffects: 3 });
+    expect(sensEffects).toBeDefined();
+    expect(sensEffects?.metricName).toBe("Steam Enthalpy Economy");
+    expect(sensEffects?.derivativeSymbol).toBe("∂Economy / ∂N_effects");
+    expect(sensEffects?.derivativeUnit).toBe("(kg evaporated/kg steam) / effect");
+    expect(sensEffects?.derivativeValue).toBe(0.88);
+
+    // Juice feed rate mass flow sensitivity
+    const sensFeed = computeParameterSensitivity(id, "juiceFeedRateKgPerH", {
+      juiceFeedRateKgPerH: 10000,
+      initialBrixDeg: 14,
+      targetBrixDeg: 65,
+    });
+    expect(sensFeed).toBeDefined();
+    expect(sensFeed?.metricName).toBe("Water Evaporation Mass Flow Rate");
+    expect(sensFeed?.derivativeSymbol).toBe("∂m_evap / ∂m_feed");
+    expect(sensFeed?.derivativeUnit).toBe("(kg/h) / (kg/h)");
+    expect(sensFeed?.derivativeValue).toBeCloseTo(1.0 - 14 / 65, 4);
+
+    // Invalid bounds
+    for (const invalid of [1999, 25001, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "juiceFeedRateKgPerH", { juiceFeedRateKgPerH: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [9.9, 20.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "initialBrixDeg", { initialBrixDeg: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [49.9, 75.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "targetBrixDeg", { targetBrixDeg: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [1, 5, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "numberOfEffects", { numberOfEffects: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Lincoln Buoyancy Chambers derives draft reduction and displacement loading sensitivities", () => {
+    const id = "us-6469-lincoln-buoy";
+
+    // Inflation percent sensitivity
+    const sensInfl = computeParameterSensitivity(id, "inflationPct", { inflationPct: 75 });
+    expect(sensInfl).toBeDefined();
+    expect(sensInfl?.metricName).toBe("Hull Draft Shoal Reduction");
+    expect(sensInfl?.derivativeSymbol).toBe("∂Draft / ∂%_inflation");
+    expect(sensInfl?.derivativeUnit).toBe("ft / %");
+    expect(sensInfl?.derivativeValue).toBe(0.045);
+
+    // Steamboat weight loading sensitivity
+    const sensWeight = computeParameterSensitivity(id, "weightTons", { weightTons: 380 });
+    expect(sensWeight).toBeDefined();
+    expect(sensWeight?.metricName).toBe("Hull Draft Displacement Loading");
+    expect(sensWeight?.derivativeSymbol).toBe("∂Draft / ∂W_steamboat");
+    expect(sensWeight?.derivativeUnit).toBe("ft / ton");
+    expect(sensWeight?.derivativeValue).toBe(0.0088);
+
+    // Invalid bounds
+    for (const invalid of [-1, 101, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "inflationPct", { inflationPct: invalid })).toBeNull();
+    }
+    for (const invalid of [199, 601, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "weightTons", { weightTons: invalid })).toBeNull();
+    }
+    for (const invalid of [1.9, 12.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "shoalDepth", { shoalDepth: invalid })).toBeNull();
+    }
+  });
 });

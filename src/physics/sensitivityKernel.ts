@@ -447,16 +447,31 @@ export function computeParameterSensitivity(
     }
 
     case "us-3633-goodyear-rubber": {
+      const vulcanTemp = params.vulcanTemp ?? 145;
+      const sulfurPct = params.sulfurPct ?? 8;
+      const specimenTempC = params.specimenTempC ?? 35;
+      const lambda = params.appliedTensileStretch ?? params.stretch ?? 1.8;
+
+      if (
+        !Number.isFinite(vulcanTemp) ||
+        vulcanTemp < 90 ||
+        vulcanTemp > 220 ||
+        !Number.isFinite(sulfurPct) ||
+        sulfurPct < 0 ||
+        sulfurPct > 35 ||
+        !Number.isFinite(specimenTempC) ||
+        specimenTempC < -40 ||
+        specimenTempC > 120 ||
+        !Number.isFinite(lambda) ||
+        lambda < 1.0 ||
+        lambda > 2.5
+      ) {
+        return null;
+      }
+
+      const rubber = stepGoodyearRubber(vulcanTemp, sulfurPct, 30, lambda, specimenTempC);
+
       if (controlKey === "appliedTensileStretch" || controlKey === "stretch") {
-        const lambda = params.appliedTensileStretch ?? params.stretch ?? 1.8;
-        if (lambda < 1 || lambda > 2.5) return null;
-        const rubber = stepGoodyearRubber(
-          params.vulcanTemp ?? 145,
-          params.sulfurPct ?? 8,
-          30,
-          lambda,
-          params.specimenTempC ?? 35,
-        );
         return {
           metricName: "Nominal Stress (Model)",
           derivativeSymbol: "∂P_nom / ∂λ",
@@ -464,6 +479,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "MPa / λ",
           interpretation:
             "Local slope of the shared illustrative stress model at the current cure temperature, sulfur content and stretch; the cure duration is the declared 30 minutes. The model's strength coefficient is held fixed. At λ = 1 or 2.5 this is the admitted one-sided slope, not a measured material modulus.",
+        };
+      }
+      if (controlKey === "sulfurPct" || controlKey === "sulfur") {
+        return {
+          metricName: "Relative Cross-Link Density",
+          derivativeSymbol: "∂X_link / ∂%_sulfur",
+          derivativeValue: Number(rubber.relativeCrossLinkSlopePerSulfurPct.toPrecision(6)),
+          derivativeUnit: "ratio / %",
+          interpretation:
+            "Disulfide bridge density scaling with sulfur compounding fraction under 30-minute thermal cure kinetics.",
         };
       }
       break;
@@ -1933,7 +1958,30 @@ export function computeParameterSensitivity(
     }
 
     case "us-3237-rillieux-evaporator": {
-      if (controlKey === "numberOfEffects") {
+      const feedRate =
+        params.juiceFeedRateKgPerH ?? params.juiceFeedRate ?? params.feedRate ?? 10000;
+      const initialBrix = params.initialBrixDeg ?? params.initialBrix ?? 14.0;
+      const targetBrix = params.targetBrixDeg ?? params.targetBrix ?? 65.0;
+      const nEffects = params.numberOfEffects ?? params.effects ?? 3;
+
+      if (
+        !Number.isFinite(feedRate) ||
+        feedRate < 2000 ||
+        feedRate > 25000 ||
+        !Number.isFinite(initialBrix) ||
+        initialBrix < 10 ||
+        initialBrix > 20 ||
+        !Number.isFinite(targetBrix) ||
+        targetBrix < 50 ||
+        targetBrix > 75 ||
+        !Number.isFinite(nEffects) ||
+        nEffects < 2 ||
+        nEffects > 4
+      ) {
+        return null;
+      }
+
+      if (controlKey === "numberOfEffects" || controlKey === "effects") {
         return {
           metricName: "Steam Enthalpy Economy",
           derivativeSymbol: "∂Economy / ∂N_effects",
@@ -1941,6 +1989,21 @@ export function computeParameterSensitivity(
           derivativeUnit: "(kg evaporated/kg steam) / effect",
           interpretation:
             "Enthalpy reuse: each additional vacuum effect captures latent heat of previous stage vapor.",
+        };
+      }
+      if (
+        controlKey === "juiceFeedRateKgPerH" ||
+        controlKey === "juiceFeedRate" ||
+        controlKey === "feedRate"
+      ) {
+        const dEvap_dFeed = Number((1.0 - initialBrix / targetBrix).toFixed(4));
+        return {
+          metricName: "Water Evaporation Mass Flow Rate",
+          derivativeSymbol: "∂m_evap / ∂m_feed",
+          derivativeValue: dEvap_dFeed,
+          derivativeUnit: "(kg/h) / (kg/h)",
+          interpretation:
+            "Linear mass conservation: dissolved sugar solids pass to syrup while water fraction is boiled off across stages.",
         };
       }
       break;
@@ -2328,44 +2391,136 @@ export function computeParameterSensitivity(
     }
 
     case "gb-931-arkwright-water-frame": {
-      if (controlKey === "waterWheelRpm") {
+      const waterWheelRpm = params.waterWheelRpm ?? params.rpm ?? 180;
+      const totalDraftRatio = params.totalDraftRatio ?? params.draftRatio ?? 6.0;
+      const rollerClampingWeightKg =
+        params.rollerClampingWeightKg ?? params.clampingWeightKg ?? 3.5;
+      const stapleLengthMm = params.stapleLengthMm ?? params.stapleLength ?? 28;
+      const inputRovingCountNe = params.inputRovingCountNe ?? params.rovingCountNe ?? 1.0;
+
+      if (
+        !Number.isFinite(waterWheelRpm) ||
+        waterWheelRpm < 60 ||
+        waterWheelRpm > 260 ||
+        !Number.isFinite(totalDraftRatio) ||
+        totalDraftRatio < 3.0 ||
+        totalDraftRatio > 10.0 ||
+        !Number.isFinite(rollerClampingWeightKg) ||
+        rollerClampingWeightKg < 1.0 ||
+        rollerClampingWeightKg > 6.0 ||
+        !Number.isFinite(stapleLengthMm) ||
+        stapleLengthMm < 20 ||
+        stapleLengthMm > 38 ||
+        !Number.isFinite(inputRovingCountNe) ||
+        inputRovingCountNe < 0.5 ||
+        inputRovingCountNe > 2.0
+      ) {
+        return null;
+      }
+
+      if (controlKey === "waterWheelRpm" || controlKey === "rpm") {
         return {
           metricName: "Flyer Spindle Rotation Speed",
           derivativeSymbol: "∂N_spindle / ∂RPM_wheel",
-          derivativeValue: 4.5,
+          derivativeValue: 18.5,
           derivativeUnit: "RPM / RPM",
-          interpretation: "Water-wheel step-up gearing ratio driving continuous spinning flyers.",
+          interpretation:
+            "Water-wheel step-up gearing ratio (18.5:1 declared teaching transmission) driving continuous spinning flyers.",
         };
       }
-      if (controlKey === "totalDraftRatio") {
+      if (controlKey === "totalDraftRatio" || controlKey === "draftRatio") {
         return {
           metricName: "Yarn Count Attenuation",
           derivativeSymbol: "∂Ne / ∂Draft",
-          derivativeValue: 1.0,
+          derivativeValue: Number(inputRovingCountNe.toFixed(3)),
           derivativeUnit: "count / ratio",
           interpretation:
-            "Differential roller speed drawing ratio reducing roving linear mass density.",
+            "Differential roller speed drawing ratio reducing roving linear mass density (Ne_out = Ne_in · Draft).",
         };
       }
       break;
     }
 
     case "gb-1306-watt-rotary-engine": {
-      if (controlKey === "strokeRateSpm") {
+      const strokeRateSpm = params.strokeRateSpm ?? params.spm ?? 20;
+      const boilerPressureKpa = params.boilerPressureKpa ?? params.boilerPressure ?? 70;
+      const gearRatioNpOverNs = params.gearRatioNpOverNs ?? params.gearRatio ?? 1.0;
+      const flywheelMassKg = params.flywheelMassKg ?? params.flywheelMass ?? 3500;
+
+      if (
+        !Number.isFinite(strokeRateSpm) ||
+        strokeRateSpm < 10 ||
+        strokeRateSpm > 30 ||
+        !Number.isFinite(boilerPressureKpa) ||
+        boilerPressureKpa < 40 ||
+        boilerPressureKpa > 120 ||
+        !Number.isFinite(gearRatioNpOverNs) ||
+        gearRatioNpOverNs < 0.5 ||
+        gearRatioNpOverNs > 2.0 ||
+        !Number.isFinite(flywheelMassKg) ||
+        flywheelMassKg < 1000 ||
+        flywheelMassKg > 6000
+      ) {
+        return null;
+      }
+
+      if (controlKey === "strokeRateSpm" || controlKey === "spm") {
+        const mult = Number((1.0 + gearRatioNpOverNs).toFixed(3));
         return {
           metricName: "Shaft Rotational Speed",
           derivativeSymbol: "∂RPM / ∂SPM",
-          derivativeValue: 2.0,
+          derivativeValue: mult,
           derivativeUnit: "RPM / SPM",
           interpretation:
-            "Sun and planet epicyclic gear doubling shaft speed per complete beam reciprocation cycle.",
+            "Sun and planet epicyclic gear doubling shaft speed per complete beam reciprocation cycle (1 + N_p/N_s multiplier).",
+        };
+      }
+      if (controlKey === "gearRatioNpOverNs" || controlKey === "gearRatio") {
+        return {
+          metricName: "Shaft Speed Multiplier",
+          derivativeSymbol: "∂Mult / ∂Ratio",
+          derivativeValue: 1.0,
+          derivativeUnit: "multiplier / ratio",
+          interpretation:
+            "Linear speed-multiplier increase per unit increase in planet-to-sun gear ratio.",
         };
       }
       break;
     }
 
     case "gb-1420-cort-puddling-rolling": {
-      if (controlKey === "furnaceTemperatureCelsius") {
+      const tempC =
+        params.furnaceTemperatureCelsius ?? params.temperatureCelsius ?? params.temperature ?? 1350;
+      const c0 = params.initialCarbonPercent ?? params.carbonPercent ?? 3.8;
+      const rabbleRpm = params.rabbleStirringRpm ?? params.rabbleRpm ?? 15;
+      const durationMin = params.puddlingDurationMinutes ?? params.durationMinutes ?? 90;
+      const passes = params.rollerPassCount ?? params.passCount ?? 5;
+
+      if (
+        !Number.isFinite(tempC) ||
+        tempC < 1150 ||
+        tempC > 1550 ||
+        !Number.isFinite(c0) ||
+        c0 < 2.8 ||
+        c0 > 4.5 ||
+        !Number.isFinite(rabbleRpm) ||
+        rabbleRpm < 0 ||
+        rabbleRpm > 25 ||
+        !Number.isFinite(durationMin) ||
+        durationMin < 30 ||
+        durationMin > 150 ||
+        !Number.isFinite(passes) ||
+        passes < 1 ||
+        passes > 8
+      ) {
+        return null;
+      }
+
+      if (
+        controlKey === "furnaceTemperatureCelsius" ||
+        controlKey === "temperatureCelsius" ||
+        controlKey === "temperature"
+      ) {
         return {
           metricName: "Decarburization Oxidation Rate",
           derivativeSymbol: "∂Rate_decarb / ∂T",
@@ -2375,11 +2530,43 @@ export function computeParameterSensitivity(
             "Reverberatory slag bath reaction kinetics burning carbon out of molten cast pig iron.",
         };
       }
+      if (controlKey === "rabbleStirringRpm" || controlKey === "rabbleRpm") {
+        return {
+          metricName: "Slag Contact Decarburization Enhancement",
+          derivativeSymbol: "∂Rate_decarb / ∂RPM_rabble",
+          derivativeValue: 0.022,
+          derivativeUnit: "%/min / RPM",
+          interpretation:
+            "Manual rabbling stirring rate increasing fresh molten metal exposure to oxidizing fayalite slag.",
+        };
+      }
       break;
     }
 
     case "us-x1-hopkins-potash": {
-      if (controlKey === "roastTempC") {
+      const roastTempC = params.roastTempC ?? params.tempC ?? 750;
+      const roastTimeHours = params.roastTimeHours ?? params.timeHours ?? 2.5;
+      const ashBatchKg = params.ashBatchKg ?? params.batchKg ?? 200;
+      const waterTempC = params.waterTempC ?? params.leachTempC ?? 80;
+
+      if (
+        !Number.isFinite(roastTempC) ||
+        roastTempC < 500 ||
+        roastTempC > 950 ||
+        !Number.isFinite(roastTimeHours) ||
+        roastTimeHours < 0.5 ||
+        roastTimeHours > 6.0 ||
+        !Number.isFinite(ashBatchKg) ||
+        ashBatchKg < 50 ||
+        ashBatchKg > 500 ||
+        !Number.isFinite(waterTempC) ||
+        waterTempC < 20 ||
+        waterTempC > 100
+      ) {
+        return null;
+      }
+
+      if (controlKey === "roastTempC" || controlKey === "tempC") {
         return {
           metricName: "Potash Carbon Burnout Purity",
           derivativeSymbol: "∂Purity / ∂T_roast",
@@ -2387,6 +2574,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "% / °C",
           interpretation:
             "Secondary furnace combustion incinerating black carbon residue into pure pearlash.",
+        };
+      }
+      if (controlKey === "waterTempC" || controlKey === "leachTempC") {
+        return {
+          metricName: "Potassium Carbonate Leaching Solubility",
+          derivativeSymbol: "∂C_sat / ∂T_water",
+          derivativeValue: 4.4,
+          derivativeUnit: "(g/L) / °C",
+          interpretation:
+            "Aqueous solubility temperature coefficient: K2CO3 dissolution rate in hot leaching vats.",
         };
       }
       break;
@@ -2505,7 +2702,29 @@ export function computeParameterSensitivity(
     }
 
     case "us-6469-lincoln-buoy": {
-      if (controlKey === "inflationPct") {
+      const inflation = params.inflationPct ?? params.inflation ?? params.expansionPct ?? 75;
+      const weight = params.weightTons ?? params.weight ?? 380;
+      const depth = params.shoalDepth ?? params.depthFt ?? 3.5;
+
+      if (
+        !Number.isFinite(inflation) ||
+        inflation < 0 ||
+        inflation > 100 ||
+        !Number.isFinite(weight) ||
+        weight < 200 ||
+        weight > 600 ||
+        !Number.isFinite(depth) ||
+        depth < 2.0 ||
+        depth > 12.0
+      ) {
+        return null;
+      }
+
+      if (
+        controlKey === "inflationPct" ||
+        controlKey === "inflation" ||
+        controlKey === "expansionPct"
+      ) {
         return {
           metricName: "Hull Draft Shoal Reduction",
           derivativeSymbol: "∂Draft / ∂%_inflation",
@@ -2513,6 +2732,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "ft / %",
           interpretation:
             "Archimedes buoyant displacement lifting vessel over shallow river sandbars.",
+        };
+      }
+      if (controlKey === "weightTons" || controlKey === "weight") {
+        return {
+          metricName: "Hull Draft Displacement Loading",
+          derivativeSymbol: "∂Draft / ∂W_steamboat",
+          derivativeValue: 0.0088,
+          derivativeUnit: "ft / ton",
+          interpretation:
+            "Hydrostatic sinkage slope: waterplane displacement loading per additional ton of cargo or vessel weight.",
         };
       }
       break;

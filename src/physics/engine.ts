@@ -10,6 +10,7 @@ import {
   type AmfVersatranTopologyState,
   stepAmfVersatranTopology as stepAmfVersatranTopologyKernel,
 } from "./amfVersatranKernel";
+import { stepArkwrightWaterFrame } from "./arkwrightKernel";
 import {
   stepBardeenTransistor as catalogStepBardeen,
   stepColtRevolver as catalogStepColt,
@@ -60,6 +61,7 @@ import {
   stepClavelDeltaRobotTopology as stepClavelDeltaRobotTopologyKernel,
 } from "./clavelDeltaRobotKernel";
 import type { ColtRuntimeControlInput } from "./coltRevolverKernel";
+import { stepCortPuddlingRolling } from "./cortKernel";
 import { stepCrumpFdmSi } from "./crumpFdmKernel";
 import { tryDaimlerMarineWasmStep } from "./daimlerWasm";
 import {
@@ -70,6 +72,7 @@ import {
 import { stepDieselEngine as kernelStepDieselEngine } from "./dieselEngineKernel";
 import { stepFermiKinetics } from "./fermiKinetics";
 import { tryGoddardApparatusWasmStep, tryGoddardWasmStep } from "./goddardWasm";
+import { stepHopkinsPotash } from "./hopkinsPotashKernel";
 import { stepHullStereolithographySi } from "./hullStereolithographyKernel";
 import {
   type KamenInjectionControls,
@@ -113,6 +116,7 @@ import {
   stepMestralVelcroSi,
 } from "./mestralVelcroKernel";
 import { stepParsonsMarine } from "./parsonsMarineKernel";
+import { stepRillieuxEvaporator } from "./rillieuxEvaporatorKernel";
 import { stepRobotEndEffectorSi } from "./robotEndEffectorKernel";
 import type { SalisburyRobotHandControls } from "./salisburyRobotHandKernel";
 import { type SalisburyMechanismState, stepSalisburyTopology } from "./salisburyWasm";
@@ -141,6 +145,8 @@ import {
   type WatsonRemoteCenterComplianceControls,
   type WatsonRemoteCenterCompliancePose,
 } from "./watsonRemoteCenterComplianceKernel";
+import { stepWattCondenser } from "./wattCondenserKernel";
+import { stepWattRotaryEngine } from "./wattRotaryKernel";
 import { stepWrightFlyerSi } from "./wrightKernel";
 
 /** US 2,292,387 illustrated record rows. Shared by the source diagrams. */
@@ -745,11 +751,20 @@ export const FrankenSimEngine = {
    * Abraham Lincoln Buoyancy Chambers (US 6,469)
    * Archimedes Hydrostatic Force & Vessel Draft Relief
    */
-  stepLincolnBuoy(expansionPct: number, riverDepthFeet: number) {
-    const cat = catalogStepLincolnBuoy({
-      inflationPct: expansionPct,
-      shoalDepth: riverDepthFeet,
-    });
+  stepLincolnBuoy(
+    expansionPctOrParams:
+      | number
+      | { inflationPct?: number; weightTons?: number; shoalDepth?: number },
+    riverDepthFeet?: number,
+  ) {
+    const params =
+      typeof expansionPctOrParams === "object" && expansionPctOrParams !== null
+        ? expansionPctOrParams
+        : {
+            inflationPct: expansionPctOrParams,
+            shoalDepth: riverDepthFeet,
+          };
+    const cat = catalogStepLincolnBuoy(params);
     return {
       ...cat,
       chamberVolumeM3: cat.displacedVolumeM3,
@@ -757,6 +772,54 @@ export const FrankenSimEngine = {
       draftReductionInches: Number((cat.draftReductionFt * 12).toFixed(1)),
       isFloating: cat.shoalClearanceFt >= 0,
     };
+  },
+
+  /**
+   * Norbert Rillieux Multi-Effect Vacuum Evaporator (US 3,237)
+   * Multi-Stage Latent Heat Recovery & Boiling Point Elevation
+   */
+  stepRillieuxEvaporator(params?: Parameters<typeof stepRillieuxEvaporator>[0]) {
+    return stepRillieuxEvaporator(params);
+  },
+
+  /**
+   * James Watt Separate Condenser (GB 913)
+   * Thermal Decoupling & Condenser Vacuum Kinetics
+   */
+  stepWattCondenser(params?: Parameters<typeof stepWattCondenser>[0]) {
+    return stepWattCondenser(params);
+  },
+
+  /**
+   * Richard Arkwright Water Frame (GB 931)
+   * Differential Roller Drafting & High-Speed Flyer Twist Kinetics
+   */
+  stepArkwrightWaterFrame(params?: Parameters<typeof stepArkwrightWaterFrame>[0]) {
+    return stepArkwrightWaterFrame(params);
+  },
+
+  /**
+   * James Watt Rotary Motion & Sun-and-Planet Engine (GB 1306)
+   * Epicyclic Gearing & Crankless Shaft Conversion Linkage
+   */
+  stepWattRotaryEngine(params: Parameters<typeof stepWattRotaryEngine>[0], timeSec = 0) {
+    return stepWattRotaryEngine(params, timeSec);
+  },
+
+  /**
+   * Henry Cort Reverberatory Puddling & Grooved Rolling (GB 1420)
+   * Slag Decarburization Kinetics & Hydrostatic Rolling Squeeze
+   */
+  stepCortPuddlingRolling(params: Parameters<typeof stepCortPuddlingRolling>[0]) {
+    return stepCortPuddlingRolling(params);
+  },
+
+  /**
+   * Samuel Hopkins Potash & Pearl Ash Calcination (US X1)
+   * High-Temperature Calcination & Aqueous Lixiviation
+   */
+  stepHopkinsPotash(params?: Parameters<typeof stepHopkinsPotash>[0]) {
+    return stepHopkinsPotash(params);
   },
 
   /**
