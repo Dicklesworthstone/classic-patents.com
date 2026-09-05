@@ -2,7 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { wattSeparateCondenserPatent } from "../patents/watt-separate-condenser";
+import { completeArchivalEditionForViewer } from "./publicationApproval";
+import { reviewedLedgerTextForViewer } from "./reviewedLedgerPublicationEvidence.server";
 import {
   manualWattClaimText,
   WATT_SEPARATE_CONDENSER_PARALLEL_READINGS,
@@ -46,9 +49,17 @@ describe("Watt Separate Condenser source-identity hold", () => {
     expect(content).toContain("these vessels I call condensers");
   });
 
-  test("publishes the bound edition while the reconstruction stays research-only", () => {
+  test("keeps the reconstruction out of the complete-source reader while preserving full text", () => {
     expect(wattSeparateCondenserPatent.originalTextAsset).toBeDefined();
     expect(wattSeparateCondenserPatent.archivalEdition).toBe(wattSeparateCondenserArchivalEdition);
+    expect(validateCuratedSpecificationEdition(wattSeparateCondenserArchivalEdition)).toEqual({
+      valid: false,
+      errors: ["The archival edition must attest that the complete facsimile was reviewed."],
+    });
+    expect(completeArchivalEditionForViewer(wattSeparateCondenserPatent)).toBeUndefined();
+    expect(reviewedLedgerTextForViewer(wattSeparateCondenserPatent)).toStartWith(
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---",
+    );
     expect(
       wattSeparateCondenserArchivalEdition.blocks.some((block) => block.kind === "figure-sheet"),
     ).toBe(false);

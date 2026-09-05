@@ -26,7 +26,17 @@ Both pages of the preserved PDF were visually reviewed. The text is legible, but
 
 ## Editorial and preservation boundaries
 
-- **Publication hold:** the canonical record intentionally has neither `originalTextAsset` nor `archivalEdition`. Do not publish an Original Patent Text face from this reconstruction.
+- **Primary archival hold:** the stored continuous edition is a research reconstruction, not an accepted archival edition. It is not presented as the complete source face.
+- **Reader availability:** this hold never suppresses the legal instrument. The visitor source reader serves the complete two-page local ledger and retains the preserved PDF alongside it while a genuine primary facsimile is sought.
 - `src/data/editions/wattSeparateCondenserEdition.ts` and `public/patents/transcripts/gb-913-watt-separate-condenser-reviewed.txt` are preserved editorial research work-in-progress only. Their text has not been accepted against a pinned primary facsimile.
 - The preserved `fig-1-source-crop-v1.png` is retained as an asset, but it is not a crop from this PDF and must not be represented as an original-patent figure or bound to the source face.
 - Reopen this record only after a genuine primary facsimile is pinned, its provenance receipt identifies the holding/source URL, and every public text, claim, and figure reference is checked against it.
+
+## Reconstruction-attestation correction (2026-09-05)
+
+The pinned PDF's `Creator: Typst 0.14.2`, 2026 creation date, A4 layout, and
+modern typesetting were visually reconfirmed directly from both pages. Its
+former `completeFacsimileReviewed` attestation was withdrawn. This is an
+internal evidence correction only: the route remains fail-open to the entire
+two-page local ledger and the preserved PDF. Neither asset is represented as a
+primary 1769 witness.

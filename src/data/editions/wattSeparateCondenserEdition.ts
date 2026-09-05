@@ -16,7 +16,10 @@ export const wattSeparateCondenserArchivalEdition: CuratedSpecificationEdition =
   sourcePdfSha256: "ba8638c99df583d72958f9ef8125bc30cd4e0f8784656cd561aecdc58b8b8fad",
   preparedBy: "Classic Patents Editorial Team",
   preparedAt: "2026-08-19",
-  completeFacsimileReviewed: true,
+  // The only pinned PDF is a 2026 Typst reconstruction, not a primary 1769
+  // witness. Keep this research edition out of the "complete" source face;
+  // the reader deliberately fails open to the full local two-page ledger.
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",
