@@ -1688,14 +1688,38 @@ export function computeParameterSensitivity(
     }
 
     case "us-7479949-multitouch": {
+      const sep = params.fingerSeparationMm ?? 50;
+      const count = params.fingerCount ?? 2;
+
+      if (
+        !Number.isFinite(sep) ||
+        sep < 15 ||
+        sep > 120 ||
+        !Number.isFinite(count) ||
+        count < 0 ||
+        count > 2
+      ) {
+        return null;
+      }
+
       if (controlKey === "fingerSeparationMm") {
         return {
-          metricName: "Mutual Capacitance Node Isolation",
-          derivativeSymbol: "∂Isolation / ∂Distance",
-          derivativeValue: 0.065,
-          derivativeUnit: "dB / mm",
+          metricName: "Affine Pinch-to-Zoom Scale Factor",
+          derivativeSymbol: "∂S / ∂d_sep",
+          derivativeValue: 0.02,
+          derivativeUnit: "scale / mm",
           interpretation:
-            "Spatial resolution preventing capacitive touch centroid merging and ghosting.",
+            "Linear pinch gesture affine scaling: 50 mm contact separation defines nominal 1.0× unity display scale (S = d / 50 mm).",
+        };
+      }
+      if (controlKey === "fingerCount") {
+        return {
+          metricName: "Active Touch Contacts",
+          derivativeSymbol: "∂Contacts / ∂Count",
+          derivativeValue: 1.0,
+          derivativeUnit: "pts / finger",
+          interpretation:
+            "Discrete tracked touch contact count admitted by Claim 1 capacitive sensing matrix.",
         };
       }
       break;

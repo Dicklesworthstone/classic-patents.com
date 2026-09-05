@@ -931,4 +931,38 @@ describe("Sensitivities follow the current admitted operating point", () => {
       ).toBeNull();
     }
   });
+
+  test("Multi-Touch derives affine pinch zoom and contact count sensitivities", () => {
+    const id = "us-7479949-multitouch";
+
+    for (const sep of [15, 30, 50, 80, 120]) {
+      const sens = computeParameterSensitivity(id, "fingerSeparationMm", {
+        fingerSeparationMm: sep,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Affine Pinch-to-Zoom Scale Factor");
+      expect(sens?.derivativeSymbol).toBe("∂S / ∂d_sep");
+      expect(sens?.derivativeUnit).toBe("scale / mm");
+      expect(sens?.derivativeValue).toBe(0.02);
+    }
+
+    for (const count of [0, 1, 2]) {
+      const sens = computeParameterSensitivity(id, "fingerCount", { fingerCount: count });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Active Touch Contacts");
+      expect(sens?.derivativeSymbol).toBe("∂Contacts / ∂Count");
+      expect(sens?.derivativeUnit).toBe("pts / finger");
+      expect(sens?.derivativeValue).toBe(1.0);
+    }
+
+    // Invalid parameters
+    for (const invalid of [14, 121, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "fingerSeparationMm", { fingerSeparationMm: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-1, 3, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "fingerCount", { fingerCount: invalid })).toBeNull();
+    }
+  });
 });
