@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { isAbsolute, join, normalize, sep } from "node:path";
 import type { Patent } from "@/types/patent";
+import { ARCHIVAL_PUBLICATION_STATE_OVERRIDES } from "./archivalPublicationState";
 import {
   evaluateReviewedLedgerTextEvidence,
   NO_REVIEWED_LEDGER_PUBLICATION_EVIDENCE,
@@ -38,10 +39,24 @@ function fallbackTranscriptUrlForPatent(id: string | undefined): string | undefi
   return `/patents/transcripts/${id}-reviewed.txt`;
 }
 
+function isKnownReconstructedTranscript(id: string | undefined): boolean {
+  if (!id) return false;
+  const reasonCode = ARCHIVAL_PUBLICATION_STATE_OVERRIDES[id]?.reasonCode;
+  return (
+    reasonCode === "FABRICATION_OR_RECONSTRUCTION_QUARANTINE" ||
+    reasonCode === "AUDIT_RECONSTRUCTION_QUARANTINE"
+  );
+}
+
 export function reviewedLedgerTextForViewer(
   patent: Pick<Patent, "id" | "originalTextAsset">,
 ): string | undefined {
   const asset = patent.originalTextAsset;
+  // A derived legacy filename is only a convenience for records whose local
+  // transcript remains usable source evidence. A known reconstruction is not
+  // a ledger at all: its page must fall through to the already-pinned PDF.
+  // This is a source-integrity choice, never an access gate.
+  if (!asset && isKnownReconstructedTranscript(patent.id)) return undefined;
   const ledgerUrl =
     asset?.kind === "reviewed-transcription"
       ? asset.url

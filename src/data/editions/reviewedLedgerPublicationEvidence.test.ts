@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { CuratedSpecificationEdition, Patent } from "@/types/patent";
 import { allPatents } from "../patents";
 import { kwolekKevlarPatent } from "../patents/kwolek-kevlar";
+import { stackhouseManipulatorPatent } from "../patents/stackhouse-manipulator-source-bounded";
 import { wrightFlyerPatent } from "../patents/wright-flyer";
 import { completeArchivalEditionForViewer } from "./publicationApproval";
 import {
@@ -196,11 +197,17 @@ describe("reviewed-ledger publication evidence", () => {
     expect(transcript).toContain("What is claimed is:");
   });
 
-  test("keeps every catalogue record readable through its selected edition or local transcript", () => {
+  test("uses the pinned facsimile instead of a known reconstructed legacy transcript", () => {
+    expect(stackhouseManipulatorPatent.originalTextAsset).toBeUndefined();
+    expect(reviewedLedgerTextForViewer(stackhouseManipulatorPatent)).toBeUndefined();
+  });
+
+  test("keeps every catalogue record readable through its selected edition, local transcript, or pinned PDF", () => {
     for (const patent of allPatents) {
       expect(
         Boolean(completeArchivalEditionForViewer(patent)) ||
-          Boolean(reviewedLedgerTextForViewer(patent)),
+          Boolean(reviewedLedgerTextForViewer(patent)) ||
+          /^\/patents\/pdfs\/.+\.pdf$/.test(patent.originalPdfUrl),
       ).toBe(true);
     }
   });

@@ -36,10 +36,12 @@ describe("archival audit vs reader totality contract (3hc.9)", () => {
       }
     }
 
-    expect(facsimileCount).toBe(0);
     expect(editionCount + transcriptCount + facsimileCount).toBe(103);
     expect(editionCount).toBeGreaterThan(0);
     expect(transcriptCount).toBeGreaterThan(0);
+    // A quarantined reconstruction must fall through to the pinned primary
+    // facsimile rather than being re-presented as a reviewed transcript.
+    expect(facsimileCount).toBeGreaterThan(0);
   });
 
   test(
@@ -66,8 +68,11 @@ describe("archival audit vs reader totality contract (3hc.9)", () => {
             ? undefined
             : reviewedLedgerTextForViewer(patent);
 
-          // Every non-accepted patent MUST still deliver either a continuous edition or reviewed ledger
-          const hasCompleteSource = Boolean(archivalSource || reviewedTranscript);
+          // Every non-accepted patent MUST still deliver a continuous edition,
+          // a reviewed ledger, or its pinned complete primary facsimile.
+          const hasCompleteSource = Boolean(
+            archivalSource || reviewedTranscript || patent.originalPdfUrl,
+          );
           expect(
             hasCompleteSource,
             `Patent ${patent.id} with hold reason ${decision.reasonCode} must deliver complete source`,
