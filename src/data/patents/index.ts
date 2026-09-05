@@ -1,3 +1,4 @@
+import { filterPatentCategory, searchPatentCatalog } from "@/data/patentCatalog";
 import type { Patent } from "@/types/patent";
 import { amfVersatranPatent } from "./amf-versatran";
 import { arkwrightWaterFramePatent } from "./arkwright-water-frame";
@@ -278,11 +279,7 @@ export function getFeaturedPatents(): Patent[] {
 }
 
 export function getPatentsByCategory(category: string): Patent[] {
-  if (category === "all") return allPatents;
-  if (category === "aviation") {
-    return allPatents.filter((p) => p.category === "aviation" || p.category === "aerospace");
-  }
-  return allPatents.filter((p) => p.category === category);
+  return [...filterPatentCategory(allPatents, category)];
 }
 
 export function getAdjacentPatents(currentId: string): {
@@ -298,28 +295,5 @@ export function getAdjacentPatents(currentId: string): {
 }
 
 export function searchPatents(query: string): Patent[] {
-  const q = query.toLowerCase().trim();
-  if (!q) return allPatents;
-  const qAlphaNum = q.replace(/[^0-9a-zA-Z]/g, "");
-
-  return allPatents.filter((p) => {
-    const pNumberAlphaNum = p.patentNumber.replace(/[^0-9a-zA-Z]/g, "").toLowerCase();
-    const matchesNumber =
-      p.patentNumber.toLowerCase().includes(q) ||
-      (qAlphaNum.length >= 3 && pNumberAlphaNum.includes(qAlphaNum));
-
-    return (
-      p.id.toLowerCase().includes(q) ||
-      p.title.toLowerCase().includes(q) ||
-      p.shortTitle.toLowerCase().includes(q) ||
-      (p.subtitle ? p.subtitle.toLowerCase().includes(q) : false) ||
-      matchesNumber ||
-      p.inventors.some((inv) => inv.toLowerCase().includes(q)) ||
-      p.inventorLocation.toLowerCase().includes(q) ||
-      p.summary.toLowerCase().includes(q) ||
-      p.category.toLowerCase().includes(q) ||
-      p.era.toLowerCase().includes(q) ||
-      p.tags?.some((tag) => tag.toLowerCase().includes(q))
-    );
-  });
+  return [...searchPatentCatalog(allPatents, query)];
 }
