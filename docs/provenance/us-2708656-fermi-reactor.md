@@ -13,6 +13,16 @@ The pinned file is the sole authority for this edition. OCR and the PDF text
 layer are comparison aids only. They are not a public source edition and did
 not supply any published archival block.
 
+## Reader-delivery boundary
+
+The canonical record binds a candidate manual edition and the page-complete
+reviewed ledger. The candidate truthfully declares
+`completeFacsimileReviewed: false`; the source-reader projection therefore
+serves the full 58-page page-marked ledger, with the pinned facsimile always
+available beside it. The strict archival hold records outstanding source and
+figure work internally. It does not, and must never, prevent a visitor from
+reading the complete patent text.
+
 ## Facsimile map
 
 | PDF pages | Content | Editorial treatment |
@@ -117,11 +127,14 @@ crops, those later references remain intentionally incomplete under the hold.
 - The former canonical `originalText` was not a transcription. It said **37
   claims**, supplied three invented claims, and assigned incorrect Fig. 1 and
   Fig. 2 captions. It has been replaced with a short opening excerpt; the
-  complete source face remains withheld.
-- The canonical record intentionally omits both `archivalEdition` and
-  `originalTextAsset`. The reviewed ledger and candidate edition remain local
-  research evidence only; neither is typed or served as a complete source
-  asset while the facsimile, drawings, and crops remain under review.
+  complete source instrument is delivered through the full page-marked ledger
+  and pinned facsimile while the candidate edition is remediated.
+- The canonical record binds both `archivalEdition` and `originalTextAsset`.
+  Because the candidate edition truthfully declares an unfinished facsimile
+  review, the visitor-facing source reader uses the complete page-marked
+  ledger rather than presenting that draft as a completed archival edition.
+  This is a delivery choice, never a visibility gate: the full ledger and
+  pinned facsimile remain readable throughout remediation.
 - The certificate of correction identifies corrections in specification
   columns 4, 5, 6, 19, 23, 25, 34, 38, 45, 48, 51, and 53. The WIP edition
   retains the certificate, but publication still requires a second review.
@@ -147,22 +160,18 @@ crops, those later references remain intentionally incomplete under the hold.
   Fig. 9 label; the served set now uses corrected v10 main and clean v10
   leader tiles. Earlier attempts remain preserved and are not served.
 
-## Remaining publication gate
+## Remaining strict-acceptance gate
 
-No canonical archival edition is published. The canonical record intentionally
-omits both `archivalEdition` and `originalTextAsset`; the reviewed ledger is
-not attached to the record. The candidate edition and ledger remain WIP
-evidence until pages 1–27 receive literal drawing-sheet transcription and all
-source-sheet/per-figure crop references receive independent acceptance. A
-valid-looking candidate block or green structural check is not publication
-evidence.
+No canonical archival edition is strictly accepted. The candidate edition and
+ledger remain under review until pages 1–27 receive literal drawing-sheet
+transcription and all source-sheet/per-figure crop references receive
+independent acceptance. A valid-looking candidate block or green structural
+check is not acceptance evidence.
 
-The withheld state is deliberate: visitors must not be shown the WIP edition or
-the reviewed ledger as a complete source face. The pinned PDF remains the
-authoritative facsimile, while the short `originalText` excerpt is the only
-canonical source excerpt currently exposed by the record. The edition's
-`completeFacsimileReviewed` flag is explicitly `false` and the canonical record
-has no edition or reviewed-ledger binding.
+The reader nevertheless always receives the entire page-marked ledger and the
+pinned PDF. The edition's `completeFacsimileReviewed` flag remains explicitly
+`false`; that strict audit state must never hide, replace, or reduce visitor
+access to the source instrument.
 
 ### Cloud-source continuation (2026-08-21)
 
@@ -296,6 +305,12 @@ literal transcription of every readable line-art numeral, label, and signature
 is not claimed. Existing source-sheet PNGs are preserved; residual crop and
 visual acceptance remains with the root review.
 
-The entire record remains unbound and withheld. No registry, shared map,
-publication, commit, deployment, deletion, local OCR, rendering, test, or
-build was performed.
+### Bounded primary-page correction (2026-09-05)
+
+PDF page 28 (the printed opening specification page) was visually checked
+against the pinned facsimile. The masthead, inventor-assignment line, and the
+Hahn–Strassman background paragraph were corrected in the page-marked ledger;
+the corresponding candidate-edition paragraph now preserves the printed
+wording rather than an editorial summary. This is deliberately bounded:
+unreconciled paragraphs and drawing-sheet material remain visible through the
+ledger and facsimile, while their strict acceptance stays open.

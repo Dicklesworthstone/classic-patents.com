@@ -2324,13 +2324,13 @@ export const fermiReactorArchivalEdition: FermiReactorWipEdition = {
     { kind: "heading", level: 2, text: "Field of the Invention" },
     paragraph(
       literal(
-        "The present invention relates to the general subject of nuclear fission and particularly to the establishment of self-sustaining neutron chain fission reactions in systems embodying uranium having a natural isotopic content with the production of power in the form of heat.",
+        "The present invention relates to the general subject of nuclear fission and particularly to the establishment of self-sustaining neutron chain fission reactions in systems embodying uranium having a natural isotopic content.",
       ),
     ),
     { kind: "heading", level: 2, text: "Background and Nuclear Physics Principles" },
     paragraph(
       literal(
-        "Following the discovery of nuclear fission by Hahn and Strassmann in 1939, it was determined that bombardment of natural uranium by slow (thermal) neutrons causes fission principally in the scarce uranium isotope U235 (present as approximately 1/139 part of natural uranium), releasing two lighter fission fragment nuclei, energetic beta and gamma rays, and an average of approximately two fast secondary neutrons per fission.",
+        "Experiments by Hahn and Strassman, the results of which were published in January 1939 Naturwissenschaften, vol. 27, page 11, led to the conclusion that nuclear bombardment of natural uranium by slow neutrons causes explosion or fission of the nucleus, which splits into particles of smaller charge and mass with energy being released in the process. Later it was found that neutrons were emitted during the process and that the fission was principally confined to the uranium isotope U235 present as 1/139 part of the natural uranium.",
       ),
     ),
     paragraph([
@@ -2476,7 +2476,7 @@ const fermiLegacyParallelReadings: Readonly<Record<number, readonly string[]>> =
     "The patent defines its subject as establishing self-sustaining neutron chain fission reactions in natural-uranium systems to generate nuclear power as heat.",
   ],
   4: [
-    "Slow-neutron bombardment of natural uranium splits the scarce U-235 isotope, yielding lighter radioactive fission fragments, beta/gamma radiation, and ~2 fast secondary neutrons.",
+    "The source identifies the 1939 Hahn–Strassman result: slow-neutron bombardment can split a uranium nucleus into lighter fragments, and the fission is principally associated with the scarce U-235 isotope in natural uranium.",
   ],
   5: [
     "Fast fission neutrons must be slowed by elastic collisions in a moderator (graphite or heavy water) to thermal energy (0.025 eV) before causing further U-235 fissions, while avoiding parasitic capture.",

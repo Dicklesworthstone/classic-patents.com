@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { evaluateReviewedLedgerTextEvidence } from "@/data/editions/reviewedLedgerPublicationEvidence";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import type { CuratedSpecificationBlock, CuratedSpecificationEdition } from "@/types/patent";
 import { fermiReactorPatent } from "../patents/fermi-reactor";
@@ -368,6 +369,22 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
     expect(validateReviewedTranscription(ledger, 58)).toEqual({ valid: true });
     expect(fermiReactorPatent.originalTextAsset).toBeDefined();
     expect(fermiReactorPatent.archivalEdition).toBe(fermiReactorArchivalEdition);
+  });
+
+  test("anchors the source-checked opening background paragraph in the reviewed ledger", () => {
+    const ledger = readFileSync(
+      publicFile("/patents/transcripts/us-2708656-fermi-reactor-reviewed.txt"),
+      "utf8",
+    );
+    const openingBackground = editionBlocks[4];
+    expect(openingBackground?.kind).toBe("paragraph");
+    if (openingBackground?.kind !== "paragraph")
+      throw new Error("Fermi opening paragraph is missing.");
+
+    expect(ledger).toContain(openingBackground.inlines.map((inline) => inline.text).join(""));
+    const evidence = evaluateReviewedLedgerTextEvidence(fermiReactorPatent, ledger);
+    expect(evidence.missingSectionIndexes).not.toContain(7);
+    expect(evidence.missingClaimNumbers).toEqual([]);
   });
 
   test("provides valid provenance classifications for all Fermi controls and metrics", () => {

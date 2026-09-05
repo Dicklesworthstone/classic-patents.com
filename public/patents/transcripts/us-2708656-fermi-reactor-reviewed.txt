@@ -323,44 +323,16 @@ FIG. 42: roughly ellipsoidal reactor outline.
 The drawing sheet is retained as source-sheet-27-27.png. Readable figure labels and the printed role headings “Witnesses:” and “By:” are transcribed above. Reference numerals remain in the source drawing; no numeral is normalized here when the cloud facsimile text is not reliably legible. The inventor names printed throughout the grant are Enrico Fermi and Leo Szilard; no illegible witness or attorney name is supplied by this ledger.
 --- REVIEWED TRANSCRIPTION PAGE 28 OF 58 ---
 
-United States Patent O
-
-2,708,656
-Patented May 17, 1955
-
-1ce
-
-1
-
-2,708,656
+UNITED STATES PATENT OFFICE
+2,708,656 — Patented May 17, 1955
 NEUTRONIC REACTOR
-
-Enrico Fermi, Santa Fe, N. Mex., and Leo Szilard, Chi-
-cago, IL, assiguors to the United States of America
-as represented by the United States Atomic Energy
-Commission
-
+Enrico Fermi, Santa Fe, N. Mex., and Leo Szilard, Chicago, Ill., assignors to the United States of America as represented by the United States Atomic Energy Commission
 Application December 19, 1944, Serial No. 568,904
 8 Claims. (Cl. 204—193)
 
-The present invention relates to the general subject
-of nuclear fission and particularly to the establishment of
-self-sustaining neutron chain fission reactions in sys-
-tems embodying uranium having a natural isotopic con-
-tent.
+The present invention relates to the general subject of nuclear fission and particularly to the establishment of self-sustaining neutron chain fission reactions in systems embodying uranium having a natural isotopic content.
 
-Experiments by Hahn and Strassman, the results of
-which were published in January 1939.
-schaften, vol. 27, page 11, led to the conclusion that
-nuclear bombardment of natural uranium by slow neu-
-trons causes explosion or fission of the nucleus, which
-splits into particles of smaller charge and mass with
-
-energy being released in the process. Later it was found .
-
-that neutrons were emitted during the process and that
-the fission was principally confined to the uranium iso-
-tope U5 present as 4g9 part of the natural uranium.
+Experiments by Hahn and Strassman, the results of which were published in January 1939 Naturwissenschaften, vol. 27, page 11, led to the conclusion that nuclear bombardment of natural uranium by slow neutrons causes explosion or fission of the nucleus, which splits into particles of smaller charge and mass with energy being released in the process. Later it was found that neutrons were emitted during the process and that the fission was principally confined to the uranium isotope U235 present as 1/139 part of the natural uranium.
 
 When it became known that the isotope U255 in naturai
 uranium could be split or fissioned by bombardment with
