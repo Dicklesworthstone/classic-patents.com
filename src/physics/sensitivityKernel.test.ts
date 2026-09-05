@@ -3,6 +3,7 @@ import { allPatents } from "@/data/patents";
 import {
   stepBellTelephone,
   stepEinsteinRefrigerator,
+  stepEngelbartMouse,
   stepGoodyearRubber,
   stepHollerithTabulating,
   stepThomsonWelding,
@@ -840,6 +841,60 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
     for (const invalid of [0, 41, Number.NaN]) {
       expect(computeParameterSensitivity(id, "activeRelays", { activeRelays: invalid })).toBeNull();
+    }
+  });
+
+  test("Engelbart mouse derives angular velocity and pulse rate sensitivities from rolling model", () => {
+    const id = "us-3541541-engelbart-mouse";
+
+    for (const v of [100, 250, 350, 800]) {
+      const sens = computeParameterSensitivity(id, "mouseSpeed", {
+        mouseSpeed: v,
+        wheelRadius: 10,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Wheel Angular Velocity");
+      expect(sens?.derivativeSymbol).toBe("∂ω / ∂v_mouse");
+      expect(sens?.derivativeUnit).toBe("(rad/s) / (mm/s)");
+      const mouse = stepEngelbartMouse({ mouseSpeed: v, wheelRadius: 10 });
+      expect(sens?.derivativeValue).toBeCloseTo(mouse.omegaSpeedSlopeRadPerSPerMmPerS, 4);
+    }
+
+    for (const r of [6, 10, 14, 18]) {
+      const sens = computeParameterSensitivity(id, "wheelRadius", {
+        mouseSpeed: 350,
+        wheelRadius: r,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Wheel Angular Velocity");
+      expect(sens?.derivativeSymbol).toBe("∂ω / ∂R_wheel");
+      expect(sens?.derivativeUnit).toBe("(rad/s) / mm");
+      const mouse = stepEngelbartMouse({ mouseSpeed: 350, wheelRadius: r });
+      expect(sens?.derivativeValue).toBeCloseTo(mouse.omegaRadiusSlopeRadPerSPerMm, 3);
+    }
+
+    for (const ppr of [50, 100, 200, 400]) {
+      const sens = computeParameterSensitivity(id, "pulsesPerRev", {
+        mouseSpeed: 350,
+        wheelRadius: 10,
+        pulsesPerRev: ppr,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Encoder Pulse Generation Rate");
+      expect(sens?.derivativeSymbol).toBe("∂f_pulse / ∂N_ppr");
+      expect(sens?.derivativeUnit).toBe("Hz / (pulse/rev)");
+      expect(sens?.derivativeValue).toBeCloseTo(350 / (2 * Math.PI * 10), 2);
+    }
+
+    // Invalid parameters
+    for (const invalid of [99, 801, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "mouseSpeed", { mouseSpeed: invalid })).toBeNull();
+    }
+    for (const invalid of [5, 19, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "wheelRadius", { wheelRadius: invalid })).toBeNull();
+    }
+    for (const invalid of [19, 401, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "pulsesPerRev", { pulsesPerRev: invalid })).toBeNull();
     }
   });
 });

@@ -13,6 +13,7 @@
 import {
   stepBellTelephone,
   stepEinsteinRefrigerator,
+  stepEngelbartMouse,
   stepGoodyearRubber,
   stepHollerithTabulating,
   stepLandPolaroidInstantFilm,
@@ -1671,14 +1672,58 @@ export function computeParameterSensitivity(
     }
 
     case "us-3541541-engelbart-mouse": {
-      if (controlKey === "mouseSpeed" || controlKey === "wheelRadius") {
+      const v = params.mouseSpeed ?? 350;
+      const r = params.wheelRadius ?? 10.0;
+      const ppr = params.pulsesPerRev ?? 200;
+
+      if (
+        !Number.isFinite(v) ||
+        v < 100 ||
+        v > 800 ||
+        !Number.isFinite(r) ||
+        r < 6 ||
+        r > 18 ||
+        !Number.isFinite(ppr) ||
+        ppr < 20 ||
+        ppr > 400
+      ) {
+        return null;
+      }
+
+      const mouse = stepEngelbartMouse({
+        mouseSpeed: v,
+        wheelRadius: r,
+        pulsesPerRev: ppr,
+      });
+
+      if (controlKey === "mouseSpeed") {
+        return {
+          metricName: "Wheel Angular Velocity",
+          derivativeSymbol: "∂ω / ∂v_mouse",
+          derivativeValue: mouse.omegaSpeedSlopeRadPerSPerMmPerS,
+          derivativeUnit: "(rad/s) / (mm/s)",
+          interpretation:
+            "Direct rolling contact kinematics: position wheel angular velocity scales inversely with wheel radius (ω = v / R).",
+        };
+      }
+      if (controlKey === "wheelRadius") {
+        return {
+          metricName: "Wheel Angular Velocity",
+          derivativeSymbol: "∂ω / ∂R_wheel",
+          derivativeValue: mouse.omegaRadiusSlopeRadPerSPerMm,
+          derivativeUnit: "(rad/s) / mm",
+          interpretation:
+            "Inverse radius dependency of rolling wheel angular velocity: ∂ω/∂R = -v / R².",
+        };
+      }
+      if (controlKey === "pulsesPerRev") {
         return {
           metricName: "Encoder Pulse Generation Rate",
-          derivativeSymbol: "∂Pulses / ∂v_mouse",
-          derivativeValue: 24.5,
-          derivativeUnit: "Hz / (m/s)",
+          derivativeSymbol: "∂f_pulse / ∂N_ppr",
+          derivativeValue: Number((v / (2 * Math.PI * r)).toFixed(3)),
+          derivativeUnit: "Hz / (pulse/rev)",
           interpretation:
-            "Orthogonal potentiometer disc resolution translating physical desktop displacement into X-Y coordinates.",
+            "Incremental encoder pulse frequency rate per unit pulses per revolution at current translation speed.",
         };
       }
       break;

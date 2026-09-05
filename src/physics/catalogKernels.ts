@@ -2411,11 +2411,17 @@ export function stepEngelbartMouse(params: {
   const ppr = params.pulsesPerRev ?? 200;
   const diameterMm = r * 2;
   const circumferenceMm = Math.PI * diameterMm;
+  const omegaSpeedSlopeRadPerSPerMmPerS = Number((1 / r).toFixed(4));
+  const omegaRadiusSlopeRadPerSPerMm = Number((-v / (r * r)).toFixed(3));
+  const pulseRateSpeedSlopeHzPerMmPerS = Number((ppr / circumferenceMm).toFixed(3));
   return {
     // Counts per inch = counts/revolution divided by inches/revolution.
     // The prior ppr*10/r shortcut overstated resolution by ~2.47x.
     dpi: Math.round((ppr * 25.4) / circumferenceMm),
     omegaRadPerS: Number((v / r).toFixed(1)),
+    omegaSpeedSlopeRadPerSPerMmPerS,
+    omegaRadiusSlopeRadPerSPerMm,
+    pulseRateSpeedSlopeHzPerMmPerS,
     slewPxPerS: Number((v * 3.8).toFixed(0)),
     wheelDiameterMm: diameterMm,
     wheelCircumferenceMm: Number(circumferenceMm.toFixed(2)),
