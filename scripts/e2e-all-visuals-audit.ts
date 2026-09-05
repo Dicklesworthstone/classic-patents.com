@@ -2,9 +2,10 @@
  * e2e-all-visuals-audit.ts
  *
  * Automated Playwright browser verification for every registered patent visualization in the museum.
- * It tests the actual Interactive 3D Simulator face before checking the WebGL canvas, then tests
- * the paired 2D Schematic face, console/page errors, and responsive layout stability. Rendering
- * health is necessary but does not establish historical or physical fidelity.
+ * It tests the actual visual face before checking either a WebGL canvas or an
+ * explicit source-bounded visual-model boundary, then tests the paired schematic
+ * face, console/page errors, and responsive layout stability. Rendering health
+ * is necessary but does not establish historical or physical fidelity.
  */
 
 import { chromium } from "playwright";
@@ -21,6 +22,7 @@ interface PatentTestResult {
   consoleErrors: string[];
   pageErrors: string[];
   canvasFound: boolean;
+  visualBoundaryFound: boolean;
   hasOverflow: boolean;
 }
 
@@ -81,23 +83,37 @@ async function runVisualsAudit() {
         throw new Error(`HTTP Status ${response?.status()}`);
       }
 
-      const interactiveView = page.getByRole("button", { name: "Interactive 3D Simulator" });
-      if ((await interactiveView.count()) !== 1) {
-        throw new Error("The Interactive 3D Simulator view control is unavailable.");
+      const visualView = page.locator('button[title$="(Shortcut: 3)"]');
+      if ((await visualView.count()) !== 1) {
+        throw new Error("The visual-face control is unavailable.");
       }
-      await interactiveView.click();
+      await visualView.click();
 
-      // 1. Check 3D WebGL Canvas Render after entering the interactive face.
+      // 1. Check the 3D face after entering it. A patent with no source basis
+      // for an apparatus must show its explicit boundary instead of a plausible
+      // but invented WebGL model.
       let canvasFound = false;
+      let visualBoundaryFound = false;
       try {
-        await page.waitForSelector("canvas", { timeout: 6000 });
-        canvasFound = true;
+        await page
+          .locator(
+            'canvas, [data-testid="three-d-source-boundary"], section[aria-labelledby="source-visual-unavailable-title"]',
+          )
+          .first()
+          .waitFor({ state: "visible", timeout: 6000 });
+        canvasFound = (await page.locator("canvas:visible").count()) > 0;
+        visualBoundaryFound =
+          (await page.getByTestId("three-d-source-boundary").count()) > 0 ||
+          (await page
+            .locator('section[aria-labelledby="source-visual-unavailable-title"]')
+            .count()) > 0;
       } catch {
         canvasFound = false;
+        visualBoundaryFound = false;
       }
 
       let threeDStatus: "PASS" | "FAIL" = "PASS";
-      if (!canvasFound || pageErrors.length > 0) {
+      if ((!canvasFound && !visualBoundaryFound) || pageErrors.length > 0) {
         threeDStatus = "FAIL";
       }
 
@@ -156,6 +172,7 @@ async function runVisualsAudit() {
         consoleErrors: [...consoleErrors],
         pageErrors: [...pageErrors],
         canvasFound,
+        visualBoundaryFound,
         hasOverflow,
       });
     } catch (err: any) {
@@ -170,6 +187,7 @@ async function runVisualsAudit() {
         consoleErrors: [...consoleErrors],
         pageErrors: [err.message],
         canvasFound: false,
+        visualBoundaryFound: false,
         hasOverflow: false,
       });
     } finally {
