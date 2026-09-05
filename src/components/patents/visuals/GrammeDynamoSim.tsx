@@ -2,6 +2,7 @@
 
 import { Pause, Play, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { grammeCoil, grammeJunctionRod, stepGrammeDynamo } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -328,22 +329,19 @@ export function GrammeDynamoSim() {
 
       {/* Sliders */}
       <div className="grid grid-cols-1 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Illustrative shaft-rate factor</span>
-            <span className="font-mono">{shaftRate.toFixed(1)}×</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Illustrative shaft-rate factor"
-            min="0.4"
-            max="1.6"
-            step="0.1"
-            value={shaftRate}
-            onChange={(e) => updateParam("shaftRate", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="gramme-shaft-rate"
+          patentId="us-120057-gramme-dynamo"
+          paramKey="shaftRate"
+          label="Illustrative shaft-rate factor"
+          value={shaftRate}
+          min={0.4}
+          max={1.6}
+          step={0.1}
+          unit="×"
+          onChange={(val) => updateParam("shaftRate", val)}
+          allParams={params}
+        />
       </div>
     </div>
   );

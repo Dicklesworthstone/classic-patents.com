@@ -246,7 +246,9 @@ export function peltonSchematicBucket(deg: number, cx = 200, cy = 130, radius = 
 export function stepGrammeDynamo(params: { shaftRate?: number }) {
   const shaftRate = Math.max(0.4, Math.min(1.6, params.shaftRate ?? 1));
   const printedJunctionCount = 36;
-  const inducedEmfIndex = Math.round(100 * shaftRate);
+  const inducedEmfIndexUnrounded = 100 * shaftRate;
+  const inducedEmfIndex = Math.round(inducedEmfIndexUnrounded);
+  const inducedEmfSlopePerFactor = 100;
   // Relative display only. 1.5°/frame ≡ 2π/240 rad/frame. Not a historical rpm.
   const displayDegPerFrame = Number((shaftRate * 1.5).toFixed(4));
   return {
@@ -254,6 +256,8 @@ export function stepGrammeDynamo(params: { shaftRate?: number }) {
     printedJunctionCount,
     junctionPitchDeg: 360 / printedJunctionCount,
     inducedEmfIndex,
+    inducedEmfIndexUnrounded,
+    inducedEmfSlopePerFactor,
     collectionContinuityPct: Number((100 - 100 / printedJunctionCount).toFixed(1)),
     ...grammeRingCrate(printedJunctionCount, shaftRate),
     displayDegPerFrame,
@@ -1539,18 +1543,27 @@ export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeD
   const rpm = params.mandrelRpm ?? 60;
   const vol = params.voiceVolumeDb ?? 75;
   const leadScrewPitchMm = 2.54;
-  const axialTravelMmPerS = Number(((rpm / 60) * leadScrewPitchMm).toFixed(3));
+  const axialTravelMmPerSUnrounded = (rpm / 60) * leadScrewPitchMm;
+  const axialTravelMmPerS = Number(axialTravelMmPerSUnrounded.toFixed(3));
+  const axialTravelSlopeMmPerSPerRpm = leadScrewPitchMm / 60;
+  const stylusAmpUnrounded = (vol / 75) * 0.00125;
+  const stylusAmp = Number(stylusAmpUnrounded.toFixed(5));
+  const stylusAmpSlopeMmPerDb = 0.00125 / 75;
   const mandrel = rpmToOmega(rpm);
   return {
     sourceGroovesPerInch: 10,
     sourceThreadsPerInch: 10,
     leadScrewPitchMm,
     axialTravelMmPerS,
+    axialTravelMmPerSUnrounded,
+    axialTravelSlopeMmPerSPerRpm,
     mandrelOmegaRadPerS: mandrel.omegaRadPerS,
     mandrelOmegaDegPerS: mandrel.omegaDegPerS,
     // Illustrative diaphragm/stylus motion only; the source gives no depth or
     // frequency-response measurement from which to derive a physical amplitude.
-    stylusAmp: Number(((vol / 75) * 0.00125).toFixed(5)),
+    stylusAmp,
+    stylusAmpUnrounded,
+    stylusAmpSlopeMmPerDb,
     ...grooveWaveCrate(rpm),
     stylusOmegaRadPerS: 45,
     axialDisplayWrapMm: 40,
@@ -4074,16 +4087,18 @@ export function stepFessendenWireless(params: FessendenWirelessControlParams = {
   // Natural resonant frequency of antenna LC circuit (kHz): f = 1 / (2*pi*sqrt(L*C))
   const lHenries = lUh * 1e-6;
   const cFarads = cPf * 1e-12;
-  const fResonantKhz = Number(
-    (1 / (2 * Math.PI * Math.sqrt(lHenries * cFarads)) / 1000).toFixed(2),
-  );
+  const fResonantKhzUnrounded = 1 / (2 * Math.PI * Math.sqrt(lHenries * cFarads)) / 1000;
+  const fResonantKhz = Number(fResonantKhzUnrounded.toFixed(2));
+  const resonantFreqSlopeKhzPerUh = (-0.5 * fResonantKhzUnrounded) / lUh;
 
   // Tuning offset and resonance alignment
   const detuningKhz = Number(Math.abs(fCarrierKhz - fResonantKhz).toFixed(2));
   const isResonant = detuningKhz < 2.0;
 
   // Radiation resistance & ohmic loss resistance (Ohms)
-  const radiationResistanceOhms = Number((1.8 * (fCarrierKhz / 75) ** 2).toFixed(2));
+  const radiationResistanceOhmsUnrounded = 1.8 * (fCarrierKhz / 75) ** 2;
+  const radiationResistanceOhms = Number(radiationResistanceOhmsUnrounded.toFixed(2));
+  const radiationResistanceSlopeOhmsPerKhz = (2 * 1.8 * fCarrierKhz) / 75 ** 2;
   const ohmicLossOhms = Number((0.45 / (cageDiam / 2.4)).toFixed(2));
   const totalResistanceOhms = radiationResistanceOhms + ohmicLossOhms;
 
@@ -4108,19 +4123,21 @@ export function stepFessendenWireless(params: FessendenWirelessControlParams = {
   // Free-space / Groundwave Path propagation to receiver (microwatts)
   const wavelengthM = 3e8 / (fCarrierKhz * 1e3);
   const pathLossFactor = (wavelengthM / (4 * Math.PI * distKm * 1e3)) ** 2 * 1.5;
-  const receivedPowerMicrowatts = Number(
-    Math.max(0.01, radiatedPowerWatts * pathLossFactor * 1e6).toFixed(3),
+  const receivedPowerMicrowattsUnrounded = Math.max(
+    0.01,
+    radiatedPowerWatts * pathLossFactor * 1e6,
   );
+  const receivedPowerMicrowatts = Number(receivedPowerMicrowattsUnrounded.toFixed(3));
+  const receivedPowerSlopeUWattsPerKm = (-2 * receivedPowerMicrowattsUnrounded) / distKm;
 
   // Liquid Barretter / Electrolytic Detector physics
   // Dilute nitric acid conductivity and junction polarization resistance (Ohms)
   const baseJunctionResistanceOhms = 1200 * (20 / acidPct);
   // Microscopic RF thermal heating decreases polarization barrier resistance
+  const deltaResistanceUnclamped = receivedPowerMicrowattsUnrounded * 4.5 * (modPct / 100);
+  const isDeltaRClamped = deltaResistanceUnclamped >= baseJunctionResistanceOhms * 0.85;
   const deltaResistanceOhms = Number(
-    Math.min(
-      baseJunctionResistanceOhms * 0.85,
-      receivedPowerMicrowatts * 4.5 * (modPct / 100),
-    ).toFixed(2),
+    Math.min(baseJunctionResistanceOhms * 0.85, deltaResistanceUnclamped).toFixed(2),
   );
   const activeDetectorResistanceOhms = Number(
     (baseJunctionResistanceOhms - deltaResistanceOhms).toFixed(1),
@@ -4132,9 +4149,12 @@ export function stepFessendenWireless(params: FessendenWirelessControlParams = {
   const dcPolarizingCurrentMicroamps = Number(((vPol / totalAudioCircuitOhms) * 1e6).toFixed(1));
 
   // Modulated audio signal current (microamps RMS)
-  const audioSignalCurrentMicroamps = Number(
-    (((vPol * deltaResistanceOhms) / totalAudioCircuitOhms ** 2) * 1e6 * (modPct / 100)).toFixed(2),
-  );
+  const audioSignalCurrentMicroampsUnrounded =
+    ((vPol * deltaResistanceOhms) / totalAudioCircuitOhms ** 2) * 1e6 * (modPct / 100);
+  const audioSignalCurrentMicroamps = Number(audioSignalCurrentMicroampsUnrounded.toFixed(2));
+  const audioSignalCurrentSlopeUaPerPct = isDeltaRClamped
+    ? audioSignalCurrentMicroampsUnrounded / modPct
+    : (2 * audioSignalCurrentMicroampsUnrounded) / modPct;
 
   // Signal to Noise Ratio (dB)
   const thermalNoiseFloorMicrowatts = 0.005;
@@ -4169,20 +4189,28 @@ export function stepFessendenWireless(params: FessendenWirelessControlParams = {
     antennaCageDiameterM: cageDiam,
     antennaCapacitancePf: cPf,
     antennaResonantFreqKhz: fResonantKhz,
+    antennaResonantFreqKhzUnrounded: fResonantKhzUnrounded,
+    resonantFreqSlopeKhzPerUh,
     detuningKhz,
     isResonant,
     qFactor,
     radiationResistanceOhms,
+    radiationResistanceOhmsUnrounded,
+    radiationResistanceSlopeOhmsPerKhz,
     ohmicLossOhms,
     radiationEfficiencyPct,
     radiatedPowerWatts,
     wavelengthM: Number(wavelengthM.toFixed(1)),
     transmissionDistanceKm: distKm,
     receivedPowerMicrowatts,
+    receivedPowerMicrowattsUnrounded,
+    receivedPowerSlopeUWattsPerKm,
     acidConcentrationPct: acidPct,
     activeDetectorResistanceOhms,
     dcPolarizingCurrentMicroamps,
     audioSignalCurrentMicroamps,
+    audioSignalCurrentMicroampsUnrounded,
+    audioSignalCurrentSlopeUaPerPct,
     waveRingDisplayRate,
     headsetDisplayOmegaRadPerS,
     audioEnvelopeOmegaRadPerS,

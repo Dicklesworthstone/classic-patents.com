@@ -2,6 +2,7 @@
 
 import { Disc, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import {
   edisonFoilGrooveX,
   edisonLeadScrewThreadX,
@@ -367,38 +368,32 @@ export function EdisonPhonographSim() {
 
       {/* Sliders */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Illustrative clock-work rate</span>
-            <span className="font-mono">{mandrelRpm} RPM</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Clockwork mandrel speed in revolutions per minute"
-            min="40"
-            max="140"
-            step="5"
-            value={mandrelRpm}
-            onChange={(e) => updateParam("mandrelRpm", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Illustrative diaphragm-excitation level</span>
-            <span className="font-mono">{voiceVolumeDb} / 100 model units</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Diaphragm excitation level in model units"
-            min="40"
-            max="100"
-            step="5"
-            value={voiceVolumeDb}
-            onChange={(e) => updateParam("voiceVolumeDb", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="phonograph-mandrel-rpm"
+          patentId="us-200521-edison-phonograph"
+          paramKey="mandrelRpm"
+          label="Illustrative clock-work rate"
+          value={mandrelRpm}
+          min={40}
+          max={140}
+          step={5}
+          unit="RPM"
+          onChange={(val) => updateParam("mandrelRpm", val)}
+          allParams={params}
+        />
+        <SensitivitySlider
+          id="phonograph-voice-volume"
+          patentId="us-200521-edison-phonograph"
+          paramKey="voiceVolumeDb"
+          label="Illustrative diaphragm-excitation level"
+          value={voiceVolumeDb}
+          min={40}
+          max={100}
+          step={5}
+          unit="model units"
+          onChange={(val) => updateParam("voiceVolumeDb", val)}
+          allParams={params}
+        />
       </div>
       <p className="mt-4 text-xs leading-relaxed text-ink-600 dark:text-ink-300">
         The patent specifies cylinder A, metallic foil or another yielding material, a

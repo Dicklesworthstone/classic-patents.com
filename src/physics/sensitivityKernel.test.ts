@@ -5,10 +5,13 @@ import {
   stepCorlissEngine,
   stepDeForestAudion,
   stepDeLavalSeparator,
+  stepEdisonPhonograph,
   stepEinsteinRefrigerator,
   stepEngelbartMouse,
   stepEricssonPropeller,
+  stepFessendenWireless,
   stepGoodyearRubber,
+  stepGrammeDynamo,
   stepHaberAmmonia,
   stepHallAluminium,
   stepHollerithTabulating,
@@ -2074,15 +2077,35 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("Gramme Dynamo derives continuous generated DC voltage sensitivity", () => {
     const id = "us-120057-gramme-dynamo";
+    const h = 1e-4;
 
     for (const rate of [0.5, 1.0, 1.5]) {
       const sens = computeParameterSensitivity(id, "shaftRate", { shaftRate: rate });
       expect(sens).toBeDefined();
-      expect(sens?.metricName).toBe("Continuous Generated DC Voltage");
-      expect(sens?.derivativeSymbol).toBe("∂V_gen / ∂ω_shaft");
-      expect(sens?.derivativeUnit).toBe("V / (rad·s⁻¹)");
-      expect(sens?.derivativeValue).toBe(1.25);
+      expect(sens?.metricName).toBe("Induced e.m.f. (illustrative)");
+      expect(sens?.derivativeSymbol).toBe("∂EMF / ∂ω_rel");
+      expect(sens?.derivativeUnit).toBe("relative index / unit");
+      expect(sens?.derivativeValue).toBe(100);
+
+      // Compare against central difference of unrounded EMF index
+      const emfForward = stepGrammeDynamo({ shaftRate: rate + h }).inducedEmfIndexUnrounded ?? 0;
+      const emfBackward = stepGrammeDynamo({ shaftRate: rate - h }).inducedEmfIndexUnrounded ?? 0;
+      const fd = (emfForward - emfBackward) / (2 * h);
+      expect(sens?.derivativeValue).toBeCloseTo(fd, 4);
+
+      // Alias preservation
+      for (const alias of ["rate", "shaftRateFactor", "rotorRpm", "shaftRpm", "speed"]) {
+        const sensAlias = computeParameterSensitivity(id, alias, { [alias]: rate });
+        expect(sensAlias?.derivativeValue).toBe(sens?.derivativeValue);
+      }
     }
+
+    // Claim 1 refusal: when continuous closed ring is withheld, sensitivity is 0
+    const sensRefused = computeParameterSensitivity(id, "shaftRate", {
+      shaftRate: 1.0,
+      claim1ClosedRingPresent: false,
+    });
+    expect(sensRefused?.derivativeValue).toBe(0);
 
     // Invalid parameters
     for (const invalid of [0.39, 1.61, Number.NaN]) {
@@ -3822,15 +3845,27 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("Edison phonograph derives mandrel RPM linear speed and voice volume displacement sensitivities", () => {
     const id = "us-200521-edison-phonograph";
+    const h = 1e-4;
 
     const sensRpm = computeParameterSensitivity(id, "mandrelRpm", {
       mandrelRpm: 60,
     });
     expect(sensRpm).toBeDefined();
-    expect(sensRpm?.metricName).toBe("Groove Surface Linear Speed");
-    expect(sensRpm?.derivativeSymbol).toBe("∂v_linear / ∂RPM");
-    expect(sensRpm?.derivativeValue).toBe(0.0052);
-    expect(sensRpm?.derivativeUnit).toBe("m·s⁻¹ / RPM");
+    expect(sensRpm?.metricName).toBe("Illustrative Helical Advance");
+    expect(sensRpm?.derivativeSymbol).toBe("∂v_axial / ∂RPM");
+    expect(sensRpm?.derivativeUnit).toBe("(mm/s) / RPM");
+
+    // Central difference check for helical advance
+    const vForward = stepEdisonPhonograph({ mandrelRpm: 60 + h }).axialTravelMmPerSUnrounded ?? 0;
+    const vBackward = stepEdisonPhonograph({ mandrelRpm: 60 - h }).axialTravelMmPerSUnrounded ?? 0;
+    const fdRpm = (vForward - vBackward) / (2 * h);
+    expect(sensRpm?.derivativeValue).toBeCloseTo(fdRpm, 4);
+
+    // Alias equivalence
+    for (const alias of ["rpm", "cylinderRpm", "mandrelSpeed", "speed", "clockworkRpm"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, { [alias]: 60 });
+      expect(sensAlias?.derivativeValue).toBe(sensRpm?.derivativeValue);
+    }
 
     const sensVol = computeParameterSensitivity(id, "voiceVolumeDb", {
       voiceVolumeDb: 75,
@@ -3838,8 +3873,26 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensVol).toBeDefined();
     expect(sensVol?.metricName).toBe("Stylus Indentation Amplitude (Illustrative)");
     expect(sensVol?.derivativeSymbol).toBe("∂A_stylus / ∂SPL");
-    expect(sensVol?.derivativeValue).toBe(0.000017);
-    expect(sensVol?.derivativeUnit).toBe("mm / dB");
+    expect(sensVol?.derivativeUnit).toBe("mm / unit");
+
+    // Central difference check for stylus indentation
+    const aForward = stepEdisonPhonograph({ voiceVolumeDb: 75 + h }).stylusAmpUnrounded ?? 0;
+    const aBackward = stepEdisonPhonograph({ voiceVolumeDb: 75 - h }).stylusAmpUnrounded ?? 0;
+    const fdVol = (aForward - aBackward) / (2 * h);
+    expect(sensVol?.derivativeValue).toBeCloseTo(fdVol, 6);
+
+    // Alias equivalence
+    for (const alias of ["voiceVolume", "volumeDb", "volume", "diaphragmExcitation", "spl"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, { [alias]: 75 });
+      expect(sensAlias?.derivativeValue).toBe(sensVol?.derivativeValue);
+    }
+
+    // Claim 1 refusal: when recording foil is withheld, indentation amplitude sensitivity is 0
+    const sensRefused = computeParameterSensitivity(id, "voiceVolumeDb", {
+      voiceVolumeDb: 75,
+      claim1FoilPresent: false,
+    });
+    expect(sensRefused?.derivativeValue).toBe(0);
 
     // Bounds checking
     for (const invalid of [19, 201, Number.NaN]) {
@@ -3946,33 +3999,115 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("Fessenden wireless derives frequency scaling, modulation power, and path loss attenuation sensitivities", () => {
     const id = "us-706737-fessenden-wireless";
+    const h = 1e-4;
 
-    const sensFreq = computeParameterSensitivity(id, "carrierFrequencyKhz", {
+    const baseParams = {
       carrierFrequencyKhz: 75,
-    });
-    expect(sensFreq).toBeDefined();
-    expect(sensFreq?.metricName).toBe("Alternator Frequency Scaling");
-    expect(sensFreq?.derivativeSymbol).toBe("∂f / ∂RPM");
-    expect(sensFreq?.derivativeValue).toBe(0.05);
-    expect(sensFreq?.derivativeUnit).toBe("kHz / RPM");
-
-    const sensMod = computeParameterSensitivity(id, "audioModulationPct", {
       audioModulationPct: 65,
-    });
-    expect(sensMod).toBeDefined();
-    expect(sensMod?.metricName).toBe("Audio Modulation Sideband Power");
-    expect(sensMod?.derivativeSymbol).toBe("∂P_sideband / ∂m");
-    expect(sensMod?.derivativeValue).toBe(12.5);
-    expect(sensMod?.derivativeUnit).toBe("W / %");
-
-    const sensDist = computeParameterSensitivity(id, "transmissionDistanceKm", {
+      antennaTuningUh: 450,
       transmissionDistanceKm: 25,
-    });
+    };
+
+    // 1. Carrier Frequency: Radiation Resistance
+    const sensFreq = computeParameterSensitivity(id, "carrierFrequencyKhz", baseParams);
+    expect(sensFreq).toBeDefined();
+    expect(sensFreq?.metricName).toBe("Antenna Radiation Resistance");
+    expect(sensFreq?.derivativeSymbol).toBe("∂R_rad / ∂f_carrier");
+    expect(sensFreq?.derivativeUnit).toBe("Ω / kHz");
+
+    const rForward =
+      stepFessendenWireless({ ...baseParams, carrierFrequencyKhz: 75 + h })
+        .radiationResistanceOhmsUnrounded ?? 0;
+    const rBackward =
+      stepFessendenWireless({ ...baseParams, carrierFrequencyKhz: 75 - h })
+        .radiationResistanceOhmsUnrounded ?? 0;
+    const fdFreq = (rForward - rBackward) / (2 * h);
+    expect(sensFreq?.derivativeValue).toBeCloseTo(fdFreq, 4);
+
+    // Alias equivalence
+    for (const alias of ["carrierFreqKhz", "carrierFreq", "frequencyKhz", "frequency"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, baseParams);
+      expect(sensAlias?.derivativeValue).toBe(sensFreq?.derivativeValue);
+    }
+
+    // 2. Audio Modulation: Barretter Audio Signal Current
+    const sensMod = computeParameterSensitivity(id, "audioModulationPct", baseParams);
+    expect(sensMod).toBeDefined();
+    expect(sensMod?.metricName).toBe("Barretter Audio Signal Current");
+    expect(sensMod?.derivativeSymbol).toBe("∂I_audio / ∂m");
+    expect(sensMod?.derivativeUnit).toBe("µA / %");
+
+    const iForward =
+      stepFessendenWireless({ ...baseParams, audioModulationPct: 65 + h })
+        .audioSignalCurrentMicroampsUnrounded ?? 0;
+    const iBackward =
+      stepFessendenWireless({ ...baseParams, audioModulationPct: 65 - h })
+        .audioSignalCurrentMicroampsUnrounded ?? 0;
+    const fdMod = (iForward - iBackward) / (2 * h);
+    expect(sensMod?.derivativeValue).toBeCloseTo(fdMod, 4);
+
+    // Alias equivalence
+    for (const alias of ["modDepthPct", "modulationPct", "modulation", "modDepth"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, baseParams);
+      expect(sensAlias?.derivativeValue).toBe(sensMod?.derivativeValue);
+    }
+
+    // 3. Transmission Distance: Received RF Power Attenuation
+    const sensDist = computeParameterSensitivity(id, "transmissionDistanceKm", baseParams);
     expect(sensDist).toBeDefined();
-    expect(sensDist?.metricName).toBe("Electrolytic Barretter Received RF Power Attenuation");
+    expect(sensDist?.metricName).toBe("Barretter Received RF Power Attenuation");
     expect(sensDist?.derivativeSymbol).toBe("∂P_rx / ∂d");
-    expect(sensDist?.derivativeValue).toBe(-0.048);
     expect(sensDist?.derivativeUnit).toBe("µW / km");
+
+    const pForward =
+      stepFessendenWireless({ ...baseParams, transmissionDistanceKm: 25 + h })
+        .receivedPowerMicrowattsUnrounded ?? 0;
+    const pBackward =
+      stepFessendenWireless({ ...baseParams, transmissionDistanceKm: 25 - h })
+        .receivedPowerMicrowattsUnrounded ?? 0;
+    const fdDist = (pForward - pBackward) / (2 * h);
+    expect(sensDist?.derivativeValue).toBeCloseTo(fdDist, 4);
+
+    // Alias equivalence
+    for (const alias of ["distanceKm", "distance", "rangeKm"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, baseParams);
+      expect(sensAlias?.derivativeValue).toBe(sensDist?.derivativeValue);
+    }
+
+    // 4. Antenna Inductance: Resonant Frequency Sensitivity
+    const sensTune = computeParameterSensitivity(id, "antennaTuningUh", baseParams);
+    expect(sensTune).toBeDefined();
+    expect(sensTune?.metricName).toBe("Antenna Resonant Frequency Sensitivity");
+    expect(sensTune?.derivativeSymbol).toBe("∂f_res / ∂L");
+    expect(sensTune?.derivativeUnit).toBe("kHz / µH");
+
+    const fForward =
+      stepFessendenWireless({ ...baseParams, antennaTuningUh: 450 + h })
+        .antennaResonantFreqKhzUnrounded ?? 0;
+    const fBackward =
+      stepFessendenWireless({ ...baseParams, antennaTuningUh: 450 - h })
+        .antennaResonantFreqKhzUnrounded ?? 0;
+    const fdTune = (fForward - fBackward) / (2 * h);
+    expect(sensTune?.derivativeValue).toBeCloseTo(fdTune, 4);
+
+    // Alias equivalence
+    for (const alias of ["tuningUh", "inductanceUh", "antennaInductanceUh", "tuningCoilUh"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, baseParams);
+      expect(sensAlias?.derivativeValue).toBe(sensTune?.derivativeValue);
+    }
+
+    // Claim 1 refusal: when distributed capacity is withheld, audio modulation & received power sensitivity are 0
+    const sensModRefused = computeParameterSensitivity(id, "audioModulationPct", {
+      ...baseParams,
+      claim1DistributedCapacityPresent: false,
+    });
+    expect(sensModRefused?.derivativeValue).toBe(0);
+
+    const sensDistRefused = computeParameterSensitivity(id, "transmissionDistanceKm", {
+      ...baseParams,
+      claim1DistributedCapacityPresent: false,
+    });
+    expect(sensDistRefused?.derivativeValue).toBe(0);
 
     // Bounds checking
     for (const invalid of [9, 201, Number.NaN]) {
@@ -4019,11 +4154,11 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensGm?.derivativeUnit).toBe("µS");
 
     const ipForwardVg =
-      stepDeForestAudion({ ...baseParams, gridBiasVoltageV: -1.5 + h })
-        .plateCurrentMaUnrounded ?? 0;
+      stepDeForestAudion({ ...baseParams, gridBiasVoltageV: -1.5 + h }).plateCurrentMaUnrounded ??
+      0;
     const ipBackwardVg =
-      stepDeForestAudion({ ...baseParams, gridBiasVoltageV: -1.5 - h })
-        .plateCurrentMaUnrounded ?? 0;
+      stepDeForestAudion({ ...baseParams, gridBiasVoltageV: -1.5 - h }).plateCurrentMaUnrounded ??
+      0;
     const fdGm = ((ipForwardVg - ipBackwardVg) / (2 * h)) * 1000; // mA/V -> µS
     expect(sensGm?.derivativeValue).toBeCloseTo(fdGm, 1);
 
@@ -4053,11 +4188,9 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensPlate?.derivativeUnit).toBe("mA / V");
 
     const ipForwardVp =
-      stepDeForestAudion({ ...baseParams, plateVoltageV: 45 + h })
-        .plateCurrentMaUnrounded ?? 0;
+      stepDeForestAudion({ ...baseParams, plateVoltageV: 45 + h }).plateCurrentMaUnrounded ?? 0;
     const ipBackwardVp =
-      stepDeForestAudion({ ...baseParams, plateVoltageV: 45 - h })
-        .plateCurrentMaUnrounded ?? 0;
+      stepDeForestAudion({ ...baseParams, plateVoltageV: 45 - h }).plateCurrentMaUnrounded ?? 0;
     const fdPlate = (ipForwardVp - ipBackwardVp) / (2 * h);
     expect(sensPlate?.derivativeValue).toBeCloseTo(fdPlate, 3);
 
@@ -4069,11 +4202,9 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensGain?.derivativeUnit).toBe("(V/V) / kΩ");
 
     const gForwardRl =
-      stepDeForestAudion({ ...baseParams, loadResistanceKOhms: 20 + h })
-        .voltageGainUnrounded ?? 0;
+      stepDeForestAudion({ ...baseParams, loadResistanceKOhms: 20 + h }).voltageGainUnrounded ?? 0;
     const gBackwardRl =
-      stepDeForestAudion({ ...baseParams, loadResistanceKOhms: 20 - h })
-        .voltageGainUnrounded ?? 0;
+      stepDeForestAudion({ ...baseParams, loadResistanceKOhms: 20 - h }).voltageGainUnrounded ?? 0;
     const fdGain = (gForwardRl - gBackwardRl) / (2 * h);
     expect(sensGain?.derivativeValue).toBeCloseTo(fdGain, 4);
 
@@ -4085,11 +4216,9 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensFil?.derivativeUnit).toBe("W / A");
 
     const pForwardFil =
-      stepDeForestAudion({ ...baseParams, filamentCurrentA: 1.0 + h })
-        .filamentPowerWUnrounded ?? 0;
+      stepDeForestAudion({ ...baseParams, filamentCurrentA: 1.0 + h }).filamentPowerWUnrounded ?? 0;
     const pBackwardFil =
-      stepDeForestAudion({ ...baseParams, filamentCurrentA: 1.0 - h })
-        .filamentPowerWUnrounded ?? 0;
+      stepDeForestAudion({ ...baseParams, filamentCurrentA: 1.0 - h }).filamentPowerWUnrounded ?? 0;
     const fdFil = (pForwardFil - pBackwardFil) / (2 * h);
     expect(sensFil?.derivativeValue).toBeCloseTo(fdFil, 4);
 

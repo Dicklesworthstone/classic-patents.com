@@ -15,10 +15,13 @@ import {
   stepCorlissEngine,
   stepDeForestAudion,
   stepDeLavalSeparator,
+  stepEdisonPhonograph,
   stepEinsteinRefrigerator,
   stepEngelbartMouse,
   stepEricssonPropeller,
+  stepFessendenWireless,
   stepGoodyearRubber,
+  stepGrammeDynamo,
   stepHaberAmmonia,
   stepHallAluminium,
   stepHewittMercuryLamp,
@@ -1825,10 +1828,32 @@ export function computeParameterSensitivity(
 
     case "us-706737-fessenden-wireless": {
       const fCarrier =
-        params.carrierFrequencyKhz ?? params.carrierFreqKhz ?? params.carrierFreq ?? 75;
-      const modPct = params.audioModulationPct ?? params.modDepthPct ?? params.modulation ?? 65;
-      const lUh = params.antennaTuningUh ?? params.tuningUh ?? 450;
-      const distKm = params.transmissionDistanceKm ?? params.distanceKm ?? 25;
+        params.carrierFrequencyKhz ??
+        params.carrierFreqKhz ??
+        params.carrierFreq ??
+        params.frequencyKhz ??
+        params.frequency ??
+        75;
+      const modPct =
+        params.audioModulationPct ??
+        params.modDepthPct ??
+        params.modulationPct ??
+        params.modulation ??
+        params.modDepth ??
+        65;
+      const lUh =
+        params.antennaTuningUh ??
+        params.tuningUh ??
+        params.inductanceUh ??
+        params.antennaInductanceUh ??
+        params.tuningCoilUh ??
+        450;
+      const distKm =
+        params.transmissionDistanceKm ??
+        params.distanceKm ??
+        params.distance ??
+        params.rangeKm ??
+        25;
 
       if (
         !Number.isFinite(fCarrier) ||
@@ -1847,46 +1872,98 @@ export function computeParameterSensitivity(
         return null;
       }
 
+      const claim1DistributedCapacityPresent =
+        params.claim1DistributedCapacityPresent === undefined && params.claim1Active === undefined
+          ? true
+          : params.claim1DistributedCapacityPresent !== undefined
+            ? Number(params.claim1DistributedCapacityPresent) >= 0.5
+            : Boolean(params.claim1Active);
+
+      const fessenden = stepFessendenWireless({
+        carrierFrequencyKhz: fCarrier,
+        audioModulationPct: modPct,
+        antennaTuningUh: lUh,
+        transmissionDistanceKm: distKm,
+      });
+
       if (
         controlKey === "carrierFrequencyKhz" ||
         controlKey === "carrierFreqKhz" ||
-        controlKey === "carrierFreq"
+        controlKey === "carrierFreq" ||
+        controlKey === "frequencyKhz" ||
+        controlKey === "frequency"
       ) {
         return {
-          metricName: "Alternator Frequency Scaling",
-          derivativeSymbol: "∂f / ∂RPM",
-          derivativeValue: 0.05,
-          derivativeUnit: "kHz / RPM",
-          interpretation:
-            "High-frequency continuous wave generation via multi-pole Alexanderson alternator rotor.",
+          metricName: "Antenna Radiation Resistance",
+          derivativeSymbol: "∂R_rad / ∂f_carrier",
+          derivativeValue:
+            fessenden.radiationResistanceSlopeOhmsPerKhz ?? (2 * 1.8 * fCarrier) / 75 ** 2,
+          derivativeUnit: "Ω / kHz",
+          interpretation: `Quadratic frequency dependence of antenna radiation resistance ($R_\\text{rad} = 1.8 (f/75)^2$) at $f = ${fCarrier}$ kHz.`,
         };
       }
       if (
         controlKey === "audioModulationPct" ||
         controlKey === "modDepthPct" ||
-        controlKey === "modulation"
+        controlKey === "modulationPct" ||
+        controlKey === "modulation" ||
+        controlKey === "modDepth"
       ) {
+        if (!claim1DistributedCapacityPresent) {
+          return {
+            metricName: "Barretter Audio Signal Current",
+            derivativeSymbol: "∂I_audio / ∂m",
+            derivativeValue: 0,
+            derivativeUnit: "µA / %",
+            interpretation:
+              "Claim 1 distributed-capacity radiating conductor is withheld; antenna radiation collapses.",
+          };
+        }
         return {
-          metricName: "Audio Modulation Sideband Power",
-          derivativeSymbol: "∂P_sideband / ∂m",
-          derivativeValue: 12.5,
-          derivativeUnit: "W / %",
-          interpretation:
-            "Voice amplitude modulation depth converting microphone acoustic signals to sideband energy.",
+          metricName: "Barretter Audio Signal Current",
+          derivativeSymbol: "∂I_audio / ∂m",
+          derivativeValue: fessenden.audioSignalCurrentSlopeUaPerPct,
+          derivativeUnit: "µA / %",
+          interpretation: `Demodulated audio signal current rate of change with respect to voice modulation depth ($2 I_\\text{audio} / m$) at $m = ${modPct}%.`,
         };
       }
       if (
         controlKey === "transmissionDistanceKm" ||
         controlKey === "distanceKm" ||
-        controlKey === "distance"
+        controlKey === "distance" ||
+        controlKey === "rangeKm"
+      ) {
+        if (!claim1DistributedCapacityPresent) {
+          return {
+            metricName: "Barretter Received RF Power Attenuation",
+            derivativeSymbol: "∂P_rx / ∂d",
+            derivativeValue: 0,
+            derivativeUnit: "µW / km",
+            interpretation:
+              "Claim 1 distributed-capacity radiating conductor is withheld; zero radiated power reaches receiver.",
+          };
+        }
+        return {
+          metricName: "Barretter Received RF Power Attenuation",
+          derivativeSymbol: "∂P_rx / ∂d",
+          derivativeValue: fessenden.receivedPowerSlopeUWattsPerKm,
+          derivativeUnit: "µW / km",
+          interpretation: `Inverse-square groundwave propagation path loss gradient ($-2 P_\\text{rx} / d$) at distance $d = ${distKm}$ km.`,
+        };
+      }
+      if (
+        controlKey === "antennaTuningUh" ||
+        controlKey === "tuningUh" ||
+        controlKey === "inductanceUh" ||
+        controlKey === "antennaInductanceUh" ||
+        controlKey === "tuningCoilUh"
       ) {
         return {
-          metricName: "Electrolytic Barretter Received RF Power Attenuation",
-          derivativeSymbol: "∂P_rx / ∂d",
-          derivativeValue: -0.048,
-          derivativeUnit: "µW / km",
-          interpretation:
-            "Inverse-square path loss attenuation rate over transatlantic coastal transmission distances.",
+          metricName: "Antenna Resonant Frequency Sensitivity",
+          derivativeSymbol: "∂f_res / ∂L",
+          derivativeValue: fessenden.resonantFreqSlopeKhzPerUh,
+          derivativeUnit: "kHz / µH",
+          interpretation: `Antenna LC resonance sensitivity ($-0.5 f_\\text{res} / L$) for top-hat capacity cage at $L = ${lUh}$ µH.`,
         };
       }
       break;
@@ -2569,8 +2646,22 @@ export function computeParameterSensitivity(
     }
 
     case "us-200521-edison-phonograph": {
-      const rpm = params.mandrelRpm ?? params.rpm ?? 60;
-      const vol = params.voiceVolumeDb ?? params.voiceVolume ?? 75;
+      const rpm =
+        params.mandrelRpm ??
+        params.rpm ??
+        params.cylinderRpm ??
+        params.mandrelSpeed ??
+        params.speed ??
+        params.clockworkRpm ??
+        60;
+      const vol =
+        params.voiceVolumeDb ??
+        params.voiceVolume ??
+        params.volumeDb ??
+        params.volume ??
+        params.diaphragmExcitation ??
+        params.spl ??
+        75;
 
       if (
         !Number.isFinite(rpm) ||
@@ -2583,22 +2674,56 @@ export function computeParameterSensitivity(
         return null;
       }
 
-      if (controlKey === "mandrelRpm" || controlKey === "rpm") {
+      const claim1FoilPresent =
+        params.claim1FoilPresent === undefined && params.claim1Active === undefined
+          ? true
+          : params.claim1FoilPresent !== undefined
+            ? Number(params.claim1FoilPresent) >= 0.5
+            : Boolean(params.claim1Active);
+
+      const phono = stepEdisonPhonograph({ mandrelRpm: rpm, voiceVolumeDb: vol });
+
+      if (
+        controlKey === "mandrelRpm" ||
+        controlKey === "rpm" ||
+        controlKey === "cylinderRpm" ||
+        controlKey === "mandrelSpeed" ||
+        controlKey === "speed" ||
+        controlKey === "clockworkRpm"
+      ) {
         return {
-          metricName: "Groove Surface Linear Speed",
-          derivativeSymbol: "∂v_linear / ∂RPM",
-          derivativeValue: 0.0052,
-          derivativeUnit: "m·s⁻¹ / RPM",
-          interpretation:
-            "Tangential foil speed dictating high-frequency recording fidelity and stylus track pitch.",
+          metricName: "Illustrative Helical Advance",
+          derivativeSymbol: "∂v_axial / ∂RPM",
+          derivativeValue: Number(
+            (phono.axialTravelSlopeMmPerSPerRpm ?? phono.leadScrewPitchMm / 60).toPrecision(6),
+          ),
+          derivativeUnit: "(mm/s) / RPM",
+          interpretation: `Axial carriage travel velocity along the 10-thread-per-inch lead screw pitch (${phono.leadScrewPitchMm} mm/rev) at the current rotational speed.`,
         };
       }
-      if (controlKey === "voiceVolumeDb" || controlKey === "voiceVolume") {
+      if (
+        controlKey === "voiceVolumeDb" ||
+        controlKey === "voiceVolume" ||
+        controlKey === "volumeDb" ||
+        controlKey === "volume" ||
+        controlKey === "diaphragmExcitation" ||
+        controlKey === "spl"
+      ) {
+        if (!claim1FoilPresent) {
+          return {
+            metricName: "Stylus Indentation Amplitude (Illustrative)",
+            derivativeSymbol: "∂A_stylus / ∂SPL",
+            derivativeValue: 0,
+            derivativeUnit: "mm / unit",
+            interpretation:
+              "Claim 1 pliable recording foil is withheld; rigid stylus cannot emboss sound grooves without tearing.",
+          };
+        }
         return {
           metricName: "Stylus Indentation Amplitude (Illustrative)",
           derivativeSymbol: "∂A_stylus / ∂SPL",
-          derivativeValue: 0.000017,
-          derivativeUnit: "mm / dB",
+          derivativeValue: Number((phono.stylusAmpSlopeMmPerDb ?? 0.00125 / 75).toPrecision(6)),
+          derivativeUnit: "mm / unit",
           interpretation:
             "Illustrative diaphragm acoustic deflection scaling with input sound pressure level.",
         };
@@ -2657,19 +2782,51 @@ export function computeParameterSensitivity(
     }
 
     case "us-120057-gramme-dynamo": {
-      const shaftRate = params.shaftRate ?? params.rate ?? 1.0;
+      const shaftRate =
+        params.shaftRate ??
+        params.rate ??
+        params.shaftRateFactor ??
+        params.rotorRpm ??
+        params.shaftRpm ??
+        params.speed ??
+        1.0;
       if (!Number.isFinite(shaftRate) || shaftRate < 0.4 || shaftRate > 1.6) {
         return null;
       }
 
-      if (controlKey === "shaftRate" || controlKey === "rate") {
+      const claim1ClosedRingPresent =
+        params.claim1ClosedRingPresent === undefined && params.claim1Active === undefined
+          ? true
+          : params.claim1ClosedRingPresent !== undefined
+            ? Number(params.claim1ClosedRingPresent) >= 0.5
+            : Boolean(params.claim1Active);
+
+      if (
+        controlKey === "shaftRate" ||
+        controlKey === "rate" ||
+        controlKey === "shaftRateFactor" ||
+        controlKey === "rotorRpm" ||
+        controlKey === "shaftRpm" ||
+        controlKey === "speed"
+      ) {
+        if (!claim1ClosedRingPresent) {
+          return {
+            metricName: "Induced e.m.f. (illustrative)",
+            derivativeSymbol: "∂EMF / ∂ω_rel",
+            derivativeValue: 0,
+            derivativeUnit: "relative index / unit",
+            interpretation:
+              "Claim 1 continuous closed-ring toroidal armature is withheld; non-continuous winding produces arcing spikes with zero continuous DC induction.",
+          };
+        }
+        const gramme = stepGrammeDynamo({ shaftRate });
         return {
-          metricName: "Continuous Generated DC Voltage",
-          derivativeSymbol: "∂V_gen / ∂ω_shaft",
-          derivativeValue: 1.25,
-          derivativeUnit: "V / (rad·s⁻¹)",
+          metricName: "Induced e.m.f. (illustrative)",
+          derivativeSymbol: "∂EMF / ∂ω_rel",
+          derivativeValue: gramme.inducedEmfSlopePerFactor ?? 100,
+          derivativeUnit: "relative index / unit",
           interpretation:
-            "Linear Faraday induction voltage scaling across toroidal ring armature coils.",
+            "Illustrative induced electromotive force index scaling proportionally with relative shaft rotation rate under the continuous ring winding model (US 120,057 prints no historical voltage or flux constants).",
         };
       }
       break;

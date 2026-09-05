@@ -351,6 +351,106 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
     }
   });
 
+  test("Edison Phonograph aliases (cylinderRpm, rpm, voiceVolume, volumeDb) update canonical controls and notify subscribers", () => {
+    const id = "us-200521-edison-phonograph";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.mandrelRpm),
+    );
+    try {
+      setPatentPhysicsParam(id, "rpm", 90);
+      const params = getPatentPhysicsParams(id);
+      expect(params.mandrelRpm).toBe(90);
+      expect(params.rpm).toBe(90);
+      expect(params.cylinderRpm).toBe(90);
+      expect(observations).toEqual([90]);
+      expect(getLastParamChange(id)?.id).toBe("mandrelRpm");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Illustrative Helical Advance")?.value).not.toBe(
+        initial.find((m) => m.label === "Illustrative Helical Advance")?.value,
+      );
+
+      setPatentPhysicsParam(id, "volumeDb", 85);
+      expect(getPatentPhysicsParams(id).voiceVolumeDb).toBe(85);
+      expect(getPatentPhysicsParams(id).voiceVolume).toBe(85);
+      expect(getPatentPhysicsParams(id).volumeDb).toBe(85);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Gramme Dynamo aliases (rotorRpm, shaftRpm, speed, shaftRateFactor) update canonical controls and notify subscribers", () => {
+    const id = "us-120057-gramme-dynamo";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) => observations.push(params.shaftRate));
+    try {
+      setPatentPhysicsParam(id, "speed", 2.2);
+      const params = getPatentPhysicsParams(id);
+      expect(params.shaftRate).toBe(2.2);
+      expect(params.speed).toBe(2.2);
+      expect(params.rotorRpm).toBe(2.2);
+      expect(observations).toEqual([2.2]);
+      expect(getLastParamChange(id)?.id).toBe("shaftRate");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Induced e.m.f. (illustrative)")?.value).not.toBe(
+        initial.find((m) => m.label === "Induced e.m.f. (illustrative)")?.value,
+      );
+
+      setPatentPhysicsParam(id, "shaftRateFactor", 1.8);
+      expect(getPatentPhysicsParams(id).shaftRate).toBe(1.8);
+      expect(getPatentPhysicsParams(id).shaftRpm).toBe(1.8);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Fessenden Wireless aliases (carrierFreqKhz, modulationPct, inductanceUh, distanceKm) update canonical controls and notify subscribers", () => {
+    const id = "us-706737-fessenden-wireless";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.carrierFrequencyKhz),
+    );
+    try {
+      setPatentPhysicsParam(id, "carrierFreqKhz", 65);
+      const params = getPatentPhysicsParams(id);
+      expect(params.carrierFrequencyKhz).toBe(65);
+      expect(params.carrierFreq).toBe(65);
+      expect(params.frequencyKhz).toBe(65);
+      expect(observations).toEqual([65]);
+      expect(getLastParamChange(id)?.id).toBe("carrierFrequencyKhz");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Radiation Resistance")?.value).not.toBe(
+        initial.find((m) => m.label === "Radiation Resistance")?.value,
+      );
+
+      setPatentPhysicsParam(id, "modulationPct", 45);
+      expect(getPatentPhysicsParams(id).audioModulationPct).toBe(45);
+      expect(getPatentPhysicsParams(id).modDepthPct).toBe(45);
+
+      setPatentPhysicsParam(id, "inductanceUh", 320);
+      expect(getPatentPhysicsParams(id).antennaTuningUh).toBe(320);
+      expect(getPatentPhysicsParams(id).tuningUh).toBe(320);
+
+      setPatentPhysicsParam(id, "distanceKm", 40);
+      expect(getPatentPhysicsParams(id).transmissionDistanceKm).toBe(40);
+      expect(getPatentPhysicsParams(id).rangeKm).toBe(40);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
   test("shares claim state across subscribers while retaining raw controls and deriving effective topology", () => {
     const goertzId = "us-2846084-goertz-electronic-master-slave-manipulator";
     resetPatentPhysicsParams(goertzId);

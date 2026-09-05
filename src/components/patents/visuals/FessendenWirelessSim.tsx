@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepFessendenWireless } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { useOffscreenGate } from "./useOffscreenGate";
@@ -433,85 +434,58 @@ export function FessendenWirelessSim() {
 
       {/* Interactive Sliders */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 bg-slate-900/60 p-4 rounded-lg border border-slate-800">
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-slate-300">RF Carrier Frequency</span>
-            <span className="text-cyan-400 font-mono">{carrierFreqKhz} kHz</span>
-          </div>
-          <input
-            type="range"
-            aria-label="RF carrier frequency in kilohertz"
-            min={40}
-            max={120}
-            step={1}
-            value={carrierFreqKhz}
-            onChange={(e) => updateParam("carrierFrequencyKhz", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-          <div className="text-xs text-ink-500 dark:text-slate-500 mt-1">
-            High-frequency alternator generator speed
-          </div>
-        </div>
-
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-slate-300">Audio Modulation Depth</span>
-            <span className="text-cyan-400 font-mono">{audioModPct} %</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Audio modulation depth percentage"
-            min={10}
-            max={100}
-            step={5}
-            value={audioModPct}
-            onChange={(e) => updateParam("audioModulationPct", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-          <div className="text-xs text-ink-500 dark:text-slate-500 mt-1">
-            Carbon microphone acoustic modulation
-          </div>
-        </div>
-
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-slate-300">Antenna Tuning Coil (L)</span>
-            <span className="text-cyan-400 font-mono">{antennaTuningUh} µH</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Antenna tuning-coil inductance in microhenries"
-            min={200}
-            max={800}
-            step={10}
-            value={antennaTuningUh}
-            onChange={(e) => updateParam("antennaTuningUh", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-          <div className="text-xs text-ink-500 dark:text-slate-500 mt-1">
-            Adjustable series inductance for resonance
-          </div>
-        </div>
-
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-slate-300">Transmission Distance</span>
-            <span className="text-cyan-400 font-mono">{distanceKm} km</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Transmission distance in kilometres"
-            min={5}
-            max={100}
-            step={5}
-            value={distanceKm}
-            onChange={(e) => updateParam("transmissionDistanceKm", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-          <div className="text-xs text-ink-500 dark:text-slate-500 mt-1">
-            Free-space & groundwave propagation loss
-          </div>
-        </div>
+        <SensitivitySlider
+          id="fessenden-carrier-freq"
+          patentId="us-706737-fessenden-wireless"
+          paramKey="carrierFrequencyKhz"
+          label="RF Carrier Frequency"
+          value={carrierFreqKhz}
+          min={40}
+          max={120}
+          step={1}
+          unit="kHz"
+          onChange={(val) => updateParam("carrierFrequencyKhz", val)}
+          allParams={params}
+        />
+        <SensitivitySlider
+          id="fessenden-audio-mod"
+          patentId="us-706737-fessenden-wireless"
+          paramKey="audioModulationPct"
+          label="Audio Modulation Depth"
+          value={audioModPct}
+          min={10}
+          max={100}
+          step={5}
+          unit="%"
+          onChange={(val) => updateParam("audioModulationPct", val)}
+          allParams={params}
+        />
+        <SensitivitySlider
+          id="fessenden-antenna-tuning"
+          patentId="us-706737-fessenden-wireless"
+          paramKey="antennaTuningUh"
+          label="Antenna Tuning Coil (L)"
+          value={antennaTuningUh}
+          min={200}
+          max={800}
+          step={10}
+          unit="µH"
+          onChange={(val) => updateParam("antennaTuningUh", val)}
+          allParams={params}
+        />
+        <SensitivitySlider
+          id="fessenden-distance"
+          patentId="us-706737-fessenden-wireless"
+          paramKey="transmissionDistanceKm"
+          label="Transmission Distance"
+          value={distanceKm}
+          min={5}
+          max={100}
+          step={5}
+          unit="km"
+          onChange={(val) => updateParam("transmissionDistanceKm", val)}
+          allParams={params}
+        />
       </div>
     </div>
   );
