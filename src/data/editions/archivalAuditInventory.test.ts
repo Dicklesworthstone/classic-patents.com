@@ -25,7 +25,10 @@ describe("server-only archival audit inventory", () => {
         "primary-facsimile": 2,
         other: 0,
       },
-      readerDeliveryCounts: { edition: 90, transcript: 13, facsimile: 0 },
+      // Fermi and Mergenthaler deliberately route through their complete
+      // reviewed ledgers while their stricter editorial packets are repaired.
+      // That is a source-reader change, not a loss of primary-source access.
+      readerDeliveryCounts: { edition: 88, transcript: 15, facsimile: 0 },
       unacceptedFigureOccurrenceCount: 225,
       recordsWithAttestedFiguresMissingLocators: 0,
       recordsMissingFigureAttestationsAndLocators: 3,
