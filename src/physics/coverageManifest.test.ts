@@ -76,7 +76,7 @@ describe("executable project coverage manifest", () => {
     expect(manifest).toHaveLength(103);
     expect(new Set(manifest.map((row) => row.patentId)).size).toBe(103);
     expect(manifest.every((row) => row.source.pinnedFacsimile)).toBe(true);
-    expect(manifest.filter((row) => row.source.reviewedLedger)).toHaveLength(99);
+    expect(manifest.filter((row) => row.source.reviewedLedger)).toHaveLength(100);
     expect(manifest.filter((row) => row.source.archivalEdition === "published")).toHaveLength(
       summary.publishedEditions,
     );

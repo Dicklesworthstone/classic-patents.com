@@ -1,5 +1,16 @@
 # Deep FrankenSim WebAssembly Physics Integration: Master Execution & Tracking Ledger
 
+> [!NOTE]
+> **Historical Tracking Ledger & Status Note (Reconciled 2026-09-05)**:
+> This document originated during initial architectural planning and recorded aspirational roadmap designs alongside early prototypes. Executable runtime counts, source boundaries, and publication decisions are canonically defined in [`src/physics/coverageManifest.ts`](../src/physics/coverageManifest.ts) and [`scripts/verify-data.ts`](../scripts/verify-data.ts).
+>
+> Key doctrine reconciliations:
+> - **No Automatic Differentiation (AD)**: Slider sensitivity derivatives are closed-form host expressions or finite differences (`src/physics/sensitivityKernel.ts`), not automatic differentiation.
+> - **Conserved Energy Bounds**: Energy strips (`PortHamiltonianEnergyStrip.tsx` / `energyLedger.ts`) report admitted partial energy or snapshot states; only Edison's radiative balance currently certifies a steady power balance ($\Delta P \approx 0$). Universal port-Hamiltonian energy conservation is NOT claimed across the catalogue.
+> - **WASM Provenance**: Only models with an active, stepping WebAssembly kernel report `WASM` provenance; all others operate as typed TypeScript host fallbacks (`TS_FALLBACK`).
+> - **Stale IDs Corrected**: Pelton (`us-233692-pelton-water-wheel`), DeLaval (`us-247804-delaval-separator`), Hall Aluminium (`us-400766-hall-aluminium`), Mergenthaler (`us-313224-mergenthaler-linotype`).
+> - **Rejected / Source-Bounded Physics**: Kwolek (US 3,671,542) is a source-integrity hold at the checked composition claims (no ballistics/tensile claims inferred); Spencer (US 2,495,429) is a source-bounded food treatment apparatus (`c = \lambda f`), refusing unsupported magnetron cavity/waveguide solves.
+
 This document tracks the end-to-end, domain-by-domain integration of the **FrankenSim** computational physics engine (`~/projects/frankensim/crates`) into **Classic Patents** (`classic-patents.com`).
 
 ---
@@ -24,13 +35,13 @@ This document tracks the end-to-end, domain-by-domain integration of the **Frank
   - [x] Couple steam expansion pressure drop ($P_1 \to P_2$) across stages with blade deflection
   - [x] Add real-time enthalpy drop ($\Delta h$) and shaft power ($P = \dot{m}\Delta h$) readout in `StudioKernelChips`
 
-- [x] **Lester Pelton Water Wheel (`us-233692-pelton-wheel`)**
+- [x] **Lester Pelton Water Wheel (`us-233692-pelton-water-wheel`)**
   - [x] Integrate `peltonJetCrate` nozzle jet density sampling
   - [x] Drive 3D high-velocity water jet mesh and dual-cup bucket splitter dynamics in `PeltonWheel3D.tsx` and `peltonWheelModel.ts`
   - [x] Calculate impulse force $F = \dot{m}(v_{\text{jet}} - u)(1 - \cos\beta)$ and hydraulic efficiency $\eta = \frac{2u(v-u)(1 - \cos\beta)}{v^2}$
   - [x] Verify water droplet splash rebound trajectory with Euler/symplectic ballistic integration
 
-- [x] **Carl Gustaf de Laval Cream Separator (`us-468383-delaval-separator`)**
+- [x] **Carl Gustaf de Laval Cream Separator (`us-247804-delaval-separator`)**
   - [x] Integrate `delavalCreamCrate` multi-phase separation sampling
   - [x] Drive radial stratification gradient in 3D conical disk bowl in `DeLavalSeparator3D.tsx` and `delavalSeparatorModel.ts`
   - [x] Couple 6,000 RPM centrifugal acceleration $a_c = \omega^2 r$ with Stokes flotation velocity
@@ -63,12 +74,12 @@ This document tracks the end-to-end, domain-by-domain integration of the **Frank
   - [x] Model thermosiphon bubble lift pump fluid column elevation without moving parts
   - [x] Display real-time Coefficient of Performance ($\text{COP} = Q_L / Q_H$)
 
-- [x] **Percy Spencer Cavity Magnetron Microwave (`us-2495429-spencer-microwave`)**
-  - [x] Model 2.45 GHz resonant cavity standing wave electric field $\vec{E}(x, y, z)$
+- [x] **Percy Spencer Food-Treatment Apparatus (`us-2495429-spencer-microwave`)**
+  - [x] Model source-bounded food-treatment cavity with exact $c = \lambda f$ conversion at 10 cm reference
   - [x] Bind dielectric loss volumetric heating rate ($\dot{q} = 2\pi f \varepsilon'' \varepsilon_0 E^2$) to food target mesh in `SpencerMicrowave3D.tsx`
-  - [x] Couple waveguide microwave power flux transmission and rotating turntable phase
+  - [x] Couple waveguide microwave power flux transmission and rotating turntable phase (refusing unsupported magnetron tube/cavity oscillator solve)
 
-- [x] **Charles Hall Aluminium Smelting (`us-400665-hall-aluminium`)**
+- [x] **Charles Hall Aluminium Smelting (`us-400766-hall-aluminium`)**
   - [x] Model cryolite-alumina electrolytic bath molten cell thermal balance ($T \approx 950^\circ\text{C}$)
   - [x] Calculate Faraday electrolytic reduction rate ($\dot{m}_{\text{Al}} = \frac{I \cdot M}{z \cdot F}$)
   - [x] Drive carbon anode consumption and CO2 gas bubble nucleation dynamics in `HallAluminium3D.tsx`
@@ -99,7 +110,7 @@ This document tracks the end-to-end, domain-by-domain integration of the **Frank
   - [x] Articulate trigger sear engagement, cylinder locking bolt pop-up, and mainspring potential energy
   - [x] Calculate percussion cap ignition flame propagation into black powder chamber with `wave2dFrames` and `waveFrameRms`
 
-- [x] **Ottmar Mergenthaler Linotype (`us-436532-mergenthaler-linotype`)**
+- [x] **Ottmar Mergenthaler Linotype (`us-313224-mergenthaler-linotype`)**
   - [x] Integrate `mergenthalerMagCrate`
   - [x] Model magazine matrix release escapement, assembler front chute slide, and spaceband wedge line justification in `MergenthalerLinotype3D.tsx`
   - [x] Articulate casting pot molten lead pump stroke, mold disk rotation, and matrix distributor bar 7-tooth binary decoding
@@ -168,10 +179,10 @@ This document tracks the end-to-end, domain-by-domain integration of the **Frank
   - [x] Calculate rubber elasticity from conformational entropy reduction ($\sigma = N k T (\lambda - \lambda^{-2})$)
   - [x] Real-time stress-strain curve with temperature dependency
 
-- [x] **Stephanie Kwolek Kevlar Aramid Fibers (`us-3671542-kwolek-kevlar`)**
-  - [x] Model liquid-crystalline poly-p-phenylene terephthalamide hydrogen-bonded planar sheet lattice in `KwolekKevlar3D.tsx`
-  - [x] Calculate extreme longitudinal tensile modulus ($E = 130\ \text{GPa}$) vs. weak transverse shear
-  - [x] Simulate ballistic projectile impact energy absorption and molecular chain rupture
+- [ ] **Stephanie Kwolek Aromatic Polyamide Dopes (`us-3671542-kwolek-kevlar`)**
+  - [x] Pinned facsimile and checked Claim 1 aromatic-polyamide dope composition
+  - [x] Source-integrity hold: the inherited polymer, tensile, and ballistic model is unavailable pending complete manual review
+  - [ ] Retain future target: liquid-crystalline poly-p-phenylene terephthalamide hydrogen-bonded planar sheet lattice when fully supported by primary source review (ballistic projectile claims rejected as unsupported by the patent grant)
 
 - [x] **Count von Zeppelin Rigid Airship (`us-621195-zeppelin-airship`)**
   - [x] Integrate `liftHeatCrate`
@@ -216,8 +227,10 @@ This document tracks the end-to-end, domain-by-domain integration of the **Frank
 
 ## 3. Verification & Compliance Gates
 
-- [x] Full test suite (1,387/1,387 tests pass across 260 files).
+- [x] Full test suite passes across the repository.
 - [x] Strict typecheck (`bun x tsc --noEmit` passes with zero errors).
-- [x] Comprehensive lint and code formatting (`bun x biome check src/` passes across all 783 files with zero errors).
-- [x] All 3D visual studios equipped with Port-Hamiltonian energy tracking strips (`PortHamiltonianEnergyStrip`), live automatic differentiation sensitivity derivatives (`SensitivitySlider`), and interactive Claim 1 failure boundary toggles (`ClaimConstraintToggle`).
-- [x] Verified production deployment pipeline executed and live on `https://classic-patents.com` with 100% HTTP 200 health check confirmations.
+- [x] Comprehensive lint and code formatting (`bun x biome check src/` passes with zero errors).
+- [x] Port-Hamiltonian energy tracking strips (`PortHamiltonianEnergyStrip.tsx`) integrated with explicit availability and reason reporting (steady power balance verified on Edison; partial or illustrative states on others; universal conserved energy is not claimed across the catalogue).
+- [x] Live parameter sensitivity sliders (`SensitivitySlider.tsx`) powered by closed-form and central-difference derivatives in `sensitivityKernel.ts` (without claiming automatic differentiation).
+- [x] Interactive Claim constraint toggles (`ClaimConstraintToggle.tsx` / `claimConstraints.ts`) for flagship mechanisms.
+- [x] Verified prebuilt deployment workflow with verified health checks.

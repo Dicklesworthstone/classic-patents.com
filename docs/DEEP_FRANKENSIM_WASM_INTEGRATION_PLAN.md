@@ -34,13 +34,14 @@ This document serves as the granular, step-by-step implementation plan and livin
 ---
 
 ### Phase 2: Automatic Differentiation (AD) & Live Sensitivity HUD (`fs-ad`, `fs-qty`)
+*Status Note (2026-09-05): `<SensitivitySlider />` and `sensitivityKernel.ts` currently deliver closed-form and central-difference derivatives on the host without claiming AD. Forward dual-number automatic differentiation (`fs-ad`) remains a tracked roadmap target.*
 - [ ] **2.1. Forward-Mode AD Sensitivity Kernel**:
   - [ ] Create `src/physics/sensitivityKernel.ts` with forward dual-number arithmetic $[x, \dot{x}]$ for live $\frac{\partial Q}{\partial u}$ evaluation.
   - [ ] Register partial derivatives for key domain parameters across all catalog patents:
     - Wright Flyer: $\frac{\partial N}{\partial \delta_{\text{warp}}}$ (adverse yaw sensitivity), $\frac{\partial L}{\partial \delta_{\text{warp}}}$ (roll authority).
     - Tesla Fig. 9 motor-generator: $\frac{\partial n_G}{\partial f}$ (generator-rate sensitivity); the grant supplies no torque or slip data.
     - Edison Lamp: $\frac{\partial P_{\text{rad}}}{\partial V}$ (radiant power voltage sensitivity), $\frac{\partial T}{\partial V}$ (filament thermal response).
-    - Spencer Microwave: $\frac{\partial B_c}{\partial V_a}$ (Hull magnetic cutoff gradient).
+    - Spencer Microwave: $\frac{\partial P_{\text{abs}}}{\partial f}$ (dielectric absorption sensitivity; food treatment apparatus $c = \lambda f$).
     - Kilby IC / Noyce Planar IC: $\frac{\partial C_j}{\partial V_r}$ (depletion capacitance voltage sensitivity).
 - [ ] **2.2. Interactive `<SensitivitySlider />` UI Component**:
   - [ ] Build reusable interactive slider component in `src/components/ui/SensitivitySlider.tsx` displaying live derivative badge ($\frac{\partial Q}{\partial u}$) on hover/drag.
@@ -49,6 +50,7 @@ This document serves as the granular, step-by-step implementation plan and livin
 ---
 
 ### Phase 3: Universal Port-Hamiltonian Energy Ledger (`fs-phs`, `fs-time`)
+*Status Note (2026-09-05): `<PortHamiltonianEnergyStrip />` and `energyLedger.ts` currently deliver admitted partial energy and snapshot states, with steady-state power balance verified on Edison ($\Delta P \approx 0$). Universal Dirac-structure balance across all models remains a tracked roadmap target.*
 - [ ] **3.1. Universal Energy Ledger State & Dirac Structure Engine**:
   - [ ] Implement `computePortHamiltonianState(patentId, params, state, dt)` in `src/physics/energyLedger.ts`.
   - [ ] Compute total stored energy $H(q, p) = T(p) + V(q)$, power input $P_{\text{in}} = \mathbf{u}^\top \mathbf{y}$, dissipated power $D(x) \ge 0$, and supply defect $|\Delta H - (P_{\text{in}} - D)\Delta t|$.

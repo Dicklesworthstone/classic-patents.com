@@ -74,9 +74,9 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P4.20 Claim-satisfaction pills on ClaimsDecoder (Wright Claim 1 ↔ coupled)
 - [x] P4.21 Spec-clause highlight from kernel predicates (Wright / Tesla / Fermi / Marconi)
 - [x] P4.22 Diptych split-view same tick (plain + spec chips share tick N)
-- [x] P4.23 `fs-phs` energy strip (Wright / Edison / Goddard / Einstein / Tesla)
+- [x] P4.23 `PortHamiltonianEnergyStrip` UI integration (Wright / Edison / Goddard / Einstein / Tesla; only Edison provides verified steady-state power balance; others report partial or snapshot energy components)
 - [x] P4.24 `fs-couple` after kernels are honest (warp→yaw, stator→shaft, I²R→radiation)
-- [x] P4.25 `fs-ad` slider derivatives (d(param)/dt on badge + tick chips)
+- [x] P4.25 Slider derivatives (closed-form / central differences in `sensitivityKernel.ts` on badge + tick chips; forward-mode AD remains a tracked target)
 - [x] P4.26 `fs-thermochem` Goddard / Einstein / Goodyear (T_c/T_e, COP strip, Arrhenius cure)
 - [x] P4.26b Goddard 3D de Laval lathe + plume rebuild from Ae/At and Te
 - [x] P4.27 Visitor as transducer (mic / device roll / typed Morse / Lamarr grid)
