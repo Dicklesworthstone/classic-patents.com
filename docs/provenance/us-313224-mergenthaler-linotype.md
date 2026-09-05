@@ -89,3 +89,15 @@ The canonical record remains unbound. The staged ledger and edition are useful
 recovery inputs, not reviewed publication artifacts. Publication requires a
 correct 35-page ledger, continuous source blocks, complete figure-reference
 previews, and independent acceptance of the repaired whole.
+
+### Drawing-sheet identity correction (2026-09-05)
+
+All seventeen drawing sheets were visually rechecked against the pinned PDF.
+Their printed headers identify **17 Sheets—Sheet 1** through **17 Sheets—Sheet
+17**. The page-marked ledger previously invented a shared description for
+thirteen sheets and then mislabeled sheets 14–17 as specification pages. Those
+entries now retain only the printed sheet identity header; they do not pretend
+to transcribe every diagram label, numeral, signature, or figure region. The
+complete original sheets remain directly readable in the pinned facsimile,
+while literal drawing transcription and crop acceptance remain strict-audit
+work.

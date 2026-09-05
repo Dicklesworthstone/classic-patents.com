@@ -118,4 +118,18 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
       expect(validateReviewedTranscription(ledger, 35)).toEqual({ valid: true });
     }
   });
+
+  test("records the actual seventeen drawing-sheet headers without invented shared descriptions", () => {
+    const ledger = readFileSync(
+      publicFile("/patents/transcripts/us-313224-mergenthaler-linotype-reviewed.txt"),
+      "utf8",
+    );
+    for (let page = 1; page <= 17; page++) {
+      expect(ledger).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 35 ---`);
+      expect(ledger).toContain(`17 Sheets—Sheet ${page}.`);
+    }
+    expect(ledger).not.toContain("13 Sheets-Sheet");
+    expect(ledger).not.toContain("Drawing Sheet 1 of 13 illustrating");
+    expect(ledger).not.toContain("Application filed February 12, 1884");
+  });
 });
