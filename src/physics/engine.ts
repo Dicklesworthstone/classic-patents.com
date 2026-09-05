@@ -1510,6 +1510,7 @@ export const FrankenSimEngine = {
     blastAirPressureBar?: number;
     cutoffRatio?: number;
     engineRpm?: number;
+    claim1Active?: number | boolean;
   }) {
     return kernelStepDieselEngine(params);
   },

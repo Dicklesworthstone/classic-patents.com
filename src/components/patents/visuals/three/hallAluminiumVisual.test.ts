@@ -203,4 +203,45 @@ describe("US 400,766 Charles Martin Hall Aluminium Smelting Visual Boundary", ()
     expect(distance(tablet) / distance(desktop)).toBeCloseTo(1.25, 8);
     expect(distance(phone) / distance(desktop)).toBeCloseTo(1.65, 8);
   });
+
+  test("hides CO2 bubble evolution and cools bath glow when Claim 1 is withheld", () => {
+    const model = createHallAluminiumModel();
+    try {
+      // Normal operating condition
+      updateHallAluminiumVisual(
+        model,
+        {
+          currentAmperes: 300000,
+          bathTemperatureCelsius: 960,
+          totalCellVoltage: 4.43,
+          aluminiumProductionRateKgPerHour: 94.6,
+          claim1Active: 1,
+        },
+        1.0,
+        1 / 60,
+      );
+      expect(model.bubbleParticles.visible).toBe(true);
+      const activeMat = model.cryoliteBath.material as THREE.MeshPhysicalMaterial;
+      expect(activeMat.emissiveIntensity).toBeGreaterThan(0.3);
+
+      // Inverted Claim 1: no molten fluoride solvent -> zero production, frozen unfluxed bath
+      updateHallAluminiumVisual(
+        model,
+        {
+          currentAmperes: 300000,
+          bathTemperatureCelsius: 960,
+          totalCellVoltage: 0,
+          aluminiumProductionRateKgPerHour: 0,
+          claim1Active: 0,
+        },
+        2.0,
+        1 / 60,
+      );
+      expect(model.bubbleParticles.visible).toBe(false);
+      const frozenMat = model.cryoliteBath.material as THREE.MeshPhysicalMaterial;
+      expect(frozenMat.emissiveIntensity).toBe(0.05);
+    } finally {
+      model.dispose();
+    }
+  });
 });

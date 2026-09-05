@@ -2162,20 +2162,25 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   if (patentId === "us-400766-hall-aluminium") {
     const amps = params.currentAmperes ?? 1200;
     const temp = params.bathTemperatureCelsius ?? 960;
+    const claim1Active = params.claim1Active === undefined || params.claim1Active >= 0.5;
     return [
       {
         id: "fused-fluoride-salt",
         phrase: "fused fluoride salt",
-        active: temp >= 900,
+        active: claim1Active && temp >= 900,
         tone: "held",
-        caption: `Bath Temp=${temp}°C: Molten sodium aluminum fluoride cryolite bath dissolves alumina at accessible temperatures.`,
+        caption: claim1Active
+          ? `Bath Temp=${temp}°C: Molten sodium aluminum fluoride cryolite bath dissolves alumina at accessible temperatures.`
+          : "CLAIM 1 INVERTED: Fused fluoride salt solvent omitted; insoluble alumina solidifies without electrolytic solvent.",
       },
       {
         id: "electric-current",
         phrase: "electric current",
-        active: amps > 400,
+        active: claim1Active && amps > 400,
         tone: "live",
-        caption: `Electrolytic Current=${amps} A: Direct electric current reduces Al3+ cations into dense molten aluminium metal.`,
+        caption: claim1Active
+          ? `Electrolytic Current=${amps} A: Direct electric current reduces Al3+ cations into dense molten aluminium metal.`
+          : "CLAIM 1 INVERTED: Non-conductive dry charge cannot conduct Faradaic current without molten cryolite flux.",
       },
     ];
   }
@@ -2203,21 +2208,25 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
 
   if (patentId === "us-542846-diesel-engine") {
     const cr = params.compressionRatio ?? 14.5;
+    const claim1Active = params.claim1Active === undefined || params.claim1Active >= 0.5;
     return [
       {
         id: "compressing-air",
         phrase: "compressing air",
-        active: cr >= 12,
+        active: claim1Active && cr >= 12,
         tone: "live",
-        caption: `Compression Ratio=${cr}:1: Pure air compressed past fuel ignition temperature before fuel injection.`,
+        caption: claim1Active
+          ? `Compression Ratio=${cr}:1: Pure air compressed past fuel ignition temperature before fuel injection.`
+          : "CLAIM 1 INVERTED: Extreme compression ignition omitted; cylinder air lacks thermodynamic temperature to ignite fuel without a spark plug.",
       },
       {
         id: "converting-the-heat",
         phrase: "converting the heat",
-        active: true,
+        active: claim1Active,
         tone: "held",
-        caption:
-          "Direct fuel injection sustains controlled isobaric combustion for high thermal efficiency.",
+        caption: claim1Active
+          ? "Direct fuel injection sustains controlled isobaric combustion for high thermal efficiency."
+          : "CLAIM 1 INVERTED: Isobaric combustion cycle absent without pre-compressed auto-ignition condition.",
       },
     ];
   }

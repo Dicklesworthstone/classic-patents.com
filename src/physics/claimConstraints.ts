@@ -2101,8 +2101,8 @@ export function applyClaimConstraintModifications(
 
     case "us-542846-diesel-engine": {
       const claim1Active = claimStates[1] ?? true;
+      modified.claim1Active = claim1Active ? 1 : 0;
       if (!claim1Active) {
-        modified.claim1Active = 0;
         modified.isAutoIgnition = 0;
         activeFailures.push(
           "Pre-Ignition Knock & Low Thermodynamic Carnot Efficiency: Low compression limits thermal efficiency and fails to ignite injected fuel without spark plugs.",
@@ -2205,10 +2205,8 @@ export function applyClaimConstraintModifications(
 
     case "us-400766-hall-aluminium": {
       const claim1Active = claimStates[1] ?? true;
+      modified.claim1Active = claim1Active ? 1 : 0;
       if (!claim1Active) {
-        modified.currentAmperes = 15000.0; // Collapsed cell current
-        modified.bathTemperatureCelsius = 2050.0; // Required unfluxed melting point
-        modified.aluminaConcentrationPct = 0.2; // Frozen solubility
         activeFailures.push(
           "Anode Effect & Refractory Freezing: Absence of cryolite flux creates solid alumina crust",
         );

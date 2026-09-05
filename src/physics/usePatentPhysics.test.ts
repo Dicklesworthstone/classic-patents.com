@@ -1480,6 +1480,24 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       expect(getPatentPhysicsParams(id)[claim1Param]).toBe(0);
       const effective = getEffectivePatentPhysicsParams(id);
       expect(effective.claim1Active).toBe(0);
+      expect(effective.isAutoIgnition).toBe(0);
+      // Controls are preserved, not clobbered
+      expect(effective.compRatio).toBe(19.5);
+      expect(effective.blastAirPressure).toBe(72);
+      const invertedMetrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(effective);
+      expect(invertedMetrics.find((m) => m.label === "Auto-Ignition State")?.value).toBe(
+        "NO IGNITION",
+      );
+
+      // Restoring Claim 1 preserves the user's controls and re-activates self-ignition
+      setPatentPhysicsParam(id, claim1Param, 1);
+      const restored = getEffectivePatentPhysicsParams(id);
+      expect(restored.claim1Active).toBe(1);
+      expect(restored.compRatio).toBe(19.5);
+      const restoredMetrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(restored);
+      expect(restoredMetrics.find((m) => m.label === "Auto-Ignition State")?.value).toBe(
+        "SELF-IGNITING",
+      );
     } finally {
       unsubscribe();
       resetPatentPhysicsParams(id);
@@ -1876,6 +1894,30 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
 
       const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
       expect(metrics.find((m) => m.label === "Cell Electrical Input")?.value).toBeDefined();
+
+      // Claim 1 constraint toggle
+      const claim1Param = claimConstraintStateParamId(1);
+      setPatentPhysicsParam(id, claim1Param, 0);
+      expect(getPatentPhysicsParams(id)[claim1Param]).toBe(0);
+      const effective = getEffectivePatentPhysicsParams(id);
+      expect(effective.claim1Active).toBe(0);
+      // Controls are preserved, not clobbered
+      expect(effective.currentAmperes).toBe(400000);
+      expect(effective.bathTemperatureCelsius).toBe(980);
+      expect(effective.aluminaConcentrationPct).toBe(4.5);
+      const invertedMetrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(effective);
+      expect(invertedMetrics.find((m) => m.label === "Al Production Rate")?.value).toBe("0.0 kg/h");
+      expect(invertedMetrics.find((m) => m.label === "Total Cell Voltage")?.value).toBe("0.00 V");
+
+      // Restoring Claim 1 preserves the user's controls and re-activates Al production
+      setPatentPhysicsParam(id, claim1Param, 1);
+      const restored = getEffectivePatentPhysicsParams(id);
+      expect(restored.claim1Active).toBe(1);
+      expect(restored.currentAmperes).toBe(400000);
+      const restoredMetrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(restored);
+      expect(restoredMetrics.find((m) => m.label === "Al Production Rate")?.value).not.toBe(
+        "0.0 kg/h",
+      );
     } finally {
       unsubscribe();
       resetPatentPhysicsParams(id);

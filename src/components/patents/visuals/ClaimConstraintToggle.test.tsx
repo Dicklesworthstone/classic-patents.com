@@ -56,4 +56,26 @@ describe("ClaimConstraintToggle", () => {
 
     expect(html).toBe("");
   });
+
+  test("renders Hall Aluminium and Diesel Engine claim probes correctly", () => {
+    const hallHtml = renderToStaticMarkup(
+      <ClaimConstraintToggle
+        patentId="us-400766-hall-aluminium"
+        claimStates={{ 1: true }}
+        onToggleClaim={() => undefined}
+      />,
+    );
+    expect(hallHtml).toContain('data-testid="claim-constraint-toggle"');
+    expect(hallHtml).toContain("dissolves alumina in molten cryolite");
+
+    const dieselHtml = renderToStaticMarkup(
+      <ClaimConstraintToggle
+        patentId="us-542846-diesel-engine"
+        claimStates={{ 1: true }}
+        onToggleClaim={() => undefined}
+      />,
+    );
+    expect(dieselHtml).toContain('data-testid="claim-constraint-toggle"');
+    expect(dieselHtml).toContain("compresses atmospheric air to extreme pressure");
+  });
 });

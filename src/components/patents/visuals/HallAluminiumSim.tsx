@@ -4,18 +4,22 @@ import { Flame, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useMemo, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHallAluminium } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "./PortHamiltonianEnergyStrip";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function HallAluminiumSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics("us-400766-hall-aluminium");
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics("us-400766-hall-aluminium");
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
-  const currentAmperes = (params.currentAmperes as number) ?? 300000;
-  const bathTemperatureCelsius = (params.bathTemperatureCelsius as number) ?? 960;
-  const aluminaConcentrationPct = (params.aluminaConcentrationPct as number) ?? 5.5;
+  const currentAmperes = (effectiveParams.currentAmperes as number) ?? 300000;
+  const bathTemperatureCelsius = (effectiveParams.bathTemperatureCelsius as number) ?? 960;
+  const aluminaConcentrationPct = (effectiveParams.aluminaConcentrationPct as number) ?? 5.5;
+  const claim1Active = effectiveParams.claim1Active;
 
   const [activeTab, setActiveTab] = useState<"electrolysis" | "cross_section" | "chemistry">(
     "electrolysis",
@@ -26,13 +30,15 @@ export function HallAluminiumSim() {
       currentAmperes,
       bathTemperatureCelsius,
       aluminaConcentrationPct,
+      claim1Active,
     });
-  }, [currentAmperes, bathTemperatureCelsius, aluminaConcentrationPct]);
+  }, [currentAmperes, bathTemperatureCelsius, aluminaConcentrationPct, claim1Active]);
 
   // Visual scaling derived from SI state
-  const currentRatio = currentAmperes / 300000;
-  const bubbleCount = Math.round(12 * currentRatio);
-  const _anodeGlow = Math.min(1.0, 0.4 + currentRatio * 0.4);
+  const isClaim1Active = claim1Active === undefined || claim1Active >= 0.5;
+  const currentRatio = isClaim1Active ? currentAmperes / 300000 : 0;
+  const bubbleCount = isClaim1Active ? Math.round(12 * currentRatio) : 0;
+  const _anodeGlow = isClaim1Active ? Math.min(1.0, 0.4 + currentRatio * 0.4) : 0.05;
 
   return (
     <div className="w-full bg-parchment-50 dark:bg-ink-950 rounded-2xl border border-parchment-300 dark:border-ink-800 p-4 sm:p-6 shadow-xl text-ink-900 dark:text-parchment-100 font-sans space-y-6">
@@ -96,6 +102,26 @@ export function HallAluminiumSim() {
           </button>
         </div>
       </div>
+
+      {claimConstraintResult.refusalWarning && (
+        <div
+          role="alert"
+          className="rounded-xl border border-rose-500/40 bg-rose-950/30 p-3 text-xs text-rose-200"
+        >
+          <span className="font-mono font-bold uppercase tracking-wider text-rose-400 mr-2">
+            Refusal:
+          </span>
+          {claimConstraintResult.refusalWarning}
+        </div>
+      )}
+
+      <ClaimConstraintToggle
+        patentId="us-400766-hall-aluminium"
+        claimStates={claimStates}
+        onToggleClaim={(claim, active) => {
+          updateParam(claimConstraintStateParamId(claim), active ? 1 : 0);
+        }}
+      />
 
       {/* Interactive SVG Diagram */}
       <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] bg-canvas rounded-xl border border-ink-800 overflow-hidden flex items-center justify-center p-2">
@@ -190,7 +216,14 @@ export function HallAluminiumSim() {
           />
 
           {/* 3. MOLTEN CRYOLITE BATH (D, ~960°C) */}
-          <rect x="180" y="210" width="440" height="130" fill="url(#hallCryoliteBath)" />
+          <rect
+            x="180"
+            y="210"
+            width="440"
+            height="130"
+            fill={isClaim1Active ? "url(#hallCryoliteBath)" : "#334155"}
+            opacity={isClaim1Active ? 1 : 0.85}
+          />
 
           {/* Cryolite Crust Layer on top */}
           <rect
@@ -207,15 +240,17 @@ export function HallAluminiumSim() {
           <circle cx="520" cy="208" r="5" fill="#f59e0b" />
 
           {/* 4. SUNK MOLTEN ALUMINIUM METAL PAD (E, density 2.3 g/cm³) */}
-          <rect
-            x="180"
-            y="340"
-            width="440"
-            height="35"
-            fill="url(#hallAluminiumPad)"
-            stroke="#38bdf8"
-            strokeWidth="1.5"
-          />
+          {isClaim1Active && (
+            <rect
+              x="180"
+              y="340"
+              width="440"
+              height="35"
+              fill="url(#hallAluminiumPad)"
+              stroke="#38bdf8"
+              strokeWidth="1.5"
+            />
+          )}
 
           {/* Cathode Collector Bars (Steel rods embedded in bottom) */}
           <rect x="220" y="375" width="360" height="12" fill="#64748b" rx="2" />
@@ -313,8 +348,9 @@ export function HallAluminiumSim() {
             fontFamily="monospace"
             fontWeight="bold"
           >
-            POSITIVE ANODE BUS (+) [{sim.currentAmperes.toLocaleString()} A · {sim.totalCellVoltage}{" "}
-            V]
+            {isClaim1Active
+              ? `POSITIVE ANODE BUS (+) [${sim.currentAmperes.toLocaleString()} A · ${sim.totalCellVoltage} V]`
+              : "CIRCUIT OPEN: INVERTED CLAIM 1 (NO MOLTEN CRYOLITE SOLVENT)"}
           </text>
 
           {/* 6. CO2 BUBBLE EVOLUTION ANIMATION (O2- + C -> CO2 + 4e-) */}

@@ -46,19 +46,21 @@ const IDLE_THERMO: ThermodynamicsState = {
 
 export function DieselEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { params, updateParam } = usePatentPhysics("us-542846-diesel-engine");
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam } =
+    usePatentPhysics("us-542846-diesel-engine");
 
-  const engineRpm = params.engineRpm ?? 150;
-  const compressionRatio = params.compRatio ?? params.compressionRatio ?? 18;
-  const blastAirPressure = params.blastAirPressure ?? 65;
-  const cutoffRatio = params.cutoffRatio ?? 1.6;
+  const engineRpm = effectiveParams.engineRpm ?? 150;
+  const compressionRatio = effectiveParams.compRatio ?? effectiveParams.compressionRatio ?? 18;
+  const blastAirPressure = effectiveParams.blastAirPressure ?? 65;
+  const cutoffRatio = effectiveParams.cutoffRatio ?? 1.6;
+  const claim1Active = effectiveParams.claim1Active;
 
   const diesel = kernelStepDieselEngine({
     compressionRatio,
     blastAirPressureBar: blastAirPressure,
     cutoffRatio,
     engineRpm,
+    claim1Active,
   });
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
@@ -98,7 +100,10 @@ export function DieselEngine3D() {
     domain: "thermodynamics_transport",
     timestampMs: 0,
     timeStepDt: 1 / 60,
-    refusal: { isRefused: false },
+    refusal: {
+      isRefused: claim1Active === 0,
+      reason: claimConstraintResult.refusalWarning ?? undefined,
+    },
     thermo: {
       temperatureCelsius: peakTempC,
       temperatureKelvin: peakTempC + 273.15,
@@ -294,9 +299,7 @@ export function DieselEngine3D() {
             patentId="us-542846-diesel-engine"
             claimStates={claimStates}
             onToggleClaim={(c: number, active: boolean) => {
-              setClaimStates((prev) => ({ ...prev, [c]: active }));
-              updateParam("compressionRatio", active ? 18 : 6);
-              updateParam("blastAirPressure", active ? 65 : 15);
+              updateParam(claimConstraintStateParamId(c), active ? 1 : 0);
             }}
           />
           <button
@@ -504,7 +507,6 @@ export function DieselEngine3D() {
           patentId="us-542846-diesel-engine"
           claimStates={claimStates}
           onToggleClaim={(claimNo, active) => {
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
             updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0);
           }}
           className="mt-2"

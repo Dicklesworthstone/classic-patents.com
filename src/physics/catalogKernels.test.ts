@@ -967,7 +967,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(base.aluminiumProductionRateKgPerHour).toBe(next.aluminiumProductionRateKgPerHour);
     expect(
       next.aluminiumProductionKgPerHourUnrounded - base.aluminiumProductionKgPerHourUnrounded,
-    ).toBeCloseTo(base.productionSlopeKgPerHourPerAmpere, 10);
+    ).toBeCloseTo(base.productionSlopeKgPerHourPerAmpere as number, 10);
     expect(base.aluminiumProductionRateKgPerHour).toBe(
       Number(base.aluminiumProductionKgPerHourUnrounded.toFixed(1)),
     );

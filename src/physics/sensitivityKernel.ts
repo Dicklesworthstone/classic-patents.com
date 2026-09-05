@@ -1075,6 +1075,12 @@ export function computeParameterSensitivity(
     }
 
     case "us-400766-hall-aluminium": {
+      const claim1Active =
+        params.claim1Active === undefined
+          ? true
+          : typeof params.claim1Active === "number"
+            ? params.claim1Active >= 0.5
+            : Boolean(params.claim1Active);
       const current =
         params.currentAmperes ?? params.current ?? params.amperes ?? params.currentA ?? 300000.0;
       const tempC =
@@ -1092,6 +1098,7 @@ export function computeParameterSensitivity(
         5.5;
 
       if (
+        !claim1Active ||
         !Number.isFinite(current) ||
         current < 100000 ||
         current > 500000 ||
@@ -1109,6 +1116,7 @@ export function computeParameterSensitivity(
         currentAmperes: current,
         bathTemperatureCelsius: tempC,
         aluminaConcentrationPct: aluminaPct,
+        claim1Active: claim1Active ? 1 : 0,
       });
       const key =
         controlKey === "current" || controlKey === "amperes" || controlKey === "currentA"
@@ -7688,6 +7696,7 @@ export function computeParameterSensitivity(
         blastAirPressureBar: blast,
         cutoffRatio: cutoff,
         engineRpm: rpm,
+        claim1Active: claim1Active ? 1 : 0,
       });
       if (controlKey === "compRatio" || controlKey === "compressionRatio") {
         if (!claim1Active) {

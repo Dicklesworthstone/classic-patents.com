@@ -11,6 +11,7 @@ export interface DieselEngineStepParams {
   blastAirPressureBar?: number;
   cutoffRatio?: number;
   engineRpm?: number;
+  claim1Active?: number | boolean;
 }
 
 export function stepDieselEngine(params: DieselEngineStepParams) {
@@ -18,6 +19,8 @@ export function stepDieselEngine(params: DieselEngineStepParams) {
   const pBlast = params.blastAirPressureBar ?? 65;
   const rc = params.cutoffRatio ?? 1.6;
   const rpm = params.engineRpm ?? 150;
+  const isClaim1Active =
+    params.claim1Active === undefined || params.claim1Active === 1 || params.claim1Active === true;
   const gamma = 1.4;
   const tIntakeK = 300;
   const tCompressionKUnrounded = tIntakeK * r ** (gamma - 1);
@@ -35,7 +38,7 @@ export function stepDieselEngine(params: DieselEngineStepParams) {
   const brakeEfficiencySlopePctPerCutoffRatio =
     (-100 * brakeEfficiencyFactor * (gamma * rc ** (gamma - 1) * (rc - 1) - (rc ** gamma - 1))) /
     (r ** (gamma - 1) * gamma * (rc - 1) ** 2);
-  const isAutoIgnition = tCompressionC > 210 && pBlast > pCompBar;
+  const isAutoIgnition = isClaim1Active && tCompressionC > 210 && pBlast > pCompBar;
   const crank = rpmToOmega(rpm);
 
   return {

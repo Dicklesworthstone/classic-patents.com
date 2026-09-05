@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHallAluminium } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ElectromagneticsState, ThermodynamicsState } from "@/physics/types";
 import {
@@ -58,26 +59,28 @@ export function HallAluminium3D() {
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(true);
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam } =
+    usePatentPhysics("us-400766-hall-aluminium");
 
-  const { params, updateParam } = usePatentPhysics("us-400766-hall-aluminium");
-
-  const currentAmperes = (params.currentAmperes as number) ?? 300000;
-  const bathTemperatureCelsius = (params.bathTemperatureCelsius as number) ?? 960;
-  const aluminaConcentrationPct = (params.aluminaConcentrationPct as number) ?? 5.5;
+  const currentAmperes = (effectiveParams.currentAmperes as number) ?? 300000;
+  const bathTemperatureCelsius = (effectiveParams.bathTemperatureCelsius as number) ?? 960;
+  const aluminaConcentrationPct = (effectiveParams.aluminaConcentrationPct as number) ?? 5.5;
+  const claim1Active = effectiveParams.claim1Active;
 
   const sim = useMemo(() => {
     return stepHallAluminium({
       currentAmperes,
       bathTemperatureCelsius,
       aluminaConcentrationPct,
+      claim1Active,
     });
-  }, [currentAmperes, bathTemperatureCelsius, aluminaConcentrationPct]);
+  }, [currentAmperes, bathTemperatureCelsius, aluminaConcentrationPct, claim1Active]);
 
   const live = useLiveSimParams({
     currentAmperes,
     bathTemperatureCelsius,
     aluminaConcentrationPct,
+    claim1Active: claim1Active === 0 || claimStates[1] === false ? 0 : 1,
     totalCellVoltage: sim.totalCellVoltage,
     aluminiumProductionRateKgPerHour: sim.aluminiumProductionRateKgPerHour,
     isCutaway,
@@ -87,7 +90,10 @@ export function HallAluminium3D() {
   // updater (TS_FALLBACK), so the render loop and any badge read one state.
   useFrankenSimPhysics("us-400766-hall-aluminium", {
     domain: "electromagnetics_flux",
-    refusal: { isRefused: false },
+    refusal: {
+      isRefused: sim.aluminiumProductionRateKgPerHour === 0 && claim1Active === 0,
+      reason: claimConstraintResult.refusalWarning ?? undefined,
+    },
     em: { ...IDLE_EM, currentAmperes: sim.currentAmperes, voltageVolts: sim.totalCellVoltage },
     thermo: { ...IDLE_THERMO, temperatureCelsius: sim.bathTemperatureCelsius },
   });
@@ -98,9 +104,13 @@ export function HallAluminium3D() {
         currentAmperes: live.current.currentAmperes,
         bathTemperatureCelsius: live.current.bathTemperatureCelsius,
         aluminaConcentrationPct: live.current.aluminaConcentrationPct,
+        claim1Active: live.current.claim1Active,
       });
       return {
-        refusal: { isRefused: false },
+        refusal: {
+          isRefused: s.aluminiumProductionRateKgPerHour === 0 && live.current.claim1Active === 0,
+          reason: live.current.claim1Active === 0 ? "CLAIM 1 INVERTED" : undefined,
+        },
         em: {
           ...(prev.em ?? IDLE_EM),
           currentAmperes: s.currentAmperes,
@@ -172,6 +182,7 @@ export function HallAluminium3D() {
           bathTemperatureCelsius: frameTel.thermo?.temperatureCelsius ?? p.bathTemperatureCelsius,
           totalCellVoltage: frameTel.em?.voltageVolts ?? p.totalCellVoltage,
           aluminiumProductionRateKgPerHour: p.aluminiumProductionRateKgPerHour,
+          claim1Active: p.claim1Active,
         },
         timeSec,
         dt,
@@ -240,8 +251,7 @@ export function HallAluminium3D() {
             patentId="us-400766-hall-aluminium"
             claimStates={claimStates}
             onToggleClaim={(c: number, active: boolean) => {
-              setClaimStates((prev) => ({ ...prev, [c]: active }));
-              updateParam("currentAmperes", active ? 300000 : 15000);
+              updateParam(claimConstraintStateParamId(c), active ? 1 : 0);
             }}
           />
           <button

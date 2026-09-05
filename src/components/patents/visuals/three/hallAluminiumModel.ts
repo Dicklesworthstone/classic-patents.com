@@ -410,38 +410,45 @@ export function updateHallAluminiumVisual(
     bathTemperatureCelsius: number;
     totalCellVoltage: number;
     aluminiumProductionRateKgPerHour: number;
+    claim1Active?: number;
   },
   elapsedSeconds: number,
   deltaSeconds: number,
 ) {
+  const isClaim1Active = telemetry.claim1Active === undefined || telemetry.claim1Active >= 0.5;
+  const isProducing = isClaim1Active && telemetry.aluminiumProductionRateKgPerHour > 0;
+
   // Deterministic bubble evolution animation
-  const positions = model.bubbleParticles.geometry.attributes.position.array as Float32Array;
-  const count = positions.length / 3;
-  const currentFactor = telemetry.currentAmperes / 300000;
-  // Lift / sway drain current density (300 kA → leftover 0.4 / 3). Zero current freezes the bath.
-  const bubbleLiftSpeed = 0.4 * currentFactor;
-  const bubbleSwayOmegaRadPerS = 3 * currentFactor;
+  model.bubbleParticles.visible = isProducing;
+  if (isProducing) {
+    const positions = model.bubbleParticles.geometry.attributes.position.array as Float32Array;
+    const count = positions.length / 3;
+    const currentFactor = telemetry.currentAmperes / 300000;
+    // Lift / sway drain current density (300 kA → leftover 0.4 / 3). Zero current freezes the bath.
+    const bubbleLiftSpeed = 0.4 * currentFactor;
+    const bubbleSwayOmegaRadPerS = 3 * currentFactor;
 
-  for (let i = 0; i < count; i++) {
-    const baseBlock = i % 4;
-    const blockX = [-1.2, -0.4, 0.4, 1.2][baseBlock];
+    for (let i = 0; i < count; i++) {
+      const baseBlock = i % 4;
+      const blockX = [-1.2, -0.4, 0.4, 1.2][baseBlock];
 
-    const lowerBathY = -0.55;
-    const bathTravel = 0.8;
-    const nextY = positions[i * 3 + 1] + bubbleLiftSpeed * Math.max(0, deltaSeconds);
-    const y = lowerBathY + ((((nextY - lowerBathY) % bathTravel) + bathTravel) % bathTravel);
-    positions[i * 3 + 1] = y;
+      const lowerBathY = -0.55;
+      const bathTravel = 0.8;
+      const nextY = positions[i * 3 + 1] + bubbleLiftSpeed * Math.max(0, deltaSeconds);
+      const y = lowerBathY + ((((nextY - lowerBathY) % bathTravel) + bathTravel) % bathTravel);
+      positions[i * 3 + 1] = y;
 
-    positions[i * 3] = blockX + Math.sin(elapsedSeconds * bubbleSwayOmegaRadPerS + i) * 0.15;
+      positions[i * 3] = blockX + Math.sin(elapsedSeconds * bubbleSwayOmegaRadPerS + i) * 0.15;
+    }
+    model.bubbleParticles.geometry.attributes.position.needsUpdate = true;
   }
-  model.bubbleParticles.geometry.attributes.position.needsUpdate = true;
 
   // Modulate cryolite bath emissive glow with bath temperature
   const tempRatio = Math.max(0.7, Math.min(1.3, telemetry.bathTemperatureCelsius / 960));
   const bathMat = model.cryoliteBath.material as THREE.MeshPhysicalMaterial;
-  bathMat.emissiveIntensity = 0.35 * tempRatio;
+  bathMat.emissiveIntensity = isClaim1Active ? 0.35 * tempRatio : 0.05;
 
   // Anode pulse drains the same current factor (300 kA → leftover 1.5).
-  const anodePulseOmegaRadPerS = 1.5 * currentFactor;
+  const anodePulseOmegaRadPerS = isProducing ? 1.5 * (telemetry.currentAmperes / 300000) : 0;
   model.anodeAssembly.position.y = Math.sin(elapsedSeconds * anodePulseOmegaRadPerS) * 0.005;
 }

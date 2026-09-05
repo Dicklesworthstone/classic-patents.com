@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { allPatents } from "@/data/patents";
+import { stepHallAluminium } from "./catalogKernels";
 import {
   applyClaimConstraintModifications,
   applySharedClaimConstraintModifications,
@@ -7,6 +8,7 @@ import {
   claimConstraintStateParamId,
   readSharedClaimConstraintStates,
 } from "./claimConstraints";
+import { stepDieselEngine } from "./dieselEngineKernel";
 
 describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
   test("every catalogue record has an explicit key in CATALOG_CLAIM_CONSTRAINTS", () => {
@@ -116,6 +118,64 @@ describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
     expect(res.activeFailures.length).toBeGreaterThanOrEqual(1);
     expect(res.activeFailures[0]).toContain("Source-bound Claim 1 condition absent");
     expect(res.refusalWarning).toContain("SOURCE-BOUND REFUSAL");
+  });
+
+  test("Hall Aluminium Claim 1 inversion withholds fluoride flux without clobbering input controls", () => {
+    const rawParams = {
+      currentAmperes: 350000,
+      bathTemperatureCelsius: 980,
+      aluminaConcentrationPct: 6.0,
+    };
+    const res = applyClaimConstraintModifications("us-400766-hall-aluminium", rawParams, {
+      1: false,
+    });
+    expect(res.activeFailures.length).toBeGreaterThanOrEqual(1);
+    expect(res.activeFailures[0]).toContain("Absence of cryolite flux");
+    expect(res.refusalWarning).toContain("ELECTROCHEMICAL REFUSAL");
+    // Controls are preserved, not clobbered to 15 kA or 2050 °C
+    expect(res.modifiedParams.currentAmperes).toBe(350000);
+    expect(res.modifiedParams.bathTemperatureCelsius).toBe(980);
+    expect(res.modifiedParams.aluminaConcentrationPct).toBe(6.0);
+    expect(res.modifiedParams.claim1Active).toBe(0);
+
+    const normalSim = stepHallAluminium(rawParams);
+    expect(normalSim.aluminiumProductionRateKgPerHour).toBeGreaterThan(0);
+    expect(normalSim.totalCellVoltage).toBeGreaterThan(0);
+    expect(normalSim.productionSlopeKgPerHourPerAmpere).not.toBeNull();
+
+    const invertedSim = stepHallAluminium(res.modifiedParams);
+    expect(invertedSim.aluminiumProductionRateKgPerHour).toBe(0);
+    expect(invertedSim.totalCellVoltage).toBe(0);
+    expect(invertedSim.electricalPowerKw).toBe(0);
+    expect(invertedSim.productionSlopeKgPerHourPerAmpere).toBeNull();
+  });
+
+  test("Diesel Engine Claim 1 inversion withholds compression ignition without clobbering controls", () => {
+    const rawParams = {
+      compressionRatio: 20,
+      blastAirPressureBar: 70,
+      cutoffRatio: 1.5,
+      engineRpm: 180,
+    };
+    const res = applyClaimConstraintModifications("us-542846-diesel-engine", rawParams, {
+      1: false,
+    });
+    expect(res.activeFailures.length).toBeGreaterThanOrEqual(1);
+    expect(res.activeFailures[0]).toContain("Pre-Ignition Knock");
+    expect(res.refusalWarning).toContain("CLAIM 1 INVERTED");
+    // Controls are preserved, not clobbered to r=6, p=15
+    expect(res.modifiedParams.compressionRatio).toBe(20);
+    expect(res.modifiedParams.blastAirPressureBar).toBe(70);
+    expect(res.modifiedParams.claim1Active).toBe(0);
+    expect(res.modifiedParams.isAutoIgnition).toBe(0);
+
+    const normalSim = stepDieselEngine(rawParams);
+    expect(normalSim.isAutoIgnition).toBe(true);
+
+    const invertedSim = stepDieselEngine(res.modifiedParams);
+    expect(invertedSim.isAutoIgnition).toBe(false);
+    expect(invertedSim.tCompressionC).toBe(normalSim.tCompressionC);
+    expect(invertedSim.pCompBar).toBe(normalSim.pCompBar);
   });
 
   test("Einstein Claim 1 inversion opens only the source-described heated lift path", () => {

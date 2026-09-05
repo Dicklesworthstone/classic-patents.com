@@ -3535,10 +3535,35 @@ export function stepHallAluminium(params: {
   currentAmperes?: number;
   bathTemperatureCelsius?: number;
   aluminaConcentrationPct?: number;
+  claim1Active?: number | boolean;
 }) {
   const I = params.currentAmperes ?? 300000;
   const T = params.bathTemperatureCelsius ?? 960;
   const cAl2O3 = params.aluminaConcentrationPct ?? 5.5;
+  const isClaim1Active =
+    params.claim1Active === undefined || params.claim1Active === 1 || params.claim1Active === true;
+
+  if (!isClaim1Active) {
+    return {
+      currentAmperes: I,
+      bathTemperatureCelsius: T,
+      aluminaConcentrationPct: cAl2O3,
+      currentEfficiencyPct: 0,
+      aluminiumProductionRateKgPerHour: 0,
+      aluminiumProductionKgPerHourUnrounded: 0,
+      productionSlopeKgPerHourPerAmpere: null,
+      productionSlopeKgPerHourPerCelsius: null,
+      productionSlopeKgPerHourPerAluminaPct: null,
+      co2EmissionRateKgPerHour: 0,
+      totalCellVoltage: 0,
+      electricalPowerKw: 0,
+      electricalInputWatts: 0,
+      bathOhmicHeatingWatts: 0,
+      specificEnergyKwhPerKg: 0,
+      liquidAluminiumDensityGPerCm3: 2.28,
+      moltenBathDensityGPerCm3: 2.1,
+    };
+  }
 
   // Faraday's Constant F = 96485 C/mol, M(Al) = 26.9815 g/mol, z = 3
   // Theoretical Al yield = (I * 3600 * 26.9815) / (3 * 96485 * 1000) kg/hr = I * 0.0003355 kg/hr

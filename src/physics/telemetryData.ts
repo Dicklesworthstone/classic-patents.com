@@ -5236,6 +5236,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         blastAirPressureBar: p.blastAirPressure ?? 65,
         cutoffRatio: p.cutoffRatio ?? 1.6,
         engineRpm: p.engineRpm ?? 150,
+        claim1Active: p.claim1Active,
       });
       const tCompC = diesel.tCompressionC;
       const pComp = diesel.pCompBar.toFixed(1);
@@ -8069,6 +8070,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         currentAmperes: p.currentAmperes,
         bathTemperatureCelsius: p.bathTemperatureCelsius,
         aluminaConcentrationPct: p.aluminaConcentrationPct,
+        claim1Active: p.claim1Active,
       });
       return [
         {
