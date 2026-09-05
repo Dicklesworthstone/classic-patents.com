@@ -2497,8 +2497,14 @@ export function engelbartPointerSvg(
 export function stepWozniakApple(params: { crystalFreq?: number; ramCapacityKb?: number }) {
   const f = params.crystalFreq ?? 14.318;
   const cpuMhz = Number((f / 14).toFixed(3));
+  const cpuClockSlopeMhzPerMhz = Number((1 / 14).toFixed(4));
+  const colorSubcarrierSlopeMhzPerMhz = 0.25;
+  const dramWindowSlopeNsPerMhz = Number((-7000 / (f * f)).toFixed(2));
   return {
     cpuClockMhz: cpuMhz,
+    cpuClockSlopeMhzPerMhz,
+    colorSubcarrierSlopeMhzPerMhz,
+    dramWindowSlopeNsPerMhz,
     colorSubcarrierMhz: Number((f / 4).toFixed(3)),
     dramWindowNs: Number(((1000 / cpuMhz) * 0.5).toFixed(1)),
     ramCapacityKb: params.ramCapacityKb ?? 48,

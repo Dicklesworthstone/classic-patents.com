@@ -18,6 +18,7 @@ import {
   stepHollerithTabulating,
   stepLandPolaroidInstantFilm,
   stepThomsonWelding,
+  stepWozniakApple,
   stepZeppelinAirship,
 } from "./catalogKernels";
 import {
@@ -1616,14 +1617,43 @@ export function computeParameterSensitivity(
     }
 
     case "us-4136359-wozniak-apple": {
+      const f = params.crystalFreq ?? 14.318;
+      const ram = params.ramCapacityKb ?? 48;
+
+      if (
+        !Number.isFinite(f) ||
+        f < 7.0 ||
+        f > 28.0 ||
+        !Number.isFinite(ram) ||
+        ram < 4 ||
+        ram > 48
+      ) {
+        return null;
+      }
+
+      const apple = stepWozniakApple({
+        crystalFreq: f,
+        ramCapacityKb: ram,
+      });
+
       if (controlKey === "crystalFreq") {
         return {
-          metricName: "Video Dot Clock Bandwidth",
-          derivativeSymbol: "∂BW / ∂f_osc",
-          derivativeValue: 1.0,
+          metricName: "Microprocessor Clock Speed",
+          derivativeSymbol: "∂f_cpu / ∂f_xtal",
+          derivativeValue: apple.cpuClockSlopeMhzPerMhz,
           derivativeUnit: "MHz / MHz",
           interpretation:
-            "Direct synchrony: master 14.318 MHz oscillator drives CPU, color burst, and video timing simultaneously.",
+            "Master crystal divider: 14.31818 MHz master oscillation divided by 14 yields the ~1.023 MHz 6502 microprocessor clock.",
+        };
+      }
+      if (controlKey === "ramCapacityKb") {
+        return {
+          metricName: "Accessible Video & Program RAM",
+          derivativeSymbol: "∂RAM / ∂Capacity",
+          derivativeValue: 1.0,
+          derivativeUnit: "KB / KB",
+          interpretation:
+            "Linear dynamic RAM capacity expansion without video refresh contention or processor DMA wait states.",
         };
       }
       break;

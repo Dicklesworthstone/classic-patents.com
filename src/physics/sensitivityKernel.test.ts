@@ -7,6 +7,7 @@ import {
   stepGoodyearRubber,
   stepHollerithTabulating,
   stepThomsonWelding,
+  stepWozniakApple,
   stepZeppelinAirship,
 } from "./catalogKernels";
 
@@ -895,6 +896,39 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
     for (const invalid of [19, 401, Number.NaN]) {
       expect(computeParameterSensitivity(id, "pulsesPerRev", { pulsesPerRev: invalid })).toBeNull();
+    }
+  });
+
+  test("Wozniak Apple II derives microprocessor clock and RAM sensitivities from master crystal", () => {
+    const id = "us-4136359-wozniak-apple";
+
+    for (const f of [10.0, 14.318, 20.0, 28.0]) {
+      const sens = computeParameterSensitivity(id, "crystalFreq", { crystalFreq: f });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Microprocessor Clock Speed");
+      expect(sens?.derivativeSymbol).toBe("∂f_cpu / ∂f_xtal");
+      expect(sens?.derivativeUnit).toBe("MHz / MHz");
+      const apple = stepWozniakApple({ crystalFreq: f });
+      expect(sens?.derivativeValue).toBeCloseTo(apple.cpuClockSlopeMhzPerMhz, 4);
+    }
+
+    for (const ram of [4, 16, 32, 48]) {
+      const sens = computeParameterSensitivity(id, "ramCapacityKb", { ramCapacityKb: ram });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Accessible Video & Program RAM");
+      expect(sens?.derivativeSymbol).toBe("∂RAM / ∂Capacity");
+      expect(sens?.derivativeValue).toBe(1.0);
+      expect(sens?.derivativeUnit).toBe("KB / KB");
+    }
+
+    // Invalid parameters
+    for (const invalid of [6.9, 28.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "crystalFreq", { crystalFreq: invalid })).toBeNull();
+    }
+    for (const invalid of [3, 49, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "ramCapacityKb", { ramCapacityKb: invalid }),
+      ).toBeNull();
     }
   });
 });
