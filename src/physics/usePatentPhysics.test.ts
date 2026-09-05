@@ -2669,4 +2669,183 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       resetPatentPhysicsParams(id);
     }
   });
+
+  test("Maiman Ruby Laser aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-3353115-maiman-ruby-laser";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.pumpEnergyJoules));
+
+    try {
+      setPatentPhysicsParam(id, "pumpEnergy", 250);
+      const params = getPatentPhysicsParams(id);
+      expect(params.pumpEnergyJoules).toBe(250);
+      expect(params.pumpEnergy).toBe(250);
+      expect(params.pumpPowerWatts).toBe(250);
+      expect(observations).toEqual([250]);
+      expect(getLastParamChange(id)?.id).toBe("pumpEnergyJoules");
+
+      setPatentPhysicsParam(id, "flashDuration", 1.8);
+      expect(getPatentPhysicsParams(id).flashDurationMs).toBe(1.8);
+      expect(getPatentPhysicsParams(id).flashDuration).toBe(1.8);
+      expect(getPatentPhysicsParams(id).flashMs).toBe(1.8);
+
+      setPatentPhysicsParam(id, "rodLength", 7.5);
+      expect(getPatentPhysicsParams(id).rodLengthCm).toBe(7.5);
+      expect(getPatentPhysicsParams(id).rodLength).toBe(7.5);
+
+      setPatentPhysicsParam(id, "mirrorReflectivity", 0.85);
+      expect(getPatentPhysicsParams(id).outputMirrorReflectivity).toBe(0.85);
+      expect(getPatentPhysicsParams(id).mirrorReflectivity).toBe(0.85);
+
+      setPatentPhysicsParam(id, "temperatureK", 250);
+      expect(getPatentPhysicsParams(id).crystalTemperatureKelvin).toBe(250);
+      expect(getPatentPhysicsParams(id).temperatureK).toBe(250);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Threshold Pump Energy")?.value).not.toBe(
+        initial.find((m) => m.label === "Threshold Pump Energy")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Baer Odyssey aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-3728480-baer-odyssey";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.player1PotX));
+
+    try {
+      setPatentPhysicsParam(id, "p1X", 0.4);
+      const params = getPatentPhysicsParams(id);
+      expect(params.player1PotX).toBe(0.4);
+      expect(params.p1X).toBe(0.4);
+      expect(params.knob17).toBe(0.4);
+      expect(observations).toEqual([0.4]);
+      expect(getLastParamChange(id)?.id).toBe("player1PotX");
+
+      setPatentPhysicsParam(id, "p1Y", 0.6);
+      expect(getPatentPhysicsParams(id).player1PotY).toBe(0.6);
+      expect(getPatentPhysicsParams(id).knob16).toBe(0.6);
+
+      setPatentPhysicsParam(id, "spin", 0.5);
+      expect(getPatentPhysicsParams(id).englishControl).toBe(0.5);
+      expect(getPatentPhysicsParams(id).spin).toBe(0.5);
+
+      setPatentPhysicsParam(id, "ballSpeed", 1.8);
+      expect(getPatentPhysicsParams(id).ballSpeedMultiplier).toBe(1.8);
+      expect(getPatentPhysicsParams(id).ballSpeed).toBe(1.8);
+
+      setPatentPhysicsParam(id, "channel", 4);
+      expect(getPatentPhysicsParams(id).rfChannel).toBe(4);
+      expect(getPatentPhysicsParams(id).channel).toBe(4);
+
+      setPatentPhysicsParam(id, "chroma", 90);
+      expect(getPatentPhysicsParams(id).chromaPhaseDeg).toBe(90);
+      expect(getPatentPhysicsParams(id).chroma).toBe(90);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Illustrative Receiver Channel")?.value).toBe("67.25");
+      expect(metrics.find((m) => m.label === "Illustrative Receiver Channel")?.value).not.toBe(
+        initial.find((m) => m.label === "Illustrative Receiver Channel")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Kamen Medication Injection Device aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-3858581-kamen-medication-injection-device";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.selectedPulseCount));
+
+    try {
+      setPatentPhysicsParam(id, "pulseCount", 24);
+      const params = getPatentPhysicsParams(id);
+      expect(params.selectedPulseCount).toBe(24);
+      expect(params.pulseCount).toBe(24);
+      expect(params.pulses).toBe(24);
+      expect(observations).toEqual([24]);
+      expect(getLastParamChange(id)?.id).toBe("selectedPulseCount");
+
+      setPatentPhysicsParam(id, "displaySpeed", 6);
+      expect(getPatentPhysicsParams(id).displayTurnsPerSecond).toBe(6);
+      expect(getPatentPhysicsParams(id).displaySpeed).toBe(6);
+
+      setPatentPhysicsParam(id, "offInterval", 4.5);
+      expect(getPatentPhysicsParams(id).offIntervalDisplaySeconds).toBe(4.5);
+      expect(getPatentPhysicsParams(id).offInterval).toBe(4.5);
+
+      setPatentPhysicsParam(id, "clutch", 0);
+      expect(getPatentPhysicsParams(id).clutchEngaged).toBe(0);
+      expect(getPatentPhysicsParams(id).clutch).toBe(0);
+
+      setPatentPhysicsParam(id, "run", 0);
+      expect(getPatentPhysicsParams(id).running).toBe(0);
+      expect(getPatentPhysicsParams(id).run).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Screw-Turn Counter")?.value).toBe("0/24");
+      expect(metrics.find((m) => m.label === "Screw-Turn Counter")?.value).not.toBe(
+        initial.find((m) => m.label === "Screw-Turn Counter")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Metcalfe Ethernet aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-4063220-metcalfe-ethernet";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.cableLengthMeters));
+
+    try {
+      setPatentPhysicsParam(id, "cableLength", 800);
+      const params = getPatentPhysicsParams(id);
+      expect(params.cableLengthMeters).toBe(800);
+      expect(params.cableLength).toBe(800);
+      expect(params.length).toBe(800);
+      expect(observations).toEqual([800]);
+      expect(getLastParamChange(id)?.id).toBe("cableLengthMeters");
+
+      setPatentPhysicsParam(id, "dataRate", 5.0);
+      expect(getPatentPhysicsParams(id).dataRateMbps).toBe(5.0);
+      expect(getPatentPhysicsParams(id).dataRate).toBe(5.0);
+
+      setPatentPhysicsParam(id, "stations", 16);
+      expect(getPatentPhysicsParams(id).stationCount).toBe(16);
+      expect(getPatentPhysicsParams(id).stations).toBe(16);
+
+      setPatentPhysicsParam(id, "load", 1.2);
+      expect(getPatentPhysicsParams(id).offeredLoad).toBe(1.2);
+      expect(getPatentPhysicsParams(id).load).toBe(1.2);
+
+      setPatentPhysicsParam(id, "packetSize", 1024);
+      expect(getPatentPhysicsParams(id).packetSizeBytes).toBe(1024);
+      expect(getPatentPhysicsParams(id).packetSize).toBe(1024);
+
+      setPatentPhysicsParam(id, "collision", 1);
+      expect(getPatentPhysicsParams(id).triggerCollision).toBe(1);
+      expect(getPatentPhysicsParams(id).collision).toBe(1);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "One-Way Cable Delay")?.value).not.toBe(
+        initial.find((m) => m.label === "One-Way Cable Delay")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
 });

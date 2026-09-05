@@ -134,38 +134,79 @@ function deterministicBackoffSlot(
 }
 
 export function readEthernetControls(
-  raw?: Partial<MetcalfeEthernetControls>,
+  raw?: Partial<MetcalfeEthernetControls> | Readonly<Record<string, number>>,
 ): MetcalfeEthernetControls {
+  const p = raw as Record<string, any> | undefined;
   return {
     cableLengthMeters: Math.max(
       10,
-      Math.min(1000, raw?.cableLengthMeters ?? DEFAULT_ETHERNET_CONTROLS.cableLengthMeters),
+      Math.min(
+        1000,
+        p?.cableLengthMeters ??
+          p?.cableLength ??
+          p?.length ??
+          p?.coaxLength ??
+          p?.busLength ??
+          DEFAULT_ETHERNET_CONTROLS.cableLengthMeters,
+      ),
     ),
     dataRateMbps: Math.max(
       0.5,
-      Math.min(10.0, raw?.dataRateMbps ?? DEFAULT_ETHERNET_CONTROLS.dataRateMbps),
+      Math.min(
+        10.0,
+        p?.dataRateMbps ??
+          p?.dataRate ??
+          p?.bitRate ??
+          p?.transmissionRate ??
+          DEFAULT_ETHERNET_CONTROLS.dataRateMbps,
+      ),
     ),
     stationCount: Math.max(
       2,
-      Math.min(32, Math.floor(raw?.stationCount ?? DEFAULT_ETHERNET_CONTROLS.stationCount)),
+      Math.min(
+        32,
+        Math.floor(
+          p?.stationCount ??
+            p?.stations ??
+            p?.nodes ??
+            p?.contenderCount ??
+            DEFAULT_ETHERNET_CONTROLS.stationCount,
+        ),
+      ),
     ),
     offeredLoad: Math.max(
       0.01,
-      Math.min(3.0, raw?.offeredLoad ?? DEFAULT_ETHERNET_CONTROLS.offeredLoad),
+      Math.min(
+        3.0,
+        p?.offeredLoad ??
+          p?.load ??
+          p?.trafficLoad ??
+          p?.g ??
+          DEFAULT_ETHERNET_CONTROLS.offeredLoad,
+      ),
     ),
     packetSizeBytes: Math.max(
       64,
-      Math.min(1518, Math.floor(raw?.packetSizeBytes ?? DEFAULT_ETHERNET_CONTROLS.packetSizeBytes)),
+      Math.min(
+        1518,
+        Math.floor(
+          p?.packetSizeBytes ??
+            p?.packetSize ??
+            p?.frameSize ??
+            p?.packetBytes ??
+            DEFAULT_ETHERNET_CONTROLS.packetSizeBytes,
+        ),
+      ),
     ),
-    triggerCollision: Boolean(raw?.triggerCollision),
+    triggerCollision: Boolean(p?.triggerCollision ?? p?.collision ?? p?.forceCollision),
     station1Transmitting:
-      raw?.station1Transmitting === undefined
+      p?.station1Transmitting === undefined
         ? DEFAULT_ETHERNET_CONTROLS.station1Transmitting
-        : Boolean(raw.station1Transmitting),
+        : Boolean(p.station1Transmitting),
     station2Transmitting:
-      raw?.station2Transmitting === undefined
+      p?.station2Transmitting === undefined
         ? DEFAULT_ETHERNET_CONTROLS.station2Transmitting
-        : Boolean(raw.station2Transmitting),
+        : Boolean(p.station2Transmitting),
   };
 }
 

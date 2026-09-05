@@ -2432,12 +2432,46 @@ export function computeParameterSensitivity(
     case "us-3353115-maiman-ruby-laser":
     case "us-3353115-maiman-laser": {
       const pumpEnergy = Number(
-        params.pumpEnergyJoules ?? params.pumpPowerWatts ?? params.pumpPower ?? 150,
+        params.pumpEnergyJoules ??
+          params.pumpPowerWatts ??
+          params.pumpPower ??
+          params.pumpEnergy ??
+          params.flashEnergy ??
+          150,
       );
-      const flashDuration = Number(params.flashDurationMs ?? 1.0);
-      const rodLength = Number(params.rodLengthCm ?? 5.0);
-      const outputReflectivity = Number(params.outputMirrorReflectivity ?? 0.92);
-      const crystalTemp = Number(params.crystalTemperatureKelvin ?? params.temperatureK ?? 300);
+      const flashDuration = Number(
+        params.flashDurationMs ??
+          params.flashDuration ??
+          params.flashMs ??
+          params.pulseDurationMs ??
+          params.pulseDuration ??
+          params.flashTimeMs ??
+          params.durationMs ??
+          1.0,
+      );
+      const rodLength = Number(
+        params.rodLengthCm ??
+          params.rodLength ??
+          params.crystalLengthCm ??
+          params.laserRodLength ??
+          5.0,
+      );
+      const outputReflectivity = Number(
+        params.outputMirrorReflectivity ??
+          params.outputReflectivity ??
+          params.mirrorReflectivity ??
+          params.r2 ??
+          params.couplerReflectivity ??
+          0.92,
+      );
+      const crystalTemp = Number(
+        params.crystalTemperatureKelvin ??
+          params.crystalTemperature ??
+          params.temperatureK ??
+          params.temperature ??
+          params.tempK ??
+          300,
+      );
 
       if (
         !Number.isFinite(pumpEnergy) ||
@@ -2462,7 +2496,9 @@ export function computeParameterSensitivity(
       if (
         controlKey === "pumpPowerWatts" ||
         controlKey === "pumpPower" ||
-        controlKey === "pumpEnergyJoules"
+        controlKey === "pumpEnergyJoules" ||
+        controlKey === "pumpEnergy" ||
+        controlKey === "flashEnergy"
       ) {
         const slopeEfficiency = 0.015; // 1.5% optical slope efficiency
         return {
@@ -2473,7 +2509,47 @@ export function computeParameterSensitivity(
           interpretation: "Stimulated emission quantum yield beyond lasing threshold.",
         };
       }
-      if (controlKey === "crystalTemperatureKelvin" || controlKey === "temperatureK") {
+      if (
+        controlKey === "flashDurationMs" ||
+        controlKey === "flashDuration" ||
+        controlKey === "flashMs" ||
+        controlKey === "pulseDurationMs" ||
+        controlKey === "pulseDuration" ||
+        controlKey === "flashTimeMs" ||
+        controlKey === "durationMs"
+      ) {
+        const tauMetastableMs = 3.0 * (300 / Math.max(80, crystalTemp)) ** 0.35;
+        const nTotal = 1.58e19;
+        const sigma21 = 2.5e-20 * (300 / Math.max(80, crystalTemp));
+        const rodRadiusCm = 0.25;
+        const rodVolumeCm3 = Math.PI * rodRadiusCm ** 2 * rodLength;
+        const photonEnergyPumpJoules = (6.626e-34 * 3e8) / 520e-9;
+        const pumpCouplingEfficiency = 0.22;
+        const r1 = 0.999;
+        const internalLossAlpha = 0.03;
+        const cavityLoss =
+          internalLossAlpha + (1 / (2 * rodLength)) * Math.log(1 / (r1 * outputReflectivity));
+        const deltaNThreshold = cavityLoss / sigma21;
+        const numerator = (nTotal / 2 + deltaNThreshold) * rodVolumeCm3 * photonEnergyPumpJoules;
+        const expTerm = Math.exp(-flashDuration / tauMetastableMs);
+        const dEth_dt =
+          -(numerator * expTerm) / (pumpCouplingEfficiency * tauMetastableMs * (1 - expTerm) ** 2);
+        return {
+          metricName: "Optical Pumping Threshold Duration Sensitivity",
+          derivativeSymbol: "∂E_th / ∂t_flash",
+          derivativeValue: Number(dEth_dt.toFixed(2)),
+          derivativeUnit: "J / ms",
+          interpretation:
+            "Sensitivity of the required flash threshold energy to xenon pulse duration governed by metastable state decay kinetics.",
+        };
+      }
+      if (
+        controlKey === "crystalTemperatureKelvin" ||
+        controlKey === "crystalTemperature" ||
+        controlKey === "temperatureK" ||
+        controlKey === "temperature" ||
+        controlKey === "tempK"
+      ) {
         return {
           metricName: "R1 Line Emission Wavelength Shift",
           derivativeSymbol: "∂λ_emission / ∂T",
@@ -2483,7 +2559,12 @@ export function computeParameterSensitivity(
             "Thermal expansion and crystal field lattice perturbation shifting the ruby R1 fluorescence line toward shorter wavelengths at cryogenic temperatures.",
         };
       }
-      if (controlKey === "rodLengthCm") {
+      if (
+        controlKey === "rodLengthCm" ||
+        controlKey === "rodLength" ||
+        controlKey === "crystalLengthCm" ||
+        controlKey === "laserRodLength"
+      ) {
         const dMode_dL = Number((-8.523 / (rodLength * rodLength)).toFixed(3));
         return {
           metricName: "Resonator Longitudinal Mode Spacing Length Sensitivity",
@@ -2494,7 +2575,13 @@ export function computeParameterSensitivity(
             "Fabry-Pérot longitudinal cavity mode frequency spacing variation with crystal rod resonator physical length.",
         };
       }
-      if (controlKey === "outputMirrorReflectivity") {
+      if (
+        controlKey === "outputMirrorReflectivity" ||
+        controlKey === "outputReflectivity" ||
+        controlKey === "mirrorReflectivity" ||
+        controlKey === "r2" ||
+        controlKey === "couplerReflectivity"
+      ) {
         const dCavityLoss_dR = Number((-1 / (2 * rodLength * outputReflectivity)).toFixed(3));
         return {
           metricName: "Resonator Threshold Cavity Loss Coupling Sensitivity",
@@ -5126,7 +5213,111 @@ export function computeParameterSensitivity(
     }
 
     case "us-3728480-baer-odyssey": {
-      if (controlKey === "player1PotX" || controlKey === "player2PotX") {
+      const p1X = Number(
+        params.player1PotX ??
+          params.p1X ??
+          params.p1PotX ??
+          params.dot1X ??
+          params.knob17 ??
+          params.player1X ??
+          0.25,
+      );
+      const p1Y = Number(
+        params.player1PotY ??
+          params.p1Y ??
+          params.p1PotY ??
+          params.dot1Y ??
+          params.knob16 ??
+          params.player1Y ??
+          0.5,
+      );
+      const p2X = Number(
+        params.player2PotX ??
+          params.p2X ??
+          params.p2PotX ??
+          params.dot2X ??
+          params.knob17Sub1 ??
+          params.player2X ??
+          0.75,
+      );
+      const p2Y = Number(
+        params.player2PotY ??
+          params.p2Y ??
+          params.p2PotY ??
+          params.dot2Y ??
+          params.knob16Sub1 ??
+          params.player2Y ??
+          0.5,
+      );
+      const english = Number(
+        params.englishControl ??
+          params.english ??
+          params.spin ??
+          params.spinPot ??
+          params.englishSpin ??
+          0.0,
+      );
+      const speed = Number(
+        params.ballSpeedMultiplier ??
+          params.ballSpeed ??
+          params.speedMultiplier ??
+          params.speed ??
+          1.0,
+      );
+      const channel = Number(
+        params.rfChannel ?? params.channel ?? params.vhfChannel ?? params.ch ?? 3,
+      );
+      const chromaPhase = Number(
+        params.chromaPhaseDeg ??
+          params.chromaPhase ??
+          params.chroma ??
+          params.huePhase ??
+          params.colorPhase ??
+          45.0,
+      );
+
+      if (
+        !Number.isFinite(p1X) ||
+        p1X < 0.05 ||
+        p1X > 0.95 ||
+        !Number.isFinite(p1Y) ||
+        p1Y < 0.05 ||
+        p1Y > 0.95 ||
+        !Number.isFinite(p2X) ||
+        p2X < 0.05 ||
+        p2X > 0.95 ||
+        !Number.isFinite(p2Y) ||
+        p2Y < 0.05 ||
+        p2Y > 0.95 ||
+        !Number.isFinite(english) ||
+        english < -1.0 ||
+        english > 1.0 ||
+        !Number.isFinite(speed) ||
+        speed < 0.2 ||
+        speed > 3.0 ||
+        !Number.isFinite(channel) ||
+        (channel !== 3 && channel !== 4) ||
+        !Number.isFinite(chromaPhase) ||
+        chromaPhase < 0 ||
+        chromaPhase > 180
+      ) {
+        return null;
+      }
+
+      if (
+        controlKey === "player1PotX" ||
+        controlKey === "p1X" ||
+        controlKey === "p1PotX" ||
+        controlKey === "dot1X" ||
+        controlKey === "knob17" ||
+        controlKey === "player1X" ||
+        controlKey === "player2PotX" ||
+        controlKey === "p2X" ||
+        controlKey === "p2PotX" ||
+        controlKey === "dot2X" ||
+        controlKey === "knob17Sub1" ||
+        controlKey === "player2X"
+      ) {
         return {
           metricName: "Horizontal Spot Delay Time",
           derivativeSymbol: "∂τ_H / ∂R_pot",
@@ -5136,7 +5327,20 @@ export function computeParameterSensitivity(
             "Monostable multivibrator RC charge timing shifts spot position across 53.5 µs active raster line.",
         };
       }
-      if (controlKey === "player1PotY" || controlKey === "player2PotY") {
+      if (
+        controlKey === "player1PotY" ||
+        controlKey === "p1Y" ||
+        controlKey === "p1PotY" ||
+        controlKey === "dot1Y" ||
+        controlKey === "knob16" ||
+        controlKey === "player1Y" ||
+        controlKey === "player2PotY" ||
+        controlKey === "p2Y" ||
+        controlKey === "p2PotY" ||
+        controlKey === "dot2Y" ||
+        controlKey === "knob16Sub1" ||
+        controlKey === "player2Y"
+      ) {
         return {
           metricName: "Vertical Field Delay Time",
           derivativeSymbol: "∂τ_V / ∂R_pot",
@@ -5146,15 +5350,97 @@ export function computeParameterSensitivity(
             "Vertical monostable RC time delay translates spot down 15.42 ms active cathode ray field.",
         };
       }
+      if (
+        controlKey === "englishControl" ||
+        controlKey === "english" ||
+        controlKey === "spin" ||
+        controlKey === "spinPot" ||
+        controlKey === "englishSpin"
+      ) {
+        return {
+          metricName: "English Spin Deflection Velocity Sensitivity",
+          derivativeSymbol: "∂v_y / ∂english",
+          derivativeValue: 0.25,
+          derivativeUnit: "(units/s) / spin",
+          interpretation:
+            "Differential English spin potentiometer modifies vertical rebound velocity on paddle contact by up to 0.25 screen units per second.",
+        };
+      }
+      if (
+        controlKey === "ballSpeedMultiplier" ||
+        controlKey === "ballSpeed" ||
+        controlKey === "speedMultiplier" ||
+        controlKey === "speed"
+      ) {
+        return {
+          metricName: "Ball Horizontal Velocity Multiplier Sensitivity",
+          derivativeSymbol: "∂v_ball / ∂multiplier",
+          derivativeValue: 0.45,
+          derivativeUnit: "(units/s) / x",
+          interpretation:
+            "Clock rate and multivibrator speed scaling scales horizontal ball transit velocity across the raster.",
+        };
+      }
+      if (
+        controlKey === "rfChannel" ||
+        controlKey === "channel" ||
+        controlKey === "vhfChannel" ||
+        controlKey === "ch"
+      ) {
+        return {
+          metricName: "VHF RF Picture Carrier Channel Step",
+          derivativeSymbol: "Δf_rf / Δch",
+          derivativeValue: 6.0,
+          derivativeUnit: "MHz / ch",
+          interpretation:
+            "VHF oscillator switch shifts RF picture carrier frequency by exactly 6.0 MHz between Channel 3 (61.25 MHz) and Channel 4 (67.25 MHz) standard broadcast allocations.",
+        };
+      }
+      if (
+        controlKey === "chromaPhaseDeg" ||
+        controlKey === "chromaPhase" ||
+        controlKey === "chroma" ||
+        controlKey === "huePhase" ||
+        controlKey === "colorPhase"
+      ) {
+        return {
+          metricName: "Chroma Subcarrier Phase Delay Sensitivity",
+          derivativeSymbol: "∂τ_chroma / ∂θ",
+          derivativeValue: 0.78,
+          derivativeUnit: "ns / deg",
+          interpretation:
+            "Subcarrier phase delay shifts NTSC color vector hue angle relative to color burst reference (0.78 ns delay per degree of phase).",
+        };
+      }
       break;
     }
 
     case "us-4063220-metcalfe-ethernet": {
-      const length = params.cableLengthMeters ?? params.cableLength ?? 500;
-      const rate = params.dataRateMbps ?? params.dataRate ?? 2.94;
-      const stations = params.stationCount ?? params.stations ?? 2;
-      const load = params.offeredLoad ?? 0.5;
-      const packetSize = params.packetSizeBytes ?? params.packetSize ?? 512;
+      const length =
+        params.cableLengthMeters ??
+        params.cableLength ??
+        params.length ??
+        params.coaxLength ??
+        params.busLength ??
+        500;
+      const rate =
+        params.dataRateMbps ?? params.dataRate ?? params.bitRate ?? params.transmissionRate ?? 2.94;
+      const stations =
+        params.stationCount ?? params.stations ?? params.nodes ?? params.contenderCount ?? 2;
+      const load = params.offeredLoad ?? params.load ?? params.trafficLoad ?? params.g ?? 0.5;
+      const packetSize =
+        params.packetSizeBytes ??
+        params.packetSize ??
+        params.frameSize ??
+        params.packetBytes ??
+        512;
+      const rawTrigger =
+        params.triggerCollision !== undefined
+          ? params.triggerCollision
+          : params.collision !== undefined
+            ? params.collision
+            : params.forceCollision;
+      const trigger = rawTrigger !== undefined ? Number(rawTrigger) : undefined;
 
       if (
         !Number.isFinite(length) ||
@@ -5171,12 +5457,19 @@ export function computeParameterSensitivity(
         load > 2.5 ||
         !Number.isFinite(packetSize) ||
         packetSize < 64 ||
-        packetSize > 1518
+        packetSize > 1518 ||
+        (trigger !== undefined && (!Number.isFinite(trigger) || trigger < 0 || trigger > 1))
       ) {
         return null;
       }
 
-      if (controlKey === "cableLengthMeters" || controlKey === "cableLength") {
+      if (
+        controlKey === "cableLengthMeters" ||
+        controlKey === "cableLength" ||
+        controlKey === "length" ||
+        controlKey === "coaxLength" ||
+        controlKey === "busLength"
+      ) {
         return {
           metricName: "One-Way Propagation Delay",
           derivativeSymbol: "∂τ_prop / ∂L",
@@ -5186,7 +5479,12 @@ export function computeParameterSensitivity(
             "Electromagnetic wave velocity in polyethylene dielectric coaxial cable (0.66c) adds 5 ns latency per meter.",
         };
       }
-      if (controlKey === "dataRateMbps" || controlKey === "dataRate") {
+      if (
+        controlKey === "dataRateMbps" ||
+        controlKey === "dataRate" ||
+        controlKey === "bitRate" ||
+        controlKey === "transmissionRate"
+      ) {
         return {
           metricName: "Manchester Bit Period",
           derivativeSymbol: "∂T_bit / ∂R",
@@ -5196,7 +5494,12 @@ export function computeParameterSensitivity(
             "Higher transmission bit rate shortens Manchester self-clocking bit intervals (100 ns at 10 Mbps).",
         };
       }
-      if (controlKey === "offeredLoad") {
+      if (
+        controlKey === "offeredLoad" ||
+        controlKey === "load" ||
+        controlKey === "trafficLoad" ||
+        controlKey === "g"
+      ) {
         return {
           metricName: "Channel Utilization Efficiency",
           derivativeSymbol: "∂η / ∂G",
@@ -5204,6 +5507,50 @@ export function computeParameterSensitivity(
           derivativeUnit: "% / norm_load",
           interpretation:
             "Increasing offered traffic load increases collision probability and backoff slot delays according to CSMA/CD contention dynamics.",
+        };
+      }
+      if (
+        controlKey === "stationCount" ||
+        controlKey === "stations" ||
+        controlKey === "nodes" ||
+        controlKey === "contenderCount"
+      ) {
+        return {
+          metricName: "Contention Channel Efficiency Node Scaling",
+          derivativeSymbol: "∂η / ∂N_station",
+          derivativeValue: -0.2,
+          derivativeUnit: "% / node",
+          interpretation:
+            "Channel efficiency degradation as additional contender stations increase contention probability and collision backoff intervals.",
+        };
+      }
+      if (
+        controlKey === "packetSizeBytes" ||
+        controlKey === "packetSize" ||
+        controlKey === "frameSize" ||
+        controlKey === "packetBytes"
+      ) {
+        return {
+          metricName: "Packet Frame Size Channel Efficiency",
+          derivativeSymbol: "∂η / ∂S_packet",
+          derivativeValue: 0.013,
+          derivativeUnit: "% / byte",
+          interpretation:
+            "Larger frame payload amortizes coaxial propagation latency over longer transmission duration, raising CSMA/CD channel efficiency.",
+        };
+      }
+      if (
+        controlKey === "triggerCollision" ||
+        controlKey === "collision" ||
+        controlKey === "forceCollision"
+      ) {
+        return {
+          metricName: "Transceiver Collision Voltage Threshold Superposition",
+          derivativeSymbol: "ΔV_bus / Δcollision",
+          derivativeValue: 1.0,
+          derivativeUnit: "V / event",
+          interpretation:
+            "Simultaneous transmission produces analog additive voltage pulse doubling baseline signal to 2.0 V, triggering transceiver collision detection.",
         };
       }
       break;
@@ -8764,23 +9111,58 @@ export function computeParameterSensitivity(
     }
 
     case "us-3858581-kamen-medication-injection-device": {
-      const rawPulse = params.selectedPulseCount ?? params.pulseCount;
+      const rawPulse =
+        params.selectedPulseCount ??
+        params.pulseCount ??
+        params.pulses ??
+        params.turnsCount ??
+        params.selectedPulses;
       if (rawPulse !== undefined && (!Number.isFinite(rawPulse) || rawPulse < 1 || rawPulse > 99)) {
         return null;
       }
-      const rawSpeed = params.displayTurnsPerSecond ?? params.displaySpeed;
+      const rawSpeed =
+        params.displayTurnsPerSecond ??
+        params.displaySpeed ??
+        params.turnsPerSecond ??
+        params.motorSpeed ??
+        params.speed;
       if (rawSpeed !== undefined && (!Number.isFinite(rawSpeed) || rawSpeed < 1 || rawSpeed > 12)) {
         return null;
       }
-      const rawOff = params.offIntervalDisplaySeconds ?? params.offInterval;
+      const rawOff =
+        params.offIntervalDisplaySeconds ??
+        params.offInterval ??
+        params.pauseInterval ??
+        params.motorOffSeconds ??
+        params.offSeconds;
       if (rawOff !== undefined && (!Number.isFinite(rawOff) || rawOff < 0.5 || rawOff > 8)) {
         return null;
       }
+      const rawClutch =
+        params.clutchEngaged ?? params.clutch ?? params.clutchCoupled ?? params.claim3Clutch;
+      if (
+        rawClutch !== undefined &&
+        (!Number.isFinite(Number(rawClutch)) || Number(rawClutch) < 0 || Number(rawClutch) > 1)
+      ) {
+        return null;
+      }
+      const rawRunning = params.running ?? params.run ?? params.active ?? params.motorRunning;
+      if (
+        rawRunning !== undefined &&
+        (!Number.isFinite(Number(rawRunning)) || Number(rawRunning) < 0 || Number(rawRunning) > 1)
+      ) {
+        return null;
+      }
 
-      const clutchEngaged =
-        params.clutchEngaged !== undefined ? Number(params.clutchEngaged) >= 0.5 : true;
+      const clutchEngaged = rawClutch !== undefined ? Number(rawClutch) >= 0.5 : true;
 
-      if (controlKey === "selectedPulseCount" || controlKey === "pulseCount") {
+      if (
+        controlKey === "selectedPulseCount" ||
+        controlKey === "pulseCount" ||
+        controlKey === "pulses" ||
+        controlKey === "turnsCount" ||
+        controlKey === "selectedPulses"
+      ) {
         return {
           metricName: "Counted Stop Coordinate",
           derivativeSymbol: "∂N_{stop} / ∂N_{selected}",
@@ -8791,7 +9173,13 @@ export function computeParameterSensitivity(
             : "Claim 3 clutch coupling is disengaged; lead screw remains disconnected from the motor.",
         };
       }
-      if (controlKey === "displayTurnsPerSecond" || controlKey === "displaySpeed") {
+      if (
+        controlKey === "displayTurnsPerSecond" ||
+        controlKey === "displaySpeed" ||
+        controlKey === "turnsPerSecond" ||
+        controlKey === "motorSpeed" ||
+        controlKey === "speed"
+      ) {
         return {
           metricName: "Counted Stop Coordinate",
           derivativeSymbol: "∂N_{stop} / ∂ω_{display}",
@@ -8801,7 +9189,13 @@ export function computeParameterSensitivity(
             "Changing the deliberately accelerated museum display speed changes how quickly the animation reaches the stop, not the integer screw-turn count at which counters 114/116 switch the motor off.",
         };
       }
-      if (controlKey === "offIntervalDisplaySeconds" || controlKey === "offInterval") {
+      if (
+        controlKey === "offIntervalDisplaySeconds" ||
+        controlKey === "offInterval" ||
+        controlKey === "pauseInterval" ||
+        controlKey === "motorOffSeconds" ||
+        controlKey === "offSeconds"
+      ) {
         return {
           metricName: "Motor-Off Display Pause Interval",
           derivativeSymbol: "∂t_off / ∂t_interval",
@@ -8809,6 +9203,36 @@ export function computeParameterSensitivity(
           derivativeUnit: "display s / display s",
           interpretation:
             "Linear pause duration scaling for the museum demonstration loop between sequential pulse delivery cycles.",
+        };
+      }
+      if (
+        controlKey === "clutchEngaged" ||
+        controlKey === "clutch" ||
+        controlKey === "clutchCoupled" ||
+        controlKey === "claim3Clutch"
+      ) {
+        return {
+          metricName: "Claim 3 Clutch Lead Screw Drive Coupling",
+          derivativeSymbol: "Δcoupling / Δclutch",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / norm",
+          interpretation:
+            "Operating the Claim 3 axial clutch physically couples motor drive to the lead screw and counter striker.",
+        };
+      }
+      if (
+        controlKey === "running" ||
+        controlKey === "run" ||
+        controlKey === "active" ||
+        controlKey === "motorRunning"
+      ) {
+        return {
+          metricName: "Mechanism Run State",
+          derivativeSymbol: "Δpower / Δrun",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / norm",
+          interpretation:
+            "Toggling running state gates motor excitation and real-time mechanism stepping.",
         };
       }
       break;

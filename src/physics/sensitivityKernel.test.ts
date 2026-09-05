@@ -3048,6 +3048,35 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(disengagedSens?.derivativeValue).toBe(0);
     expect(disengagedSens?.interpretation).toContain("disengaged");
 
+    // Claim 3 clutch coupling sensitivity
+    const sensClutch = computeParameterSensitivity(id, "clutchEngaged", { clutchEngaged: 1 });
+    expect(sensClutch).toBeDefined();
+    expect(sensClutch?.metricName).toBe("Claim 3 Clutch Lead Screw Drive Coupling");
+    expect(sensClutch?.derivativeSymbol).toBe("Δcoupling / Δclutch");
+    expect(sensClutch?.derivativeValue).toBe(1.0);
+    expect(sensClutch?.derivativeUnit).toBe("state / norm");
+
+    // Mechanism run state sensitivity
+    const sensRun = computeParameterSensitivity(id, "running", { running: 1 });
+    expect(sensRun).toBeDefined();
+    expect(sensRun?.metricName).toBe("Mechanism Run State");
+    expect(sensRun?.derivativeSymbol).toBe("Δpower / Δrun");
+    expect(sensRun?.derivativeValue).toBe(1.0);
+    expect(sensRun?.derivativeUnit).toBe("state / norm");
+
+    // Aliases
+    expect(computeParameterSensitivity(id, "pulseCount", { pulseCount: 15 })?.derivativeValue).toBe(
+      1,
+    );
+    expect(
+      computeParameterSensitivity(id, "displaySpeed", { displaySpeed: 4 })?.derivativeValue,
+    ).toBe(0);
+    expect(
+      computeParameterSensitivity(id, "offInterval", { offInterval: 3.0 })?.derivativeValue,
+    ).toBe(1.0);
+    expect(computeParameterSensitivity(id, "clutch", { clutch: 1 })?.derivativeValue).toBe(1.0);
+    expect(computeParameterSensitivity(id, "run", { run: 1 })?.derivativeValue).toBe(1.0);
+
     // Invalid parameters
     for (const invalid of [0, 100, Number.NaN]) {
       expect(
@@ -3067,6 +3096,12 @@ describe("Sensitivities follow the current admitted operating point", () => {
           offIntervalDisplaySeconds: invalid,
         }),
       ).toBeNull();
+    }
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "clutchEngaged", { clutchEngaged: invalid }),
+      ).toBeNull();
+      expect(computeParameterSensitivity(id, "running", { running: invalid })).toBeNull();
     }
   });
 
@@ -6286,6 +6321,26 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensMirror?.derivativeUnit).toBe("cm⁻¹ / R");
     expect(sensMirror?.derivativeValue).toBeCloseTo(-1 / (2 * 5.0 * 0.92), 3);
 
+    // Flash pulse duration threshold pumping energy sensitivity
+    const sensFlash = computeParameterSensitivity(id, "flashDurationMs", {
+      pumpEnergyJoules: 150,
+      flashDurationMs: 1.0,
+      rodLengthCm: 5.0,
+      outputMirrorReflectivity: 0.92,
+      crystalTemperatureKelvin: 300,
+    });
+    expect(sensFlash).toBeDefined();
+    expect(sensFlash?.metricName).toBe("Optical Pumping Threshold Duration Sensitivity");
+    expect(sensFlash?.derivativeSymbol).toBe("∂E_th / ∂t_flash");
+    expect(sensFlash?.derivativeUnit).toBe("J / ms");
+    expect(sensFlash?.derivativeValue).toBeCloseTo(-47.86, 1);
+
+    // Flash duration alias test
+    const sensFlashAlias = computeParameterSensitivity(id, "flashDuration", {
+      flashDuration: 1.0,
+    });
+    expect(sensFlashAlias?.derivativeValue).toBeCloseTo(-47.86, 1);
+
     // Alias id test
     const sensAlias = computeParameterSensitivity("us-3353115-maiman-laser", "pumpPowerWatts", {
       pumpPowerWatts: 150,
@@ -6318,6 +6373,104 @@ describe("Sensitivities follow the current admitted operating point", () => {
         computeParameterSensitivity(id, "crystalTemperatureKelvin", {
           crystalTemperatureKelvin: invalid,
         }),
+      ).toBeNull();
+    }
+  });
+
+  test("Baer Odyssey TV gaming derives spot delay, spin deflection, ball speed, and RF channel sensitivities", () => {
+    const id = "us-3728480-baer-odyssey";
+
+    // Player 1 and Player 2 Horizontal Delay
+    const sensP1X = computeParameterSensitivity(id, "player1PotX", { player1PotX: 0.25 });
+    expect(sensP1X).toBeDefined();
+    expect(sensP1X?.metricName).toBe("Horizontal Spot Delay Time");
+    expect(sensP1X?.derivativeSymbol).toBe("∂τ_H / ∂R_pot");
+    expect(sensP1X?.derivativeValue).toBe(48.0);
+    expect(sensP1X?.derivativeUnit).toBe("µs / norm_pot");
+
+    const sensP2X = computeParameterSensitivity(id, "player2PotX", { player2PotX: 0.75 });
+    expect(sensP2X?.derivativeValue).toBe(48.0);
+
+    // Player 1 and Player 2 Vertical Delay
+    const sensP1Y = computeParameterSensitivity(id, "player1PotY", { player1PotY: 0.5 });
+    expect(sensP1Y).toBeDefined();
+    expect(sensP1Y?.metricName).toBe("Vertical Field Delay Time");
+    expect(sensP1Y?.derivativeSymbol).toBe("∂τ_V / ∂R_pot");
+    expect(sensP1Y?.derivativeValue).toBe(14.0);
+    expect(sensP1Y?.derivativeUnit).toBe("ms / norm_pot");
+
+    const sensP2Y = computeParameterSensitivity(id, "player2PotY", { player2PotY: 0.5 });
+    expect(sensP2Y?.derivativeValue).toBe(14.0);
+
+    // English spin deflection
+    const sensEnglish = computeParameterSensitivity(id, "englishControl", { englishControl: 0.0 });
+    expect(sensEnglish).toBeDefined();
+    expect(sensEnglish?.metricName).toBe("English Spin Deflection Velocity Sensitivity");
+    expect(sensEnglish?.derivativeSymbol).toBe("∂v_y / ∂english");
+    expect(sensEnglish?.derivativeValue).toBe(0.25);
+    expect(sensEnglish?.derivativeUnit).toBe("(units/s) / spin");
+
+    // Ball speed multiplier
+    const sensSpeed = computeParameterSensitivity(id, "ballSpeedMultiplier", {
+      ballSpeedMultiplier: 1.0,
+    });
+    expect(sensSpeed).toBeDefined();
+    expect(sensSpeed?.metricName).toBe("Ball Horizontal Velocity Multiplier Sensitivity");
+    expect(sensSpeed?.derivativeSymbol).toBe("∂v_ball / ∂multiplier");
+    expect(sensSpeed?.derivativeValue).toBe(0.45);
+    expect(sensSpeed?.derivativeUnit).toBe("(units/s) / x");
+
+    // VHF RF Channel step
+    const sensCh = computeParameterSensitivity(id, "rfChannel", { rfChannel: 3 });
+    expect(sensCh).toBeDefined();
+    expect(sensCh?.metricName).toBe("VHF RF Picture Carrier Channel Step");
+    expect(sensCh?.derivativeSymbol).toBe("Δf_rf / Δch");
+    expect(sensCh?.derivativeValue).toBe(6.0);
+    expect(sensCh?.derivativeUnit).toBe("MHz / ch");
+
+    // Chroma phase delay
+    const sensChroma = computeParameterSensitivity(id, "chromaPhaseDeg", { chromaPhaseDeg: 45 });
+    expect(sensChroma).toBeDefined();
+    expect(sensChroma?.metricName).toBe("Chroma Subcarrier Phase Delay Sensitivity");
+    expect(sensChroma?.derivativeSymbol).toBe("∂τ_chroma / ∂θ");
+    expect(sensChroma?.derivativeValue).toBe(0.78);
+    expect(sensChroma?.derivativeUnit).toBe("ns / deg");
+
+    // Aliases
+    expect(computeParameterSensitivity(id, "p1X", { p1X: 0.3 })?.derivativeValue).toBe(48.0);
+    expect(computeParameterSensitivity(id, "knob17", { knob17: 0.3 })?.derivativeValue).toBe(48.0);
+    expect(computeParameterSensitivity(id, "p1Y", { p1Y: 0.4 })?.derivativeValue).toBe(14.0);
+    expect(computeParameterSensitivity(id, "knob16", { knob16: 0.4 })?.derivativeValue).toBe(14.0);
+    expect(computeParameterSensitivity(id, "spin", { spin: 0.2 })?.derivativeValue).toBe(0.25);
+    expect(computeParameterSensitivity(id, "ballSpeed", { ballSpeed: 1.5 })?.derivativeValue).toBe(
+      0.45,
+    );
+    expect(computeParameterSensitivity(id, "channel", { channel: 4 })?.derivativeValue).toBe(6.0);
+    expect(computeParameterSensitivity(id, "chroma", { chroma: 90 })?.derivativeValue).toBe(0.78);
+
+    // Bounds checking
+    for (const invalid of [0.04, 0.96, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "player1PotX", { player1PotX: invalid })).toBeNull();
+      expect(computeParameterSensitivity(id, "player1PotY", { player1PotY: invalid })).toBeNull();
+      expect(computeParameterSensitivity(id, "player2PotX", { player2PotX: invalid })).toBeNull();
+      expect(computeParameterSensitivity(id, "player2PotY", { player2PotY: invalid })).toBeNull();
+    }
+    for (const invalid of [-1.01, 1.01, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "englishControl", { englishControl: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.19, 3.01, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "ballSpeedMultiplier", { ballSpeedMultiplier: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [2, 5, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "rfChannel", { rfChannel: invalid })).toBeNull();
+    }
+    for (const invalid of [-1, 181, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "chromaPhaseDeg", { chromaPhaseDeg: invalid }),
       ).toBeNull();
     }
   });
@@ -7599,6 +7752,51 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensEff?.derivativeValue).toBe(-28.5);
     expect(sensEff?.derivativeUnit).toBe("% / norm_load");
 
+    const sensStations = computeParameterSensitivity(id, "stationCount", {
+      stationCount: 8,
+    });
+    expect(sensStations).toBeDefined();
+    expect(sensStations?.metricName).toBe("Contention Channel Efficiency Node Scaling");
+    expect(sensStations?.derivativeSymbol).toBe("∂η / ∂N_station");
+    expect(sensStations?.derivativeValue).toBe(-0.2);
+    expect(sensStations?.derivativeUnit).toBe("% / node");
+
+    const sensPacket = computeParameterSensitivity(id, "packetSizeBytes", {
+      packetSizeBytes: 256,
+    });
+    expect(sensPacket).toBeDefined();
+    expect(sensPacket?.metricName).toBe("Packet Frame Size Channel Efficiency");
+    expect(sensPacket?.derivativeSymbol).toBe("∂η / ∂S_packet");
+    expect(sensPacket?.derivativeValue).toBe(0.013);
+    expect(sensPacket?.derivativeUnit).toBe("% / byte");
+
+    const sensCol = computeParameterSensitivity(id, "triggerCollision", {
+      triggerCollision: 0,
+    });
+    expect(sensCol).toBeDefined();
+    expect(sensCol?.metricName).toBe("Transceiver Collision Voltage Threshold Superposition");
+    expect(sensCol?.derivativeSymbol).toBe("ΔV_bus / Δcollision");
+    expect(sensCol?.derivativeValue).toBe(1.0);
+    expect(sensCol?.derivativeUnit).toBe("V / event");
+
+    // Aliases
+    expect(
+      computeParameterSensitivity(id, "cableLength", { cableLength: 300 })?.derivativeValue,
+    ).toBe(5.0);
+    expect(computeParameterSensitivity(id, "dataRate", { dataRate: 10.0 })?.derivativeValue).toBe(
+      -34.0,
+    );
+    expect(computeParameterSensitivity(id, "load", { load: 1.0 })?.derivativeValue).toBe(-28.5);
+    expect(computeParameterSensitivity(id, "stations", { stations: 16 })?.derivativeValue).toBe(
+      -0.2,
+    );
+    expect(
+      computeParameterSensitivity(id, "packetSize", { packetSize: 1024 })?.derivativeValue,
+    ).toBe(0.013);
+    expect(computeParameterSensitivity(id, "collision", { collision: 1 })?.derivativeValue).toBe(
+      1.0,
+    );
+
     // Bounds checking
     for (const invalid of [9, 1001, Number.NaN]) {
       expect(
@@ -7617,6 +7815,11 @@ describe("Sensitivities follow the current admitted operating point", () => {
     for (const invalid of [63, 1519, Number.NaN]) {
       expect(
         computeParameterSensitivity(id, "packetSizeBytes", { packetSizeBytes: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "triggerCollision", { triggerCollision: invalid }),
       ).toBeNull();
     }
   });

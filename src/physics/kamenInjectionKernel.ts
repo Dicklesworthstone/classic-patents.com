@@ -128,14 +128,22 @@ function booleanControl(value: number | boolean | undefined, fallback: boolean):
 export function readKamenInjectionControls(
   raw?: Partial<KamenInjectionControls> | Readonly<Record<string, number>>,
 ): KamenInjectionControls {
+  const p = raw as Record<string, any> | undefined;
   return {
-    running: booleanControl(raw?.running, KAMEN_INJECTION_DEFAULT_CONTROLS.running),
+    running: booleanControl(
+      p?.running ?? p?.run ?? p?.active ?? p?.motorRunning,
+      KAMEN_INJECTION_DEFAULT_CONTROLS.running,
+    ),
     displayTurnsPerSecond: Math.max(
       1,
       Math.min(
         12,
         finiteOr(
-          raw?.displayTurnsPerSecond,
+          p?.displayTurnsPerSecond ??
+            p?.displaySpeed ??
+            p?.turnsPerSecond ??
+            p?.motorSpeed ??
+            p?.speed,
           KAMEN_INJECTION_DEFAULT_CONTROLS.displayTurnsPerSecond,
         ),
       ),
@@ -145,7 +153,14 @@ export function readKamenInjectionControls(
       Math.min(
         99,
         Math.round(
-          finiteOr(raw?.selectedPulseCount, KAMEN_INJECTION_DEFAULT_CONTROLS.selectedPulseCount),
+          finiteOr(
+            p?.selectedPulseCount ??
+              p?.pulseCount ??
+              p?.pulses ??
+              p?.turnsCount ??
+              p?.selectedPulses,
+            KAMEN_INJECTION_DEFAULT_CONTROLS.selectedPulseCount,
+          ),
         ),
       ),
     ),
@@ -154,17 +169,21 @@ export function readKamenInjectionControls(
       Math.min(
         8,
         finiteOr(
-          raw?.offIntervalDisplaySeconds,
+          p?.offIntervalDisplaySeconds ??
+            p?.offInterval ??
+            p?.pauseInterval ??
+            p?.motorOffSeconds ??
+            p?.offSeconds,
           KAMEN_INJECTION_DEFAULT_CONTROLS.offIntervalDisplaySeconds,
         ),
       ),
     ),
     clutchEngaged: booleanControl(
-      raw?.clutchEngaged,
+      p?.clutchEngaged ?? p?.clutch ?? p?.clutchCoupled ?? p?.claim3Clutch,
       KAMEN_INJECTION_DEFAULT_CONTROLS.clutchEngaged,
     ),
     claim1PulseLoopPresent: booleanControl(
-      raw?.claim1PulseLoopPresent,
+      p?.claim1PulseLoopPresent ?? p?.claim1 ?? p?.pulseLoopPresent,
       KAMEN_INJECTION_DEFAULT_CONTROLS.claim1PulseLoopPresent,
     ),
   };

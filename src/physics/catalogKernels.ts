@@ -4970,11 +4970,33 @@ export interface MaimanRubyLaserControls {
 }
 
 export function stepMaimanRubyLaser(controls: MaimanRubyLaserControls = {}) {
-  const pumpEnergy = controls.pumpEnergyJoules ?? 150; // 50 to 500 Joules
-  const flashMs = controls.flashDurationMs ?? 1.0; // 0.5 to 3.0 ms
-  const rodLength = controls.rodLengthCm ?? 5.0; // cm
-  const r2 = controls.outputMirrorReflectivity ?? 0.92; // 0.70 to 0.98
-  const tempK = controls.crystalTemperatureKelvin ?? 300; // 100 to 350 K
+  const p = controls as Record<string, number | undefined>;
+  const pumpEnergy =
+    p.pumpEnergyJoules ?? p.pumpPowerWatts ?? p.pumpPower ?? p.pumpEnergy ?? p.flashEnergy ?? 150; // 50 to 500 Joules
+  const flashMs =
+    p.flashDurationMs ??
+    p.flashDuration ??
+    p.flashMs ??
+    p.pulseDurationMs ??
+    p.pulseDuration ??
+    p.flashTimeMs ??
+    p.durationMs ??
+    1.0; // 0.5 to 3.0 ms
+  const rodLength = p.rodLengthCm ?? p.rodLength ?? p.crystalLengthCm ?? p.laserRodLength ?? 5.0; // cm
+  const r2 =
+    p.outputMirrorReflectivity ??
+    p.outputReflectivity ??
+    p.mirrorReflectivity ??
+    p.r2 ??
+    p.couplerReflectivity ??
+    0.92; // 0.70 to 0.98
+  const tempK =
+    p.crystalTemperatureKelvin ??
+    p.crystalTemperature ??
+    p.temperatureK ??
+    p.temperature ??
+    p.tempK ??
+    300; // 100 to 350 K
 
   // Cr3+ total doping density in 0.05% pink ruby
   const nTotal = 1.58e19; // ions/cm^3

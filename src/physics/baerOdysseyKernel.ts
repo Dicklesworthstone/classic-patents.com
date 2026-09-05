@@ -190,46 +190,106 @@ function deterministicServeVerticalVelocity(
   return (nextSeed / 0x1_0000_0000 - 0.5) * 0.3;
 }
 
-export function readBaerControls(raw?: Partial<BaerOdysseyControls>): BaerOdysseyControls {
+export function readBaerControls(
+  raw?: Partial<BaerOdysseyControls> | Readonly<Record<string, number>>,
+): BaerOdysseyControls {
+  const p = raw as Record<string, any> | undefined;
   return {
-    running: raw?.running === undefined ? DEFAULT_BAER_CONTROLS.running : Boolean(raw.running),
+    running: p?.running === undefined ? DEFAULT_BAER_CONTROLS.running : Boolean(p.running),
     claim1Active:
-      raw?.claim1Active === undefined
-        ? DEFAULT_BAER_CONTROLS.claim1Active
-        : Boolean(raw.claim1Active),
+      p?.claim1Active === undefined ? DEFAULT_BAER_CONTROLS.claim1Active : Boolean(p.claim1Active),
     player1PotX: Math.max(
       0.05,
-      Math.min(0.95, raw?.player1PotX ?? DEFAULT_BAER_CONTROLS.player1PotX),
+      Math.min(
+        0.95,
+        p?.player1PotX ??
+          p?.p1X ??
+          p?.p1PotX ??
+          p?.dot1X ??
+          p?.knob17 ??
+          p?.player1X ??
+          DEFAULT_BAER_CONTROLS.player1PotX,
+      ),
     ),
     player1PotY: Math.max(
       0.05,
-      Math.min(0.95, raw?.player1PotY ?? DEFAULT_BAER_CONTROLS.player1PotY),
+      Math.min(
+        0.95,
+        p?.player1PotY ??
+          p?.p1Y ??
+          p?.p1PotY ??
+          p?.dot1Y ??
+          p?.knob16 ??
+          p?.player1Y ??
+          DEFAULT_BAER_CONTROLS.player1PotY,
+      ),
     ),
     player2PotX: Math.max(
       0.05,
-      Math.min(0.95, raw?.player2PotX ?? DEFAULT_BAER_CONTROLS.player2PotX),
+      Math.min(
+        0.95,
+        p?.player2PotX ??
+          p?.p2X ??
+          p?.p2PotX ??
+          p?.dot2X ??
+          p?.knob17Sub1 ??
+          p?.player2X ??
+          DEFAULT_BAER_CONTROLS.player2PotX,
+      ),
     ),
     player2PotY: Math.max(
       0.05,
-      Math.min(0.95, raw?.player2PotY ?? DEFAULT_BAER_CONTROLS.player2PotY),
+      Math.min(
+        0.95,
+        p?.player2PotY ??
+          p?.p2Y ??
+          p?.p2PotY ??
+          p?.dot2Y ??
+          p?.knob16Sub1 ??
+          p?.player2Y ??
+          DEFAULT_BAER_CONTROLS.player2PotY,
+      ),
     ),
     englishControl: Math.max(
       -1.0,
-      Math.min(1.0, raw?.englishControl ?? DEFAULT_BAER_CONTROLS.englishControl),
+      Math.min(
+        1.0,
+        p?.englishControl ??
+          p?.english ??
+          p?.spin ??
+          p?.spinPot ??
+          p?.englishSpin ??
+          DEFAULT_BAER_CONTROLS.englishControl,
+      ),
     ),
     ballSpeedMultiplier: Math.max(
       0.2,
-      Math.min(3.0, raw?.ballSpeedMultiplier ?? DEFAULT_BAER_CONTROLS.ballSpeedMultiplier),
+      Math.min(
+        3.0,
+        p?.ballSpeedMultiplier ??
+          p?.ballSpeed ??
+          p?.speedMultiplier ??
+          p?.speed ??
+          DEFAULT_BAER_CONTROLS.ballSpeedMultiplier,
+      ),
     ),
-    rfChannel: raw?.rfChannel === 4 ? 4 : 3,
+    rfChannel: (p?.rfChannel ?? p?.channel ?? p?.vhfChannel ?? p?.ch) === 4 ? 4 : 3,
     chromaPhaseDeg: Math.max(
       0,
-      Math.min(180, raw?.chromaPhaseDeg ?? DEFAULT_BAER_CONTROLS.chromaPhaseDeg),
+      Math.min(
+        180,
+        p?.chromaPhaseDeg ??
+          p?.chromaPhase ??
+          p?.chroma ??
+          p?.huePhase ??
+          p?.colorPhase ??
+          DEFAULT_BAER_CONTROLS.chromaPhaseDeg,
+      ),
     ),
-    lightGunTrigger: Boolean(raw?.lightGunTrigger),
-    lightGunAimX: Math.max(0, Math.min(1, raw?.lightGunAimX ?? DEFAULT_BAER_CONTROLS.lightGunAimX)),
-    lightGunAimY: Math.max(0, Math.min(1, raw?.lightGunAimY ?? DEFAULT_BAER_CONTROLS.lightGunAimY)),
-    resetButton: Boolean(raw?.resetButton),
+    lightGunTrigger: Boolean(p?.lightGunTrigger),
+    lightGunAimX: Math.max(0, Math.min(1, p?.lightGunAimX ?? DEFAULT_BAER_CONTROLS.lightGunAimX)),
+    lightGunAimY: Math.max(0, Math.min(1, p?.lightGunAimY ?? DEFAULT_BAER_CONTROLS.lightGunAimY)),
+    resetButton: Boolean(p?.resetButton),
   };
 }
 
