@@ -97,10 +97,10 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
           : [],
       ),
     );
-    expect(references).toHaveLength(40);
-    expect(referencesWithPreviews).toHaveLength(13);
+    expect(references).toHaveLength(36);
+    expect(referencesWithPreviews).toHaveLength(9);
     expect(references.length - referencesWithPreviews.length).toBe(27);
-    expect(uniquePreviewPaths.size).toBe(4);
+    expect(uniquePreviewPaths.size).toBe(3);
     for (const reference of references) {
       if (reference.kind !== "reference" || reference.referenceType !== "figure") continue;
       for (const preview of reference.figurePreviews ?? []) {
@@ -131,5 +131,30 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
     expect(ledger).not.toContain("13 Sheets-Sheet");
     expect(ledger).not.toContain("Drawing Sheet 1 of 13 illustrating");
     expect(ledger).not.toContain("Application filed February 12, 1884");
+  });
+
+  test("uses the directly reviewed opening rather than the later-machine staging copy", () => {
+    const masthead = mergenthalerLinotypeArchivalEdition.blocks[0];
+    const opening = mergenthalerLinotypeArchivalEdition.blocks[2];
+    expect(masthead).toMatchObject({
+      kind: "masthead",
+      lines: expect.arrayContaining([
+        "Application filed August 30, 1884. (No model.)",
+        "OTTMAR MERGENTHALER, OF BALTIMORE, MARYLAND, ASSIGNOR TO THE NATIONAL TYPOGRAPHIC COMPANY, OF WEST VIRGINIA",
+      ]),
+    });
+    expect(opening).toMatchObject({
+      kind: "paragraph",
+      inlines: [
+        {
+          kind: "text",
+          text: expect.stringContaining("To all whom it may concern"),
+        },
+      ],
+    });
+    const stagedText = JSON.stringify(mergenthalerLinotypeArchivalEdition.blocks.slice(0, 11));
+    expect(stagedText).not.toContain("Application filed February 12, 1884");
+    expect(stagedText).not.toContain("Wedge Spacebands");
+    expect(stagedText).not.toContain("mold wheel rotates");
   });
 });

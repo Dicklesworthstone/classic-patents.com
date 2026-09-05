@@ -123,7 +123,7 @@ See the complete roadmap in [`docs/FRANKENSIM_WASM_INTEGRATION_TODO.md`](./docs/
 ## Getting Started Locally
 
 ### Prerequisites
-- [Bun](https://bun.sh) (v1.2+) or Node.js (v20+)
+- [Bun](https://bun.sh) (v1.4+ for the isolated test suite) or Node.js (v20+ for local development)
 - [Vercel CLI](https://vercel.com/cli) (optional, for prebuilt deployment)
 
 ### Installation & Development
@@ -145,6 +145,16 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ---
 
 ## Verification & Deployment
+
+Run the full unit and integration suite with Bun's per-file isolation so
+framework mocks cannot leak into another test file (verified with Bun 1.4.0):
+
+```bash
+bun run test
+```
+
+The deployment-configuration rejection tests use fixed fixtures and do not
+create or delete temporary files.
 
 For per-patent and full-catalogue production-browser acceptance, including the
 exact 320 px route, structured JSONL diagnostics, and retained failure traces,
