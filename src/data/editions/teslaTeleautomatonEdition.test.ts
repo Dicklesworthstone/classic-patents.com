@@ -31,7 +31,7 @@ describe("US 613,809 Nikola Tesla Teleautomaton manual archival edition", () => 
     ]);
   });
 
-  test("makes complete pinned drawing sheets primary and retains local crops", () => {
+  test("keeps unverified figure prose out of the held packet while preserving the pinned sheets", () => {
     const references = teslaTeleautomatonArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
         ? block.inlines.filter(
@@ -40,17 +40,20 @@ describe("US 613,809 Nikola Tesla Teleautomaton manual archival edition", () => 
           )
         : [],
     );
-    expect(references).not.toHaveLength(0);
-    for (const reference of references) {
-      expect(reference.figurePreviews?.length).toBeGreaterThan(0);
-      expect(reference.figurePreviews?.[0]?.src).toMatch(
-        /^\/patents\/figures\/us-613809-tesla-teleautomaton\/source-sheet-[1-5]-v1\.png$/,
+    expect(references).toHaveLength(0);
+    for (let sheetNumber = 1; sheetNumber <= 5; sheetNumber += 1) {
+      const sheetPath = resolve(
+        process.cwd(),
+        "public",
+        "patents",
+        "figures",
+        "us-613809-tesla-teleautomaton",
+        `source-sheet-${sheetNumber}-v1.png`,
       );
-      expect(reference.figurePreviews?.[0]).toMatchObject({ width: 2320, height: 3408 });
-      for (const preview of reference.figurePreviews ?? []) {
-        expect(preview.src).toStartWith("/patents/figures/us-613809-tesla-teleautomaton/");
-        expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
-      }
+      expect(existsSync(sheetPath)).toBe(true);
+      const png = readFileSync(sheetPath);
+      expect(png.readUInt32BE(16)).toBe(2320);
+      expect(png.readUInt32BE(20)).toBe(3408);
     }
   });
 

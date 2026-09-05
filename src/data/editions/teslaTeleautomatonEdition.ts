@@ -11,6 +11,17 @@ const p = (inlines: CuratedSpecificationInlines): CuratedSpecificationBlock => (
 
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 
+/**
+ * The larger hand-authored reconstruction below remains research material,
+ * but direct source review found wording drift in its later body and figure
+ * prose. Keep only the visually checked masthead/opening and every printed
+ * claim in the active held packet. The reader independently serves the full
+ * reviewed ledger and pinned facsimile until the continuous edition is rebuilt.
+ */
+const HELD_SOURCE_BOUND_BLOCK_INDEXES = new Set([
+  0, 1, 2, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52,
+]);
+
 const figureDimensions: Record<number, readonly [number, number]> = {
   1: [780, 1390],
   2: [940, 1410],
@@ -490,7 +501,7 @@ export const teslaTeleautomatonArchivalEdition: CuratedSpecificationEdition = {
     },
     p([{ kind: "small-caps", text: "NIKOLA TESLA." }]),
     p(text("Witnesses: RAPHAËL NETTER, GEORGE SCHERFF.")),
-  ],
+  ].filter((_block, blockIndex) => HELD_SOURCE_BOUND_BLOCK_INDEXES.has(blockIndex)),
 };
 
 /** Companion readings are authored against the block positions above; this file
@@ -501,119 +512,5 @@ export const teslaTeleautomatonParallelReadings: Readonly<Record<number, readonl
   ],
   2: [
     "The inventor identifies the remote-control target: propulsion, steering, and other equipment on a moving or floating body.",
-  ],
-  3: [
-    "Tesla contrasts wire-towed control with a system that can direct a moving vessel across distance without an artificial physical connection.",
-  ],
-  4: [
-    "The broad proposal is command through natural media—earth, water, or air—rather than an intermediate cable.",
-  ],
-  5: [
-    "He frames reliable long-distance control as an engineering problem requiring specially designed transmission and receiving apparatus.",
-  ],
-  6: [
-    "One stated embodiment inductively couples a rapidly varying current in a large transmitting loop to a tuned moving receiver.",
-  ],
-  7: [
-    "A second embodiment uses a grounded elevated terminal and a similarly arranged receiver; Tesla specifies a different conductor-length relation.",
-  ],
-  8: [
-    "A third embodiment spreads high-frequency currents through the ground and discusses the difference between open and closed receiving circuits.",
-  ],
-  9: [
-    "Tesla also leaves room for radiated oscillations, rays, waves, pulses, or other disturbances capable of operating a remote mechanism.",
-  ],
-  10: [
-    "The detailed account selects the arrangement Tesla considered most practical while preserving the broader stated scope.",
-  ],
-  11: [
-    "When the remote effect is too weak to operate the control directly, an auxiliary sensitive relay amplifies its operational consequence.",
-  ],
-  12: [
-    "Tesla gives a near-breakdown dielectric detector as one possible way to convert a weak electrical disturbance into a usable current.",
-  ],
-  13: [
-    "Another detector uses loose conductive particles: a distant disturbance presses them into a more conductive connection.",
-  ],
-  14: [
-    "A battery-biased particle-and-film version combines aspects of the two preceding detector arrangements.",
-  ],
-  15: [
-    "Narrow tuning improves both response and selectivity, reducing the chance that unrelated disturbances trigger the receiver.",
-  ],
-  16: [
-    "Tesla says many separately tuned receivers could be addressed, then turns to extracting many functions from one receiver.",
-  ],
-  17: [
-    "Because a sensitive detector must work repeatedly, the specification insists on restoring its insulating state instead of tolerating missed actions.",
-  ],
-  18: [
-    "This paragraph makes the figure sequence an authored map of the vessel, receiver, control mechanism, and system diagrams.",
-  ],
-  19: [
-    "The vessel example uses a propeller motor, storage batteries, a steering motor, worm gear, sleeve, rod, and rudder spindle.",
-  ],
-  20: [
-    "The receiving circuit is tuned or made sensitive to waves or impulses from the distant source, at the source period or a harmonic.",
-  ],
-  21: [
-    "Tesla identifies the elevated terminal, insulated conductor, sensitive device, and grounded metal keel, then explains the local relay circuit.",
-  ],
-  22: [
-    "The detector is a cylinder of oxidized conducting grains with contacts arranged to form part of the receiving and local circuit.",
-  ],
-  23: [
-    "A relay action advances clockwork and an anchor escapement so that the detector cylinder can be mechanically reset after a received disturbance.",
-  ],
-  24: [
-    "Pins, spring, eccentric, and lever turn the grain cylinder end for end at a controlled moment, restoring the detector mechanically.",
-  ],
-  25: [
-    "Tesla attributes erratic detector behavior to grain and atmosphere variation and points to improved preparation and high-frequency apparatus.",
-  ],
-  26: [
-    "The particles are made uniform, oxidized in a controlled acid treatment, and kept dry in an airtight enclosure rather than rarefied.",
-  ],
-  27: [
-    "Turning the cylinder shifts the grains reproducibly; the relay is made weak-current sensitive but assisted so its armature releases reliably.",
-  ],
-  28: [
-    "The relay-driven escapement advances a cylinder carrying contact plates and brushes, creating three controlled electrical terminal conditions.",
-  ],
-  29: [
-    "Two relays select opposite steering-motor directions according to which cylinder contact the brush reaches; their location also protects the detector.",
-  ],
-  30: [
-    "The steering sleeve carries contact disks and brushes that route battery current to propulsion and steering circuits as the rudder moves.",
-  ],
-  31: [
-    "Long and isolated contact plates permit reversible steering within a stated limit and interrupt the motor before the rudder is driven too far.",
-  ],
-  32: [
-    "Contact sparking can disturb the sensitive receiver, so Tesla provides suppression and uses two relays despite their otherwise dispensable role.",
-  ],
-  33: [
-    "A small series motor and spring-loaded clockwork turn brief steering pulses into optional signalling or auxiliary-device actions.",
-  ],
-  34: [
-    "The transmitter switch creates short disturbances at successive stops; their sequence corresponds to alternating remote steering actions.",
-  ],
-  35: [
-    "Tesla traces the initial command: receiver action advances the controller, selects a steering circuit, and then closes propulsion as the rudder shifts.",
-  ],
-  36: [
-    "Successive switch positions reverse, pause, or extend steering; quickly passing a contrary point avoids an appreciable counter-command.",
-  ],
-  37: [
-    "The source names delivery, exploration, animal capture, commercial, scientific, engineering, and military applications, including Tesla's own peace claim.",
-  ],
-  38: [
-    "This formal sentence closes the specification and introduces the numbered legal claims that follow.",
-  ],
-  53: [
-    "The printed signature identifies Nikola Tesla as the applicant and author of the described invention.",
-  ],
-  54: [
-    "The printed witness line records Raphaël Netter and George Scherff as witnesses to the signed specification.",
   ],
 };

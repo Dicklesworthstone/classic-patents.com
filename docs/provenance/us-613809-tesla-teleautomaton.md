@@ -34,7 +34,7 @@
 
 ## Editorial and preservation boundaries
 
-- `teslaTeleautomatonArchivalEdition` in `src/data/editions/teslaTeleautomatonEdition.ts` is a retained editorial working draft, not an accepted archival edition. It is not presented under the complete-source reader while its source comparison is repaired.
+- `teslaTeleautomatonArchivalEdition` in `src/data/editions/teslaTeleautomatonEdition.ts` is a retained editorial working draft, not an accepted archival edition. Its active held packet is deliberately limited to the visually checked masthead/opening and all printed claims; it is not presented under the complete-source reader while its page-complete source comparison is repaired.
 - The page-marked reviewed ledger at `public/patents/transcripts/us-613809-tesla-teleautomaton-reviewed.txt` is the current visitor source text. It preserves all 13 pages, including the five drawing sheets; the pinned PDF remains continuously available alongside it.
 - Local figure previews are source crops under `public/patents/figures/us-613809-tesla-teleautomaton/`; each crop derives from the indicated pinned drawing sheet.
 - The grant prints thirteen numbered claims. It prints ten figures, numbered 1 through 10, on five drawing sheets.
@@ -56,12 +56,14 @@ Figs. 4–8, and sheet 5 / Fig. 10. The respective SHA-256 values are
 `b035aec55dad08bf8e9a1d63e7bc2aff649b23d08d8a2c196853a83f51423f43`,
 and `a55e7bbc83d1925598b81b3d6b93a75c0a3739bcde65e8b19dea15bbc18ba0ac`.
 
-The complete source sheet is now the first preview for each of the thirty
-authored figure citations, with a full-page source rectangle (`0,0,2320,3408`)
-and explicit occurrence locator. The earlier numbered crops remain preserved
-as supplemental assets; none were replaced or deleted. This evidence repair
-does not alter the independent full-facsimile review hold or the reader's
-always-available complete-source fallback.
+The complete source sheet was retained as the first preview for each of the
+thirty reconstruction-era figure citations, with a full-page source rectangle
+(`0,0,2320,3408`) and explicit occurrence locator. The earlier numbered crops
+remain preserved as supplemental assets; none were replaced or deleted. Those
+citations are no longer active in the held source packet after the direct text
+audit below. This evidence repair does not alter the independent
+full-facsimile review hold or the reader's always-available complete-source
+fallback.
 
 ## Independent source-sheet review (2026-09-04)
 
@@ -72,16 +74,19 @@ PDF pages 1–5 were rendered directly from the pinned facsimile at 300 DPI (232
 - Sheet 4 (PDF page 4): Figs. 4, 5, 6, 7, 8 sensitive-device and controlling-mechanism details
 - Sheet 5 (PDF page 5): Fig. 10 system and mechanism diagram
 
-The resulting immutable full-sheet assets are `public/patents/figures/us-613809-tesla-teleautomaton/source-sheet-[1-5]-v1.png`. All thirty authored figure-reference occurrences now lead with their respective full sheet, whose source rectangle is the entire page (`0,0,2320,3408`). The prior versioned figure crops remain preserved as supplemental research assets. This repairs the active citation path's incomplete-crop risk, but does not change the separate candidate hold: the continuous edition still requires independent review of the complete specification and claims before it can be accepted as an archival edition.
+The resulting immutable full-sheet assets are `public/patents/figures/us-613809-tesla-teleautomaton/source-sheet-[1-5]-v1.png`. The former thirty authored figure-reference occurrences led with their respective full sheet, whose source rectangle is the entire page (`0,0,2320,3408`). The prior versioned figure crops remain preserved as supplemental research assets. The figure references were removed from the active held packet after source review, so these assets now preserve the source without asserting a reconstructed archival citation path.
 
 ## Continuous-edition source-parity correction (2026-09-05)
 
-Direct visual comparison of the pinned specification pages 8–12 found that the
-stored continuous edition contains material abridgements and wording drift in
-the figure-description and remote-control-operation passages. The candidate's
-`completeFacsimileReviewed` attestation has therefore been withdrawn. This
-does **not** withhold any source material: the route now serves the complete
-thirteen-page local reviewed ledger, and the pinned facsimile remains available.
-The working draft is retained for line-by-line primary-source repair; it will
-not be reintroduced as the continuous archival source face until that review
-is complete.
+Direct visual comparison of the pinned specification pages 6 and 8–12 found
+that the masthead and opening are sound, but the stored continuous edition
+contains material abridgements and wording drift in the figure-description and
+remote-control-operation passages. The candidate's
+`completeFacsimileReviewed` attestation has therefore been withdrawn. Its
+active held packet now contains only the visually checked masthead/opening and
+the thirteen ledger-bound printed claims; the reconstructed body and figure
+prose remain retained as research material but cannot surface as archival
+text. This does **not** withhold any source material: the route serves the
+complete thirteen-page local reviewed ledger, and the pinned facsimile remains
+available. The working draft will not be reintroduced as the continuous
+archival source face until page-complete review is complete.
