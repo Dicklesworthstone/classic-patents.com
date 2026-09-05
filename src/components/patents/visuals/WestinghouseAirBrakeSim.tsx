@@ -13,6 +13,7 @@ import {
   VolumeX,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -828,26 +829,19 @@ export function WestinghouseAirBrakeSim() {
             </div>
 
             {/* Operating Pipe B Pressure Slider */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Locomotive Brake Valve (Pipe B)
-                </span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {trainPipePressurePsi} PSI
-                </span>
-              </div>
-              <input
-                type="range"
-                aria-label="Locomotive Brake Valve (Pipe B)"
-                min="0"
-                max="80"
-                step="5"
-                value={trainPipePressurePsi}
-                onChange={(e) => updateParam("trainPipePressure", Number(e.target.value))}
-                className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-              />
-            </div>
+            <SensitivitySlider
+              id="westinghouse-pipe-pressure-2d"
+              patentId="us-124404-westinghouse-air-brake"
+              paramKey="trainPipePressure"
+              label="Locomotive Brake Valve (Pipe B)"
+              value={trainPipePressurePsi}
+              min={0}
+              max={80}
+              step={5}
+              unit="PSI"
+              onChange={(val) => updateParam("trainPipePressure", val)}
+              allParams={params}
+            />
 
             {/* Selecting Cock d¹ Role Reversal Button (Claim 3) */}
             <div className="space-y-1.5 pt-1">

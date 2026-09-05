@@ -2,6 +2,7 @@
 
 import { Lightbulb, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHewittMercuryLamp } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -411,44 +412,34 @@ export function HewittMercuryLampSim({
       {/* Control Sliders Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-parchment-100/80 dark:bg-ink-900/60 rounded-xl border border-parchment-200 dark:border-ink-800">
         {/* Mains Voltage */}
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between text-xs font-semibold">
-            <span className="text-cyan-600 dark:text-cyan-400">Mains Voltage</span>
-            <span className="font-mono text-cyan-700 dark:text-cyan-300">{mainsVoltageV} V</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Electrical mains voltage in volts"
-            min={80}
-            max={240}
-            step={5}
-            value={mainsVoltageV}
-            onChange={(e) => updateParam("mainsVoltageV", Number(e.target.value))}
-            className="w-full h-1.5 bg-parchment-300 dark:bg-ink-700 rounded-lg appearance-none cursor-pointer accent-cyan-600 dark:accent-cyan-500"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400">
-            Commercial supply mains
-          </span>
-        </div>
+        <SensitivitySlider
+          id="hewitt-mains-voltage-2d"
+          patentId="us-682690-hewitt-mercury-lamp"
+          paramKey="mainsVoltageV"
+          label="Mains Voltage"
+          value={mainsVoltageV}
+          min={80}
+          max={240}
+          step={5}
+          unit="V"
+          onChange={(val) => updateParam("mainsVoltageV", val)}
+          allParams={params}
+        />
 
         {/* Tube Length */}
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between text-xs font-semibold">
-            <span className="text-amber-400">Tube Length</span>
-            <span className="font-mono text-amber-300">{tubeLengthCm} cm</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Mercury-vapor tube length in centimeters"
-            min={30}
-            max={150}
-            step={5}
-            value={tubeLengthCm}
-            onChange={(e) => updateParam("tubeLengthCm", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500"
-          />
-          <span className="text-[10px] text-slate-400">Positive column length</span>
-        </div>
+        <SensitivitySlider
+          id="hewitt-tube-length-2d"
+          patentId="us-682690-hewitt-mercury-lamp"
+          paramKey="tubeLengthCm"
+          label="Tube Length"
+          value={tubeLengthCm}
+          min={30}
+          max={150}
+          step={5}
+          unit="cm"
+          onChange={(val) => updateParam("tubeLengthCm", val)}
+          allParams={params}
+        />
 
         {/* Tube Diameter */}
         <div className="flex flex-col gap-1">
@@ -489,23 +480,19 @@ export function HewittMercuryLampSim({
         </div>
 
         {/* Ballast Resistance */}
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between text-xs font-semibold">
-            <span className="text-rose-400">Ballast Resistance</span>
-            <span className="font-mono text-rose-300">{ballastResistanceOhms} Ω</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Ballast resistance in ohms"
-            min={5}
-            max={30}
-            step={1}
-            value={ballastResistanceOhms}
-            onChange={(e) => updateParam("ballastResistanceOhms", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-rose-500"
-          />
-          <span className="text-[10px] text-slate-400">Negative resistance stabilizer</span>
-        </div>
+        <SensitivitySlider
+          id="hewitt-ballast-resistance-2d"
+          patentId="us-682690-hewitt-mercury-lamp"
+          paramKey="ballastResistanceOhms"
+          label="Ballast Resistance"
+          value={ballastResistanceOhms}
+          min={5}
+          max={30}
+          step={1}
+          unit="Ω"
+          onChange={(val) => updateParam("ballastResistanceOhms", val)}
+          allParams={params}
+        />
       </div>
     </div>
   );

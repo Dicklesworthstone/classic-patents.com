@@ -50,7 +50,10 @@ export function LindeAirLiquefaction3D() {
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const { params, claimStates, updateParam } = usePatentPhysics("us-727650-linde-air-liquefaction");
   const claim1Active = claimStates[1] ?? true;
-  const linde = FrankenSimEngine.stepLindeAirLiquefaction();
+  const linde = FrankenSimEngine.stepLindeAirLiquefaction({
+    inletPressureAtm: params.inletPressureAtm,
+    coolerOutletC: params.coolerOutletC,
+  });
   const highPressureAtm = linde.highPressureAtm;
   const lowPressureAtm = linde.lowPressureAtm;
   const coolerOutletC = linde.coolerOutletC;

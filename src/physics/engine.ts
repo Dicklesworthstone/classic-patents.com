@@ -1021,8 +1021,17 @@ export const FrankenSimEngine = {
     const _isRelease = cylPsi <= 5;
 
     const cylAreaSqIn = 78.5; // 10-inch cylinder
-    const pistonThrustLbf = cylPsi * cylAreaSqIn;
-    const shoeClampingForceKn = Number(((pistonThrustLbf * 5 * 4.44822) / 1000).toFixed(1));
+    const pistonThrustLbfUnrounded = cylPsi * cylAreaSqIn;
+    const shoeClampingForceNUnrounded = pistonThrustLbfUnrounded * 5 * 4.44822;
+    const shoeClampingForceKnUnrounded = shoeClampingForceNUnrounded / 1000;
+    const shoeClampingForceKn = Number(shoeClampingForceKnUnrounded.toFixed(1));
+    const shoeClampingSlopeKnPerPsi =
+      !isTripped && !isConductorOpen && !isReversed ? (cylAreaSqIn * 5 * 4.44822) / 1000 : 0;
+    const shoeClampingSlopeNPerPsi =
+      !isTripped && !isConductorOpen && !isReversed ? cylAreaSqIn * 5 * 4.44822 : 0;
+    const receiverWorkJoulesUnrounded = receiverStoredPsi * 6894.757 * 0.04;
+    const reservoirWorkSlopeJPerPsi = 6894.757 * 0.04;
+    const signalIndexSlopePerPsi = 2.0;
     // Constant shoe force => constant deceleration at fixed mass and cylinder
     // pressure: a = a0 * (psi/50) / (mass/35), anchored so 45 mph at the
     // 50 psi / 35 t design point gives the historical 500 m stop. Distance
@@ -1056,8 +1065,15 @@ export const FrankenSimEngine = {
       reservoirPipePressurePsi: isReversed ? pipePsi : resPipePsi,
       auxReservoirPressurePsi: receiverStoredPsi,
       receiverPressurePsi: receiverStoredPsi,
+      receiverWorkJoulesUnrounded,
+      reservoirWorkSlopeJPerPsi,
       brakeCylinderPressurePsi: cylPsi,
       shoeClampingForceKn,
+      shoeClampingForceKnUnrounded,
+      shoeClampingForceNUnrounded,
+      shoeClampingSlopeKnPerPsi,
+      shoeClampingSlopeNPerPsi,
+      signalIndexSlopePerPsi,
       stoppingDistanceM,
       stoppingDistanceFt: Math.round(stoppingDistanceM * 3.28084),
       pistonStrokeRatio: Number((cylPsi / 55).toFixed(2)),
@@ -1320,12 +1336,23 @@ export const FrankenSimEngine = {
     const highPressureAtm = params?.inletPressureAtm ?? 75;
     const lowPressureAtm = 25;
     const coolerOutletC = params?.coolerOutletC ?? 10;
+    const tempKelvin = coolerOutletC + 273.15;
+    // Joule-Thomson expansion temperature drop: ΔT = ((p^2 - p'^2) * 289) / (4 * T^2)
+    const jouleThomsonDropKUnrounded =
+      ((highPressureAtm ** 2 - lowPressureAtm ** 2) * 289) / (4 * tempKelvin ** 2);
+    const jtSlopeKPerAtm = (144.5 * highPressureAtm) / tempKelvin ** 2;
+    const jtSlopeKPerC = (-144.5 * (highPressureAtm ** 2 - lowPressureAtm ** 2)) / tempKelvin ** 3;
 
     return {
       highPressureAtm,
       lowPressureAtm,
       pressureDifferenceAtm: highPressureAtm - lowPressureAtm,
       coolerOutletC,
+      tempKelvin,
+      jouleThomsonDropK: Number(jouleThomsonDropKUnrounded.toFixed(2)),
+      jouleThomsonDropKUnrounded,
+      jtSlopeKPerAtm,
+      jtSlopeKPerC,
       counterCurrentLengthM: 100,
       liquefactionClaimed: true,
       modelBoundary:

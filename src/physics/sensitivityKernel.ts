@@ -933,6 +933,7 @@ export function computeParameterSensitivity(
         params.trainPipePressure ??
         params.trainPipePressurePsi ??
         params.brakePipePressure ??
+        params.brakePressurePsi ??
         params.pipePressure ??
         0;
       const res =
@@ -941,6 +942,7 @@ export function computeParameterSensitivity(
         params.reservoirPressure ??
         90;
       const signal = params.signalPulsePressure ?? params.signalPulsePressurePsi ?? 0;
+      const claim1Active = params.claim1Active !== undefined ? Boolean(params.claim1Active) : true;
 
       if (
         !Number.isFinite(pipe) ||
@@ -956,19 +958,48 @@ export function computeParameterSensitivity(
         return null;
       }
 
+      const selectingCockState =
+        (params.selectingCockPosition ?? 0) === 1 || params.selectingCockState === "reversed"
+          ? "reversed"
+          : "normal";
+      const tripModes = ["running", "tripped_derailment", "tripped_parting"] as const;
+      const tripCockState =
+        typeof params.accidentTrip === "number"
+          ? (tripModes[params.accidentTrip] ?? "running")
+          : (params.tripCockState ?? "running");
+
+      const wh = FrankenSimEngine.stepWestinghouseAirBrake({
+        trainPipePressurePsi: pipe,
+        reservoirPipePressurePsi: res,
+        selectingCockState,
+        tripCockState,
+        signalPulsePressurePsi: signal,
+      });
+
       if (
         controlKey === "trainPipePressure" ||
         controlKey === "trainPipePressurePsi" ||
         controlKey === "brakePipePressure" ||
+        controlKey === "brakePressurePsi" ||
         controlKey === "pipePressure"
       ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Brake Clamping Force",
+            derivativeSymbol: "∂F_clamp / ∂P",
+            derivativeValue: 0,
+            derivativeUnit: "N / psi",
+            interpretation:
+              "Claim 1 continuous dual-pipe and automatic valve arrangement is withheld; absence of trainline pneumatic pressure coupling halts brake cylinder actuation.",
+          };
+        }
         return {
           metricName: "Brake Clamping Force",
           derivativeSymbol: "∂F_clamp / ∂P",
-          derivativeValue: -125.0,
+          derivativeValue: wh.shoeClampingSlopeNPerPsi,
           derivativeUnit: "N / psi",
           interpretation:
-            "Fail-safe negative gradient: dropping train pipe pressure vents auxiliary reservoir into brake cylinder.",
+            "Linear shoe clamping force increase per psi of brake pipe pressure across 10-inch cylinder and 5:1 brake rigging.",
         };
       }
       if (
@@ -976,33 +1007,51 @@ export function computeParameterSensitivity(
         controlKey === "reservoirPipePressurePsi" ||
         controlKey === "reservoirPressure"
       ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Stored Pneumatic Work",
+            derivativeSymbol: "∂E / ∂P",
+            derivativeValue: 0,
+            derivativeUnit: "J / psi",
+            interpretation:
+              "Claim 1 auxiliary reservoir charging line is withheld; auxiliary receiver lacks pneumatic storage for automatic emergency reserve.",
+          };
+        }
         return {
           metricName: "Stored Pneumatic Work",
           derivativeSymbol: "∂E / ∂P",
-          derivativeValue: 276.0,
+          derivativeValue: wh.reservoirWorkSlopeJPerPsi,
           derivativeUnit: "J / psi",
           interpretation:
-            "Auxiliary reservoir pressure energy available for emergency brake application.",
+            "Auxiliary reservoir (40 L) stored pneumatic energy available for emergency equalized brake application.",
         };
       }
       if (controlKey === "signalPulsePressure" || controlKey === "signalPulsePressurePsi") {
         return {
           metricName: "Signalling Index Graduation Rate",
           derivativeSymbol: "∂Index / ∂P_signal",
-          derivativeValue: 2.0,
+          derivativeValue: wh.signalIndexSlopePerPsi,
           derivativeUnit: "step / psi",
           interpretation:
-            "Pneumatic signalling line pressure pulses advancing the cab dial index indicator.",
+            "Pneumatic signalling line pressure pulses advancing the cab dial index indicator (0.5 psi per index step).",
         };
       }
       break;
     }
 
     case "us-682690-hewitt-mercury-lamp": {
-      const vMains = params.mainsVoltageV ?? params.voltage ?? 110;
-      const rBallast = params.ballastResistanceOhms ?? params.ballast ?? 12;
-      const lenCm = params.tubeLengthCm ?? params.tubeLength ?? 100;
+      const vMains =
+        params.mainsVoltageV ?? params.voltage ?? params.vMains ?? params.arcVoltage ?? 110;
+      const rBallast =
+        params.ballastResistanceOhms ??
+        params.ballast ??
+        params.ballastOhms ??
+        params.rBallast ??
+        params.arcCurrent ??
+        12;
+      const lenCm = params.tubeLengthCm ?? params.tubeLength ?? params.length ?? 100;
       const diamMm = params.tubeDiameterMm ?? params.diameter ?? 25;
+      const claim1Active = params.claim1Active !== undefined ? Boolean(params.claim1Active) : true;
 
       if (
         !Number.isFinite(vMains) ||
@@ -1021,33 +1070,84 @@ export function computeParameterSensitivity(
         return null;
       }
 
-      if (controlKey === "mainsVoltageV" || controlKey === "voltage") {
-        return {
-          metricName: "Arc Luminous Flux Output",
-          derivativeSymbol: "∂Φ / ∂V_supply",
-          derivativeValue: 18.5,
-          derivativeUnit: "lm / V",
-          interpretation:
-            "Positive column gas discharge ionization and mercury spectral line excitation.",
-        };
-      }
-      if (controlKey === "ballastResistanceOhms" || controlKey === "ballast") {
-        const base = stepHewittMercuryLamp({
-          mainsVoltageV: vMains,
+      const h = 1e-4;
+      const base = stepHewittMercuryLamp({
+        mainsVoltageV: vMains,
+        ballastResistanceOhms: rBallast,
+        tubeLengthCm: lenCm,
+        tubeDiameterMm: diamMm,
+      });
+
+      if (
+        controlKey === "mainsVoltageV" ||
+        controlKey === "voltage" ||
+        controlKey === "vMains" ||
+        controlKey === "arcVoltage"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Arc Luminous Flux Output",
+            derivativeSymbol: "∂Φ / ∂V_supply",
+            derivativeValue: 0,
+            derivativeUnit: "lm / V",
+            interpretation:
+              "Claim 1 enclosed evacuated mercury vapor gas discharge arc is withheld; mercury gas remains non-conductive with zero light emission.",
+          };
+        }
+        const fwd = stepHewittMercuryLamp({
+          mainsVoltageV: vMains + h,
           ballastResistanceOhms: rBallast,
           tubeLengthCm: lenCm,
           tubeDiameterMm: diamMm,
         });
-        const delta = rBallast < 50 ? 1 : -1;
-        const perturbed = stepHewittMercuryLamp({
-          mainsVoltageV: vMains,
-          ballastResistanceOhms: rBallast + delta,
+        const bwd = stepHewittMercuryLamp({
+          mainsVoltageV: vMains - h,
+          ballastResistanceOhms: rBallast,
           tubeLengthCm: lenCm,
           tubeDiameterMm: diamMm,
         });
-        const dPhi_dR = Number(
-          ((perturbed.luminousFluxLumens - base.luminousFluxLumens) / delta).toFixed(1),
-        );
+        const dPhi_dV =
+          (fwd.luminousFluxLumensUnrounded - bwd.luminousFluxLumensUnrounded) / (2 * h);
+        return {
+          metricName: "Arc Luminous Flux Output",
+          derivativeSymbol: "∂Φ / ∂V_supply",
+          derivativeValue: dPhi_dV,
+          derivativeUnit: "lm / V",
+          interpretation:
+            "Positive column gas discharge ionization and mercury spectral line excitation scaling with applied mains voltage.",
+        };
+      }
+      if (
+        controlKey === "ballastResistanceOhms" ||
+        controlKey === "ballast" ||
+        controlKey === "ballastOhms" ||
+        controlKey === "rBallast" ||
+        controlKey === "arcCurrent"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Ballast Luminous Flux Quenching",
+            derivativeSymbol: "∂Φ / ∂R_ballast",
+            derivativeValue: 0,
+            derivativeUnit: "lm / Ω",
+            interpretation:
+              "Claim 1 gas discharge arc is extinguished; zero arc current flows through ballast resistance.",
+          };
+        }
+        const fwd = stepHewittMercuryLamp({
+          mainsVoltageV: vMains,
+          ballastResistanceOhms: rBallast + h,
+          tubeLengthCm: lenCm,
+          tubeDiameterMm: diamMm,
+        });
+        const bwd = stepHewittMercuryLamp({
+          mainsVoltageV: vMains,
+          ballastResistanceOhms: rBallast - h,
+          tubeLengthCm: lenCm,
+          tubeDiameterMm: diamMm,
+        });
+        const dPhi_dR =
+          (fwd.luminousFluxLumensUnrounded - bwd.luminousFluxLumensUnrounded) / (2 * h);
         return {
           metricName: "Ballast Luminous Flux Quenching",
           derivativeSymbol: "∂Φ / ∂R_ballast",
@@ -1057,13 +1157,7 @@ export function computeParameterSensitivity(
             "Series ballast resistance limits runaway negative-differential arc current, lowering equilibrium luminous flux.",
         };
       }
-      if (controlKey === "tubeLengthCm" || controlKey === "tubeLength") {
-        const base = stepHewittMercuryLamp({
-          mainsVoltageV: vMains,
-          ballastResistanceOhms: rBallast,
-          tubeLengthCm: lenCm,
-          tubeDiameterMm: diamMm,
-        });
+      if (controlKey === "tubeLengthCm" || controlKey === "tubeLength" || controlKey === "length") {
         return {
           metricName: "Positive Column Voltage Gradient",
           derivativeSymbol: "∂V_arc / ∂L_tube",
@@ -1071,15 +1165,6 @@ export function computeParameterSensitivity(
           derivativeUnit: "V / cm",
           interpretation:
             "Uniform electric field gradient in the ionized positive column across tube elongation.",
-        };
-      }
-      if (controlKey === "arcCurrent" || controlKey === "current") {
-        return {
-          metricName: "Luminous Lobe Flux",
-          derivativeSymbol: "∂Φ / ∂I",
-          derivativeValue: 420.0,
-          derivativeUnit: "lm / A",
-          interpretation: "Plasma Townsend avalanche ionization photon generation per ampere.",
         };
       }
       break;
@@ -1144,8 +1229,16 @@ export function computeParameterSensitivity(
     }
 
     case "us-727650-linde-air-liquefaction": {
-      const inletP = params.inletPressureAtm ?? params.throttlePressureBar ?? params.pressure ?? 75;
-      const tCooler = params.coolerOutletC ?? params.coolerTempC ?? 10;
+      const inletP =
+        params.inletPressureAtm ??
+        params.throttlePressureBar ??
+        params.pressure ??
+        params.inletPressure ??
+        params.pHigh ??
+        75;
+      const tCooler =
+        params.coolerOutletC ?? params.coolerTempC ?? params.temperature ?? params.tCooler ?? 10;
+      const claim1Active = params.claim1Active !== undefined ? Boolean(params.claim1Active) : true;
 
       if (
         !Number.isFinite(inletP) ||
@@ -1158,24 +1251,57 @@ export function computeParameterSensitivity(
         return null;
       }
 
+      const linde = FrankenSimEngine.stepLindeAirLiquefaction({
+        inletPressureAtm: inletP,
+        coolerOutletC: tCooler,
+      });
+
       if (
         controlKey === "inletPressureAtm" ||
         controlKey === "throttlePressureBar" ||
-        controlKey === "pressure"
+        controlKey === "pressure" ||
+        controlKey === "inletPressure" ||
+        controlKey === "pHigh"
       ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Joule-Thomson Throttling Drop",
+            derivativeSymbol: "∂ΔT_JT / ∂P",
+            derivativeValue: 0,
+            derivativeUnit: "K / atm",
+            interpretation:
+              "Claim 1 regenerative counter-current heat exchanger path is withheld; compressed air is expanded once without regenerative accumulation, preventing continuous temperature depression.",
+          };
+        }
         return {
           metricName: "Joule-Thomson Throttling Drop",
           derivativeSymbol: "∂ΔT_JT / ∂P",
-          derivativeValue: 0.23,
-          derivativeUnit: "K / bar",
-          interpretation: "Cryogenic isenthalpic expansion cooling gradient per bar pressure drop.",
+          derivativeValue: linde.jtSlopeKPerAtm,
+          derivativeUnit: "K / atm",
+          interpretation:
+            "Cryogenic isenthalpic expansion cooling gradient per atmosphere of inlet compressor discharge pressure.",
         };
       }
-      if (controlKey === "coolerOutletC" || controlKey === "coolerTempC") {
+      if (
+        controlKey === "coolerOutletC" ||
+        controlKey === "coolerTempC" ||
+        controlKey === "temperature" ||
+        controlKey === "tCooler"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Pre-Cooler Temperature Sensitivity",
+            derivativeSymbol: "∂T_exp / ∂T_cooler",
+            derivativeValue: 0,
+            derivativeUnit: "°C / °C",
+            interpretation:
+              "Claim 1 regenerative counter-current path is withheld; lack of recirculation breaks thermal coupling to pre-cooler outlet.",
+          };
+        }
         return {
           metricName: "Pre-Cooler Temperature Sensitivity",
           derivativeSymbol: "∂T_exp / ∂T_cooler",
-          derivativeValue: 0.85,
+          derivativeValue: linde.jtSlopeKPerC,
           derivativeUnit: "°C / °C",
           interpretation:
             "Regenerative counter-current approach temperature scaling with primary cooling water heat rejection.",
@@ -1595,8 +1721,15 @@ export function computeParameterSensitivity(
     }
 
     case "us-247804-delaval-separator": {
-      const rpm = params.bowlRpm ?? params.rotorRpm ?? params.rpm ?? 6500;
-      const flow = params.rawMilkFlowLph ?? params.feedRateLph ?? params.flow ?? 300;
+      const rpm = params.bowlRpm ?? params.rotorRpm ?? params.rpm ?? params.speed ?? 6500;
+      const flow =
+        params.rawMilkFlowLph ??
+        params.feedRateLph ??
+        params.flow ??
+        params.milkFlowLph ??
+        params.feedFlow ??
+        300;
+      const claim1Active = params.claim1Active !== undefined ? Boolean(params.claim1Active) : true;
 
       if (
         !Number.isFinite(rpm) ||
@@ -1611,11 +1744,26 @@ export function computeParameterSensitivity(
 
       const sep = stepDeLavalSeparator({ bowlRpm: rpm, rawMilkFlowLph: flow });
 
-      if (controlKey === "bowlRpm" || controlKey === "rotorRpm" || controlKey === "rpm") {
+      if (
+        controlKey === "bowlRpm" ||
+        controlKey === "rotorRpm" ||
+        controlKey === "rpm" ||
+        controlKey === "speed"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Centrifugal Separation Force",
+            derivativeSymbol: "∂G / ∂RPM",
+            derivativeValue: 0,
+            derivativeUnit: "G / RPM",
+            interpretation:
+              "Claim 1 vertical rotating chamber and concentric delivery nozzles are withheld; absence of continuous concentric feed/discharge halts continuous centrifugal separation.",
+          };
+        }
         return {
           metricName: "Centrifugal Separation Force",
           derivativeSymbol: "∂G / ∂RPM",
-          derivativeValue: Number(sep.gForceSlopeGPerRpm.toFixed(4)),
+          derivativeValue: sep.gForceSlopeGPerRpm,
           derivativeUnit: "G / RPM",
           interpretation:
             "Stokes creaming centrifugal acceleration gradient scaling with bowl rotation speed under the rotating disc stack model.",
@@ -1624,8 +1772,20 @@ export function computeParameterSensitivity(
       if (
         controlKey === "rawMilkFlowLph" ||
         controlKey === "feedRateLph" ||
-        controlKey === "flow"
+        controlKey === "flow" ||
+        controlKey === "milkFlowLph" ||
+        controlKey === "feedFlow"
       ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Continuous Cream Discharge Yield",
+            derivativeSymbol: "∂Q_cream / ∂Q_milk",
+            derivativeValue: 0,
+            derivativeUnit: "(L/h) / (L/h)",
+            interpretation:
+              "Claim 1 concentric delivery nozzles are withheld; whole milk does not partition into separated cream discharge without concentric collection paths.",
+          };
+        }
         return {
           metricName: "Continuous Cream Discharge Yield",
           derivativeSymbol: "∂Q_cream / ∂Q_milk",

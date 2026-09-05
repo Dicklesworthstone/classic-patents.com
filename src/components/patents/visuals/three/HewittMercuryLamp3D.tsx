@@ -4,6 +4,7 @@ import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHewittMercuryLamp } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ElectromagneticsState, ThermodynamicsState } from "@/physics/types";
 import {
@@ -393,7 +394,7 @@ export function HewittMercuryLamp3D({
           <SensitivitySlider
             id="hewittMainsVoltage"
             patentId="us-682690-hewitt-mercury-lamp"
-            paramKey="arcVoltage"
+            paramKey="mainsVoltageV"
             label="Mains Voltage"
             value={mainsVoltageV}
             min={80}
@@ -421,7 +422,7 @@ export function HewittMercuryLamp3D({
           <SensitivitySlider
             id="hewittBallastResistance"
             patentId="us-682690-hewitt-mercury-lamp"
-            paramKey="arcCurrent"
+            paramKey="ballastResistanceOhms"
             label="Ballast Resistance"
             value={ballastResistanceOhms}
             min={4}
@@ -432,6 +433,16 @@ export function HewittMercuryLamp3D({
             allParams={params}
           />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-682690-hewitt-mercury-lamp"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) => {
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0);
+          }}
+          className="mt-3"
+        />
 
         <PortHamiltonianEnergyStrip
           patentId="us-682690-hewitt-mercury-lamp"

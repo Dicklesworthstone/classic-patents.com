@@ -4481,15 +4481,17 @@ export function stepHewittMercuryLamp(params: {
   const isStable = rBallast >= 2.0 && rBallast + dynamicArcResistanceOhms > 0;
 
   // Power metrics (W)
-  const arcPowerWatts = Number((arcOperatingVoltageV * arcCurrentAmperes).toFixed(1));
+  const arcPowerWattsUnrounded = arcOperatingVoltageV * arcCurrentAmperes;
+  const arcPowerWatts = Number(arcPowerWattsUnrounded.toFixed(1));
   const totalPowerWatts = Number((vMains * arcCurrentAmperes).toFixed(1));
   const electricalEfficiencyPct = Number(((arcPowerWatts / totalPowerWatts) * 100).toFixed(1));
 
   // Luminous Efficacy & Output (lumens)
-  const luminousEfficacyLmPerWatt = Number(
-    (72 * (arcCurrentAmperes / 3.5) ** 0.2 * (25 / diamMm) ** 0.15).toFixed(1),
-  );
-  const luminousFluxLumens = Math.round(arcPowerWatts * luminousEfficacyLmPerWatt);
+  const luminousEfficacyLmPerWattUnrounded =
+    72 * (arcCurrentAmperes / 3.5) ** 0.2 * (25 / diamMm) ** 0.15;
+  const luminousEfficacyLmPerWatt = Number(luminousEfficacyLmPerWattUnrounded.toFixed(1));
+  const luminousFluxLumensUnrounded = arcPowerWattsUnrounded * luminousEfficacyLmPerWattUnrounded;
+  const luminousFluxLumens = Math.round(luminousFluxLumensUnrounded);
   const equivalentCarbonBulbs = Math.round(luminousFluxLumens / 200); // 16-cp carbon bulb ≈ 200 lm
 
   // Cathode spot current density (A/cm²)
@@ -4515,10 +4517,13 @@ export function stepHewittMercuryLamp(params: {
     dynamicArcResistanceOhms,
     isStable,
     arcPowerWatts,
+    arcPowerWattsUnrounded,
     totalPowerWatts,
     electricalEfficiencyPct,
     luminousEfficacyLmPerWatt,
+    luminousEfficacyLmPerWattUnrounded,
     luminousFluxLumens,
+    luminousFluxLumensUnrounded,
     equivalentCarbonBulbs,
     cathodeSpotAreaMm2,
     cathodeCurrentDensityAperCm2,

@@ -728,4 +728,149 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       resetPatentPhysicsParams(id);
     }
   });
+
+  test("Westinghouse Air Brake aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-124404-westinghouse-air-brake";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.trainPipePressure),
+    );
+    try {
+      setPatentPhysicsParam(id, "brakePressurePsi", 60);
+      const params = getPatentPhysicsParams(id);
+      expect(params.trainPipePressure).toBe(60);
+      expect(params.trainPipePressurePsi).toBe(60);
+      expect(params.brakePipePressure).toBe(60);
+      expect(params.brakePressurePsi).toBe(60);
+      expect(params.pipePressure).toBe(60);
+      expect(observations).toEqual([60]);
+      expect(getLastParamChange(id)?.id).toBe("trainPipePressure");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Brake Cylinder Pressure (C)")?.value).not.toBe(
+        initial.find((m) => m.label === "Brake Cylinder Pressure (C)")?.value,
+      );
+
+      setPatentPhysicsParam(id, "reservoirPressure", 70);
+      expect(getPatentPhysicsParams(id).reservoirPipePressure).toBe(70);
+      expect(getPatentPhysicsParams(id).reservoirPipePressurePsi).toBe(70);
+      expect(getPatentPhysicsParams(id).reservoirPressure).toBe(70);
+
+      setPatentPhysicsParam(id, "signalPulsePressurePsi", 1.5);
+      expect(getPatentPhysicsParams(id).signalPulsePressure).toBe(1.5);
+      expect(getPatentPhysicsParams(id).signalPulsePressurePsi).toBe(1.5);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("DeLaval Cream Separator aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-247804-delaval-separator";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) => observations.push(params.bowlRpm));
+    try {
+      setPatentPhysicsParam(id, "speed", 7200);
+      const params = getPatentPhysicsParams(id);
+      expect(params.bowlRpm).toBe(7200);
+      expect(params.rotorRpm).toBe(7200);
+      expect(params.rpm).toBe(7200);
+      expect(params.speed).toBe(7200);
+      expect(observations).toEqual([7200]);
+      expect(getLastParamChange(id)?.id).toBe("bowlRpm");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Centrifugal G-Force")?.value).not.toBe(
+        initial.find((m) => m.label === "Centrifugal G-Force")?.value,
+      );
+
+      setPatentPhysicsParam(id, "feedFlow", 450);
+      expect(getPatentPhysicsParams(id).rawMilkFlowLph).toBe(450);
+      expect(getPatentPhysicsParams(id).feedRateLph).toBe(450);
+      expect(getPatentPhysicsParams(id).flow).toBe(450);
+      expect(getPatentPhysicsParams(id).milkFlowLph).toBe(450);
+      expect(getPatentPhysicsParams(id).feedFlow).toBe(450);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Hewitt Mercury Lamp aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-682690-hewitt-mercury-lamp";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.mainsVoltageV),
+    );
+    try {
+      setPatentPhysicsParam(id, "arcVoltage", 130);
+      const params = getPatentPhysicsParams(id);
+      expect(params.mainsVoltageV).toBe(130);
+      expect(params.voltage).toBe(130);
+      expect(params.vMains).toBe(130);
+      expect(params.arcVoltage).toBe(130);
+      expect(observations).toEqual([130]);
+      expect(getLastParamChange(id)?.id).toBe("mainsVoltageV");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Arc Tube Voltage")?.value).not.toBe(
+        initial.find((m) => m.label === "Arc Tube Voltage")?.value,
+      );
+
+      setPatentPhysicsParam(id, "ballast", 18);
+      expect(getPatentPhysicsParams(id).ballastResistanceOhms).toBe(18);
+      expect(getPatentPhysicsParams(id).ballast).toBe(18);
+      expect(getPatentPhysicsParams(id).ballastOhms).toBe(18);
+      expect(getPatentPhysicsParams(id).rBallast).toBe(18);
+
+      setPatentPhysicsParam(id, "length", 120);
+      expect(getPatentPhysicsParams(id).tubeLengthCm).toBe(120);
+      expect(getPatentPhysicsParams(id).tubeLength).toBe(120);
+      expect(getPatentPhysicsParams(id).length).toBe(120);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Linde Air Liquefaction aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-727650-linde-air-liquefaction";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.inletPressureAtm),
+    );
+    try {
+      setPatentPhysicsParam(id, "pHigh", 120);
+      const params = getPatentPhysicsParams(id);
+      expect(params.inletPressureAtm).toBe(120);
+      expect(params.pressure).toBe(120);
+      expect(params.inletPressure).toBe(120);
+      expect(params.throttlePressureBar).toBe(120);
+      expect(params.pHigh).toBe(120);
+      expect(observations).toEqual([120]);
+      expect(getLastParamChange(id)?.id).toBe("inletPressureAtm");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "High-pressure p")?.value).not.toBe(
+        initial.find((m) => m.label === "High-pressure p")?.value,
+      );
+
+      setPatentPhysicsParam(id, "tCooler", -5);
+      expect(getPatentPhysicsParams(id).coolerOutletC).toBe(-5);
+      expect(getPatentPhysicsParams(id).coolerTempC).toBe(-5);
+      expect(getPatentPhysicsParams(id).temperature).toBe(-5);
+      expect(getPatentPhysicsParams(id).tCooler).toBe(-5);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
 });

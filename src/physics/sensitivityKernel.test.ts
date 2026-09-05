@@ -17,6 +17,7 @@ import {
   stepGrammeDynamo,
   stepHaberAmmonia,
   stepHallAluminium,
+  stepHewittMercuryLamp,
   stepHollerithTabulating,
   stepLincolnBuoy,
   stepMorseTelegraph,
@@ -344,14 +345,14 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
     expect(sens?.metricName).toBe("Relay Magnetomotive Force");
   });
 
-  test("Westinghouse air brake computes fail-safe negative clamping force gradient", () => {
+  test("Westinghouse air brake computes continuous braking clamping force gradient", () => {
     const sens = computeParameterSensitivity(
       "us-124404-westinghouse-air-brake",
       "trainPipePressure",
       {},
     );
     expect(sens).toBeDefined();
-    expect(sens?.derivativeValue).toBeLessThan(0);
+    expect(sens?.derivativeValue).toBeGreaterThan(0);
   });
 
   test("Bardeen refuses derivatives absent from the source-reported samples", () => {
@@ -1359,8 +1360,9 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
   });
 
-  test("Westinghouse Air Brake derives fail-safe clamping and reservoir energy sensitivities", () => {
+  test("Westinghouse Air Brake derives continuous clamping and reservoir energy sensitivities", () => {
     const id = "us-124404-westinghouse-air-brake";
+    const h = 1e-4;
 
     for (const pipe of [10, 40, 70]) {
       const sens = computeParameterSensitivity(id, "trainPipePressure", {
@@ -1371,7 +1373,37 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.metricName).toBe("Brake Clamping Force");
       expect(sens?.derivativeSymbol).toBe("∂F_clamp / ∂P");
       expect(sens?.derivativeUnit).toBe("N / psi");
-      expect(sens?.derivativeValue).toBe(-125.0);
+
+      const wh = FrankenSimEngine.stepWestinghouseAirBrake({
+        trainPipePressurePsi: pipe,
+        reservoirPipePressurePsi: 90,
+      });
+      expect(sens?.derivativeValue).toBeCloseTo(wh.shoeClampingSlopeNPerPsi, 4);
+
+      const fPlus = FrankenSimEngine.stepWestinghouseAirBrake({
+        trainPipePressurePsi: pipe + h,
+        reservoirPipePressurePsi: 90,
+      }).shoeClampingForceNUnrounded;
+      const fMinus = FrankenSimEngine.stepWestinghouseAirBrake({
+        trainPipePressurePsi: pipe - h,
+        reservoirPipePressurePsi: 90,
+      }).shoeClampingForceNUnrounded;
+      const fd = (fPlus - fMinus) / (2 * h);
+      expect(sens?.derivativeValue).toBeCloseTo(fd, 3);
+
+      // Aliases
+      for (const key of [
+        "trainPipePressurePsi",
+        "brakePipePressure",
+        "brakePressurePsi",
+        "pipePressure",
+      ]) {
+        const aliasSens = computeParameterSensitivity(id, key, {
+          [key]: pipe,
+          reservoirPipePressure: 90,
+        });
+        expect(aliasSens?.derivativeValue).toBe(sens?.derivativeValue);
+      }
     }
 
     for (const res of [20, 60, 90]) {
@@ -1383,7 +1415,32 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.metricName).toBe("Stored Pneumatic Work");
       expect(sens?.derivativeSymbol).toBe("∂E / ∂P");
       expect(sens?.derivativeUnit).toBe("J / psi");
-      expect(sens?.derivativeValue).toBe(276.0);
+
+      const wh = FrankenSimEngine.stepWestinghouseAirBrake({
+        trainPipePressurePsi: 0,
+        reservoirPipePressurePsi: res,
+      });
+      expect(sens?.derivativeValue).toBeCloseTo(wh.reservoirWorkSlopeJPerPsi, 4);
+
+      const fPlus = FrankenSimEngine.stepWestinghouseAirBrake({
+        trainPipePressurePsi: 0,
+        reservoirPipePressurePsi: res + h,
+      }).receiverWorkJoulesUnrounded;
+      const fMinus = FrankenSimEngine.stepWestinghouseAirBrake({
+        trainPipePressurePsi: 0,
+        reservoirPipePressurePsi: res - h,
+      }).receiverWorkJoulesUnrounded;
+      const fd = (fPlus - fMinus) / (2 * h);
+      expect(sens?.derivativeValue).toBeCloseTo(fd, 3);
+
+      // Aliases
+      for (const key of ["reservoirPipePressurePsi", "reservoirPressure"]) {
+        const aliasSens = computeParameterSensitivity(id, key, {
+          trainPipePressure: 0,
+          [key]: res,
+        });
+        expect(aliasSens?.derivativeValue).toBe(sens?.derivativeValue);
+      }
     }
 
     for (const signal of [0.5, 1.5, 2.0]) {
@@ -1395,7 +1452,27 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeSymbol).toBe("∂Index / ∂P_signal");
       expect(sens?.derivativeUnit).toBe("step / psi");
       expect(sens?.derivativeValue).toBe(2.0);
+
+      const aliasSens = computeParameterSensitivity(id, "signalPulsePressurePsi", {
+        signalPulsePressurePsi: signal,
+      });
+      expect(aliasSens?.derivativeValue).toBe(sens?.derivativeValue);
     }
+
+    // Claim 1 refusal gating
+    const gatedPipe = computeParameterSensitivity(id, "trainPipePressure", {
+      trainPipePressure: 40,
+      claim1Active: false,
+    });
+    expect(gatedPipe?.derivativeValue).toBe(0);
+    expect(gatedPipe?.interpretation).toContain("Claim 1");
+
+    const gatedRes = computeParameterSensitivity(id, "reservoirPipePressure", {
+      reservoirPipePressure: 90,
+      claim1Active: false,
+    });
+    expect(gatedRes?.derivativeValue).toBe(0);
+    expect(gatedRes?.interpretation).toContain("Claim 1");
 
     // Invalid parameters
     for (const invalid of [-1, 81, Number.NaN]) {
@@ -1483,7 +1560,7 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeValue).toBeCloseTo(fd, 3);
 
       // Aliases
-      for (const key of ["rotorRpm", "rpm"]) {
+      for (const key of ["rotorRpm", "rpm", "speed"]) {
         const aliasSens = computeParameterSensitivity(id, key, {
           [key]: rpm,
           rawMilkFlowLph: 300,
@@ -1516,7 +1593,7 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeValue).toBeCloseTo(fd, 4);
 
       // Aliases
-      for (const key of ["feedRateLph", "flow"]) {
+      for (const key of ["feedRateLph", "flow", "milkFlowLph", "feedFlow"]) {
         const aliasSens = computeParameterSensitivity(id, key, {
           bowlRpm: 6500,
           [key]: flow,
@@ -1525,12 +1602,25 @@ describe("Sensitivities follow the current admitted operating point", () => {
       }
     }
 
+    // Claim 1 refusal gating
+    const gatedRpm = computeParameterSensitivity(id, "bowlRpm", {
+      bowlRpm: 6500,
+      claim1Active: false,
+    });
+    expect(gatedRpm?.derivativeValue).toBe(0);
+    expect(gatedRpm?.interpretation).toContain("Claim 1");
+
+    const gatedFlow = computeParameterSensitivity(id, "rawMilkFlowLph", {
+      rawMilkFlowLph: 300,
+      claim1Active: false,
+    });
+    expect(gatedFlow?.derivativeValue).toBe(0);
+    expect(gatedFlow?.interpretation).toContain("Claim 1");
+
     // Defaults when omitted
     const defaultSens = computeParameterSensitivity(id, "bowlRpm", {});
     expect(defaultSens).toBeDefined();
-    expect(defaultSens?.derivativeValue).toBe(
-      Number(stepDeLavalSeparator({}).gForceSlopeGPerRpm.toFixed(4)),
-    );
+    expect(defaultSens?.derivativeValue).toBe(stepDeLavalSeparator({}).gForceSlopeGPerRpm);
 
     // Invalid parameters / out-of-domain refusals
     for (const invalid of [1999.9, 9000.1, Number.NaN, Number.POSITIVE_INFINITY]) {
@@ -2441,6 +2531,7 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("Hewitt Mercury Vapor Lamp derives luminous flux, ballast quenching, and column field gradient sensitivities", () => {
     const id = "us-682690-hewitt-mercury-lamp";
+    const h = 1e-4;
 
     for (const v of [80, 110, 180]) {
       const sensV = computeParameterSensitivity(id, "mainsVoltageV", { mainsVoltageV: v });
@@ -2448,7 +2539,27 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sensV?.metricName).toBe("Arc Luminous Flux Output");
       expect(sensV?.derivativeSymbol).toBe("∂Φ / ∂V_supply");
       expect(sensV?.derivativeUnit).toBe("lm / V");
-      expect(sensV?.derivativeValue).toBe(18.5);
+
+      const fwd = stepHewittMercuryLamp({
+        mainsVoltageV: v + h,
+        ballastResistanceOhms: 12,
+        tubeLengthCm: 100,
+        tubeDiameterMm: 25,
+      }).luminousFluxLumensUnrounded;
+      const bwd = stepHewittMercuryLamp({
+        mainsVoltageV: v - h,
+        ballastResistanceOhms: 12,
+        tubeLengthCm: 100,
+        tubeDiameterMm: 25,
+      }).luminousFluxLumensUnrounded;
+      const fd = (fwd - bwd) / (2 * h);
+      expect(sensV?.derivativeValue).toBeCloseTo(fd, 3);
+
+      // Aliases
+      for (const key of ["voltage", "vMains", "arcVoltage"]) {
+        const aliasSens = computeParameterSensitivity(id, key, { [key]: v });
+        expect(aliasSens?.derivativeValue).toBe(sensV?.derivativeValue);
+      }
     }
 
     for (const r of [10, 20, 35]) {
@@ -2459,7 +2570,28 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sensR?.metricName).toBe("Ballast Luminous Flux Quenching");
       expect(sensR?.derivativeSymbol).toBe("∂Φ / ∂R_ballast");
       expect(sensR?.derivativeUnit).toBe("lm / Ω");
-      expect(sensR?.derivativeValue).toBeLessThanOrEqual(0); // Quenches arc or clamps at extinction floor
+      expect(sensR?.derivativeValue).toBeLessThanOrEqual(0);
+
+      const fwd = stepHewittMercuryLamp({
+        mainsVoltageV: 110,
+        ballastResistanceOhms: r + h,
+        tubeLengthCm: 100,
+        tubeDiameterMm: 25,
+      }).luminousFluxLumensUnrounded;
+      const bwd = stepHewittMercuryLamp({
+        mainsVoltageV: 110,
+        ballastResistanceOhms: r - h,
+        tubeLengthCm: 100,
+        tubeDiameterMm: 25,
+      }).luminousFluxLumensUnrounded;
+      const fd = (fwd - bwd) / (2 * h);
+      expect(sensR?.derivativeValue).toBeCloseTo(fd, 3);
+
+      // Aliases
+      for (const key of ["ballast", "ballastOhms", "rBallast"]) {
+        const aliasSens = computeParameterSensitivity(id, key, { [key]: r });
+        expect(aliasSens?.derivativeValue).toBe(sensR?.derivativeValue);
+      }
     }
 
     for (const len of [50, 100, 140]) {
@@ -2468,15 +2600,39 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sensL?.metricName).toBe("Positive Column Voltage Gradient");
       expect(sensL?.derivativeSymbol).toBe("∂V_arc / ∂L_tube");
       expect(sensL?.derivativeUnit).toBe("V / cm");
-      expect(sensL?.derivativeValue).toBeGreaterThan(0.2);
+
+      const base = stepHewittMercuryLamp({
+        mainsVoltageV: 110,
+        ballastResistanceOhms: 12,
+        tubeLengthCm: len,
+        tubeDiameterMm: 25,
+      });
+      expect(sensL?.derivativeValue).toBe(base.electricFieldVPerCm);
+
+      // Aliases
+      for (const key of ["tubeLength", "length"]) {
+        const aliasSens = computeParameterSensitivity(id, key, { [key]: len });
+        expect(aliasSens?.derivativeValue).toBe(sensL?.derivativeValue);
+      }
     }
 
-    const sensI = computeParameterSensitivity(id, "arcCurrent", {});
-    expect(sensI).toBeDefined();
-    expect(sensI?.derivativeValue).toBe(420.0);
+    // Claim 1 refusal gating
+    const gatedV = computeParameterSensitivity(id, "mainsVoltageV", {
+      mainsVoltageV: 110,
+      claim1Active: false,
+    });
+    expect(gatedV?.derivativeValue).toBe(0);
+    expect(gatedV?.interpretation).toContain("Claim 1");
+
+    const gatedR = computeParameterSensitivity(id, "ballastResistanceOhms", {
+      ballastResistanceOhms: 12,
+      claim1Active: false,
+    });
+    expect(gatedR?.derivativeValue).toBe(0);
+    expect(gatedR?.interpretation).toContain("Claim 1");
 
     // Invalid parameters
-    for (const invalid of [59, 201, Number.NaN]) {
+    for (const invalid of [59, 241, Number.NaN]) {
       expect(
         computeParameterSensitivity(id, "mainsVoltageV", { mainsVoltageV: invalid }),
       ).toBeNull();
@@ -3497,28 +3653,98 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("Linde Air Liquefaction derives Joule-Thomson throttling drop and cooler sensitivities", () => {
     const id = "us-727650-linde-air-liquefaction";
+    const h = 1e-4;
 
-    // Throttling pressure sensitivity
-    const sensP = computeParameterSensitivity(id, "inletPressureAtm", {
+    for (const p of [50, 75, 120, 180]) {
+      const sensP = computeParameterSensitivity(id, "inletPressureAtm", {
+        inletPressureAtm: p,
+        coolerOutletC: 10,
+      });
+      expect(sensP).toBeDefined();
+      expect(sensP?.metricName).toBe("Joule-Thomson Throttling Drop");
+      expect(sensP?.derivativeSymbol).toBe("∂ΔT_JT / ∂P");
+      expect(sensP?.derivativeUnit).toBe("K / atm");
+
+      const linde = FrankenSimEngine.stepLindeAirLiquefaction({
+        inletPressureAtm: p,
+        coolerOutletC: 10,
+      });
+      expect(sensP?.derivativeValue).toBeCloseTo(linde.jtSlopeKPerAtm, 4);
+
+      const fPlus = FrankenSimEngine.stepLindeAirLiquefaction({
+        inletPressureAtm: p + h,
+        coolerOutletC: 10,
+      }).jouleThomsonDropKUnrounded;
+      const fMinus = FrankenSimEngine.stepLindeAirLiquefaction({
+        inletPressureAtm: p - h,
+        coolerOutletC: 10,
+      }).jouleThomsonDropKUnrounded;
+      const fd = (fPlus - fMinus) / (2 * h);
+      expect(sensP?.derivativeValue).toBeCloseTo(fd, 4);
+
+      // Aliases
+      for (const key of ["throttlePressureBar", "pressure", "inletPressure", "pHigh"]) {
+        const aliasSens = computeParameterSensitivity(id, key, {
+          [key]: p,
+          coolerOutletC: 10,
+        });
+        expect(aliasSens?.derivativeValue).toBe(sensP?.derivativeValue);
+      }
+    }
+
+    for (const t of [-5, 5, 15, 25]) {
+      const sensCooler = computeParameterSensitivity(id, "coolerOutletC", {
+        inletPressureAtm: 75,
+        coolerOutletC: t,
+      });
+      expect(sensCooler).toBeDefined();
+      expect(sensCooler?.metricName).toBe("Pre-Cooler Temperature Sensitivity");
+      expect(sensCooler?.derivativeSymbol).toBe("∂T_exp / ∂T_cooler");
+      expect(sensCooler?.derivativeUnit).toBe("°C / °C");
+
+      const linde = FrankenSimEngine.stepLindeAirLiquefaction({
+        inletPressureAtm: 75,
+        coolerOutletC: t,
+      });
+      expect(sensCooler?.derivativeValue).toBeCloseTo(linde.jtSlopeKPerC, 4);
+
+      const fPlus = FrankenSimEngine.stepLindeAirLiquefaction({
+        inletPressureAtm: 75,
+        coolerOutletC: t + h,
+      }).jouleThomsonDropKUnrounded;
+      const fMinus = FrankenSimEngine.stepLindeAirLiquefaction({
+        inletPressureAtm: 75,
+        coolerOutletC: t - h,
+      }).jouleThomsonDropKUnrounded;
+      const fd = (fPlus - fMinus) / (2 * h);
+      expect(sensCooler?.derivativeValue).toBeCloseTo(fd, 4);
+
+      // Aliases
+      for (const key of ["coolerTempC", "temperature", "tCooler"]) {
+        const aliasSens = computeParameterSensitivity(id, key, {
+          inletPressureAtm: 75,
+          [key]: t,
+        });
+        expect(aliasSens?.derivativeValue).toBe(sensCooler?.derivativeValue);
+      }
+    }
+
+    // Claim 1 refusal gating
+    const gatedP = computeParameterSensitivity(id, "inletPressureAtm", {
       inletPressureAtm: 75,
       coolerOutletC: 10,
+      claim1Active: false,
     });
-    expect(sensP).toBeDefined();
-    expect(sensP?.metricName).toBe("Joule-Thomson Throttling Drop");
-    expect(sensP?.derivativeSymbol).toBe("∂ΔT_JT / ∂P");
-    expect(sensP?.derivativeUnit).toBe("K / bar");
-    expect(sensP?.derivativeValue).toBe(0.23);
+    expect(gatedP?.derivativeValue).toBe(0);
+    expect(gatedP?.interpretation).toContain("Claim 1");
 
-    // Cooler outlet temperature sensitivity
-    const sensCooler = computeParameterSensitivity(id, "coolerOutletC", {
+    const gatedT = computeParameterSensitivity(id, "coolerOutletC", {
       inletPressureAtm: 75,
       coolerOutletC: 10,
+      claim1Active: false,
     });
-    expect(sensCooler).toBeDefined();
-    expect(sensCooler?.metricName).toBe("Pre-Cooler Temperature Sensitivity");
-    expect(sensCooler?.derivativeSymbol).toBe("∂T_exp / ∂T_cooler");
-    expect(sensCooler?.derivativeUnit).toBe("°C / °C");
-    expect(sensCooler?.derivativeValue).toBe(0.85);
+    expect(gatedT?.derivativeValue).toBe(0);
+    expect(gatedT?.interpretation).toContain("Claim 1");
 
     // Invalid bounds
     for (const invalid of [49, 201, Number.NaN]) {
