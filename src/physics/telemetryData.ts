@@ -198,7 +198,11 @@ import {
   stepWatsonRemoteCenterComplianceTopology,
   WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS,
 } from "./watsonRemoteCenterComplianceKernel";
-import { stepWattCondenser } from "./wattCondenserKernel";
+import {
+  readWattCondenserControls,
+  stepWattCondenser,
+  WATT_CONTROL_RANGES,
+} from "./wattCondenserKernel";
 import { stepWattRotaryEngine } from "./wattRotaryKernel";
 import { readWrightControls, stepWrightFlyerSi, WRIGHT_COUPLING } from "./wrightKernel";
 
@@ -7437,9 +7441,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "boilerPressurePsi",
         label: "Boiler Gauge Pressure",
-        min: 0.5,
-        max: 10.0,
-        step: 0.5,
+        ...WATT_CONTROL_RANGES.boilerPressurePsi,
         defaultValue: 3.0,
         unit: "psi",
         provenance: "scenario-reader",
@@ -7447,9 +7449,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "condenserTempC",
         label: "Condenser Cistern Temp",
-        min: 10,
-        max: 60,
-        step: 1,
+        ...WATT_CONTROL_RANGES.condenserTempC,
         defaultValue: 35,
         unit: "°C",
         provenance: "scenario-reader",
@@ -7457,9 +7457,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "cylinderBoreInches",
         label: "Cylinder Bore",
-        min: 20,
-        max: 72,
-        step: 2,
+        ...WATT_CONTROL_RANGES.cylinderBoreInches,
         defaultValue: 38,
         unit: "in",
         provenance: "scenario-reader",
@@ -7467,9 +7465,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "pistonStrokeFeet",
         label: "Stroke Length",
-        min: 4,
-        max: 10,
-        step: 0.5,
+        ...WATT_CONTROL_RANGES.pistonStrokeFeet,
         defaultValue: 6.0,
         unit: "ft",
         provenance: "scenario-reader",
@@ -7477,9 +7473,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "strokesPerMinute",
         label: "Cadence",
-        min: 6,
-        max: 24,
-        step: 1,
+        ...WATT_CONTROL_RANGES.strokesPerMinute,
         defaultValue: 14,
         unit: "spm",
         provenance: "scenario-reader",
@@ -7494,17 +7488,19 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         unit: "",
         provenance: "scenario-reader",
       },
+      {
+        id: "hasSteamJacket",
+        label: "Steam Jacket",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "",
+        provenance: "scenario-reader",
+      },
     ],
     computeMetrics: (p) => {
-      const watt = stepWattCondenser({
-        boilerPressurePsi: p.boilerPressurePsi,
-        condenserTempC: p.condenserTempC,
-        cylinderBoreInches: p.cylinderBoreInches,
-        pistonStrokeFeet: p.pistonStrokeFeet,
-        strokesPerMinute: p.strokesPerMinute,
-        hasSeparateCondenser: (p.hasSeparateCondenser ?? 1) > 0.5,
-        hasSteamJacket: true,
-      });
+      const watt = stepWattCondenser(readWattCondenserControls(p));
 
       return [
         {

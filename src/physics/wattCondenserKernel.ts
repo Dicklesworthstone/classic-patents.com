@@ -40,6 +40,7 @@ export interface WattCondenserOutputs {
   pistonPistonForceKn: number;
   indicatedPowerKw: number;
   indicatedHorsepower: number;
+  netShaftPowerKw: number;
 
   // Thermal & Fuel Economy
   heatInputRateKw: number;
@@ -71,6 +72,32 @@ export const WATT_DEFAULT_CONTROLS: Required<WattCondenserControls> = {
   hasSeparateCondenser: true,
 };
 
+export const WATT_CONTROL_RANGES = {
+  boilerPressurePsi: { min: 0.5, max: 20, step: 0.5 },
+  condenserTempC: { min: 10, max: 60, step: 1 },
+  cylinderBoreInches: { min: 20, max: 72, step: 2 },
+  pistonStrokeFeet: { min: 4, max: 10, step: 0.5 },
+  strokesPerMinute: { min: 6, max: 24, step: 1 },
+} as const;
+
+export const WATT_SCENARIO_NOTE =
+  "Illustrative teaching scenario using declared engine dimensions, 65% boiler efficiency, and simplified heat-loss terms; these outputs are model estimates.";
+
+/** One control decoder for the views, telemetry, and numerical readouts. */
+export function readWattCondenserControls(
+  params: Record<string, number>,
+): Required<WattCondenserControls> {
+  const controls = { ...WATT_DEFAULT_CONTROLS };
+  for (const key of Object.keys(WATT_CONTROL_RANGES) as (keyof typeof WATT_CONTROL_RANGES)[]) {
+    const range = WATT_CONTROL_RANGES[key];
+    const value = params[key] ?? WATT_DEFAULT_CONTROLS[key];
+    controls[key] = Math.max(range.min, Math.min(range.max, value));
+  }
+  controls.hasSeparateCondenser = (params.hasSeparateCondenser ?? 1) > 0.5;
+  controls.hasSteamJacket = (params.hasSteamJacket ?? 1) > 0.5;
+  return controls;
+}
+
 const ATMOSPHERIC_PRESSURE_KPA = 101.325;
 const COAL_LOWER_HEATING_VALUE_J_PER_KG = 29.3e6; // 29.3 MJ/kg standard Welsh/Scottish steam coal
 const SPECIFIC_HEAT_CAST_IRON_J_KG_K = 460;
@@ -84,29 +111,22 @@ const STANDARD_MINE_HEAD_METERS = 183.0; // 100 fathoms Cornwall/Newcastle coal 
  * Step the thermodynamic and mechanical state of the Watt separate condenser steam engine.
  */
 export function stepWattCondenser(controls: WattCondenserControls = {}): WattCondenserOutputs {
-  const boilerPressurePsi = Math.max(
-    0.5,
-    Math.min(10.0, controls.boilerPressurePsi ?? WATT_DEFAULT_CONTROLS.boilerPressurePsi),
-  );
-  const condenserTempC = Math.max(
-    10.0,
-    Math.min(60.0, controls.condenserTempC ?? WATT_DEFAULT_CONTROLS.condenserTempC),
-  );
-  const cylinderBoreInches = Math.max(
-    20.0,
-    Math.min(72.0, controls.cylinderBoreInches ?? WATT_DEFAULT_CONTROLS.cylinderBoreInches),
-  );
-  const pistonStrokeFeet = Math.max(
-    4.0,
-    Math.min(10.0, controls.pistonStrokeFeet ?? WATT_DEFAULT_CONTROLS.pistonStrokeFeet),
-  );
-  const strokesPerMinute = Math.max(
-    6.0,
-    Math.min(24.0, controls.strokesPerMinute ?? WATT_DEFAULT_CONTROLS.strokesPerMinute),
-  );
-  const hasSteamJacket = controls.hasSteamJacket ?? WATT_DEFAULT_CONTROLS.hasSteamJacket;
-  const hasSeparateCondenser =
-    controls.hasSeparateCondenser ?? WATT_DEFAULT_CONTROLS.hasSeparateCondenser;
+  const {
+    boilerPressurePsi,
+    condenserTempC,
+    cylinderBoreInches,
+    pistonStrokeFeet,
+    strokesPerMinute,
+    hasSteamJacket,
+    hasSeparateCondenser,
+  } = readWattCondenserControls({
+    ...Object.fromEntries(
+      Object.entries(controls).filter(([, value]) => typeof value === "number"),
+    ),
+    hasSteamJacket: (controls.hasSteamJacket ?? WATT_DEFAULT_CONTROLS.hasSteamJacket) ? 1 : 0,
+    hasSeparateCondenser:
+      (controls.hasSeparateCondenser ?? WATT_DEFAULT_CONTROLS.hasSeparateCondenser) ? 1 : 0,
+  });
 
   // Conversions to SI
   const boreMeters = cylinderBoreInches * 0.0254;
@@ -222,6 +242,7 @@ export function stepWattCondenser(controls: WattCondenserControls = {}): WattCon
     pistonPistonForceKn,
     indicatedPowerKw,
     indicatedHorsepower,
+    netShaftPowerKw,
     heatInputRateKw,
     thermalEfficiencyPct,
     coalConsumptionKgPerHour,

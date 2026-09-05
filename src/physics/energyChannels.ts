@@ -15,12 +15,12 @@ import {
   stepMorseTelegraph,
   stepParsonsTurbine,
   stepThomsonWelding,
-  stepWattCondenser,
   stepWozniakApple,
 } from "./catalogKernels";
 import { FrankenSimEngine } from "./engine";
 import { readKamenSegwayControls, stepKamenSegwaySi } from "./kamenSegwayKernel";
 import { stepRillieuxEvaporator } from "./rillieuxEvaporatorKernel";
+import { readWattCondenserControls, stepWattCondenser } from "./wattCondenserKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 /** Mechanical horsepower in watts. Used only to print an already-owned hp field. */
@@ -315,16 +315,10 @@ export function energyChannelsFor(
     ];
   }
   if (patentId === "gb-913-watt-separate-condenser") {
-    const watt = stepWattCondenser({
-      boilerPressurePsi: params.boilerPressurePsi,
-      condenserTempC: params.condenserTempC,
-      cylinderBoreInches: params.cylinderBoreInches,
-      pistonStrokeFeet: params.pistonStrokeFeet,
-      strokesPerMinute: params.strokesPerMinute,
-    });
+    const watt = stepWattCondenser(readWattCondenserControls(params));
     return [
       { name: "Furnace", watts: watt.heatInputRateKw * 1000, tone: "in" },
-      { name: "Indicated", watts: watt.indicatedPowerKw * 1000, tone: "useful" },
+      { name: "Net shaft", watts: watt.netShaftPowerKw * 1000, tone: "useful" },
       { name: "Air pump", watts: watt.airPumpPowerKw * 1000, tone: "loss" },
     ];
   }
