@@ -34,8 +34,9 @@
 
 1. **Facsimile Layer**: Immutable 8-page PDF stored at `public/patents/pdfs/us-4068536-stackhouse-manipulator.pdf` with pinned SHA-256 digest `dcd6652f996f2583bb6bd39f341bac2474b08472adb931972e94137aea1b7846`.
 2. **Withdrawn Ledger Draft**: `public/patents/transcripts/us-4068536-stackhouse-manipulator-reviewed.txt` is retained for audit history but is not a reviewed transcription and is not bound through `originalTextAsset`. A fresh comparison found reconstructed passages and claim language that do not match the facsimile.
-3. **Withdrawn Edition Draft**: `src/data/editions/stackhouseManipulatorEdition.ts` is marked `completeFacsimileReviewed: false` and held at the publication boundary. It must not render as the source face until a clean line-by-line replacement is completed.
-4. **Quarantined Figure Fragments and replacement source sheets**: The legacy
+3. **Clean, Unbound Ledger Candidate**: `public/patents/transcripts/us-4068536-stackhouse-manipulator-reviewed-v2.txt` is the page-complete direct transcription prepared from the eight-page pinned facsimile during the 2026-09-05 review. It preserves the printed claim-1 word `wherein` and records the later certificate separately; it is intentionally not bound until the continuous edition, figure-occurrence locators, paragraph readings, and claim decoders are complete.
+4. **Withdrawn Edition Draft**: `src/data/editions/stackhouseManipulatorEdition.ts` is marked `completeFacsimileReviewed: false` and held at the publication boundary. It must not render as the source face until a clean line-by-line replacement is completed.
+5. **Quarantined Figure Fragments and replacement source sheets**: The legacy
    `fig-1-source-crop-v1.png` through `fig-4-source-crop-v1.png` files remain
    preserved as unverified research fragments; their crop boundaries and
    figure mappings must not be published. Direct 300-DPI renders of the two
@@ -46,7 +47,7 @@
    `b55771dd6a708c55937e09db3de6bba82f8225349ff12d091d7e48d687190844`.
    These images were visually checked against the pinned sheets but remain
    unbound until the clean ledger and continuous edition are accepted.
-5. **Public Catalogue Boundary**: The registered record publishes no claims, drawings, or reviewed-ledger receipt. Its excerpt and engineering description are limited to text checked directly against the pinned facsimile. The connected wrist visual uses selected drawing-space geometry and refuses numerical load, speed, power, precision, gear-ratio, Jacobian, or singularity claims because those inputs are not printed in the grant.
+6. **Public Catalogue Boundary**: The registered record publishes no claims, drawings, or reviewed-ledger receipt. Its excerpt and engineering description are limited to text checked directly against the pinned facsimile. The connected wrist visual uses selected drawing-space geometry and refuses numerical load, speed, power, precision, gear-ratio, Jacobian, or singularity claims because those inputs are not printed in the grant.
 
 ## Independent Full-Facsimile Review (2026-09-05)
 
