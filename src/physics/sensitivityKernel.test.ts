@@ -1228,4 +1228,348 @@ describe("Sensitivities follow the current admitted operating point", () => {
       ).toBeNull();
     }
   });
+
+  test("Westinghouse Air Brake derives fail-safe clamping and reservoir energy sensitivities", () => {
+    const id = "us-124404-westinghouse-air-brake";
+
+    for (const pipe of [10, 40, 70]) {
+      const sens = computeParameterSensitivity(id, "trainPipePressure", {
+        trainPipePressure: pipe,
+        reservoirPipePressure: 90,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Brake Clamping Force");
+      expect(sens?.derivativeSymbol).toBe("∂F_clamp / ∂P");
+      expect(sens?.derivativeUnit).toBe("N / psi");
+      expect(sens?.derivativeValue).toBe(-125.0);
+    }
+
+    for (const res of [20, 60, 90]) {
+      const sens = computeParameterSensitivity(id, "reservoirPipePressure", {
+        trainPipePressure: 0,
+        reservoirPipePressure: res,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Stored Pneumatic Work");
+      expect(sens?.derivativeSymbol).toBe("∂E / ∂P");
+      expect(sens?.derivativeUnit).toBe("J / psi");
+      expect(sens?.derivativeValue).toBe(276.0);
+    }
+
+    for (const signal of [0.5, 1.5, 2.0]) {
+      const sens = computeParameterSensitivity(id, "signalPulsePressure", {
+        signalPulsePressure: signal,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Signalling Index Graduation Rate");
+      expect(sens?.derivativeSymbol).toBe("∂Index / ∂P_signal");
+      expect(sens?.derivativeUnit).toBe("step / psi");
+      expect(sens?.derivativeValue).toBe(2.0);
+    }
+
+    // Invalid parameters
+    for (const invalid of [-1, 81, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "trainPipePressure", { trainPipePressure: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-1, 101, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "reservoirPipePressure", {
+          reservoirPipePressure: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [-0.1, 2.6, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "signalPulsePressure", { signalPulsePressure: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Pasteur Fermentation derives identity reader state and temperature sensitivities", () => {
+    const id = "us-135245-pasteur-fermentation";
+
+    for (const co2 of [20, 60, 100]) {
+      const sens = computeParameterSensitivity(id, "co2SweepPct", { co2SweepPct: co2 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(1);
+    }
+
+    for (const spray of [20, 60, 100]) {
+      const sens = computeParameterSensitivity(id, "sprayCoveragePct", {
+        sprayCoveragePct: spray,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(1);
+    }
+
+    for (const temp of [20.0, 21.25, 22.5]) {
+      const sens = computeParameterSensitivity(id, "wortTempC", { wortTempC: temp });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(1);
+      expect(sens?.derivativeUnit).toBe("°C displayed / °C reader control");
+    }
+
+    // Invalid parameters
+    for (const invalid of [-1, 101, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "co2SweepPct", { co2SweepPct: invalid })).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "sprayCoveragePct", { sprayCoveragePct: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [19.9, 22.6, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "wortTempC", { wortTempC: invalid })).toBeNull();
+    }
+  });
+
+  test("DeLaval Separator derives centrifugal acceleration and cream yield sensitivities", () => {
+    const id = "us-247804-delaval-separator";
+
+    for (const rpm of [4000, 6500, 8000]) {
+      const sens = computeParameterSensitivity(id, "bowlRpm", { bowlRpm: rpm });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Centrifugal Separation Force");
+      expect(sens?.derivativeSymbol).toBe("∂G / ∂RPM");
+      expect(sens?.derivativeUnit).toBe("G / RPM");
+      expect(sens?.derivativeValue).toBeCloseTo(2.236068e-4 * rpm, 3);
+    }
+
+    for (const flow of [200, 300, 500]) {
+      const sens = computeParameterSensitivity(id, "rawMilkFlowLph", { rawMilkFlowLph: flow });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Continuous Cream Discharge Yield");
+      expect(sens?.derivativeSymbol).toBe("∂Q_cream / ∂Q_milk");
+      expect(sens?.derivativeUnit).toBe("(L/h) / (L/h)");
+      expect(sens?.derivativeValue).toBe(0.12);
+    }
+
+    // Invalid parameters
+    for (const invalid of [2999, 9001, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "bowlRpm", { bowlRpm: invalid })).toBeNull();
+    }
+    for (const invalid of [99, 601, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "rawMilkFlowLph", { rawMilkFlowLph: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Mergenthaler Linotype derives justification width, distributor rate, and pot solidification sensitivities", () => {
+    const id = "us-313224-mergenthaler-linotype";
+
+    for (const wedge of [3.0, 6.5, 10.0]) {
+      const sens = computeParameterSensitivity(id, "spacebandWedge", { spacebandWedge: wedge });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Line Justification Expansion");
+      expect(sens?.derivativeSymbol).toBe("∂Width / ∂WedgeLift");
+      expect(sens?.derivativeUnit).toBe("mm / mm");
+      expect(sens?.derivativeValue).toBe(4.2);
+    }
+
+    for (const rate of [30, 60, 90]) {
+      const sens = computeParameterSensitivity(id, "matrixRate", { matrixRate: rate });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Matrix Distributor Escapement Frequency");
+      expect(sens?.derivativeSymbol).toBe("∂f_dist / ∂Rate");
+      expect(sens?.derivativeUnit).toBe("Hz / (char/min)");
+      expect(sens?.derivativeValue).toBeCloseTo(1 / 60, 4);
+    }
+
+    for (const temp of [230, 260, 290]) {
+      const sens = computeParameterSensitivity(id, "potTemp", { potTemp: temp });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Lead-Tin-Antimony Solidification Duration");
+      expect(sens?.derivativeSymbol).toBe("∂t_solid / ∂T_pot");
+      expect(sens?.derivativeUnit).toBe("ms / °C");
+      expect(sens?.derivativeValue).toBeCloseTo(450 / 260, 4);
+    }
+
+    // Invalid parameters
+    for (const invalid of [1.9, 12.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "spacebandWedge", { spacebandWedge: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [9, 121, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "matrixRate", { matrixRate: invalid })).toBeNull();
+    }
+    for (const invalid of [219, 301, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "potTemp", { potTemp: invalid })).toBeNull();
+    }
+  });
+
+  test("Maxim Machine Gun derives breech-block kinematics and gas impulse sensitivities", () => {
+    const id = "us-319596-maxim-machine-gun";
+
+    for (const phase of [45, 90, 180, 270]) {
+      const sens = computeParameterSensitivity(id, "cyclePhase", { cyclePhase: phase });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Breech-Block Linear Travel");
+      expect(sens?.derivativeSymbol).toBe("∂x_breech / ∂θ_crank");
+      expect(sens?.derivativeUnit).toBe("mm / deg");
+      const expected = Number(
+        (((24 * Math.PI) / 180) * Math.sin((phase * Math.PI) / 180)).toFixed(4),
+      );
+      expect(sens?.derivativeValue).toBeCloseTo(expected, 4);
+    }
+
+    for (const impulse of [20, 50, 80]) {
+      const sens = computeParameterSensitivity(id, "gasImpulsePct", { gasImpulsePct: impulse });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Muzzle Sleeve Forward Impulse");
+      expect(sens?.derivativeSymbol).toBe("∂p_sleeve / ∂P_gas");
+      expect(sens?.derivativeUnit).toBe("mm / %");
+      expect(sens?.derivativeValue).toBe(0.24);
+    }
+
+    // Invalid parameters
+    for (const invalid of [-1, 361, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "cyclePhase", { cyclePhase: invalid })).toBeNull();
+    }
+    for (const invalid of [-1, 101, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "gasImpulsePct", { gasImpulsePct: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Reno Escalator derives belt speed conversion and vertical ascent sensitivity", () => {
+    const id = "us-470918-reno-escalator";
+
+    for (const speed of [0.5, 1.016, 1.2]) {
+      const sens = computeParameterSensitivity(id, "beltSpeed", { beltSpeed: speed });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Belt Velocity Linear Conversion");
+      expect(sens?.derivativeSymbol).toBe("∂v_fpm / ∂v_mps");
+      expect(sens?.derivativeUnit).toBe("(ft/min) / (m/s)");
+      expect(sens?.derivativeValue).toBeCloseTo(60 / 0.3048, 2);
+    }
+
+    for (const angle of [22, 25, 32]) {
+      const sens = computeParameterSensitivity(id, "inclineAngle", {
+        beltSpeed: 1.016,
+        inclineAngle: angle,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Vertical Ascent Rate");
+      expect(sens?.derivativeSymbol).toBe("∂v_z / ∂θ_incline");
+      expect(sens?.derivativeUnit).toBe("(m/s) / deg");
+      const expected = Number(
+        (1.016 * Math.cos((angle * Math.PI) / 180) * (Math.PI / 180)).toFixed(4),
+      );
+      expect(sens?.derivativeValue).toBeCloseTo(expected, 4);
+    }
+
+    // Invalid parameters
+    for (const invalid of [0.39, 1.21, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "beltSpeed", { beltSpeed: invalid })).toBeNull();
+    }
+    for (const invalid of [19, 36, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "inclineAngle", { inclineAngle: invalid })).toBeNull();
+    }
+  });
+
+  test("Carrier Air Conditioner derives dynamic pressure loss, spray capture, and turning face efficiency", () => {
+    const id = "us-808897-carrier-air-conditioner";
+
+    for (const cfm of [5000, 15000, 25000]) {
+      const sens = computeParameterSensitivity(id, "airflowCfm", {
+        airflowCfm: cfm,
+        separatorFaces: 6,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Separator Air Velocity & Pressure Loss");
+      expect(sens?.derivativeSymbol).toBe("∂ΔP / ∂CFM");
+      expect(sens?.derivativeUnit).toBe("Pa / cfm");
+      expect(sens?.derivativeValue).toBeCloseTo(3.4212e-7 * cfm * 6, 5);
+    }
+
+    for (const faces of [3, 6, 10]) {
+      const sens = computeParameterSensitivity(id, "separatorFaces", { separatorFaces: faces });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Droplet Separation Efficiency");
+      expect(sens?.derivativeSymbol).toBe("∂η / ∂Faces");
+      expect(sens?.derivativeUnit).toBe("% / face");
+      expect(sens?.derivativeValue).toBe(8.5);
+    }
+
+    for (const spray of [20, 60, 90]) {
+      const sens = computeParameterSensitivity(id, "sprayRatePct", { sprayRatePct: spray });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Droplet Elimination Wet Spray Sensitivity");
+      expect(sens?.derivativeSymbol).toBe("∂η / ∂Spray");
+      expect(sens?.derivativeUnit).toBe("% / %");
+      expect(sens?.derivativeValue).toBe(0.18);
+    }
+
+    // Invalid parameters
+    for (const invalid of [1999, 30001, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "airflowCfm", { airflowCfm: invalid })).toBeNull();
+    }
+    for (const invalid of [1, 13, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "separatorFaces", { separatorFaces: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [9, 101, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "sprayRatePct", { sprayRatePct: invalid })).toBeNull();
+    }
+  });
+
+  test("Sundback Zipper derives scoop engagement, cam wedge force, and cord strain sensitivities", () => {
+    const id = "us-1219881-sundback-zipper";
+
+    for (const pos of [20, 50, 80]) {
+      const sens = computeParameterSensitivity(id, "sliderPositionPct", {
+        sliderPositionPct: pos,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Engaged Tooth Count");
+      expect(sens?.derivativeSymbol).toBe("∂N_engaged / ∂x_slider");
+      expect(sens?.derivativeUnit).toBe("teeth / %");
+      expect(sens?.derivativeValue).toBe(0.65);
+    }
+
+    for (const pull of [10, 25, 45]) {
+      const sens = computeParameterSensitivity(id, "pullForceN", { pullForceN: pull });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Cam Wedge Normal Force");
+      expect(sens?.derivativeSymbol).toBe("∂F_n / ∂F_pull");
+      expect(sens?.derivativeUnit).toBe("N / N");
+      expect(sens?.derivativeValue).toBe(1.25);
+    }
+
+    for (const lat of [20, 80, 150]) {
+      const sens = computeParameterSensitivity(id, "lateralTensionN", { lateralTensionN: lat });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Corded Tape Strain");
+      expect(sens?.derivativeSymbol).toBe("∂ε / ∂F_lat");
+      expect(sens?.derivativeUnit).toBe("% / N");
+      expect(sens?.derivativeValue).toBeCloseTo(100 / 1700, 4);
+    }
+
+    // Invalid parameters
+    for (const invalid of [-1, 101, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "sliderPositionPct", { sliderPositionPct: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-1, 51, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "pullForceN", { pullForceN: invalid })).toBeNull();
+    }
+    for (const invalid of [-1, 201, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "lateralTensionN", { lateralTensionN: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-1, 181, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "flexAngleDeg", { flexAngleDeg: invalid })).toBeNull();
+    }
+    for (const invalid of [7, 15, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "toothDensityTpi", { toothDensityTpi: invalid }),
+      ).toBeNull();
+    }
+  });
 });
