@@ -2,6 +2,7 @@
 
 import { Camera } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepGliddenBarbedWire } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ContinuumState, MachineState } from "@/physics/types";
@@ -375,72 +376,58 @@ export const GliddenBarbedWire3D = memo(() => {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Line Wire Tension</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {wireTensionN} N
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Line wire tension"
-              min="200"
-              max="1200"
-              step="50"
-              value={wireTensionN}
-              onChange={(e) => updateParam("wireTensionN", Number.parseInt(e.target.value, 10))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
+          <SensitivitySlider
+            id="glidden-3d-tension"
+            patentId="us-157124-glidden-barbed-wire"
+            paramKey="wireTensionN"
+            label="Line Wire Tension"
+            value={wireTensionN}
+            min={200}
+            max={1200}
+            step={50}
+            unit="N"
+            onChange={(val) => updateParam("wireTensionN", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Helical Twist Rate</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {twistsPerFoot} twists/ft
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Helical twist rate"
-              min="2"
-              max="10"
-              step="1"
-              value={twistsPerFoot}
-              onChange={(e) => updateParam("twistsPerFoot", Number.parseInt(e.target.value, 10))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-purple-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
+          <SensitivitySlider
+            id="glidden-3d-twists"
+            patentId="us-157124-glidden-barbed-wire"
+            paramKey="twistsPerFoot"
+            label="Helical Twist Rate"
+            value={twistsPerFoot}
+            min={2}
+            max={10}
+            step={1}
+            unit="twists/ft"
+            onChange={(val) => updateParam("twistsPerFoot", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Livestock Push Force
-              </span>
-              <span className="text-rose-700 dark:text-rose-400 font-mono font-bold">
-                {animalPushForceN} N
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Livestock push force"
-              min="20"
-              max="300"
-              step="10"
-              value={animalPushForceN}
-              onChange={(e) => updateParam("animalPushForceN", Number.parseInt(e.target.value, 10))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-rose-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-rose-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
+          <SensitivitySlider
+            id="glidden-3d-push"
+            patentId="us-157124-glidden-barbed-wire"
+            paramKey="animalPushForceN"
+            label="Livestock Push Force"
+            value={animalPushForceN}
+            min={20}
+            max={300}
+            step={10}
+            unit="N"
+            onChange={(val) => updateParam("animalPushForceN", val)}
+            allParams={params}
+          />
         </div>
 
         <ClaimConstraintToggle
           patentId="us-157124-glidden-barbed-wire"
           claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
+          onToggleClaim={(claimNo, active) => {
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
+            if (claimNo === 1) {
+              updateParam("claim1Active", active ? 1 : 0);
+            }
+          }}
           className="mt-2"
         />
 

@@ -91,6 +91,12 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
       toCanonical: (rpm) => (rpm / 450) * 12,
       fromCanonical: (volts) => (volts / 12) * 450,
     },
+    voltage: same("batteryVoltage"),
+    batteryVolts: same("batteryVoltage"),
+    v: same("batteryVoltage"),
+    torque: same("loadTorque"),
+    load: same("loadTorque"),
+    torqueNm: same("loadTorque"),
   },
   "us-157124-glidden-barbed-wire": {
     machineRpm: {
@@ -98,6 +104,14 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
       toCanonical: (rpm) => Math.max(2, Math.min(10, rpm / 24)),
       fromCanonical: (twists) => twists * 24,
     },
+    tension: same("wireTensionN"),
+    tensionN: same("wireTensionN"),
+    lineTensionN: same("wireTensionN"),
+    twists: same("twistsPerFoot"),
+    twistRate: same("twistsPerFoot"),
+    pushForce: same("animalPushForceN"),
+    pushForceN: same("animalPushForceN"),
+    push: same("animalPushForceN"),
   },
   "us-621195-zeppelin-airship": {
     airspeedMph: {
@@ -169,8 +183,23 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
   "us-2708656-fermi-reactor": { controlRodWithdrawalPct: same("rodWithdrawal") },
   "us-6469-lincoln-buoy": {
     bellowsInflationPct: same("inflationPct"),
+    inflation: same("inflationPct"),
+    expansionPct: same("inflationPct"),
     steamboatWeightTons: same("weightTons"),
+    weight: same("weightTons"),
     riverShoalDepthFt: same("shoalDepth"),
+    depth: same("shoalDepth"),
+    depthFt: same("shoalDepth"),
+  },
+  "us-4750-howe-sewing-machine": {
+    rpm: same("crankRpm"),
+    speed: same("crankRpm"),
+    sewingSpeedRpm: same("crankRpm"),
+    stitchingSpeedRpm: same("crankRpm"),
+    pitch: same("stitchPitchMm"),
+    feedPitch: same("stitchPitchMm"),
+    slack: same("loopSlackPct"),
+    slackPct: same("loopSlackPct"),
   },
   "us-706737-fessenden-wireless": {
     carrierFreqKhz: same("carrierFrequencyKhz"),

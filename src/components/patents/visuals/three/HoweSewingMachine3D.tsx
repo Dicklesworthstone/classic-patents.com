@@ -236,6 +236,9 @@ export function HoweSewingMachine3D() {
             claimStates={claimStates}
             onToggleClaim={(c: number, active: boolean) => {
               setClaimStates((prev) => ({ ...prev, [c]: active }));
+              if (c === 1) {
+                updateParam("claim1Active", active ? 1 : 0);
+              }
             }}
           />
           <button

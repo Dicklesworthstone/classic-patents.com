@@ -3,6 +3,7 @@ import { allPatents } from "@/data/patents";
 import {
   stepBellTelephone,
   stepCorlissEngine,
+  stepDavenportMotor,
   stepDeForestAudion,
   stepDeLavalSeparator,
   stepEdisonPhonograph,
@@ -11,11 +12,13 @@ import {
   stepEricssonPropeller,
   stepFessendenWireless,
   stepGatlingGun,
+  stepGliddenBarbedWire,
   stepGoodyearRubber,
   stepGrammeDynamo,
   stepHaberAmmonia,
   stepHallAluminium,
   stepHollerithTabulating,
+  stepLincolnBuoy,
   stepMorseTelegraph,
   stepOttoEngine,
   stepParsonsTurbine,
@@ -26,6 +29,7 @@ import {
 } from "./catalogKernels";
 import { stepDieselEngine } from "./dieselEngineKernel";
 import { FrankenSimEngine } from "./engine";
+import { stepHoweSewingMachine } from "./machineKernels";
 
 describe("Thomson and Goodyear sensitivities use the displayed model", () => {
   test("welding current uses the current I²R derivative, including one-sided endpoints", () => {
@@ -2093,9 +2097,12 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("Davenport Electric Motor derives commutated speed and load droop sensitivities", () => {
     const id = "us-132-davenport-electric-motor";
+    const h = 1e-4;
 
     for (const v of [6, 12, 24]) {
       for (const load of [0.5, 0.8, 2.0]) {
+        const motor = stepDavenportMotor({ batteryVoltage: v, loadTorque: load });
+
         const sensV = computeParameterSensitivity(id, "batteryVoltage", {
           batteryVoltage: v,
           loadTorque: load,
@@ -2104,7 +2111,18 @@ describe("Sensitivities follow the current admitted operating point", () => {
         expect(sensV?.metricName).toBe("Armature Commutated Rotational Speed");
         expect(sensV?.derivativeSymbol).toBe("∂RPM / ∂V_batt");
         expect(sensV?.derivativeUnit).toBe("RPM / V");
-        expect(sensV?.derivativeValue).toBeCloseTo(37.5 / Math.max(0.5, load), 3);
+        expect(sensV?.derivativeValue).toBe(motor.rpmSlopePerVolt);
+
+        // Finite difference verification against unrounded continuous model
+        const rpmForward = stepDavenportMotor({
+          batteryVoltage: v + h,
+          loadTorque: load,
+        }).shaftRpmUnrounded;
+        const rpmBackward = stepDavenportMotor({
+          batteryVoltage: v - h,
+          loadTorque: load,
+        }).shaftRpmUnrounded;
+        expect(sensV?.derivativeValue).toBeCloseTo((rpmForward - rpmBackward) / (2 * h), 3);
 
         const sensLoad = computeParameterSensitivity(id, "loadTorque", {
           batteryVoltage: v,
@@ -2114,10 +2132,61 @@ describe("Sensitivities follow the current admitted operating point", () => {
         expect(sensLoad?.metricName).toBe("Armature Speed Load Droop");
         expect(sensLoad?.derivativeSymbol).toBe("∂RPM / ∂τ_load");
         expect(sensLoad?.derivativeUnit).toBe("RPM / (N·m)");
-        const expectedDroop = load > 0.5 ? -(v * 37.5) / load ** 2 : 0;
-        expect(sensLoad?.derivativeValue).toBeCloseTo(expectedDroop, 3);
+        expect(sensLoad?.derivativeValue).toBe(motor.rpmSlopePerNm);
+
+        if (load > 0.5) {
+          const rpmLoadForward = stepDavenportMotor({
+            batteryVoltage: v,
+            loadTorque: load + h,
+          }).shaftRpmUnrounded;
+          const rpmLoadBackward = stepDavenportMotor({
+            batteryVoltage: v,
+            loadTorque: load - h,
+          }).shaftRpmUnrounded;
+          expect(sensLoad?.derivativeValue).toBeCloseTo(
+            (rpmLoadForward - rpmLoadBackward) / (2 * h),
+            3,
+          );
+        }
+
+        // Alias preservation
+        for (const alias of ["voltage", "batteryVolts", "v"]) {
+          const sensAlias = computeParameterSensitivity(id, alias, {
+            [alias]: v,
+            loadTorque: load,
+          });
+          expect(sensAlias?.derivativeValue).toBe(sensV?.derivativeValue);
+        }
+        for (const alias of ["torque", "load", "torqueNm"]) {
+          const sensAlias = computeParameterSensitivity(id, alias, {
+            batteryVoltage: v,
+            [alias]: load,
+          });
+          expect(sensAlias?.derivativeValue).toBe(sensLoad?.derivativeValue);
+        }
       }
     }
+
+    // Claim 1 refusal: when commutator switching is withheld, speed sensitivity drops to 0
+    const sensRefusedV = computeParameterSensitivity(id, "batteryVoltage", {
+      batteryVoltage: 12,
+      loadTorque: 0.8,
+      claim1Active: false,
+    });
+    expect(sensRefusedV?.derivativeValue).toBe(0);
+    expect(sensRefusedV?.interpretation).toContain(
+      "Claim 1 position-dependent contact switching is withheld",
+    );
+
+    const sensRefusedLoad = computeParameterSensitivity(id, "loadTorque", {
+      batteryVoltage: 12,
+      loadTorque: 0.8,
+      claim1Active: false,
+    });
+    expect(sensRefusedLoad?.derivativeValue).toBe(0);
+    expect(sensRefusedLoad?.interpretation).toContain(
+      "Claim 1 position-dependent contact switching is withheld",
+    );
 
     // Invalid parameters
     for (const invalid of [3.9, 24.1, Number.NaN]) {
@@ -2753,22 +2822,76 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("Lincoln Buoyancy Chambers derives draft reduction and displacement loading sensitivities", () => {
     const id = "us-6469-lincoln-buoy";
+    const h = 1e-4;
+
+    const buoy = stepLincolnBuoy({ inflationPct: 75, weightTons: 380, shoalDepth: 3.5 });
 
     // Inflation percent sensitivity
-    const sensInfl = computeParameterSensitivity(id, "inflationPct", { inflationPct: 75 });
+    const sensInfl = computeParameterSensitivity(id, "inflationPct", {
+      inflationPct: 75,
+      weightTons: 380,
+      shoalDepth: 3.5,
+    });
     expect(sensInfl).toBeDefined();
     expect(sensInfl?.metricName).toBe("Hull Draft Shoal Reduction");
     expect(sensInfl?.derivativeSymbol).toBe("∂Draft / ∂%_inflation");
     expect(sensInfl?.derivativeUnit).toBe("ft / %");
-    expect(sensInfl?.derivativeValue).toBe(0.045);
+    expect(sensInfl?.derivativeValue).toBe(buoy.draftReductionSlopeFtPerPct);
+
+    // Finite difference check for inflation
+    const buoyFwdInfl = stepLincolnBuoy({ inflationPct: 75 + h, weightTons: 380, shoalDepth: 3.5 });
+    const buoyBwdInfl = stepLincolnBuoy({ inflationPct: 75 - h, weightTons: 380, shoalDepth: 3.5 });
+    const fdInfl =
+      (buoyFwdInfl.draftReductionFtUnrounded - buoyBwdInfl.draftReductionFtUnrounded) / (2 * h);
+    expect(sensInfl?.derivativeValue).toBeCloseTo(fdInfl, 5);
 
     // Steamboat weight loading sensitivity
-    const sensWeight = computeParameterSensitivity(id, "weightTons", { weightTons: 380 });
+    const sensWeight = computeParameterSensitivity(id, "weightTons", {
+      inflationPct: 75,
+      weightTons: 380,
+      shoalDepth: 3.5,
+    });
     expect(sensWeight).toBeDefined();
     expect(sensWeight?.metricName).toBe("Hull Draft Displacement Loading");
     expect(sensWeight?.derivativeSymbol).toBe("∂Draft / ∂W_steamboat");
     expect(sensWeight?.derivativeUnit).toBe("ft / ton");
-    expect(sensWeight?.derivativeValue).toBe(0.0088);
+    expect(sensWeight?.derivativeValue).toBe(buoy.hullDraftSlopeFtPerTon);
+
+    // Finite difference check for weight loading
+    const buoyFwdWeight = stepLincolnBuoy({
+      inflationPct: 75,
+      weightTons: 380 + h,
+      shoalDepth: 3.5,
+    });
+    const buoyBwdWeight = stepLincolnBuoy({
+      inflationPct: 75,
+      weightTons: 380 - h,
+      shoalDepth: 3.5,
+    });
+    const fdWeight =
+      (buoyFwdWeight.hullDraftFtUnrounded - buoyBwdWeight.hullDraftFtUnrounded) / (2 * h);
+    expect(sensWeight?.derivativeValue).toBeCloseTo(fdWeight, 5);
+
+    // Alias preservation
+    for (const alias of ["inflation", "expansionPct", "bellowsInflationPct"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, { [alias]: 75, weightTons: 380 });
+      expect(sensAlias?.derivativeValue).toBe(sensInfl?.derivativeValue);
+    }
+    for (const alias of ["weight", "steamboatWeightTons"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, { inflationPct: 75, [alias]: 380 });
+      expect(sensAlias?.derivativeValue).toBe(sensWeight?.derivativeValue);
+    }
+
+    // Claim 1 refusal: when expandable chamber attachment is withheld, draft reduction is 0
+    const sensRefused = computeParameterSensitivity(id, "inflationPct", {
+      inflationPct: 75,
+      weightTons: 380,
+      claim1Active: false,
+    });
+    expect(sensRefused?.derivativeValue).toBe(0);
+    expect(sensRefused?.interpretation).toContain(
+      "Claim 1 expandable buoyant chamber attachment is withheld",
+    );
 
     // Invalid bounds
     for (const invalid of [-1, 101, Number.NaN]) {
@@ -2856,8 +2979,15 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
   });
 
-  test("Glidden Barbed Wire derives barb clamping and span sag stiffness sensitivities", () => {
+  test("Glidden Barbed Wire derives barb clamping, span sag stiffness, and contact stress sensitivities", () => {
     const id = "us-157124-glidden-barbed-wire";
+    const h = 1e-4;
+
+    const glidden = stepGliddenBarbedWire({
+      wireTensionN: 1800,
+      twistsPerFoot: 3.5,
+      animalPushForceN: 450,
+    });
 
     // Twists per foot sensitivity
     const sensTwist = computeParameterSensitivity(id, "twistsPerFoot", {
@@ -2869,7 +2999,21 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensTwist?.metricName).toBe("Spurred Barb Interlock Clamping Force");
     expect(sensTwist?.derivativeSymbol).toBe("∂F_clamp / ∂Twist");
     expect(sensTwist?.derivativeUnit).toBe("N / twist");
-    expect(sensTwist?.derivativeValue).toBe(18.5);
+    expect(sensTwist?.derivativeValue).toBe(glidden.barbSlipThresholdSlopeNPerTwist);
+
+    // Finite difference check for twist clamping
+    const gFwdTwist = stepGliddenBarbedWire({
+      wireTensionN: 1800,
+      twistsPerFoot: 3.5 + h,
+      animalPushForceN: 450,
+    });
+    const gBwdTwist = stepGliddenBarbedWire({
+      wireTensionN: 1800,
+      twistsPerFoot: 3.5 - h,
+      animalPushForceN: 450,
+    });
+    const fdTwist = (gFwdTwist.barbSlipThresholdN - gBwdTwist.barbSlipThresholdN) / (2 * h);
+    expect(sensTwist?.derivativeValue).toBeCloseTo(fdTwist, 5);
 
     // Wire tension sag stiffness sensitivity
     const sensTension = computeParameterSensitivity(id, "wireTensionN", {
@@ -2881,21 +3025,219 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensTension?.metricName).toBe("Fence Span Elastic Sag Stiffness");
     expect(sensTension?.derivativeSymbol).toBe("∂δ_sag / ∂T_wire");
     expect(sensTension?.derivativeUnit).toBe("mm / N");
-    expect(sensTension?.derivativeValue).toBe(-0.012);
+    expect(sensTension?.derivativeValue).toBe(glidden.sagSlopeMmPerN);
+
+    // Finite difference check for tension sag
+    const gFwdTension = stepGliddenBarbedWire({
+      wireTensionN: 1800 + h,
+      twistsPerFoot: 3.5,
+      animalPushForceN: 450,
+    });
+    const gBwdTension = stepGliddenBarbedWire({
+      wireTensionN: 1800 - h,
+      twistsPerFoot: 3.5,
+      animalPushForceN: 450,
+    });
+    const fdTension = (gFwdTension.sagMmUnrounded - gBwdTension.sagMmUnrounded) / (2 * h);
+    expect(sensTension?.derivativeValue).toBeCloseTo(fdTension, 4);
+
+    // Animal push force contact stress sensitivity
+    const sensPush = computeParameterSensitivity(id, "animalPushForceN", {
+      wireTensionN: 1800,
+      twistsPerFoot: 3.5,
+      animalPushForceN: 450,
+    });
+    expect(sensPush).toBeDefined();
+    expect(sensPush?.metricName).toBe("Barb Contact Stress");
+    expect(sensPush?.derivativeSymbol).toBe("∂σ_contact / ∂F_push");
+    expect(sensPush?.derivativeUnit).toBe("MPa / N");
+    expect(sensPush?.derivativeValue).toBe(glidden.contactStressSlopeMpaPerN);
+
+    // Finite difference check for contact stress
+    const gFwdPush = stepGliddenBarbedWire({
+      wireTensionN: 1800,
+      twistsPerFoot: 3.5,
+      animalPushForceN: 450 + h,
+    });
+    const gBwdPush = stepGliddenBarbedWire({
+      wireTensionN: 1800,
+      twistsPerFoot: 3.5,
+      animalPushForceN: 450 - h,
+    });
+    const fdPush =
+      (gFwdPush.contactStressMpaUnrounded - gBwdPush.contactStressMpaUnrounded) / (2 * h);
+    expect(sensPush?.derivativeValue).toBeCloseTo(fdPush, 4);
+
+    // Alias preservation
+    for (const alias of ["twists", "twistRate"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, {
+        wireTensionN: 1800,
+        [alias]: 3.5,
+        animalPushForceN: 450,
+      });
+      expect(sensAlias?.derivativeValue).toBe(sensTwist?.derivativeValue);
+    }
+    for (const alias of ["tension", "tensionN", "lineTensionN"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, {
+        [alias]: 1800,
+        twistsPerFoot: 3.5,
+        animalPushForceN: 450,
+      });
+      expect(sensAlias?.derivativeValue).toBe(sensTension?.derivativeValue);
+    }
+    for (const alias of ["pushForce", "pushForceN", "push"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, {
+        wireTensionN: 1800,
+        twistsPerFoot: 3.5,
+        [alias]: 450,
+      });
+      expect(sensAlias?.derivativeValue).toBe(sensPush?.derivativeValue);
+    }
+
+    // Claim 1 refusal: when twisted wire locking is withheld, clamping force drops to 0
+    const sensRefused = computeParameterSensitivity(id, "twistsPerFoot", {
+      wireTensionN: 1800,
+      twistsPerFoot: 3.5,
+      animalPushForceN: 450,
+      claim1Active: false,
+    });
+    expect(sensRefused?.derivativeValue).toBe(0);
+    expect(sensRefused?.interpretation).toContain(
+      "Claim 1 twisted dual-strand wire lock is withheld",
+    );
 
     // Invalid bounds
-    for (const invalid of [499, 3501, Number.NaN]) {
+    for (const invalid of [199, 3501, Number.NaN]) {
       expect(computeParameterSensitivity(id, "wireTensionN", { wireTensionN: invalid })).toBeNull();
     }
-    for (const invalid of [0.9, 6.1, Number.NaN]) {
+    for (const invalid of [0.9, 10.1, Number.NaN]) {
       expect(
         computeParameterSensitivity(id, "twistsPerFoot", { twistsPerFoot: invalid }),
       ).toBeNull();
     }
-    for (const invalid of [99, 1201, Number.NaN]) {
+    for (const invalid of [19, 1201, Number.NaN]) {
       expect(
         computeParameterSensitivity(id, "animalPushForceN", { animalPushForceN: invalid }),
       ).toBeNull();
+    }
+  });
+
+  test("Howe Sewing Machine derives stitch formation rate, cloth feed velocity, and shuttle clearance sensitivities", () => {
+    const id = "us-4750-howe-sewing-machine";
+    const h = 1e-4;
+
+    const howe = stepHoweSewingMachine(240, 65, 3.5);
+
+    // Crank RPM sensitivity
+    const sensRpm = computeParameterSensitivity(id, "crankRpm", {
+      crankRpm: 240,
+      stitchPitchMm: 3.5,
+      loopSlackPct: 65,
+    });
+    expect(sensRpm).toBeDefined();
+    expect(sensRpm?.metricName).toBe("Lockstitch Formation Rate");
+    expect(sensRpm?.derivativeSymbol).toBe("∂Stitches / ∂RPM_crank");
+    expect(sensRpm?.derivativeUnit).toBe("stitches/min / RPM");
+    expect(sensRpm?.derivativeValue).toBe(howe.formationRateSlopePerRpm);
+
+    // Finite difference check for RPM
+    const hFwdRpm = stepHoweSewingMachine(240 + h, 65, 3.5);
+    const hBwdRpm = stepHoweSewingMachine(240 - h, 65, 3.5);
+    const fdRpm =
+      (hFwdRpm.stitchesPerMinuteUnrounded - hBwdRpm.stitchesPerMinuteUnrounded) / (2 * h);
+    expect(sensRpm?.derivativeValue).toBeCloseTo(fdRpm, 4);
+
+    // Stitch pitch sensitivity
+    const sensPitch = computeParameterSensitivity(id, "stitchPitchMm", {
+      crankRpm: 240,
+      stitchPitchMm: 3.5,
+      loopSlackPct: 65,
+    });
+    expect(sensPitch).toBeDefined();
+    expect(sensPitch?.metricName).toBe("Cloth Feed Velocity");
+    expect(sensPitch?.derivativeSymbol).toBe("∂v_{feed} / ∂pitch");
+    expect(sensPitch?.derivativeUnit).toBe("(mm/s) / mm");
+    expect(sensPitch?.derivativeValue).toBe(howe.feedSlopeMmPerSPerMm);
+
+    // Finite difference check for pitch
+    const hFwdPitch = stepHoweSewingMachine(240, 65, 3.5 + h);
+    const hBwdPitch = stepHoweSewingMachine(240, 65, 3.5 - h);
+    const fdPitch =
+      (hFwdPitch.clothFeedMmPerSUnrounded - hBwdPitch.clothFeedMmPerSUnrounded) / (2 * h);
+    expect(sensPitch?.derivativeValue).toBeCloseTo(fdPitch, 4);
+
+    // Loop slack sensitivity
+    const sensSlack = computeParameterSensitivity(id, "loopSlackPct", {
+      crankRpm: 240,
+      stitchPitchMm: 3.5,
+      loopSlackPct: 65,
+    });
+    expect(sensSlack).toBeDefined();
+    expect(sensSlack?.metricName).toBe("Needle Loop Shuttle Clearance");
+    expect(sensSlack?.derivativeSymbol).toBe("∂Clearance / ∂Slack");
+    expect(sensSlack?.derivativeUnit).toBe("% / %");
+    expect(sensSlack?.derivativeValue).toBe(howe.loopClearanceSlopePctPerPct);
+
+    // Alias preservation
+    for (const alias of ["rpm", "speed", "sewingSpeedRpm", "stitchingSpeedRpm"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, {
+        [alias]: 240,
+        stitchPitchMm: 3.5,
+        loopSlackPct: 65,
+      });
+      expect(sensAlias?.derivativeValue).toBe(sensRpm?.derivativeValue);
+    }
+    for (const alias of ["pitch", "feedPitch"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, {
+        crankRpm: 240,
+        [alias]: 3.5,
+        loopSlackPct: 65,
+      });
+      expect(sensAlias?.derivativeValue).toBe(sensPitch?.derivativeValue);
+    }
+    for (const alias of ["slack", "slackPct"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, {
+        crankRpm: 240,
+        stitchPitchMm: 3.5,
+        [alias]: 65,
+      });
+      expect(sensAlias?.derivativeValue).toBe(sensSlack?.derivativeValue);
+    }
+
+    // Claim 1 refusal: when eye-pointed needle & shuttle interlock is withheld
+    const sensRefusedClaim = computeParameterSensitivity(id, "crankRpm", {
+      crankRpm: 240,
+      stitchPitchMm: 3.5,
+      loopSlackPct: 65,
+      claim1Active: false,
+    });
+    expect(sensRefusedClaim?.derivativeValue).toBe(0);
+    expect(sensRefusedClaim?.interpretation).toContain(
+      "Claim 1 eye-pointed needle and shuttle interlock is withheld",
+    );
+
+    // Interlock threshold refusal: loop slack < 40%
+    const sensLowSlack = computeParameterSensitivity(id, "crankRpm", {
+      crankRpm: 240,
+      stitchPitchMm: 3.5,
+      loopSlackPct: 35,
+    });
+    expect(sensLowSlack?.derivativeValue).toBe(0);
+    expect(sensLowSlack?.interpretation).toContain(
+      "Loop slack is below 40% threshold required for shuttle pass",
+    );
+
+    // Invalid bounds
+    for (const invalid of [59, 421, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "crankRpm", { crankRpm: invalid })).toBeNull();
+    }
+    for (const invalid of [0.9, 6.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "stitchPitchMm", { stitchPitchMm: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-1, 101, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "loopSlackPct", { loopSlackPct: invalid })).toBeNull();
     }
   });
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { ShieldAlert, Volume2, VolumeX } from "lucide-react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepGliddenBarbedWire } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -202,38 +203,32 @@ export function GliddenBarbedWireSim() {
 
       {/* Sliders */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Twists per Foot Pitch</span>
-            <span className="font-mono">{twistsPerFoot} twists/ft</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Barbed-wire twists per foot"
-            min="2"
-            max="10"
-            step="1"
-            value={twistsPerFoot}
-            onChange={(e) => updateParam("twistsPerFoot", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Animal Push Force</span>
-            <span className="font-mono">{animalPushForceN} N</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Animal push force in newtons"
-            min="20"
-            max="300"
-            step="10"
-            value={animalPushForceN}
-            onChange={(e) => updateParam("animalPushForceN", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="glidden-twists"
+          patentId="us-157124-glidden-barbed-wire"
+          paramKey="twistsPerFoot"
+          label="Twists per Foot Pitch"
+          value={twistsPerFoot}
+          min={2}
+          max={10}
+          step={1}
+          unit="twists/ft"
+          onChange={(val) => updateParam("twistsPerFoot", val)}
+          allParams={params}
+        />
+        <SensitivitySlider
+          id="glidden-push"
+          patentId="us-157124-glidden-barbed-wire"
+          paramKey="animalPushForceN"
+          label="Animal Push Force"
+          value={animalPushForceN}
+          min={20}
+          max={300}
+          step={10}
+          unit="N"
+          onChange={(val) => updateParam("animalPushForceN", val)}
+          allParams={params}
+        />
       </div>
     </div>
   );

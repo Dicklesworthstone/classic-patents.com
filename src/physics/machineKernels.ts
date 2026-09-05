@@ -183,15 +183,29 @@ export function stepHoweSewingMachine(
     throw new Error("Howe display inputs must be finite and inside their declared domains");
   }
   const rpm = crankRpm;
-  const stitchFrequencyHz = Number((rpm / 60).toFixed(1));
+  const stitchFrequencyHzUnrounded = rpm / 60;
+  const stitchFrequencyHz = Number(stitchFrequencyHzUnrounded.toFixed(1));
   const pitch = stitchPitchMm;
   const loopSlackNormalized = loopSlackPct / 100;
+  const clothFeedMmPerSUnrounded = stitchFrequencyHzUnrounded * pitch;
+  const clothFeedMmPerS = Number((stitchFrequencyHz * pitch).toFixed(1));
+  const formationRateSlopePerRpm = 1.0;
+  const feedSlopeMmPerSPerRpm = pitch / 60;
+  const feedSlopeMmPerSPerMm = rpm / 60;
+  const loopClearanceSlopePctPerPct = 1.0;
   return {
     stitchesPerMinute: rpm,
+    stitchesPerMinuteUnrounded: rpm,
     stitchFrequencyHz,
+    stitchFrequencyHzUnrounded,
     cycleTimeMs: Math.round(1000 / Math.max(0.01, stitchFrequencyHz)),
     stitchPitchMm: pitch,
-    clothFeedMmPerS: Number((stitchFrequencyHz * pitch).toFixed(1)),
+    clothFeedMmPerS,
+    clothFeedMmPerSUnrounded,
+    formationRateSlopePerRpm,
+    feedSlopeMmPerSPerRpm,
+    feedSlopeMmPerSPerMm,
+    loopClearanceSlopePctPerPct,
     loopSlackPct,
     loopSlackNormalized,
     minimumLoopSlackPct: HOWE_MIN_LOOP_SLACK_PCT,

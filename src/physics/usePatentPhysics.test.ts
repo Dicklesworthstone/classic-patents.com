@@ -583,4 +583,149 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
     expect(params.firingRate).toBe(680);
     resetPatentPhysicsParams(maximId);
   });
+
+  test("Davenport Electric Motor aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-132-davenport-electric-motor";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.batteryVoltage),
+    );
+    try {
+      setPatentPhysicsParam(id, "batteryVolts", 18);
+      const params = getPatentPhysicsParams(id);
+      expect(params.batteryVoltage).toBe(18);
+      expect(params.batteryVolts).toBe(18);
+      expect(params.v).toBe(18);
+      expect(observations).toEqual([18]);
+      expect(getLastParamChange(id)?.id).toBe("batteryVoltage");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Motor Speed")?.value).not.toBe(
+        initial.find((m) => m.label === "Motor Speed")?.value,
+      );
+
+      setPatentPhysicsParam(id, "torque", 1.5);
+      expect(getPatentPhysicsParams(id).loadTorque).toBe(1.5);
+      expect(getPatentPhysicsParams(id).torque).toBe(1.5);
+      expect(getPatentPhysicsParams(id).load).toBe(1.5);
+      expect(getPatentPhysicsParams(id).torqueNm).toBe(1.5);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Glidden Barbed Wire aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-157124-glidden-barbed-wire";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.wireTensionN),
+    );
+    try {
+      setPatentPhysicsParam(id, "tension", 900);
+      const params = getPatentPhysicsParams(id);
+      expect(params.wireTensionN).toBe(900);
+      expect(params.tension).toBe(900);
+      expect(params.tensionN).toBe(900);
+      expect(params.lineTensionN).toBe(900);
+      expect(observations).toEqual([900]);
+      expect(getLastParamChange(id)?.id).toBe("wireTensionN");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Span Sag")?.value).not.toBe(
+        initial.find((m) => m.label === "Span Sag")?.value,
+      );
+
+      setPatentPhysicsParam(id, "twistRate", 7);
+      expect(getPatentPhysicsParams(id).twistsPerFoot).toBe(7);
+      expect(getPatentPhysicsParams(id).twists).toBe(7);
+      expect(getPatentPhysicsParams(id).twistRate).toBe(7);
+
+      setPatentPhysicsParam(id, "pushForce", 200);
+      expect(getPatentPhysicsParams(id).animalPushForceN).toBe(200);
+      expect(getPatentPhysicsParams(id).pushForce).toBe(200);
+      expect(getPatentPhysicsParams(id).pushForceN).toBe(200);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Lincoln Buoyancy Chambers aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-6469-lincoln-buoy";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.inflationPct),
+    );
+    try {
+      setPatentPhysicsParam(id, "inflation", 90);
+      const params = getPatentPhysicsParams(id);
+      expect(params.inflationPct).toBe(90);
+      expect(params.inflation).toBe(90);
+      expect(params.expansionPct).toBe(90);
+      expect(params.bellowsInflationPct).toBe(90);
+      expect(observations).toEqual([90]);
+      expect(getLastParamChange(id)?.id).toBe("inflationPct");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Draft Reduction")?.value).not.toBe(
+        initial.find((m) => m.label === "Draft Reduction")?.value,
+      );
+
+      setPatentPhysicsParam(id, "weight", 420);
+      expect(getPatentPhysicsParams(id).weightTons).toBe(420);
+      expect(getPatentPhysicsParams(id).weight).toBe(420);
+      expect(getPatentPhysicsParams(id).steamboatWeightTons).toBe(420);
+
+      setPatentPhysicsParam(id, "depth", 4.2);
+      expect(getPatentPhysicsParams(id).shoalDepth).toBe(4.2);
+      expect(getPatentPhysicsParams(id).depth).toBe(4.2);
+      expect(getPatentPhysicsParams(id).depthFt).toBe(4.2);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Howe Sewing Machine aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-4750-howe-sewing-machine";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) => observations.push(params.crankRpm));
+    try {
+      setPatentPhysicsParam(id, "speed", 320);
+      const params = getPatentPhysicsParams(id);
+      expect(params.crankRpm).toBe(320);
+      expect(params.rpm).toBe(320);
+      expect(params.speed).toBe(320);
+      expect(params.sewingSpeedRpm).toBe(320);
+      expect(observations).toEqual([320]);
+      expect(getLastParamChange(id)?.id).toBe("crankRpm");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Display Cadence")?.value).not.toBe(
+        initial.find((m) => m.label === "Display Cadence")?.value,
+      );
+
+      setPatentPhysicsParam(id, "pitch", 4.0);
+      expect(getPatentPhysicsParams(id).stitchPitchMm).toBe(4.0);
+      expect(getPatentPhysicsParams(id).pitch).toBe(4.0);
+      expect(getPatentPhysicsParams(id).feedPitch).toBe(4.0);
+
+      setPatentPhysicsParam(id, "slack", 75);
+      expect(getPatentPhysicsParams(id).loopSlackPct).toBe(75);
+      expect(getPatentPhysicsParams(id).slack).toBe(75);
+      expect(getPatentPhysicsParams(id).slackPct).toBe(75);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
 });

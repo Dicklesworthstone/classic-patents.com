@@ -3,6 +3,7 @@
 import { Pause, Play, RotateCcw, Scissors, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { ensureHoweWasm, stepHoweTopology } from "@/physics/howeWasm";
 import { stepHoweSewingMachine } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -331,43 +332,33 @@ export function HoweSewingMachineSim() {
               />
             </label>
 
-            <label className="space-y-1.5 block">
-              <span className="flex justify-between text-xs sm:text-sm font-mono">
-                <span>Declared display cadence</span>
-                <span className="text-blue-600 dark:text-blue-400 font-bold">
-                  {sewingSpeedRpm} RPM
-                </span>
-              </span>
-              <input
-                type="range"
-                aria-label="Declared display cadence"
-                min="60"
-                max="420"
-                step="10"
-                value={sewingSpeedRpm}
-                onChange={(event) => updateParam("crankRpm", Number(event.target.value))}
-                className="w-full h-11 accent-blue-600 cursor-pointer"
-              />
-            </label>
+            <SensitivitySlider
+              id="howe-sim-speed"
+              patentId="us-4750-howe-sewing-machine"
+              paramKey="crankRpm"
+              label="Declared Display Cadence"
+              value={sewingSpeedRpm}
+              min={60}
+              max={420}
+              step={10}
+              unit="RPM"
+              onChange={(val) => updateParam("crankRpm", val)}
+              allParams={params}
+            />
 
-            <label className="space-y-1.5 block">
-              <span className="flex justify-between text-xs sm:text-sm font-mono">
-                <span>Displayed loop slack</span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  {loopSlackPct}%
-                </span>
-              </span>
-              <input
-                type="range"
-                aria-label="Displayed loop slack"
-                min="0"
-                max="100"
-                step="1"
-                value={loopSlackPct}
-                onChange={(event) => updateParam("loopSlackPct", Number(event.target.value))}
-                className="w-full h-11 accent-emerald-600 cursor-pointer"
-              />
-            </label>
+            <SensitivitySlider
+              id="howe-sim-slack"
+              patentId="us-4750-howe-sewing-machine"
+              paramKey="loopSlackPct"
+              label="Displayed Loop Slack"
+              value={loopSlackPct}
+              min={0}
+              max={100}
+              step={1}
+              unit="%"
+              onChange={(val) => updateParam("loopSlackPct", val)}
+              allParams={params}
+            />
 
             <div
               className={`p-3.5 rounded-xl border text-xs sm:text-sm ${

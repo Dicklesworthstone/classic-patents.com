@@ -1080,17 +1080,28 @@ export function mccormickCrankPinSvg(phaseRad: number, hubX = -50, orbitPx = 8) 
 export function stepDavenportMotor(params: { batteryVoltage?: number; loadTorque?: number }) {
   const v = params.batteryVoltage ?? 12;
   const load = params.loadTorque ?? 0.8;
-  const rpm = Math.round((v / 12) * (450 / Math.max(0.5, load)));
+  const shaftRpmUnrounded = (v / 12) * (450 / Math.max(0.5, load));
+  const rpm = Math.round(shaftRpmUnrounded);
+  const shaftPowerWattsUnrounded = ((shaftRpmUnrounded * 2 * Math.PI) / 60) * load;
   const shaftPowerW = Math.round(((rpm * 2 * Math.PI) / 60) * load);
   const ktNmPerA = 0.12;
-  const armatureCurrentA = Number((load / ktNmPerA).toFixed(2));
+  const armatureCurrentAUnrounded = load / ktNmPerA;
+  const armatureCurrentA = Number(armatureCurrentAUnrounded.toFixed(2));
   const copperLossW = armatureCurrentA ** 2 * 1.8;
   const electricalWatts = Math.round(shaftPowerW + copperLossW);
   const shaft = rpmToOmega(rpm);
+  const rpmSlopePerVolt = 37.5 / Math.max(0.5, load);
+  const rpmSlopePerNm = load > 0.5 ? (-37.5 * v) / load ** 2 : 0;
   return {
     shaftRpm: rpm,
+    shaftRpmUnrounded,
+    rpmSlopePerVolt,
+    rpmSlopePerNm,
     shaftPowerW,
+    shaftPowerWattsUnrounded,
     armatureCurrentA,
+    armatureCurrentAUnrounded,
+    armatureCurrentSlopePerNm: 1 / ktNmPerA,
     electricalWatts,
     efficiencyPct: electricalWatts > 0 ? Math.round((shaftPowerW / electricalWatts) * 100) : 0,
     shaftOmegaRadPerS: shaft.omegaRadPerS,
@@ -1514,19 +1525,39 @@ export function stepGliddenBarbedWire(params: {
   const twists = params.twistsPerFoot ?? 5;
   const push = params.animalPushForceN ?? 120;
   const spacingIn = params.barbSpacingInches ?? 5.0;
+  const sagCmUnrounded = 2800 / Math.max(100, t);
+  const sagMmUnrounded = 28000 / Math.max(100, t);
+  const sagSlopeMmPerN = -28000 / Math.max(100, t) ** 2;
+  const sagSlopeCmPerN = -2800 / Math.max(100, t) ** 2;
   const barbSlipThresholdN = twists * 95;
+  const barbSlipThresholdSlopeNPerTwist = 95;
   const contactAreaMm2 = 0.25;
+  const contactStressMpaUnrounded = push / contactAreaMm2;
+  const contactStressSlopeMpaPerN = 1 / contactAreaMm2;
   const machineRpm = twists * 24;
+  const machineRpmSlopePerTwist = 24;
   const flyer = rpmToOmega(machineRpm);
+  const productionRateFtPerMinUnrounded = (machineRpm * spacingIn) / 12;
+  const productionRateSlopeFtPerMinPerTwist = (machineRpmSlopePerTwist * spacingIn) / 12;
   return {
-    sagCm: Number((2800 / Math.max(100, t)).toFixed(1)),
+    sagCm: Number(sagCmUnrounded.toFixed(1)),
+    sagCmUnrounded,
+    sagMmUnrounded,
+    sagSlopeMmPerN,
+    sagSlopeCmPerN,
     barbSlipThresholdN,
+    barbSlipThresholdSlopeNPerTwist,
     isLocked: barbSlipThresholdN >= push,
     tensileStrengthLbs: 950,
     contactAreaMm2,
-    contactStressMpa: Number((push / contactAreaMm2).toFixed(0)),
+    contactStressMpa: Number(contactStressMpaUnrounded.toFixed(0)),
+    contactStressMpaUnrounded,
+    contactStressSlopeMpaPerN,
     machineRpm,
-    productionRateFtPerMin: Number(((machineRpm * spacingIn) / 12).toFixed(1)),
+    machineRpmSlopePerTwist,
+    productionRateFtPerMin: Number(productionRateFtPerMinUnrounded.toFixed(1)),
+    productionRateFtPerMinUnrounded,
+    productionRateSlopeFtPerMinPerTwist,
     wireTensionLbs: Math.round(t / 4.44822),
     flyerOmegaRadPerS: flyer.omegaRadPerS,
     flyerOmegaDegPerS: flyer.omegaDegPerS,
@@ -3264,8 +3295,11 @@ export function stepLincolnBuoy(params: {
   const infl = params.inflationPct ?? 75;
   const weight = params.weightTons ?? 380;
   const depth = params.shoalDepth ?? 3.5;
-  const volM3 = Number(((infl / 100) * 42.5).toFixed(1));
-  const liftKn = Math.round(volM3 * 9.81);
+  const volM3Unrounded = (infl / 100) * 42.5;
+  const volM3 = Number(volM3Unrounded.toFixed(1));
+  const liftKnUnrounded = volM3Unrounded * 9.81;
+  const liftKn = Math.round(liftKnUnrounded);
+  const liftKnSlopePerPct = 0.425 * 9.81;
   const hullLengthFt = 160;
   const hullBeamFt = 32;
   // Governing equation Δd = ΔF_b / (ρ g A_waterplane): draft change per
@@ -3275,16 +3309,27 @@ export function stepLincolnBuoy(params: {
   const waterplaneAreaSqFt = Math.round(hullLengthFt * hullBeamFt * 0.78);
   const waterplaneAreaM2 = waterplaneAreaSqFt * 0.092903;
   const ftPerM3 = 3.28084 / waterplaneAreaM2;
-  const draftRedFt = Number((volM3 * ftPerM3).toFixed(2));
+  const draftRedFtUnrounded = volM3Unrounded * ftPerM3;
+  const draftRedFt = Number(draftRedFtUnrounded.toFixed(2));
+  const draftReductionSlopeFtPerPct = 0.425 * ftPerM3;
+  const hullDraftSlopeFtPerTon = ftPerM3;
   const baseDraftFt = 5.0;
+  const hullDraftFtUnrounded = baseDraftFt + (weight - 380) * ftPerM3 - draftRedFtUnrounded;
   const hullDraftFt = baseDraftFt + (weight - 380) * ftPerM3 - draftRedFt;
   return {
     displacedVolumeM3: volM3,
+    displacedVolumeM3Unrounded: volM3Unrounded,
     displacedVolumeCuFt: Math.round(volM3 * 35.315),
     liftKn,
+    liftKnUnrounded,
+    liftKnSlopePerPct,
     liftTons: Number((liftKn / 9.81).toFixed(1)),
     draftReductionFt: draftRedFt,
+    draftReductionFtUnrounded: draftRedFtUnrounded,
+    draftReductionSlopeFtPerPct,
     hullDraftFt: Number(hullDraftFt.toFixed(2)),
+    hullDraftFtUnrounded,
+    hullDraftSlopeFtPerTon,
     shoalClearanceFt: Number((depth - hullDraftFt).toFixed(2)),
     hullLengthFt,
     hullBeamFt,

@@ -13,6 +13,7 @@
 import {
   stepBellTelephone,
   stepCorlissEngine,
+  stepDavenportMotor,
   stepDeForestAudion,
   stepDeLavalSeparator,
   stepEdisonPhonograph,
@@ -21,6 +22,7 @@ import {
   stepEricssonPropeller,
   stepFessendenWireless,
   stepGatlingGun,
+  stepGliddenBarbedWire,
   stepGoodyearRubber,
   stepGrammeDynamo,
   stepHaberAmmonia,
@@ -28,6 +30,7 @@ import {
   stepHewittMercuryLamp,
   stepHollerithTabulating,
   stepLandPolaroidInstantFilm,
+  stepLincolnBuoy,
   stepMorseTelegraph,
   stepOttoEngine,
   stepParsonsTurbine,
@@ -64,6 +67,7 @@ import {
 } from "./hullStereolithographyKernel";
 import { readKamenSegwayControls, stepKamenSegwaySi } from "./kamenSegwayKernel";
 import { stepLemelsonWarehouseTopology } from "./lemelsonWarehouseKernel";
+import { stepHoweSewingMachine } from "./machineKernels";
 import { stepMakinoScaraTopology } from "./makinoScaraKernel";
 import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
 import { stepMilacronRobotToolchanger } from "./milacronRobotToolchangerKernel";
@@ -3819,8 +3823,14 @@ export function computeParameterSensitivity(
     }
 
     case "us-132-davenport-electric-motor": {
-      const v = params.batteryVoltage ?? params.voltage ?? 12;
-      const load = params.loadTorque ?? params.torque ?? 0.8;
+      const v = params.batteryVoltage ?? params.voltage ?? params.batteryVolts ?? params.v ?? 12;
+      const load = params.loadTorque ?? params.torque ?? params.load ?? params.torqueNm ?? 0.8;
+      const claim1Active =
+        params.isCommutatorActive !== undefined
+          ? Number(params.isCommutatorActive) >= 0.5
+          : params.claim1Active !== undefined
+            ? Boolean(params.claim1Active)
+            : true;
 
       if (
         !Number.isFinite(v) ||
@@ -3833,23 +3843,53 @@ export function computeParameterSensitivity(
         return null;
       }
 
-      if (controlKey === "batteryVoltage" || controlKey === "voltage") {
-        const dRpm_dV = Number((37.5 / Math.max(0.5, load)).toFixed(3));
+      const motor = stepDavenportMotor({ batteryVoltage: v, loadTorque: load });
+
+      if (
+        controlKey === "batteryVoltage" ||
+        controlKey === "voltage" ||
+        controlKey === "batteryVolts" ||
+        controlKey === "v"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Armature Commutated Rotational Speed",
+            derivativeSymbol: "∂RPM / ∂V_batt",
+            derivativeValue: 0,
+            derivativeUnit: "RPM / V",
+            interpretation:
+              "Claim 1 position-dependent contact switching is withheld; revolving electromagnets freeze against stationary poles, halting continuous rotation.",
+          };
+        }
         return {
           metricName: "Armature Commutated Rotational Speed",
           derivativeSymbol: "∂RPM / ∂V_batt",
-          derivativeValue: dRpm_dV,
+          derivativeValue: motor.rpmSlopePerVolt,
           derivativeUnit: "RPM / V",
           interpretation:
-            "Commutated rotor speed scaling with applied galvanic battery voltage across the Lorentz electromagnetic torque loop.",
+            "Continuous commutated rotor speed scaling with applied galvanic battery voltage across the Lorentz electromagnetic torque loop.",
         };
       }
-      if (controlKey === "loadTorque" || controlKey === "torque") {
-        const dRpm_dLoad = load > 0.5 ? Number((-(v * 37.5) / load ** 2).toFixed(3)) : 0;
+      if (
+        controlKey === "loadTorque" ||
+        controlKey === "torque" ||
+        controlKey === "load" ||
+        controlKey === "torqueNm"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Armature Speed Load Droop",
+            derivativeSymbol: "∂RPM / ∂τ_load",
+            derivativeValue: 0,
+            derivativeUnit: "RPM / (N·m)",
+            interpretation:
+              "Claim 1 position-dependent contact switching is withheld; armature is stationary and exhibits no dynamic speed droop.",
+          };
+        }
         return {
           metricName: "Armature Speed Load Droop",
           derivativeSymbol: "∂RPM / ∂τ_load",
-          derivativeValue: dRpm_dLoad,
+          derivativeValue: motor.rpmSlopePerNm,
           derivativeUnit: "RPM / (N·m)",
           interpretation:
             "Inverse rotational speed droop under mechanical shaft resisting load torque.",
@@ -3859,23 +3899,106 @@ export function computeParameterSensitivity(
     }
 
     case "us-4750-howe-sewing-machine": {
-      if (controlKey === "crankRpm") {
+      const rpm =
+        params.crankRpm ??
+        params.rpm ??
+        params.speed ??
+        params.sewingSpeedRpm ??
+        params.stitchingSpeedRpm ??
+        240;
+      const pitch = params.stitchPitchMm ?? params.pitch ?? params.feedPitch ?? 3.5;
+      const slack = params.loopSlackPct ?? params.slack ?? params.slackPct ?? 65;
+      const claim1Active = params.claim1Active !== undefined ? Boolean(params.claim1Active) : true;
+
+      if (
+        !Number.isFinite(rpm) ||
+        rpm < 60 ||
+        rpm > 420 ||
+        !Number.isFinite(pitch) ||
+        pitch < 1.0 ||
+        pitch > 6.0 ||
+        !Number.isFinite(slack) ||
+        slack < 0 ||
+        slack > 100
+      ) {
+        return null;
+      }
+
+      const howe = stepHoweSewingMachine(rpm, slack, pitch);
+
+      if (
+        controlKey === "crankRpm" ||
+        controlKey === "rpm" ||
+        controlKey === "speed" ||
+        controlKey === "sewingSpeedRpm" ||
+        controlKey === "stitchingSpeedRpm"
+      ) {
+        if (!claim1Active || !howe.claim1InterlockPossible) {
+          return {
+            metricName: "Lockstitch Formation Rate",
+            derivativeSymbol: "∂Stitches / ∂RPM_crank",
+            derivativeValue: 0,
+            derivativeUnit: "stitches/min / RPM",
+            interpretation: !claim1Active
+              ? "Claim 1 eye-pointed needle and shuttle interlock is withheld; thread loop is not captured, halting stitch formation."
+              : "Loop slack is below 40% threshold required for shuttle pass; needle loop does not clear the shuttle section.",
+          };
+        }
         return {
           metricName: "Lockstitch Formation Rate",
           derivativeSymbol: "∂Stitches / ∂RPM_crank",
-          derivativeValue: 1.0,
+          derivativeValue: howe.formationRateSlopePerRpm,
           derivativeUnit: "stitches/min / RPM",
           interpretation:
             "Synchronized eye-pointed needle penetration and reciprocating shuttle loop pass.",
+        };
+      }
+
+      if (controlKey === "stitchPitchMm" || controlKey === "pitch" || controlKey === "feedPitch") {
+        if (!claim1Active || !howe.claim1InterlockPossible) {
+          return {
+            metricName: "Cloth Feed Velocity",
+            derivativeSymbol: "∂v_{feed} / ∂pitch",
+            derivativeValue: 0,
+            derivativeUnit: "(mm/s) / mm",
+            interpretation:
+              "Interlock condition refused; cloth advancement without valid stitch formation halts regular feed progression.",
+          };
+        }
+        return {
+          metricName: "Cloth Feed Velocity",
+          derivativeSymbol: "∂v_{feed} / ∂pitch",
+          derivativeValue: howe.feedSlopeMmPerSPerMm,
+          derivativeUnit: "(mm/s) / mm",
+          interpretation:
+            "Linear cloth advancement velocity per millimetre of baster plate point pitch.",
+        };
+      }
+
+      if (controlKey === "loopSlackPct" || controlKey === "slack" || controlKey === "slackPct") {
+        return {
+          metricName: "Needle Loop Shuttle Clearance",
+          derivativeSymbol: "∂Clearance / ∂Slack",
+          derivativeValue: howe.loopClearanceSlopePctPerPct,
+          derivativeUnit: "% / %",
+          interpretation:
+            "Proportional loop slack margin above 40% minimum required for shuttle bobbin pass.",
         };
       }
       break;
     }
 
     case "us-6469-lincoln-buoy": {
-      const inflation = params.inflationPct ?? params.inflation ?? params.expansionPct ?? 75;
-      const weight = params.weightTons ?? params.weight ?? 380;
-      const depth = params.shoalDepth ?? params.depthFt ?? 3.5;
+      const inflation =
+        params.inflationPct ??
+        params.inflation ??
+        params.expansionPct ??
+        params.bellowsInflationPct ??
+        75;
+      const weight = params.weightTons ?? params.weight ?? params.steamboatWeightTons ?? 380;
+      const depth =
+        params.shoalDepth ?? params.depth ?? params.depthFt ?? params.riverShoalDepthFt ?? 3.5;
+      const claim1Active = params.claim1Active !== undefined ? Boolean(params.claim1Active) : true;
 
       if (
         !Number.isFinite(inflation) ||
@@ -3891,25 +4014,46 @@ export function computeParameterSensitivity(
         return null;
       }
 
+      const buoy = stepLincolnBuoy({
+        inflationPct: inflation,
+        weightTons: weight,
+        shoalDepth: depth,
+      });
+
       if (
         controlKey === "inflationPct" ||
         controlKey === "inflation" ||
-        controlKey === "expansionPct"
+        controlKey === "expansionPct" ||
+        controlKey === "bellowsInflationPct"
       ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Hull Draft Shoal Reduction",
+            derivativeSymbol: "∂Draft / ∂%_inflation",
+            derivativeValue: 0,
+            derivativeUnit: "ft / %",
+            interpretation:
+              "Claim 1 expandable buoyant chamber attachment is withheld; bellows are decoupled from hull, producing zero draft reduction.",
+          };
+        }
         return {
           metricName: "Hull Draft Shoal Reduction",
           derivativeSymbol: "∂Draft / ∂%_inflation",
-          derivativeValue: 0.045,
+          derivativeValue: buoy.draftReductionSlopeFtPerPct,
           derivativeUnit: "ft / %",
           interpretation:
             "Archimedes buoyant displacement lifting vessel over shallow river sandbars.",
         };
       }
-      if (controlKey === "weightTons" || controlKey === "weight") {
+      if (
+        controlKey === "weightTons" ||
+        controlKey === "weight" ||
+        controlKey === "steamboatWeightTons"
+      ) {
         return {
           metricName: "Hull Draft Displacement Loading",
           derivativeSymbol: "∂Draft / ∂W_steamboat",
-          derivativeValue: 0.0088,
+          derivativeValue: buoy.hullDraftSlopeFtPerTon,
           derivativeUnit: "ft / ton",
           interpretation:
             "Hydrostatic sinkage slope: waterplane displacement loading per additional ton of cargo or vessel weight.",
@@ -4056,42 +4200,81 @@ export function computeParameterSensitivity(
     }
 
     case "us-157124-glidden-barbed-wire": {
-      const tension = params.wireTensionN ?? params.tensionN ?? 1800;
-      const twists = params.twistsPerFoot ?? params.twists ?? 3.5;
-      const push = params.animalPushForceN ?? params.pushForceN ?? 450;
+      const tension =
+        params.wireTensionN ?? params.tensionN ?? params.tension ?? params.lineTensionN ?? 650;
+      const twists = params.twistsPerFoot ?? params.twists ?? params.twistRate ?? 5.0;
+      const push =
+        params.animalPushForceN ?? params.pushForceN ?? params.pushForce ?? params.push ?? 120;
+      const claim1Active = params.claim1Active !== undefined ? Boolean(params.claim1Active) : true;
 
       if (
         !Number.isFinite(tension) ||
-        tension < 500 ||
+        tension < 200 ||
         tension > 3500 ||
         !Number.isFinite(twists) ||
         twists < 1.0 ||
-        twists > 6.0 ||
+        twists > 10.0 ||
         !Number.isFinite(push) ||
-        push < 100 ||
+        push < 20 ||
         push > 1200
       ) {
         return null;
       }
 
-      if (controlKey === "twistsPerFoot" || controlKey === "twists") {
+      const glidden = stepGliddenBarbedWire({
+        wireTensionN: tension,
+        twistsPerFoot: twists,
+        animalPushForceN: push,
+      });
+
+      if (controlKey === "twistsPerFoot" || controlKey === "twists" || controlKey === "twistRate") {
+        if (!claim1Active) {
+          return {
+            metricName: "Spurred Barb Interlock Clamping Force",
+            derivativeSymbol: "∂F_clamp / ∂Twist",
+            derivativeValue: 0,
+            derivativeUnit: "N / twist",
+            interpretation:
+              "Claim 1 twisted dual-strand wire lock is withheld; barbs slide freely along single uncoiled strand without torsional clamping.",
+          };
+        }
         return {
           metricName: "Spurred Barb Interlock Clamping Force",
           derivativeSymbol: "∂F_clamp / ∂Twist",
-          derivativeValue: 18.5,
+          derivativeValue: glidden.barbSlipThresholdSlopeNPerTwist,
           derivativeUnit: "N / twist",
           interpretation:
             "Twisted dual-strand wire clamping short coiled spurred barbs against lateral sliding.",
         };
       }
-      if (controlKey === "wireTensionN" || controlKey === "tensionN") {
+      if (
+        controlKey === "wireTensionN" ||
+        controlKey === "tensionN" ||
+        controlKey === "tension" ||
+        controlKey === "lineTensionN"
+      ) {
         return {
           metricName: "Fence Span Elastic Sag Stiffness",
           derivativeSymbol: "∂δ_sag / ∂T_wire",
-          derivativeValue: -0.012,
+          derivativeValue: glidden.sagSlopeMmPerN,
           derivativeUnit: "mm / N",
           interpretation:
             "Longitudinal tensile pre-stress reducing catenary sag under transverse contact loads.",
+        };
+      }
+      if (
+        controlKey === "animalPushForceN" ||
+        controlKey === "pushForceN" ||
+        controlKey === "pushForce" ||
+        controlKey === "push"
+      ) {
+        return {
+          metricName: "Barb Contact Stress",
+          derivativeSymbol: "∂σ_contact / ∂F_push",
+          derivativeValue: glidden.contactStressSlopeMpaPerN,
+          derivativeUnit: "MPa / N",
+          interpretation:
+            "Concentrated point-contact pressure scaling inversely with spur sharp cross-sectional area (0.25 mm²).",
         };
       }
       break;

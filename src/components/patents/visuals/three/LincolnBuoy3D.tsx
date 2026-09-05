@@ -2,6 +2,7 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -318,70 +319,58 @@ export function LincolnBuoy3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Bellows Inflation</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {bellowsInflationPct}%
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Bellows inflation"
-              min="0"
-              max="100"
-              step="1"
-              value={bellowsInflationPct}
-              onChange={(e) => updateParam("inflationPct", Number.parseInt(e.target.value, 10))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
+          <SensitivitySlider
+            id="lincoln-3d-expansion"
+            patentId="us-6469-lincoln-buoy"
+            paramKey="inflationPct"
+            label="Bellows Inflation"
+            value={bellowsInflationPct}
+            min={0}
+            max={100}
+            step={1}
+            unit="%"
+            onChange={(val) => updateParam("inflationPct", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Steamboat Weight</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {steamboatWeightTons} T
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Steamboat weight"
-              min="200"
-              max="600"
-              step="10"
-              value={steamboatWeightTons}
-              onChange={(e) => updateParam("weightTons", Number.parseInt(e.target.value, 10))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-purple-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
+          <SensitivitySlider
+            id="lincoln-3d-weight"
+            patentId="us-6469-lincoln-buoy"
+            paramKey="weightTons"
+            label="Steamboat Weight"
+            value={steamboatWeightTons}
+            min={200}
+            max={600}
+            step={10}
+            unit="T"
+            onChange={(val) => updateParam("weightTons", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Shoal Water Depth</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {riverShoalDepthFt.toFixed(1)} ft
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Shoal water depth"
-              min="2.0"
-              max="12.0"
-              step="0.1"
-              value={riverShoalDepthFt}
-              onChange={(e) => updateParam("shoalDepth", Number.parseFloat(e.target.value))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
+          <SensitivitySlider
+            id="lincoln-3d-depth"
+            patentId="us-6469-lincoln-buoy"
+            paramKey="shoalDepth"
+            label="Shoal Water Depth"
+            value={riverShoalDepthFt}
+            min={2.0}
+            max={12.0}
+            step={0.1}
+            unit="ft"
+            onChange={(val) => updateParam("shoalDepth", val)}
+            allParams={params}
+          />
         </div>
 
         <ClaimConstraintToggle
           patentId="us-6469-lincoln-buoy"
           claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
+          onToggleClaim={(claimNo, active) => {
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
+            if (claimNo === 1) {
+              updateParam("claim1Active", active ? 1 : 0);
+            }
+          }}
           className="mt-2"
         />
 
