@@ -7,12 +7,14 @@ import {
   evaluateArchivalPublicationState,
 } from "../src/data/editions/publicationApproval";
 import { reviewedLedgerTextForViewer } from "../src/data/editions/reviewedLedgerPublicationEvidence.server";
+import { patentSourceIdentity } from "../src/data/patentSourceIdentity.server";
 import { allPatents } from "../src/data/patents";
 import { CATALOG_CLAIM_CONSTRAINTS } from "../src/physics/claimConstraints";
 import { energyChannelsFor } from "../src/physics/energyChannels";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 import type { Patent } from "../src/types/patent";
 import {
+  assertPatentSourceIdentity,
   buildPatentE2EScenarios,
   classifyPatentE2EDiagnostic,
   createPatentE2EEvent,
@@ -40,6 +42,29 @@ function patent(id: string, overrides: Partial<Patent> = {}): Patent {
 }
 
 describe("patent E2E scenario contract", () => {
+  test("source identity detects a changed figure version before asset assertions", () => {
+    const crump = allPatents.find((entry) => entry.id === "us-5121329-crump-fdm");
+    if (!crump) throw new Error("Missing Crump fixture");
+    const original = patentSourceIdentity(crump);
+    const changed = JSON.parse(
+      JSON.stringify(crump).replace("/patents/figures/", "/patents/figure-revision/"),
+    ) as Patent;
+    expect(patentSourceIdentity(changed)).not.toBe(original);
+    expect(() => assertPatentSourceIdentity(original, original)).not.toThrow();
+    expect(() => assertPatentSourceIdentity(original, patentSourceIdentity(changed))).toThrow(
+      "SOURCE_IDENTITY_MISMATCH",
+    );
+    expect(() => assertPatentSourceIdentity(original, null)).toThrow("deployed=missing");
+  });
+
+  test("held-model capability is explicit independently of face-label wording", () => {
+    const scenarios = buildPatentE2EScenarios(
+      [patent("us-3671542-kwolek-kevlar"), patent("us-821393-wright-flyer")],
+      { rendersEdition: () => false, hasCompleteTranscript: () => true },
+    );
+    expect(scenarios[0].visualAvailability).toBe("source-hold");
+    expect(scenarios[1].visualAvailability).toBe("interactive");
+  });
   test("builds one source-state-aware scenario per exact catalogue id", () => {
     const scenarios = buildPatentE2EScenarios(
       [
@@ -505,6 +530,46 @@ describe("structured E2E diagnostics", () => {
     expect(stableFailureStem("US 1", "phone", "Original Patent", "PDF 200")).toBe(
       "us-1__phone__original-patent__pdf-200",
     );
+  });
+
+  test("capture events do not double-count a failure or hide an uncaught scenario failure", () => {
+    const event = createPatentE2EEvent({
+      runId: "run-1",
+      sequence: 1,
+      patentId: "us-1",
+      route: "/patents/us-1",
+      viewport: "phone",
+      face: "route",
+      action: "source-identity",
+      status: "fail",
+      durationMs: 1,
+    });
+    const evidence = {
+      ...event,
+      sequence: 2,
+      action: "failure-evidence",
+      artifactPaths: ["failure.png"],
+    };
+    const summarize = (events: (typeof event)[]) =>
+      summarizePatentE2EEvents({
+        runId: "run-1",
+        startedAt: "2026-09-05T00:00:00Z",
+        finishedAt: "2026-09-05T00:01:00Z",
+        baseUrl: "http://127.0.0.1:4245",
+        selectedPatents: ["us-1"],
+        selectedViewports: ["phone"],
+        artifactDirectory: "/fixture",
+        events,
+      });
+    const paired = summarize([event, evidence]);
+    expect(paired).toMatchObject({ eventCount: 2, failedActions: 1, failureEvidenceEvents: 1 });
+    expect(
+      paired.actionGroups.find((group) => group.action === "failure-evidence")?.artifactPaths,
+    ).toEqual(["failure.png"]);
+    expect(patentE2EExitCode(paired)).toBe(1);
+    const unpaired = summarize([evidence]);
+    expect(unpaired.failedActions).toBe(1);
+    expect(patentE2EExitCode(unpaired)).toBe(1);
   });
 
   test("validates deterministic event order and rejects missing or repeated sequence numbers", () => {

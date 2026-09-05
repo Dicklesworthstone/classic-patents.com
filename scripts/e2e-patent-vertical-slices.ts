@@ -28,6 +28,7 @@ import { CATALOG_CLAIM_CONSTRAINTS } from "../src/physics/claimConstraints";
 import { energyChannelsFor } from "../src/physics/energyChannels";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 import {
+  assertPatentSourceIdentity,
   buildPatentE2EScenarios,
   classifyPatentE2EDiagnostic,
   createPatentE2EEvent,
@@ -285,6 +286,8 @@ async function runFailureEvidenceSelfTest(args: {
 }) {
   const scenario: PatentE2EScenario = {
     patentId: "__harness-self-test__",
+    sourceIdentity: "self-test",
+    visualAvailability: "source-hold",
     patentNumber: "HARNESS SELF-TEST",
     title: "Intentional failure evidence",
     route: "/",
@@ -502,6 +505,18 @@ async function runPatentViewport(args: {
       },
     );
 
+    await checked(
+      args.recorder,
+      meta(args.scenario, args.viewport, "route", "source-identity"),
+      args.scenario.sourceIdentity,
+      async () => {
+        const actual = await page
+          .getByTestId("dual-projection-viewer")
+          .getAttribute("data-source-identity");
+        assertPatentSourceIdentity(args.scenario.sourceIdentity, actual);
+        return actual;
+      },
+    );
     await verifyPinnedPdf(context, args.baseUrl, args.scenario, args.viewport, args.recorder);
     await verifyFigurePreviewAssets(
       context,
@@ -825,9 +840,49 @@ async function verifyVisualAndTelemetry(
       if (actualId !== scenario.patentId) {
         throw new Error(`Expected visual ${scenario.patentId}, received ${actualId}.`);
       }
+      const availability = await dispatcher.getAttribute("data-visual-availability");
+      if (availability !== scenario.visualAvailability) {
+        throw new Error(
+          `Visual capability mismatch: expected ${scenario.visualAvailability}, received ${availability}.`,
+        );
+      }
       return actualId;
     },
   );
+
+  if (scenario.visualAvailability === "source-hold") {
+    await checked(
+      recorder,
+      meta(scenario, viewport, "interactive-sim", "source-held-model"),
+      "explanatory status with no enabled model or unsupported physics controls",
+      async () => {
+        const surface = dispatcher.getByTestId("patent-visual-surface");
+        const status = surface.locator(
+          'section[aria-labelledby="source-visual-unavailable-title"]',
+        );
+        await status.waitFor({ state: "visible" });
+        const explanation = await status.innerText();
+        if (explanation.trim().length < 40)
+          throw new Error("Held model has no explanatory status.");
+        const modelCount = await surface
+          .locator('canvas, input[type="range"], input[type="checkbox"]')
+          .count();
+        const modeCount = await dispatcher
+          .getByRole("button", { name: /^(?:3D Physics Simulation|2D Technical Diagram)$/ })
+          .count();
+        const unsupportedControls = await page
+          .getByTestId("physics-telemetry-badge")
+          .locator("input:not([disabled])")
+          .count();
+        if (modelCount || modeCount || unsupportedControls)
+          throw new Error(
+            `Source-held model unexpectedly enabled: surfaces/controls=${modelCount}, modes=${modeCount}, telemetry controls=${unsupportedControls}.`,
+          );
+        return { explanation, modelCount, modeCount, unsupportedControls };
+      },
+    );
+    return;
+  }
 
   await checked(
     recorder,
@@ -1361,7 +1416,7 @@ async function openAndRestoreFace(
     face.expectedView,
     async () => {
       await waitForPatentViewerHydration(page);
-      const button = page.locator(`button[title="${face.title}"]`);
+      const button = page.locator(`button[data-patent-face="${face.expectedView}"]`);
       await button.waitFor({ state: "visible" });
       await button.click();
       await page.waitForFunction(
@@ -1370,7 +1425,7 @@ async function openAndRestoreFace(
       );
       await page.reload({ waitUntil: "domcontentloaded" });
       await waitForPatentViewerHydration(page);
-      const restored = page.locator(`button[title="${face.title}"]`);
+      const restored = page.locator(`button[data-patent-face="${face.expectedView}"]`);
       await restored.waitFor({ state: "visible" });
       const pressed = await restored.getAttribute("aria-pressed");
       const view = new URL(page.url()).searchParams.get("view");

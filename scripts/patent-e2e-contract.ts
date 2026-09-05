@@ -4,6 +4,8 @@ import type {
   ArchivalPublicationStateKind,
 } from "../src/data/editions/archivalPublicationState";
 import { archivalPublicationDiagnostics } from "../src/data/editions/archivalPublicationState";
+import { patentSourceIdentity } from "../src/data/patentSourceIdentity.server";
+import { patentVisualAvailability } from "../src/data/patentVisualAvailability";
 import type { Patent } from "../src/types/patent";
 
 export const PATENT_E2E_LOG_SCHEMA = "classic-patents.e2e-event.v1" as const;
@@ -36,6 +38,8 @@ export interface PatentE2EControl {
 
 export interface PatentE2EScenario {
   patentId: string;
+  sourceIdentity: string;
+  visualAvailability: "source-hold" | "interactive";
   patentNumber: string;
   title: string;
   route: string;
@@ -94,6 +98,7 @@ export interface PatentE2ESummary {
   eventCount: number;
   passedActions: number;
   failedActions: number;
+  failureEvidenceEvents: number;
   failedPatents: readonly string[];
   artifactDirectory: string;
   actionGroups: readonly PatentE2EActionGroup[];
@@ -180,6 +185,8 @@ export function buildPatentE2EScenarios(
     // not a reason to reject a record whose editorial text layer is unfinished.
     return {
       patentId: patent.id,
+      sourceIdentity: patentSourceIdentity(patent),
+      visualAvailability: patentVisualAvailability(patent.id),
       patentNumber: patent.patentNumber,
       title: patent.shortTitle,
       route: `/patents/${patent.id}`,
@@ -385,7 +392,17 @@ export function summarizePatentE2EEvents(args: {
   artifactDirectory: string;
   events: readonly PatentE2EEvent[];
 }): PatentE2ESummary {
-  const failed = args.events.filter((event) => event.status === "fail");
+  const isFailedAction = (event: PatentE2EEvent) =>
+    event.status === "fail" &&
+    (event.action !== "failure-evidence" ||
+      !args.events.some(
+        (other) =>
+          other.status === "fail" &&
+          other.action !== "failure-evidence" &&
+          other.patentId === event.patentId &&
+          other.viewport === event.viewport,
+      ));
+  const failed = args.events.filter(isFailedAction);
   const grouped = new Map<string, PatentE2EEvent[]>();
   for (const event of args.events) {
     const key = [event.patentId, event.viewport, event.face, event.action].join("\u0000");
@@ -403,7 +420,7 @@ export function summarizePatentE2EEvents(args: {
         action: first.action,
         eventCount: events.length,
         passedActions: events.filter((event) => event.status === "pass").length,
-        failedActions: events.filter((event) => event.status === "fail").length,
+        failedActions: events.filter(isFailedAction).length,
         artifactPaths: uniqueStrings(events.flatMap((event) => event.artifactPaths ?? [])),
         kernelSources: uniqueStrings(
           events.flatMap((event) => (event.kernelSource ? [event.kernelSource] : [])),
@@ -429,10 +446,20 @@ export function summarizePatentE2EEvents(args: {
     eventCount: args.events.length,
     passedActions: args.events.filter((event) => event.status === "pass").length,
     failedActions: failed.length,
+    failureEvidenceEvents: args.events.filter((event) => event.action === "failure-evidence")
+      .length,
     failedPatents: [...new Set(failed.map((event) => event.patentId))].sort(),
     artifactDirectory: args.artifactDirectory,
     actionGroups,
   };
+}
+
+export function assertPatentSourceIdentity(expected: string, actual: string | null): void {
+  if (!actual || actual !== expected) {
+    throw new Error(
+      `SOURCE_IDENTITY_MISMATCH: local=${expected}, deployed=${actual ?? "missing"}. Use expectations from the tested build before interpreting asset or content failures.`,
+    );
+  }
 }
 
 export function patentE2EExitCode(summary: PatentE2ESummary): number {

@@ -15,6 +15,7 @@ import {
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
+import { patentVisualAvailability } from "@/data/patentVisualAvailability";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
 import type { Patent } from "@/types/patent";
@@ -36,6 +37,8 @@ import { WeaveInstrument } from "./WeaveInstrument";
 
 interface DualProjectionViewerProps {
   patent: Patent;
+  /** Server-authored source version used to detect stale browser expectations. */
+  sourceIdentity?: string;
   /** One server-resolved companion map; never import the all-patent registry here. */
   archivalParallelReadings?: Readonly<Record<number, readonly string[]>>;
   /** A server-read, page-complete reviewed transcript used only when this record
@@ -200,6 +203,7 @@ function ReviewedTranscript({ transcript }: { transcript: string }) {
 
 export function DualProjectionViewer({
   patent,
+  sourceIdentity,
   archivalParallelReadings,
   reviewedTranscript,
   initialView,
@@ -231,7 +235,9 @@ export function DualProjectionViewer({
     : reviewedTranscript
       ? "Complete patent transcript"
       : "Complete pinned primary-source facsimile";
-  const sourceVisualHold = patent.id === "us-3671542-kwolek-kevlar";
+  const sourceVisualHold =
+    patent.id === "us-3671542-kwolek-kevlar" ||
+    patentVisualAvailability(patent.id) === "source-hold";
   const visualFaceLabel = sourceVisualHold
     ? "Visual Model in Preparation"
     : "Interactive 3D Simulator";
@@ -286,6 +292,7 @@ export function DualProjectionViewer({
     <div
       className="space-y-8 print:space-y-4"
       data-testid="dual-projection-viewer"
+      data-source-identity={sourceIdentity}
       data-hydrated={hydrated}
       data-source-delivery={
         archivalSource ? "edition" : reviewedTranscript ? "transcript" : "facsimile"
@@ -301,6 +308,7 @@ export function DualProjectionViewer({
           <button
             type="button"
             aria-pressed={viewMode === "plain-english"}
+            data-patent-face="plain-english"
             onClick={() => setViewMode("plain-english")}
             title="Plain English Face (Shortcut: 1)"
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
@@ -319,6 +327,7 @@ export function DualProjectionViewer({
           <button
             type="button"
             aria-pressed={viewMode === "original-spec"}
+            data-patent-face="original-spec"
             onClick={() => setViewMode("original-spec")}
             title="Original Patent Text (Shortcut: 2)"
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
@@ -337,6 +346,7 @@ export function DualProjectionViewer({
           <button
             type="button"
             aria-pressed={viewMode === "interactive-sim"}
+            data-patent-face="interactive-sim"
             onClick={() => setViewMode("interactive-sim")}
             title={`${visualFaceLabel} (Shortcut: 3)`}
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
@@ -355,6 +365,7 @@ export function DualProjectionViewer({
           <button
             type="button"
             aria-pressed={viewMode === "schematic-sheet"}
+            data-patent-face="schematic-sheet"
             onClick={() => setViewMode("schematic-sheet")}
             title="Schematic & Pins (Shortcut: 4)"
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
@@ -373,6 +384,7 @@ export function DualProjectionViewer({
           <button
             type="button"
             aria-pressed={viewMode === "pdf-facsimile"}
+            data-patent-face="pdf-facsimile"
             onClick={() => setViewMode("pdf-facsimile")}
             title="Full Original PDF (Shortcut: 5)"
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
@@ -404,6 +416,7 @@ export function DualProjectionViewer({
           <button
             type="button"
             aria-pressed={viewMode === "split-view"}
+            data-patent-face="split-view"
             onClick={() => setViewMode(viewMode === "split-view" ? "plain-english" : "split-view")}
             title="Toggle Dual Split-Screen (Shortcut: 6)"
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans border flex items-center gap-2 transition-colors shadow-xs cursor-pointer ${

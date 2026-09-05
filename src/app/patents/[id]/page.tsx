@@ -12,6 +12,7 @@ import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
 import { patentForSourceReader } from "@/data/editions/publicationApproval";
 import { reviewedLedgerTextForViewer } from "@/data/editions/reviewedLedgerPublicationEvidence.server";
 import { getLineagesForPatent } from "@/data/patentLineages";
+import { patentSourceIdentity } from "@/data/patentSourceIdentity.server";
 import {
   allPatents,
   getAdjacentPatents,
@@ -142,6 +143,7 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
       <div>
         <DualProjectionViewer
           patent={viewerPatent}
+          sourceIdentity={patentSourceIdentity(patent)}
           archivalParallelReadings={archivalParallelReadings}
           reviewedTranscript={reviewedTranscript}
           colorizedEquations={colorizedEquations}

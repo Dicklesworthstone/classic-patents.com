@@ -4,6 +4,7 @@ import { Activity, Sparkles } from "lucide-react";
 // 3D WebGL Physics Simulators
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
+import { patentVisualAvailability } from "@/data/patentVisualAvailability";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { planPhoneFocusClearance } from "./phoneFocusClearance";
 import { SourceVisualUnavailable } from "./SourceVisualUnavailable";
@@ -970,7 +971,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
   // the shared transport tick observable to browser acceptance tests without
   // inventing a second control path.
   const { tick: physicsTick, lastChange } = usePatentPhysics(patentId);
-  const sourceVisualHold = patentId === "us-3671542-kwolek-kevlar";
+  const sourceVisualHold = patentVisualAvailability(patentId) === "source-hold";
   const [renderMode, setRenderMode] = useState<"3d-physics" | "vector-diagram">(
     () => renderModeMemory.get(patentId) ?? "3d-physics",
   );
@@ -1063,6 +1064,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
       ref={dispatcherRef}
       className="space-y-4"
       data-testid="patent-visual-dispatcher"
+      data-visual-availability={sourceVisualHold ? "source-hold" : "interactive"}
       data-patent-id={patentId}
       data-render-mode={renderMode}
       data-physics-tick={physicsTick}

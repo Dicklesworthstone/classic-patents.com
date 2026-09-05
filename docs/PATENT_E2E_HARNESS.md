@@ -7,6 +7,12 @@ requires same-origin HTTP 200 HTML containing both the product identity and
 Next asset identity, then records the final URL, response headers, HTML byte
 count, and SHA-256 build fingerprint.
 
+Each route also exposes the SHA-256 identity of its authored source version,
+including figure URLs. The harness compares it with the local scenario before
+checking assets. `SOURCE_IDENTITY_MISMATCH` means the expectations and deployed
+source differ; run the harness from the tested build's source snapshot. This
+identity is not a checksum of served asset bytes or an editorial approval.
+
 ## Commands
 
 ```bash
@@ -55,6 +61,12 @@ claim probes, mute default, schematic and split views, theme restoration,
 reduced motion, focusability, 320 px overflow, and unexpected browser/runtime
 diagnostics as applicable to that patent.
 
+Face controls use stable `data-patent-face` identifiers. A source-held model
+such as Kwolek keeps the text, PDF, claim, and responsive checks, then verifies
+the explanatory hold and absence of enabled simulation controls instead of
+requiring unavailable 2D/3D modes. Changing its button wording does not change
+the acceptance path.
+
 No arbitrary sleep is used. Readiness is tied to semantic locators, URL state,
 DOM attributes, telemetry changes, and bounded Playwright predicates. The
 runner does not replace archival-edition tests or numerical kernel tests.
@@ -68,7 +80,13 @@ and writes `summary.json` at completion. Scenario rows name the exact shared
 control contract and expected telemetry surfaces; events record the observed
 control, kernel method, telemetry/refusal envelope, and browser diagnostics
 when applicable. The summary groups results by patent, viewport, face, and
-action, preserving the associated evidence paths. Failures also retain stable-named:
+action, preserving the associated evidence paths.
+
+`failedActions` counts an action failure once; `failureEvidenceEvents` counts
+its retained capture events separately. A capture for an otherwise uncaught
+scenario failure still produces a nonzero exit code.
+
+Failures also retain stable-named:
 
 - a full-page PNG;
 - a redacted DOM snapshot;
