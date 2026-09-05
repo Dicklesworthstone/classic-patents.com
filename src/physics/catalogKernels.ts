@@ -2057,7 +2057,8 @@ export function stepBellTelephone(params: {
 }) {
   const db = params.voiceAmplitude ?? 75;
   const gap = Math.max(0.05, params.airGap ?? 0.35);
-  const displUm = Number((10 ** ((db - 40) / 30) * 0.45).toFixed(2));
+  const displUmUnrounded = 10 ** ((db - 40) / 30) * 0.45;
+  const displUm = Number(displUmUnrounded.toFixed(2));
   const voiceNorm = Math.max(0, Math.min(1, (db - 40) / 55));
   const volts = params.batteryVoltage ?? 6;
   const sigma = Math.max(0.1, params.liquidConductivity ?? 1.2);
@@ -2065,9 +2066,17 @@ export function stepBellTelephone(params: {
   const resistanceModulationOhms = Number((baseResistanceOhms * 0.45 * voiceNorm).toFixed(1));
   const currentBaselineAmps = Number((volts / baseResistanceOhms).toFixed(3));
   const freqHz = Math.max(1, params.acousticFrequencyHz ?? 440);
+  const modulatedMaUnrounded = (displUmUnrounded / (gap * 1000)) * 18.5;
+  const modulatedMa = Number(modulatedMaUnrounded.toFixed(2));
+  const voiceSlopeMaPerDb = (modulatedMaUnrounded * Math.LN10) / 30;
+  const gapSlopeMaPerMm = -modulatedMaUnrounded / gap;
   return {
     diaphragmUm: displUm,
-    modulatedMa: Number(((displUm / (gap * 1000)) * 18.5).toFixed(2)),
+    diaphragmUmUnrounded: displUmUnrounded,
+    modulatedMa,
+    modulatedMaUnrounded,
+    voiceSlopeMaPerDb,
+    gapSlopeMaPerMm,
     sensitivityMvPerPa: Number((18.5 / (gap + 0.1)).toFixed(1)),
     baseResistanceOhms,
     resistanceModulationOhms,
@@ -3032,9 +3041,13 @@ export function stepEinsteinRefrigerator(params: {
   const press = params.totalPressure ?? 15.0;
   const nh3 = params.ammoniaRatio ?? 0.65;
   const claim1LiftPathPresent = Number(params.claim1LiftPathPresent ?? 1) >= 0.5;
-  const evapTempC = -25 + (press - 10) * 1.4 - (nh3 - 0.65) * 18;
-  const scenarioCop = Number((0.32 * (1 - Math.abs(evapTempC) / 120)).toFixed(2));
+  const evapTempCUnrounded = -25 + (press - 10) * 1.4 - (nh3 - 0.65) * 18;
+  const evapTempC = Number(evapTempCUnrounded.toFixed(1));
+  const scenarioCopUnrounded = 0.32 * (1 - Math.abs(evapTempCUnrounded) / 120);
+  const scenarioCop = Number(scenarioCopUnrounded.toFixed(2));
   const cop = claim1LiftPathPresent ? scenarioCop : 0;
+  const copUnrounded = claim1LiftPathPresent ? Math.max(0, scenarioCopUnrounded) : 0;
+  const coolingWattsUnrounded = qIn * copUnrounded;
   const coolingWatts = claim1LiftPathPresent ? Math.round(qIn * cop) : 0;
   return {
     operating: claim1LiftPathPresent,
@@ -3042,10 +3055,14 @@ export function stepEinsteinRefrigerator(params: {
     refusalReason: claim1LiftPathPresent
       ? null
       : "Claim 1 heated liquid-lift conduit is withheld; the source cycle is open and no cooling state is inferred.",
-    evapTempC: Number(evapTempC.toFixed(1)),
-    evapTempF: Math.round((evapTempC * 9) / 5 + 32),
+    evapTempC,
+    evapTempCUnrounded,
+    evapTempF: Math.round((evapTempCUnrounded * 9) / 5 + 32),
     coolingWatts,
+    coolingWattsUnrounded,
     cop,
+    copUnrounded,
+    copSlopeWattsPerWatt: cop,
     pressureAtm: press,
     partialPressureButaneAtm: Number((press * (1 - nh3)).toFixed(2)),
     fluidDisplaySpeed: claim1LiftPathPresent ? Number((coolingWatts / 45 + 0.8).toFixed(3)) : 0,

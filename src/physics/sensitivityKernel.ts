@@ -11,6 +11,8 @@
  */
 
 import {
+  stepBellTelephone,
+  stepEinsteinRefrigerator,
   stepGoodyearRubber,
   stepLandPolaroidInstantFilm,
   stepThomsonWelding,
@@ -88,9 +90,11 @@ function kernelDerivative(
 export function computeParameterSensitivity(
   patentId: string,
   controlKey: string,
-  params: Record<string, number>,
+  params: Record<string, any>,
 ): SensitivityResult | null {
-  if (Object.values(params).some((value) => !Number.isFinite(value))) return null;
+  if (Object.values(params).some((value) => typeof value === "number" && !Number.isFinite(value))) {
+    return null;
+  }
   switch (patentId) {
     case "us-821393-wright-flyer": {
       // Central finite differences over the live kernel. Probing through
@@ -1187,38 +1191,108 @@ export function computeParameterSensitivity(
     }
 
     case "us-174465-bell-telephone": {
+      const db = params.voiceAmplitude ?? 75;
+      const freq = params.acousticFrequencyHz ?? 440;
+      const gap = params.airGap ?? 0.35;
+      const volts = params.batteryVoltage ?? 6;
+      const cond = params.liquidConductivity ?? 1.2;
+
+      if (
+        !Number.isFinite(db) ||
+        db < 40 ||
+        db > 95 ||
+        !Number.isFinite(freq) ||
+        freq < 200 ||
+        freq > 800 ||
+        !Number.isFinite(gap) ||
+        gap < 0.1 ||
+        gap > 0.8 ||
+        !Number.isFinite(volts) ||
+        volts < 1 ||
+        volts > 12 ||
+        !Number.isFinite(cond) ||
+        cond < 0.2 ||
+        cond > 3
+      ) {
+        return null;
+      }
+
+      const bell = stepBellTelephone({
+        voiceAmplitude: db,
+        acousticFrequencyHz: freq,
+        airGap: gap,
+        batteryVoltage: volts,
+        liquidConductivity: cond,
+      });
+
       if (controlKey === "voiceAmplitude") {
         return {
-          metricName: "Induced Electromagnetic Potential",
-          derivativeSymbol: "∂V / ∂A_voice",
-          derivativeValue: 0.12,
-          derivativeUnit: "mV / %",
+          metricName: "Modulated Signal Current",
+          derivativeSymbol: "∂I_mod / ∂SPL",
+          derivativeValue: Number(bell.voiceSlopeMaPerDb.toPrecision(6)),
+          derivativeUnit: "mA / dB",
           interpretation:
-            "Faraday induction rate from iron diaphragm vibration in permanent magnetic field.",
+            "Local slope of modulated signal current with respect to voice sound pressure level under the shared variable-resistance transmitter model at the current diaphragm air gap. At 40 or 95 dB this is the admitted one-sided slope.",
         };
       }
       if (controlKey === "acousticFrequencyHz") {
         return {
-          metricName: "Electromotive Response Frequency",
+          metricName: "Acoustic Angular Frequency",
           derivativeSymbol: "∂ω / ∂f_acoustic",
-          derivativeValue: 6.28,
+          derivativeValue: 6.283185,
           derivativeUnit: "rad·s⁻¹ / Hz",
           interpretation:
-            "Linear angular frequency transfer of continuous undulatory acoustic wave.",
+            "Exact derivative 2π relating cyclic acoustic frequency to angular frequency for the continuous undulatory sound wave.",
+        };
+      }
+      if (controlKey === "airGap") {
+        return {
+          metricName: "Modulated Signal Current",
+          derivativeSymbol: "∂I_mod / ∂gap",
+          derivativeValue: Number(bell.gapSlopeMaPerMm.toPrecision(6)),
+          derivativeUnit: "mA / mm",
+          interpretation:
+            "Inverse-gap gradient of modulated transduction current across the liquid-electrode gap.",
         };
       }
       break;
     }
 
     case "us-1781541-einstein-refrigerator": {
+      const qIn = params.heatInput ?? 220;
+      const press = params.totalPressure ?? 15.0;
+      const nh3 = params.ammoniaRatio ?? params.auxiliaryGasRatio ?? 0.65;
+
+      if (
+        !Number.isFinite(qIn) ||
+        qIn < 80 ||
+        qIn > 500 ||
+        !Number.isFinite(press) ||
+        press < 6 ||
+        press > 22 ||
+        !Number.isFinite(nh3) ||
+        nh3 < 0.4 ||
+        nh3 > 0.9
+      ) {
+        return null;
+      }
+
+      const frige = stepEinsteinRefrigerator({
+        heatInput: qIn,
+        totalPressure: press,
+        ammoniaRatio: nh3,
+        claim1LiftPathPresent: params.claim1LiftPathPresent,
+      });
+
       if (controlKey === "heatInput") {
         return {
           metricName: "Refrigeration Evaporator Duty",
           derivativeSymbol: "∂Q_evap / ∂Q_gen",
-          derivativeValue: 0.32,
+          derivativeValue: frige.cop,
           derivativeUnit: "W / W",
-          interpretation:
-            "Coefficient of performance (COP) for single-pressure butane-ammonia-water absorption cycle.",
+          interpretation: frige.operating
+            ? `Evaporator cooling duty per unit generator heat input (effective cycle COP) under current admitted cycle state (P = ${frige.pressureAtm} atm, x_NH₃ = ${nh3}).`
+            : "Cycle operation is refused because Claim 1 liquid-lift conduit is withheld; marginal cooling duty is 0 W / W.",
         };
       }
       break;

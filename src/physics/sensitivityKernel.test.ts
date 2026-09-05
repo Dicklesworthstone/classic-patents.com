@@ -1,6 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import { allPatents } from "@/data/patents";
-import { stepGoodyearRubber, stepThomsonWelding } from "./catalogKernels";
+import {
+  stepBellTelephone,
+  stepEinsteinRefrigerator,
+  stepGoodyearRubber,
+  stepThomsonWelding,
+} from "./catalogKernels";
 
 describe("Thomson and Goodyear sensitivities use the displayed model", () => {
   test("welding current uses the current I²R derivative, including one-sided endpoints", () => {
@@ -241,11 +246,72 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
     expect(sens?.derivativeSymbol).toBe("∂P / ∂V");
   });
 
-  test("Bell telephone computes Faraday induction acoustic sensitivity", () => {
-    const sens = computeParameterSensitivity("us-174465-bell-telephone", "voiceAmplitude", {});
-    expect(sens).toBeDefined();
-    expect(sens?.metricName).toBe("Induced Electromagnetic Potential");
-    expect(sens?.derivativeValue).toBeGreaterThan(0);
+  test("Bell telephone computes modulated signal current sensitivity and matches numerical difference", () => {
+    const id = "us-174465-bell-telephone";
+    for (const voiceAmplitude of [40, 60, 75, 90, 95]) {
+      for (const airGap of [0.1, 0.35, 0.8]) {
+        const params = { voiceAmplitude, airGap };
+        const sens = computeParameterSensitivity(id, "voiceAmplitude", params);
+        expect(sens).toBeDefined();
+        expect(sens?.metricName).toBe("Modulated Signal Current");
+        expect(sens?.derivativeSymbol).toBe("∂I_mod / ∂SPL");
+        expect(sens?.derivativeUnit).toBe("mA / dB");
+        expect(sens?.derivativeValue).toBeGreaterThan(0);
+
+        const eps = 1e-4;
+        const lo = Math.max(40, voiceAmplitude - eps);
+        const hi = Math.min(95, voiceAmplitude + eps);
+        const numDiff =
+          (stepBellTelephone({ ...params, voiceAmplitude: hi }).modulatedMaUnrounded -
+            stepBellTelephone({ ...params, voiceAmplitude: lo }).modulatedMaUnrounded) /
+          (hi - lo);
+        expect(sens?.derivativeValue).toBeCloseTo(numDiff, 4);
+      }
+    }
+
+    // Invalid parameters
+    for (const invalid of [39, 96, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "voiceAmplitude", { voiceAmplitude: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Einstein refrigerator computes evaporator duty from current cycle COP and state", () => {
+    const id = "us-1781541-einstein-refrigerator";
+    // Default operating point
+    const defaultSens = computeParameterSensitivity(id, "heatInput", {});
+    expect(defaultSens).toBeDefined();
+    expect(defaultSens?.metricName).toBe("Refrigeration Evaporator Duty");
+    expect(defaultSens?.derivativeSymbol).toBe("∂Q_evap / ∂Q_gen");
+    expect(defaultSens?.derivativeUnit).toBe("W / W");
+    const defaultState = stepEinsteinRefrigerator({});
+    expect(defaultSens?.derivativeValue).toBe(defaultState.cop);
+
+    // Varied pressure and ammonia ratio
+    for (const totalPressure of [8, 15, 20]) {
+      for (const ammoniaRatio of [0.45, 0.65, 0.85]) {
+        const params = { heatInput: 250, totalPressure, ammoniaRatio };
+        const sens = computeParameterSensitivity(id, "heatInput", params);
+        expect(sens).toBeDefined();
+        const state = stepEinsteinRefrigerator(params);
+        expect(sens?.derivativeValue).toBe(state.cop);
+      }
+    }
+
+    // Refusal when Claim 1 liquid-lift path is withheld
+    const withheldSens = computeParameterSensitivity(id, "heatInput", {
+      claim1LiftPathPresent: false,
+    });
+    expect(withheldSens).toBeDefined();
+    expect(withheldSens?.derivativeValue).toBe(0);
+    expect(withheldSens?.interpretation).toContain("withheld");
+
+    // Invalid heat input or pressure
+    for (const invalid of [79, 501, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "heatInput", { heatInput: invalid })).toBeNull();
+    }
+    expect(computeParameterSensitivity(id, "heatInput", { totalPressure: 5 })).toBeNull();
   });
 
   test("Morse telegraph computes relay electromagnetic force sensitivity", () => {
