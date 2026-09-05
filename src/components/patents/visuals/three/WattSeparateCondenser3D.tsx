@@ -14,6 +14,7 @@ import {
   readWattCondenserControls,
   stepWattCondenser,
   WATT_CONTROL_RANGES,
+  WATT_SCENARIO_NOTE,
 } from "@/physics/wattCondenserKernel";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -77,7 +78,7 @@ export function WattSeparateCondenser3D() {
           poseXMeters: Math.sin(wattPhaseRef.current) * 0.5,
           poseYMeters: 2.6 + Math.sin(wattPhaseRef.current) * 0.5,
           headingRad: -Math.sin(wattPhaseRef.current) * (12 * (Math.PI / 180)),
-          modeLabel: p.hasSeparateCondenser ? "separate condenser" : "steam jacket",
+          modeLabel: p.hasSeparateCondenser ? "separate condenser" : "in-cylinder condensation",
           wheelSpeedMps: 0,
         },
         thermo: {
@@ -161,7 +162,7 @@ export function WattSeparateCondenser3D() {
     {
       label: "Thermal Efficiency",
       value: `${outputs.thermalEfficiencyPct.toFixed(2)}%`,
-      unit: "Rankine cycle",
+      unit: "Declared heat-loss model",
       tone: "hot",
     },
     {
@@ -173,7 +174,13 @@ export function WattSeparateCondenser3D() {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+    <div
+      data-testid="watt-condenser-three"
+      data-watt-condenser={controls.hasSeparateCondenser ? "separate" : "in-cylinder"}
+      data-watt-heat-input-watts={outputs.heatInputRateKw * 1000}
+      data-watt-shaft-output-watts={outputs.netShaftPowerKw * 1000}
+      className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent"
+    >
       <div className="sr-only">James Watt Separate Condenser Steam Engine 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -290,6 +297,7 @@ export function WattSeparateCondenser3D() {
 
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <p className="mb-3 text-xs text-ink-600 dark:text-ink-300">{WATT_SCENARIO_NOTE}</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <SensitivitySlider
             id="boilerPressure"

@@ -428,19 +428,26 @@ export function computeParameterSensitivity(
         );
         if (slope === null) return null;
         const units = {
-          boilerPressurePsi: "PSI",
+          boilerPressurePsi: "psi",
           condenserTempC: "°C",
-          cylinderBoreInches: "IN",
-          pistonStrokeFeet: "FT",
-          strokesPerMinute: "SPM",
+          cylinderBoreInches: "in",
+          pistonStrokeFeet: "ft",
+          strokesPerMinute: "spm",
+        };
+        const symbols = {
+          boilerPressurePsi: "p_boiler",
+          condenserTempC: "T",
+          cylinderBoreInches: "bore",
+          pistonStrokeFeet: "stroke",
+          strokesPerMinute: "cadence",
         };
         return {
           metricName: condenserPressure
             ? "Condenser Saturation Pressure"
             : "Indicated Engine Power",
-          derivativeSymbol: condenserPressure ? "∂p_condenser / ∂T" : `∂P_indicated / ∂${control}`,
+          derivativeSymbol: condenserPressure ? "∂p_condenser / ∂T" : `∂P / ∂${symbols[control]}`,
           derivativeValue: slope,
-          derivativeUnit: `${condenserPressure ? "kPa" : "HP"} / ${units[control]}`,
+          derivativeUnit: `${condenserPressure ? "kPa" : "hp"} / ${units[control]}`,
           interpretation:
             "Local slope of the shared illustrative Watt/Newcomen model at the current dimensions, cadence, condenser and steam-jacket settings. Input clamps and nonsmooth boundaries have no displayed derivative.",
         };

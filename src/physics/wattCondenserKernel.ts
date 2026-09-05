@@ -73,7 +73,7 @@ export const WATT_DEFAULT_CONTROLS: Required<WattCondenserControls> = {
 };
 
 export const WATT_CONTROL_RANGES = {
-  boilerPressurePsi: { min: 0.5, max: 20, step: 0.5 },
+  boilerPressurePsi: { min: 0.5, max: 10, step: 0.5 },
   condenserTempC: { min: 10, max: 60, step: 1 },
   cylinderBoreInches: { min: 20, max: 72, step: 2 },
   pistonStrokeFeet: { min: 4, max: 10, step: 0.5 },

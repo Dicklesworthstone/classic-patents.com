@@ -44,6 +44,7 @@ export interface PortHamiltonianReport {
   /** Explicit useful output when the model supplies it; null means unavailable. */
   outputPowerWatts: number | null;
   dissipationLabel?: string;
+  /** Difference of available ports only; incomplete ports cannot determine dH/dt. */
   netPowerRateWatts: number;
   balance:
     | { kind: "unavailable"; reason: string }
@@ -228,11 +229,10 @@ export function computePortHamiltonianEnergy(
       outputPower = watt.netShaftPowerKw * 1000;
       dissipated = watt.airPumpPowerKw * 1000;
       dissipationLabel = "Air pump";
-      thermal = controls.hasSeparateCondenser ? 12000.0 : 45000.0;
       availability = "kernel-partial";
       runtimeSource = "ts-fallback";
-      storedEnergyAvailable = true;
-      reason = `${WATT_SCENARIO_NOTE} Furnace input, net shaft output, and air-pump load come from the shared kernel.`;
+      storedEnergyAvailable = false;
+      reason = `${WATT_SCENARIO_NOTE} Furnace input, net shaft output, and air-pump load come from the shared kernel. Stored energy and complete heat rejection are not supplied.`;
       break;
     }
 
