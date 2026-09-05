@@ -99,6 +99,34 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
     }
   });
 
+  test("Otto aliases cr and rpm update canonical controls and notify subscribers", () => {
+    const id = "us-194047-otto-engine";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.compressionRatio),
+    );
+    try {
+      setPatentPhysicsParam(id, "cr", 6.5);
+      const params = getPatentPhysicsParams(id);
+      expect(params.compressionRatio).toBe(6.5);
+      expect(params.cr).toBe(6.5);
+      expect(observations).toEqual([6.5]);
+      expect(getLastParamChange(id)?.id).toBe("compressionRatio");
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((metric) => metric.label === "Modern Ideal Efficiency")?.value).not.toBe(
+        initial.find((metric) => metric.label === "Modern Ideal Efficiency")?.value,
+      );
+      setPatentPhysicsParam(id, "rpm", 240);
+      expect(getPatentPhysicsParams(id).engineRpm).toBe(240);
+      expect(getPatentPhysicsParams(id).rpm).toBe(240);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
   test("shares claim state across subscribers while retaining raw controls and deriving effective topology", () => {
     const goertzId = "us-2846084-goertz-electronic-master-slave-manipulator";
     resetPatentPhysicsParams(goertzId);

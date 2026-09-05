@@ -18,6 +18,10 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
     compressionRatio: same("compRatio"),
     blastAirPressureBar: same("blastAirPressure"),
   },
+  "us-194047-otto-engine": {
+    cr: same("compressionRatio"),
+    rpm: same("engineRpm"),
+  },
   "us-319596-maxim-machine-gun": { fireRateRpm: same("firingRate") },
   "us-124404-westinghouse-air-brake": { brakePressurePsi: same("trainPipePressure") },
   "us-347140-thomson-welding": { currentAmperes: same("weldCurrentAmps") },

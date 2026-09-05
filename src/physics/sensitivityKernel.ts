@@ -21,6 +21,7 @@ import {
   stepHewittMercuryLamp,
   stepHollerithTabulating,
   stepLandPolaroidInstantFilm,
+  stepOttoEngine,
   stepThomsonWelding,
   stepWozniakApple,
   stepYaleLock,
@@ -661,18 +662,39 @@ export function computeParameterSensitivity(
     }
 
     case "us-194047-otto-engine": {
+      const cr = params.compressionRatio ?? params.cr ?? 4.5;
+      const rpm = params.engineRpm ?? params.rpm ?? 180;
+
+      if (
+        !Number.isFinite(cr) ||
+        cr < 3.0 ||
+        cr > 8.0 ||
+        !Number.isFinite(rpm) ||
+        rpm < 60 ||
+        rpm > 320
+      ) {
+        return null;
+      }
+
+      const otto = stepOttoEngine({ engineRpm: rpm, compressionRatio: cr });
       if (controlKey === "compressionRatio" || controlKey === "cr") {
-        const r = params.compressionRatio ?? params.cr ?? 8.0;
-        const gamma = 1.4;
-        // eta = 1 - 1/r^(gamma-1) -> deta/dr = (gamma - 1) / r^gamma
-        const dEta_dr = (gamma - 1.0) / r ** gamma;
         return {
-          metricName: "Thermal Efficiency",
+          metricName: "Thermal Efficiency (Air-Standard)",
           derivativeSymbol: "∂η / ∂r",
-          derivativeValue: Number((dEta_dr * 100).toFixed(2)),
+          derivativeValue: Number(otto.thermalEfficiencySlopePctPerRatio.toPrecision(6)),
           derivativeUnit: "% / ratio",
           interpretation:
-            "Modern air-standard Otto-cycle sensitivity for the declared analysis ratio. It is not a measured efficiency or a numerical limitation printed by US 194,047.",
+            "Modern air-standard Otto-cycle sensitivity for the declared analysis ratio before display rounding, holding γ = 1.4 fixed. At public endpoints this is the admitted one-sided slope. It is an illustrative lens, not a measured efficiency or a numerical limitation printed by US 194,047.",
+        };
+      }
+      if (controlKey === "engineRpm" || controlKey === "rpm") {
+        return {
+          metricName: "Brake Horsepower (Model)",
+          derivativeSymbol: "∂P_brake / ∂N",
+          derivativeValue: Number(otto.brakeHorsepowerSlopeHpPerRpm.toPrecision(6)),
+          derivativeUnit: "hp / rpm",
+          interpretation:
+            "Linear speed scaling of brake horsepower in this illustrative model at the declared compression ratio, before display rounding.",
         };
       }
       break;

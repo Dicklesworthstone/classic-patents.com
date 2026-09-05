@@ -9,6 +9,7 @@ import {
   stepGoodyearRubber,
   stepHallAluminium,
   stepHollerithTabulating,
+  stepOttoEngine,
   stepThomsonWelding,
   stepWozniakApple,
   stepZeppelinAirship,
@@ -2737,6 +2738,76 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
     expect(computeParameterSensitivity(id, "blastAirPressure", {})).toBeNull();
     expect(computeParameterSensitivity(id, "engineRpm", {})).toBeNull();
+  });
+
+  test("Otto four-stroke slopes follow unrounded air-standard efficiency and brake horsepower", () => {
+    const id = "us-194047-otto-engine";
+    for (const cr of [3.0, 4.5, 6.0, 7.5, 8.0]) {
+      for (const rpm of [60, 120, 180, 240, 320]) {
+        const params = { compressionRatio: cr, engineRpm: rpm };
+        const effSens = computeParameterSensitivity(id, "compressionRatio", params);
+        const hpSens = computeParameterSensitivity(id, "engineRpm", params);
+        expect(effSens).toBeDefined();
+        expect(hpSens).toBeDefined();
+        if (!effSens || !hpSens) throw new Error("Expected Otto sensitivities");
+
+        const lowR = Math.max(3.0, cr - 0.000001);
+        const highR = Math.min(8.0, cr + 0.000001);
+        const lowN = Math.max(60, rpm - 0.01);
+        const highN = Math.min(320, rpm + 0.01);
+
+        const effDifference =
+          (stepOttoEngine({ engineRpm: rpm, compressionRatio: highR })
+            .thermalEfficiencyPctUnrounded -
+            stepOttoEngine({ engineRpm: rpm, compressionRatio: lowR })
+              .thermalEfficiencyPctUnrounded) /
+          (highR - lowR);
+
+        const hpDifference =
+          (stepOttoEngine({ engineRpm: highN, compressionRatio: cr }).brakeHorsepowerUnrounded -
+            stepOttoEngine({ engineRpm: lowN, compressionRatio: cr }).brakeHorsepowerUnrounded) /
+          (highN - lowN);
+
+        expect(effSens.derivativeValue).toBeCloseTo(effDifference, 4);
+        expect(hpSens.derivativeValue).toBeCloseTo(hpDifference, 4);
+        expect(effSens.metricName).toBe("Thermal Efficiency (Air-Standard)");
+        expect(effSens.derivativeUnit).toBe("% / ratio");
+        expect(hpSens.metricName).toBe("Brake Horsepower (Model)");
+        expect(hpSens.derivativeUnit).toBe("hp / rpm");
+
+        // Alias identity
+        expect(computeParameterSensitivity(id, "cr", params)).toEqual(effSens);
+        expect(computeParameterSensitivity(id, "rpm", params)).toEqual(hpSens);
+      }
+    }
+
+    // Default params match nominal 4.5 / 180
+    expect(computeParameterSensitivity(id, "compressionRatio", {})).toEqual(
+      computeParameterSensitivity(id, "compressionRatio", {
+        compressionRatio: 4.5,
+        engineRpm: 180,
+      }),
+    );
+    expect(computeParameterSensitivity(id, "engineRpm", {})).toEqual(
+      computeParameterSensitivity(id, "engineRpm", { compressionRatio: 4.5, engineRpm: 180 }),
+    );
+  });
+
+  test("Otto sensitivity domain enforces public control bounds and refuses invalid inputs", () => {
+    const id = "us-194047-otto-engine";
+    const invalid = [
+      { compressionRatio: 2.9 },
+      { compressionRatio: 8.1 },
+      { engineRpm: 59 },
+      { engineRpm: 321 },
+      { compressionRatio: Number.NaN },
+      { engineRpm: Number.POSITIVE_INFINITY },
+    ];
+    for (const params of invalid) {
+      expect(computeParameterSensitivity(id, "compressionRatio", params)).toBeNull();
+      expect(computeParameterSensitivity(id, "engineRpm", params)).toBeNull();
+    }
+    expect(computeParameterSensitivity(id, "unsupportedOttoControl", {})).toBeNull();
   });
 
   test("Linde Air Liquefaction derives Joule-Thomson throttling drop and cooler sensitivities", () => {

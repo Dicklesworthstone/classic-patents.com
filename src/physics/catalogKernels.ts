@@ -356,9 +356,18 @@ export function stepOttoEngine(params: { engineRpm?: number; compressionRatio?: 
   const cr = params.compressionRatio ?? 4.5;
   const peakCompressionBar = Number((1.0 * cr ** 1.4).toFixed(1));
   const crank = rpmToOmega(rpm);
+  const gamma = 1.4;
+  const thermalEfficiencyPctUnrounded = (1 - 1 / cr ** (gamma - 1)) * 100;
+  const thermalEfficiencySlopePctPerRatio = ((gamma - 1) / cr ** gamma) * 100;
+  const brakeHorsepowerUnrounded = (rpm / 180) * (3.0 * (cr / 4.5) ** 0.5);
+  const brakeHorsepowerSlopeHpPerRpm = (3.0 * (cr / 4.5) ** 0.5) / 180;
   return {
-    brakeHorsepower: Number(((rpm / 180) * (3.0 * (cr / 4.5) ** 0.5)).toFixed(1)),
-    thermalEfficiencyPct: Math.round((1 - 1 / cr ** 0.4) * 100),
+    brakeHorsepower: Number(brakeHorsepowerUnrounded.toFixed(1)),
+    brakeHorsepowerUnrounded,
+    brakeHorsepowerSlopeHpPerRpm,
+    thermalEfficiencyPct: Math.round(thermalEfficiencyPctUnrounded),
+    thermalEfficiencyPctUnrounded,
+    thermalEfficiencySlopePctPerRatio,
     peakCompressionBar,
     peakFiringBar: Number((peakCompressionBar * 3.8).toFixed(1)),
     ...cycleHeatCrate(cr),
