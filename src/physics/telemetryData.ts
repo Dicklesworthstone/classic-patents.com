@@ -8031,7 +8031,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     equationName: "Faraday's Law of Electrolysis & Cell Voltage",
     governingEquation:
       "m_{\\text{Al}} = \\frac{I \\cdot t \\cdot M}{z \\cdot F} \\eta_{\\text{curr}} \\quad \\text{and} \\quad V_{\\text{cell}} = E_{\\text{rev}} + \\eta + I R_{\\text{bath}}",
-    engineMethod: "FrankenSimEngine.stepHallAluminium",
+    engineMethod: "stepHallAluminium (TypeScript modern teaching cell; VI and I²R power ports)",
     controls: [
       {
         id: "currentAmperes",
@@ -8071,6 +8071,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         aluminaConcentrationPct: p.aluminaConcentrationPct,
       });
       return [
+        {
+          label: "Cell Electrical Input",
+          value: (hall.electricalInputWatts / 1000).toFixed(1),
+          unit: "kW",
+          badgeColor: "cyan",
+          provenance: "scenario-modern",
+        },
+        {
+          label: "Bath Joule Heating",
+          value: (hall.bathOhmicHeatingWatts / 1000).toFixed(1),
+          unit: "kW",
+          badgeColor: "amber",
+          provenance: "scenario-modern",
+        },
         {
           label: "Al Production Rate",
           value: `${hall.aluminiumProductionRateKgPerHour.toFixed(1)} kg/h`,
@@ -10336,12 +10350,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           provenance: "scenario-modern",
         },
         {
-          label: "Capacitance Shunt",
-          value: `-${out.mutualCapacitanceDeltaPf.toFixed(2)} pF`,
-          unit: "ΔC_m",
+          label: "Command Mode",
+          value: out.gestureMode,
+          unit: "",
           badgeColor: "emerald",
-          progressPct: clampProgress((out.mutualCapacitanceDeltaPf / 1.5) * 100),
-          provenance: "scenario-modern",
+          progressPct: 100,
+          provenance: "scenario-reader",
         },
       ];
     },

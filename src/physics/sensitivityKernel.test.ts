@@ -934,7 +934,7 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
   });
 
-  test("Multi-Touch derives affine pinch zoom and contact count sensitivities", () => {
+  test("Multi-Touch derives Claim 8 pinch scale and contact-count sensitivities", () => {
     const id = "us-7479949-multitouch";
 
     for (const sep of [15, 30, 50, 80, 120]) {
@@ -2433,6 +2433,304 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
     for (const invalid of [1.9, 12.1, Number.NaN]) {
       expect(computeParameterSensitivity(id, "shoalDepth", { shoalDepth: invalid })).toBeNull();
+    }
+  });
+
+  test("Nobel Dynamite derives detonation shock front and cap initiation sensitivities", () => {
+    const id = "us-78317-nobel-dynamite";
+
+    // NG concentration sensitivity
+    const sensNg = computeParameterSensitivity(id, "ngConcentrationPct", {
+      ngConcentrationPct: 75,
+      capEnergyJoules: 15,
+    });
+    expect(sensNg).toBeDefined();
+    expect(sensNg?.metricName).toBe("Detonation Shock Front Velocity");
+    expect(sensNg?.derivativeSymbol).toBe("∂v_det / ∂%_NG");
+    expect(sensNg?.derivativeUnit).toBe("m/s / %");
+    expect(sensNg?.derivativeValue).toBe(45.0);
+
+    // Blasting cap energy sensitivity
+    const sensCap = computeParameterSensitivity(id, "capEnergyJoules", {
+      ngConcentrationPct: 75,
+      capEnergyJoules: 15,
+    });
+    expect(sensCap).toBeDefined();
+    expect(sensCap?.metricName).toBe("Blasting Cap Initiation Energy");
+    expect(sensCap?.derivativeSymbol).toBe("∂E_det / ∂E_cap");
+    expect(sensCap?.derivativeUnit).toBe("J / J");
+    expect(sensCap?.derivativeValue).toBe(1.0);
+
+    // Invalid bounds
+    for (const invalid of [49, 81, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "ngConcentrationPct", { ngConcentrationPct: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [4, 51, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "capEnergyJoules", { capEnergyJoules: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Hyatt Celluloid derives thermoplastic molding and hydraulic consolidation sensitivities", () => {
+    const id = "us-105338-hyatt-celluloid";
+
+    // Steam temperature sensitivity
+    const sensSteam = computeParameterSensitivity(id, "steamTempC", {
+      steamTempC: 125,
+      hydraulicPressureMpa: 18,
+    });
+    expect(sensSteam).toBeDefined();
+    expect(sensSteam?.metricName).toBe("Thermoplastic Molding Plasticity");
+    expect(sensSteam?.derivativeSymbol).toBe("∂Flow / ∂T_steam");
+    expect(sensSteam?.derivativeUnit).toBe("mm/s / °C");
+    expect(sensSteam?.derivativeValue).toBe(0.12);
+
+    // Hydraulic pressure sensitivity
+    const sensPress = computeParameterSensitivity(id, "hydraulicPressureMpa", {
+      steamTempC: 125,
+      hydraulicPressureMpa: 18,
+    });
+    expect(sensPress).toBeDefined();
+    expect(sensPress?.metricName).toBe("Consolidation Density Gradient");
+    expect(sensPress?.derivativeSymbol).toBe("∂Density / ∂P_hydraulic");
+    expect(sensPress?.derivativeUnit).toBe("(g/cm³) / MPa");
+    expect(sensPress?.derivativeValue).toBe(0.004);
+
+    // Invalid bounds
+    for (const invalid of [89, 151, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "steamTempC", { steamTempC: invalid })).toBeNull();
+    }
+    for (const invalid of [4, 36, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "hydraulicPressureMpa", { hydraulicPressureMpa: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Glidden Barbed Wire derives barb clamping and span sag stiffness sensitivities", () => {
+    const id = "us-157124-glidden-barbed-wire";
+
+    // Twists per foot sensitivity
+    const sensTwist = computeParameterSensitivity(id, "twistsPerFoot", {
+      wireTensionN: 1800,
+      twistsPerFoot: 3.5,
+      animalPushForceN: 450,
+    });
+    expect(sensTwist).toBeDefined();
+    expect(sensTwist?.metricName).toBe("Spurred Barb Interlock Clamping Force");
+    expect(sensTwist?.derivativeSymbol).toBe("∂F_clamp / ∂Twist");
+    expect(sensTwist?.derivativeUnit).toBe("N / twist");
+    expect(sensTwist?.derivativeValue).toBe(18.5);
+
+    // Wire tension sag stiffness sensitivity
+    const sensTension = computeParameterSensitivity(id, "wireTensionN", {
+      wireTensionN: 1800,
+      twistsPerFoot: 3.5,
+      animalPushForceN: 450,
+    });
+    expect(sensTension).toBeDefined();
+    expect(sensTension?.metricName).toBe("Fence Span Elastic Sag Stiffness");
+    expect(sensTension?.derivativeSymbol).toBe("∂δ_sag / ∂T_wire");
+    expect(sensTension?.derivativeUnit).toBe("mm / N");
+    expect(sensTension?.derivativeValue).toBe(-0.012);
+
+    // Invalid bounds
+    for (const invalid of [499, 3501, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "wireTensionN", { wireTensionN: invalid })).toBeNull();
+    }
+    for (const invalid of [0.9, 6.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "twistsPerFoot", { twistsPerFoot: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [99, 1201, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "animalPushForceN", { animalPushForceN: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Hall Aluminium derives Faradaic production and bath conductivity sensitivities", () => {
+    const id = "us-400766-hall-aluminium";
+
+    // Current sensitivity
+    const sensCurrent = computeParameterSensitivity(id, "currentAmperes", {
+      currentAmperes: 300000,
+      bathTemperatureCelsius: 960,
+      aluminaConcentrationPct: 3.5,
+    });
+    expect(sensCurrent).toBeDefined();
+    expect(sensCurrent?.metricName).toBe("Faradaic Production Sensitivity");
+    expect(sensCurrent?.derivativeSymbol).toBe("∂ṁ_Al / ∂I");
+    expect(sensCurrent?.derivativeUnit).toBe("kg / (kA·hr)");
+    expect(sensCurrent?.derivativeValue).toBe(0.316);
+
+    // Bath temperature sensitivity
+    const sensTemp = computeParameterSensitivity(id, "bathTemperatureCelsius", {
+      currentAmperes: 300000,
+      bathTemperatureCelsius: 960,
+      aluminaConcentrationPct: 3.5,
+    });
+    expect(sensTemp).toBeDefined();
+    expect(sensTemp?.metricName).toBe("Bath Conductivity Sensitivity");
+    expect(sensTemp?.derivativeSymbol).toBe("∂σ_bath / ∂T");
+    expect(sensTemp?.derivativeUnit).toBe("S/cm · °C");
+    expect(sensTemp?.derivativeValue).toBe(0.0028);
+
+    // Invalid bounds
+    for (const invalid of [49999, 500001, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "currentAmperes", { currentAmperes: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [919, 1021, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "bathTemperatureCelsius", {
+          bathTemperatureCelsius: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [1.4, 8.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "aluminaConcentrationPct", {
+          aluminaConcentrationPct: invalid,
+        }),
+      ).toBeNull();
+    }
+  });
+
+  test("Diesel Engine derives end-of-compression temperature and cutoff efficiency sensitivities", () => {
+    const id = "us-542846-diesel-engine";
+
+    // Compression ratio sensitivity
+    const sensCr = computeParameterSensitivity(id, "compRatio", {
+      compRatio: 16,
+      blastAirPressure: 60,
+      cutoffRatio: 2.0,
+      engineRpm: 250,
+    });
+    expect(sensCr).toBeDefined();
+    expect(sensCr?.metricName).toBe("End-of-Compression Air Temperature");
+    expect(sensCr?.derivativeSymbol).toBe("∂T_comp / ∂CR");
+    expect(sensCr?.derivativeUnit).toBe("K / unit_CR");
+    expect(sensCr?.derivativeValue).toBe(42.0);
+
+    // Cutoff ratio efficiency sensitivity
+    const sensCutoff = computeParameterSensitivity(id, "cutoffRatio", {
+      compRatio: 16,
+      blastAirPressure: 60,
+      cutoffRatio: 2.0,
+      engineRpm: 250,
+    });
+    expect(sensCutoff).toBeDefined();
+    expect(sensCutoff?.metricName).toBe("Diesel Cycle Indicated Thermal Efficiency");
+    expect(sensCutoff?.derivativeSymbol).toBe("∂η_th / ∂r_c");
+    expect(sensCutoff?.derivativeUnit).toBe("efficiency / unit_cutoff");
+    expect(sensCutoff?.derivativeValue).toBe(-0.045);
+
+    // Invalid bounds
+    for (const invalid of [9, 23, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "compRatio", { compRatio: invalid })).toBeNull();
+    }
+    for (const invalid of [39, 81, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "blastAirPressure", { blastAirPressure: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [1.1, 3.6, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "cutoffRatio", { cutoffRatio: invalid })).toBeNull();
+    }
+    for (const invalid of [99, 601, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "engineRpm", { engineRpm: invalid })).toBeNull();
+    }
+  });
+
+  test("Linde Air Liquefaction derives Joule-Thomson throttling drop and cooler sensitivities", () => {
+    const id = "us-727650-linde-air-liquefaction";
+
+    // Throttling pressure sensitivity
+    const sensP = computeParameterSensitivity(id, "inletPressureAtm", {
+      inletPressureAtm: 75,
+      coolerOutletC: 10,
+    });
+    expect(sensP).toBeDefined();
+    expect(sensP?.metricName).toBe("Joule-Thomson Throttling Drop");
+    expect(sensP?.derivativeSymbol).toBe("∂ΔT_JT / ∂P");
+    expect(sensP?.derivativeUnit).toBe("K / bar");
+    expect(sensP?.derivativeValue).toBe(0.23);
+
+    // Cooler outlet temperature sensitivity
+    const sensCooler = computeParameterSensitivity(id, "coolerOutletC", {
+      inletPressureAtm: 75,
+      coolerOutletC: 10,
+    });
+    expect(sensCooler).toBeDefined();
+    expect(sensCooler?.metricName).toBe("Pre-Cooler Temperature Sensitivity");
+    expect(sensCooler?.derivativeSymbol).toBe("∂T_exp / ∂T_cooler");
+    expect(sensCooler?.derivativeUnit).toBe("°C / °C");
+    expect(sensCooler?.derivativeValue).toBe(0.85);
+
+    // Invalid bounds
+    for (const invalid of [49, 201, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "inletPressureAtm", { inletPressureAtm: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-11, 26, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "coolerOutletC", { coolerOutletC: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Baekeland Bakelite derives void suppression and crosslinking kinetics sensitivities", () => {
+    const id = "us-942699-baekeland-bakelite";
+
+    // Autoclave pressure sensitivity
+    const sensPress = computeParameterSensitivity(id, "autoclavePressurePsi", {
+      curingTempC: 150,
+      autoclavePressurePsi: 75,
+      catalystPct: 1.5,
+      curingTimeMin: 60,
+    });
+    expect(sensPress).toBeDefined();
+    expect(sensPress?.metricName).toBe("Polymer Void Suppression");
+    expect(sensPress?.derivativeSymbol).toBe("∂Density / ∂P");
+    expect(sensPress?.derivativeUnit).toBe("(g/cm³) / psi");
+    expect(sensPress?.derivativeValue).toBe(0.0085);
+
+    // Curing temperature sensitivity
+    const sensTemp = computeParameterSensitivity(id, "curingTempC", {
+      curingTempC: 150,
+      autoclavePressurePsi: 75,
+      catalystPct: 1.5,
+      curingTimeMin: 60,
+    });
+    expect(sensTemp).toBeDefined();
+    expect(sensTemp?.metricName).toBe("Crosslinking Kinetics Rate");
+    expect(sensTemp?.derivativeSymbol).toBe("∂k_crosslink / ∂T");
+    expect(sensTemp?.derivativeUnit).toBe("min⁻¹ / °C");
+    expect(sensTemp?.derivativeValue).toBe(0.065);
+
+    // Invalid bounds
+    for (const invalid of [109, 201, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "curingTempC", { curingTempC: invalid })).toBeNull();
+    }
+    for (const invalid of [29, 151, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "autoclavePressurePsi", { autoclavePressurePsi: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.4, 5.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "catalystPct", { catalystPct: invalid })).toBeNull();
+    }
+    for (const invalid of [14, 121, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "curingTimeMin", { curingTimeMin: invalid }),
+      ).toBeNull();
     }
   });
 });

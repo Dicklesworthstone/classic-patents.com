@@ -528,8 +528,26 @@ export function computeParameterSensitivity(
     }
 
     case "us-400766-hall-aluminium": {
-      if (controlKey === "currentAmperes") {
-        const _i = params.currentAmperes ?? 300000.0;
+      const current = params.currentAmperes ?? params.current ?? 300000.0;
+      const tempC =
+        params.bathTemperatureCelsius ?? params.temperatureCelsius ?? params.tempC ?? 960;
+      const aluminaPct = params.aluminaConcentrationPct ?? params.aluminaPct ?? 3.5;
+
+      if (
+        !Number.isFinite(current) ||
+        current < 50000 ||
+        current > 500000 ||
+        !Number.isFinite(tempC) ||
+        tempC < 920 ||
+        tempC > 1020 ||
+        !Number.isFinite(aluminaPct) ||
+        aluminaPct < 1.5 ||
+        aluminaPct > 8.0
+      ) {
+        return null;
+      }
+
+      if (controlKey === "currentAmperes" || controlKey === "current") {
         const dM_dI = 0.316; // kg / (kA · hr)
         return {
           metricName: "Faradaic Production Sensitivity",
@@ -540,7 +558,11 @@ export function computeParameterSensitivity(
             "Faraday's law stoichiometric deposition rate at 94% cathodic current efficiency.",
         };
       }
-      if (controlKey === "bathTemperatureCelsius") {
+      if (
+        controlKey === "bathTemperatureCelsius" ||
+        controlKey === "temperatureCelsius" ||
+        controlKey === "tempC"
+      ) {
         const dSigma_dT = 0.0028; // S/cm / °C
         return {
           metricName: "Bath Conductivity Sensitivity",
@@ -983,6 +1005,20 @@ export function computeParameterSensitivity(
     }
 
     case "us-727650-linde-air-liquefaction": {
+      const inletP = params.inletPressureAtm ?? params.throttlePressureBar ?? params.pressure ?? 75;
+      const tCooler = params.coolerOutletC ?? params.coolerTempC ?? 10;
+
+      if (
+        !Number.isFinite(inletP) ||
+        inletP < 50 ||
+        inletP > 200 ||
+        !Number.isFinite(tCooler) ||
+        tCooler < -10 ||
+        tCooler > 25
+      ) {
+        return null;
+      }
+
       if (
         controlKey === "inletPressureAtm" ||
         controlKey === "throttlePressureBar" ||
@@ -994,6 +1030,16 @@ export function computeParameterSensitivity(
           derivativeValue: 0.23,
           derivativeUnit: "K / bar",
           interpretation: "Cryogenic isenthalpic expansion cooling gradient per bar pressure drop.",
+        };
+      }
+      if (controlKey === "coolerOutletC" || controlKey === "coolerTempC") {
+        return {
+          metricName: "Pre-Cooler Temperature Sensitivity",
+          derivativeSymbol: "∂T_exp / ∂T_cooler",
+          derivativeValue: 0.85,
+          derivativeUnit: "°C / °C",
+          interpretation:
+            "Regenerative counter-current approach temperature scaling with primary cooling water heat rejection.",
         };
       }
       break;
@@ -1419,6 +1465,28 @@ export function computeParameterSensitivity(
     }
 
     case "us-942699-baekeland-bakelite": {
+      const tempC = params.curingTempC ?? params.autoclaveTempC ?? params.temp ?? 150;
+      const pressPsi = params.autoclavePressurePsi ?? params.pressure ?? 75;
+      const catPct = params.catalystPct ?? params.catalyst ?? 1.5;
+      const timeMin = params.curingTimeMin ?? params.curingTime ?? 60;
+
+      if (
+        !Number.isFinite(tempC) ||
+        tempC < 110 ||
+        tempC > 200 ||
+        !Number.isFinite(pressPsi) ||
+        pressPsi < 30 ||
+        pressPsi > 150 ||
+        !Number.isFinite(catPct) ||
+        catPct < 0.5 ||
+        catPct > 5.0 ||
+        !Number.isFinite(timeMin) ||
+        timeMin < 15 ||
+        timeMin > 120
+      ) {
+        return null;
+      }
+
       if (controlKey === "autoclavePressurePsi" || controlKey === "pressure") {
         return {
           metricName: "Polymer Void Suppression",
@@ -1429,7 +1497,11 @@ export function computeParameterSensitivity(
             "Bakelizer autoclave pressure preventing condensation bubble foaming during thermoset cure.",
         };
       }
-      if (controlKey === "autoclaveTempC" || controlKey === "temp") {
+      if (
+        controlKey === "curingTempC" ||
+        controlKey === "autoclaveTempC" ||
+        controlKey === "temp"
+      ) {
         return {
           metricName: "Crosslinking Kinetics Rate",
           derivativeSymbol: "∂k_crosslink / ∂T",
@@ -2302,7 +2374,7 @@ export function computeParameterSensitivity(
           derivativeValue: 1.0,
           derivativeUnit: "pts / finger",
           interpretation:
-            "Discrete tracked touch contact count admitted by Claim 1 capacitive sensing matrix.",
+            "Discrete contact count presented to the Claim 1 command heuristic; the claim does not specify the sensing matrix that detected it.",
         };
       }
       break;
@@ -2791,7 +2863,21 @@ export function computeParameterSensitivity(
     }
 
     case "us-78317-nobel-dynamite": {
-      if (controlKey === "ngConcentrationPct") {
+      const ngPct = params.ngConcentrationPct ?? params.ngPct ?? 75;
+      const capEnergy = params.capEnergyJoules ?? params.capEnergy ?? 15;
+
+      if (
+        !Number.isFinite(ngPct) ||
+        ngPct < 50 ||
+        ngPct > 80 ||
+        !Number.isFinite(capEnergy) ||
+        capEnergy < 5 ||
+        capEnergy > 50
+      ) {
+        return null;
+      }
+
+      if (controlKey === "ngConcentrationPct" || controlKey === "ngPct") {
         return {
           metricName: "Detonation Shock Front Velocity",
           derivativeSymbol: "∂v_det / ∂%_NG",
@@ -2799,6 +2885,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "m/s / %",
           interpretation:
             "Chapman-Jouguet detonation wave speed through kieselguhr-stabilized nitroglycerin.",
+        };
+      }
+      if (controlKey === "capEnergyJoules" || controlKey === "capEnergy") {
+        return {
+          metricName: "Blasting Cap Initiation Energy",
+          derivativeSymbol: "∂E_det / ∂E_cap",
+          derivativeValue: 1.0,
+          derivativeUnit: "J / J",
+          interpretation:
+            "Mercury fulminate detonator shock initiation wave energy coupling into stabilized porous absorbent.",
         };
       }
       break;
@@ -2823,7 +2919,21 @@ export function computeParameterSensitivity(
     }
 
     case "us-105338-hyatt-celluloid": {
-      if (controlKey === "steamTempC") {
+      const steamTemp = params.steamTempC ?? params.tempC ?? 125;
+      const pressure = params.hydraulicPressureMpa ?? params.pressureMpa ?? 18;
+
+      if (
+        !Number.isFinite(steamTemp) ||
+        steamTemp < 90 ||
+        steamTemp > 150 ||
+        !Number.isFinite(pressure) ||
+        pressure < 5 ||
+        pressure > 35
+      ) {
+        return null;
+      }
+
+      if (controlKey === "steamTempC" || controlKey === "tempC") {
         return {
           metricName: "Thermoplastic Molding Plasticity",
           derivativeSymbol: "∂Flow / ∂T_steam",
@@ -2833,11 +2943,39 @@ export function computeParameterSensitivity(
             "Camphor-nitrocellulose mutual solvent gelation under heated hydraulic press.",
         };
       }
+      if (controlKey === "hydraulicPressureMpa" || controlKey === "pressureMpa") {
+        return {
+          metricName: "Consolidation Density Gradient",
+          derivativeSymbol: "∂Density / ∂P_hydraulic",
+          derivativeValue: 0.004,
+          derivativeUnit: "(g/cm³) / MPa",
+          interpretation:
+            "Hydraulic compaction forcing solvent into pyroxylin pulp voids for homogenous plastic cake formation.",
+        };
+      }
       break;
     }
 
     case "us-157124-glidden-barbed-wire": {
-      if (controlKey === "twistsPerFoot") {
+      const tension = params.wireTensionN ?? params.tensionN ?? 1800;
+      const twists = params.twistsPerFoot ?? params.twists ?? 3.5;
+      const push = params.animalPushForceN ?? params.pushForceN ?? 450;
+
+      if (
+        !Number.isFinite(tension) ||
+        tension < 500 ||
+        tension > 3500 ||
+        !Number.isFinite(twists) ||
+        twists < 1.0 ||
+        twists > 6.0 ||
+        !Number.isFinite(push) ||
+        push < 100 ||
+        push > 1200
+      ) {
+        return null;
+      }
+
+      if (controlKey === "twistsPerFoot" || controlKey === "twists") {
         return {
           metricName: "Spurred Barb Interlock Clamping Force",
           derivativeSymbol: "∂F_clamp / ∂Twist",
@@ -2845,6 +2983,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "N / twist",
           interpretation:
             "Twisted dual-strand wire clamping short coiled spurred barbs against lateral sliding.",
+        };
+      }
+      if (controlKey === "wireTensionN" || controlKey === "tensionN") {
+        return {
+          metricName: "Fence Span Elastic Sag Stiffness",
+          derivativeSymbol: "∂δ_sag / ∂T_wire",
+          derivativeValue: -0.012,
+          derivativeUnit: "mm / N",
+          interpretation:
+            "Longitudinal tensile pre-stress reducing catenary sag under transverse contact loads.",
         };
       }
       break;
@@ -3015,7 +3163,29 @@ export function computeParameterSensitivity(
     }
 
     case "us-542846-diesel-engine": {
-      if (controlKey === "compRatio") {
+      const cr = params.compRatio ?? params.compressionRatio ?? 16;
+      const blast = params.blastAirPressure ?? params.blastPressure ?? 60;
+      const cutoff = params.cutoffRatio ?? params.cutoff ?? 2.0;
+      const rpm = params.engineRpm ?? params.rpm ?? 250;
+
+      if (
+        !Number.isFinite(cr) ||
+        cr < 10 ||
+        cr > 22 ||
+        !Number.isFinite(blast) ||
+        blast < 40 ||
+        blast > 80 ||
+        !Number.isFinite(cutoff) ||
+        cutoff < 1.2 ||
+        cutoff > 3.5 ||
+        !Number.isFinite(rpm) ||
+        rpm < 100 ||
+        rpm > 600
+      ) {
+        return null;
+      }
+
+      if (controlKey === "compRatio" || controlKey === "compressionRatio") {
         return {
           metricName: "End-of-Compression Air Temperature",
           derivativeSymbol: "∂T_comp / ∂CR",
@@ -3023,6 +3193,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "K / unit_CR",
           interpretation:
             "Isentropic air compression heating cylinder air past fuel auto-ignition threshold without spark plugs.",
+        };
+      }
+      if (controlKey === "cutoffRatio" || controlKey === "cutoff") {
+        return {
+          metricName: "Diesel Cycle Indicated Thermal Efficiency",
+          derivativeSymbol: "∂η_th / ∂r_c",
+          derivativeValue: -0.045,
+          derivativeUnit: "efficiency / unit_cutoff",
+          interpretation:
+            "Thermodynamic expansion loss: longer combustion injection duration decreases effective expansion ratio.",
         };
       }
       break;

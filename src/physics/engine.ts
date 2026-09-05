@@ -22,6 +22,7 @@ import {
   goddardSchematicStack,
   type LandPolaroidInput,
   type LandPolaroidState,
+  stepBaekelandBakelite,
   stepBellTelephone,
   stepCorlissEngine,
   stepDavenportMotor,
@@ -35,6 +36,7 @@ import {
   stepGliddenBarbedWire,
   stepGoodyearRubber as stepGoodyearRubberCatalog,
   stepGrammeDynamo,
+  stepHallAluminium,
   stepHewittMercuryLamp,
   stepHyattCelluloid,
   stepLandPolaroidInstantFilm,
@@ -823,6 +825,34 @@ export const FrankenSimEngine = {
   },
 
   /**
+   * Charles Martin Hall Electrolytic Aluminium Reduction (US 400,766)
+   * Molten Cryolite Bath & Faradaic Cell Reduction
+   */
+  stepHallAluminium(params: Parameters<typeof stepHallAluminium>[0] = {}) {
+    return stepHallAluminium(params);
+  },
+
+  /**
+   * Leo Baekeland Phenol-Formaldehyde Condensation (US 942,699)
+   * Bakelizer Autoclave Crosslinking & Void Suppression
+   */
+  stepBaekelandBakelite(
+    curingTempC?: number,
+    autoclavePressurePsi?: number,
+    catalystPct?: number,
+    curingTimeMin?: number,
+    fillerPct?: number,
+  ) {
+    return stepBaekelandBakelite(
+      curingTempC,
+      autoclavePressurePsi,
+      catalystPct,
+      curingTimeMin,
+      fillerPct,
+    );
+  },
+
+  /**
    * Elias Howe Sewing Machine (US 4,750)
    * 4-Bar Kinematic Linkage & Shuttle Lockstitch Interlock
    */
@@ -1233,12 +1263,12 @@ export const FrankenSimEngine = {
    * a flow rate, a product amount, nor a terminal temperature. Reporting
    * any of those as a computed output would fabricate a plant measurement.
    */
-  stepLindeAirLiquefaction() {
+  stepLindeAirLiquefaction(params?: { inletPressureAtm?: number; coolerOutletC?: number }) {
     // These are the one operating example printed by the grant, not visitor
     // controls or a plant-sizing range.
-    const highPressureAtm = 75;
+    const highPressureAtm = params?.inletPressureAtm ?? 75;
     const lowPressureAtm = 25;
-    const coolerOutletC = 10;
+    const coolerOutletC = params?.coolerOutletC ?? 10;
 
     return {
       highPressureAtm,
