@@ -11,7 +11,9 @@
  */
 
 import {
+  stepBaekelandBakelite,
   stepBellTelephone,
+  stepCarlsonElectrophotography,
   stepCorlissEngine,
   stepDavenportMotor,
   stepDeForestAudion,
@@ -29,6 +31,7 @@ import {
   stepHallAluminium,
   stepHewittMercuryLamp,
   stepHollerithTabulating,
+  stepLamarrRecordControl,
   stepLandPolaroidInstantFilm,
   stepLincolnBuoy,
   stepMorseTelegraph,
@@ -1171,9 +1174,16 @@ export function computeParameterSensitivity(
     }
 
     case "us-808897-carrier-air-conditioner": {
-      const cfm = params.airflowCfm ?? params.airFlowCfm ?? 15000;
-      const spray = params.sprayRatePct ?? 60;
-      const faces = params.separatorFaces ?? 6;
+      const cfm = params.airflowCfm ?? params.airFlowCfm ?? params.airflow ?? params.cfm ?? 15000;
+      const spray =
+        params.sprayRatePct ?? params.sprayRate ?? params.spray ?? params.sprayPct ?? 60;
+      const faces =
+        params.separatorFaces ??
+        params.plateFaces ??
+        params.faces ??
+        params.separatorFaceCount ??
+        6;
+      const claim1Active = params.claim1Active !== undefined ? Boolean(params.claim1Active) : true;
 
       if (
         !Number.isFinite(cfm) ||
@@ -1189,40 +1199,63 @@ export function computeParameterSensitivity(
         return null;
       }
 
-      if (controlKey === "airflowCfm" || controlKey === "airFlowCfm") {
-        const dP_dCfm = Number((3.4212e-7 * cfm * faces).toFixed(5));
+      const carrier = FrankenSimEngine.stepCarrierAirConditioner({
+        airflowCfm: cfm,
+        sprayRatePct: spray,
+        separatorFaces: faces,
+      });
+      const isSaturated = (faces - 1) * 8.5 + spray * 0.18 >= 99;
+
+      if (
+        controlKey === "airflowCfm" ||
+        controlKey === "airFlowCfm" ||
+        controlKey === "airflow" ||
+        controlKey === "cfm"
+      ) {
         return {
           metricName: "Separator Air Velocity & Pressure Loss",
           derivativeSymbol: "∂ΔP / ∂CFM",
-          derivativeValue: dP_dCfm,
+          derivativeValue: claim1Active ? carrier.pressureDropSlopePaPerCfm : 0,
           derivativeUnit: "Pa / cfm",
-          interpretation:
-            "Dynamic pressure drop across sinuous separator plates scaling quadratically with airflow under the fluid impaction model.",
+          interpretation: claim1Active
+            ? "Dynamic pressure drop across sinuous separator plates scaling quadratically with airflow under the fluid impaction model."
+            : "Claim 1's unobstructed front wetted faces and projected rear droplet-separating gutters are withheld; two-stage particle capture and mist elimination are not operative.",
         };
       }
-      const unclampedSeparation = (faces - 1) * 8.5 + spray * 0.18;
-      const isSaturated = unclampedSeparation >= 99;
-
-      if (controlKey === "sprayRatePct") {
+      if (
+        controlKey === "sprayRatePct" ||
+        controlKey === "sprayRate" ||
+        controlKey === "spray" ||
+        controlKey === "sprayPct"
+      ) {
         return {
           metricName: "Droplet Elimination Wet Spray Sensitivity",
           derivativeSymbol: "∂η / ∂Spray",
-          derivativeValue: isSaturated ? 0 : 0.18,
+          derivativeValue: claim1Active ? carrier.dropletSeparationSlopePerSpray : 0,
           derivativeUnit: "% / %",
-          interpretation: isSaturated
-            ? "Droplet separation is saturated at maximum 99% capture limit across current plate geometry."
-            : "Nozzle spray rate sensitivity contributing to fine particle and droplet capture across wet plate surfaces.",
+          interpretation: !claim1Active
+            ? "Claim 1's unobstructed front wetted faces and projected rear droplet-separating gutters are withheld; two-stage particle capture and mist elimination are not operative."
+            : isSaturated
+              ? "Droplet separation is saturated at maximum 99% capture limit across current plate geometry."
+              : "Nozzle spray rate sensitivity contributing to fine particle and droplet capture across wet plate surfaces.",
         };
       }
-      if (controlKey === "separatorFaces") {
+      if (
+        controlKey === "separatorFaces" ||
+        controlKey === "plateFaces" ||
+        controlKey === "faces" ||
+        controlKey === "separatorFaceCount"
+      ) {
         return {
           metricName: "Droplet Separation Efficiency",
           derivativeSymbol: "∂η / ∂Faces",
-          derivativeValue: isSaturated ? 0 : 8.5,
+          derivativeValue: claim1Active ? carrier.dropletSeparationSlopePerFace : 0,
           derivativeUnit: "% / face",
-          interpretation: isSaturated
-            ? "Droplet separation is saturated at maximum 99% capture limit across current plate geometry."
-            : "Inertial droplet impact and capture per sinuous plate turn and drainage gutter.",
+          interpretation: !claim1Active
+            ? "Claim 1's unobstructed front wetted faces and projected rear droplet-separating gutters are withheld; two-stage particle capture and mist elimination are not operative."
+            : isSaturated
+              ? "Droplet separation is saturated at maximum 99% capture limit across current plate geometry."
+              : "Inertial droplet impact and capture per sinuous plate turn and drainage gutter.",
         };
       }
       break;
@@ -1395,54 +1428,115 @@ export function computeParameterSensitivity(
     }
 
     case "us-2292387-lamarr-frequency-hopping": {
-      const pos =
-        params.recordPosition ?? params.position ?? params.activeChannels ?? params.channels ?? 0;
-      const tone = params.commandTone ?? 100;
+      const pos = params.recordPosition ?? params.position ?? params.pos ?? params.recordIndex ?? 0;
+      const tone = params.commandTone ?? params.tone ?? params.toneCycles ?? 100;
+      const channels =
+        params.activeChannels ?? params.channels ?? params.numChannels ?? params.channelCount ?? 88;
+      const claim1Active =
+        params.claim1Active !== undefined
+          ? Boolean(params.claim1Active)
+          : params.claim1SynchronizedRecordsPresent !== undefined
+            ? Number(params.claim1SynchronizedRecordsPresent) >= 0.5
+            : true;
 
       if (
         !Number.isFinite(pos) ||
         pos < 0 ||
-        pos > 88 ||
+        pos > 6 ||
         !Number.isFinite(tone) ||
         tone < 50 ||
-        tone > 1000
+        tone > 1000 ||
+        !Number.isFinite(channels) ||
+        channels < 1 ||
+        channels > 88
       ) {
         return null;
       }
 
+      const lamarr = stepLamarrRecordControl({
+        recordPosition: pos,
+        commandTone: tone === 500 ? 500 : 100,
+        claim1SynchronizedRecordsPresent: claim1Active,
+        activeChannels: channels,
+      });
+
       if (
         controlKey === "recordPosition" ||
         controlKey === "position" ||
+        controlKey === "pos" ||
+        controlKey === "recordIndex" ||
+        controlKey === "tapePosition" ||
+        controlKey === "row"
+      ) {
+        return {
+          metricName: "Record Index Advance",
+          derivativeSymbol: "∂Row / ∂Step",
+          derivativeValue: claim1Active ? lamarr.recordIndexSlopePerRow : 0,
+          derivativeUnit: "row / step",
+          interpretation: claim1Active
+            ? "Discrete mechanical stepper advance across slotted paper tape rows."
+            : "Claim 1's paired identically slotted records and synchronized receiver actuation are withheld; receiver tuning and command acceptance are not inferred.",
+        };
+      }
+      if (
         controlKey === "activeChannels" ||
-        controlKey === "channels"
+        controlKey === "channels" ||
+        controlKey === "numChannels" ||
+        controlKey === "channelCount"
       ) {
         return {
           metricName: "Jamming Processing Gain",
           derivativeSymbol: "∂G_p / ∂N",
-          derivativeValue: 0.22,
+          derivativeValue: claim1Active ? lamarr.processingGainSlopeDbPerChannel : 0,
           derivativeUnit: "dB / channel",
-          interpretation:
-            "Spread-spectrum electronic counter-countermeasures immunity across 88 piano roll channels.",
+          interpretation: claim1Active
+            ? "Spread-spectrum electronic counter-countermeasures processing gain scaling logarithmically with available carrier channels."
+            : "Claim 1's paired identically slotted records and synchronized receiver actuation are withheld; spread-spectrum processing gain is not operative.",
         };
       }
-      if (controlKey === "commandTone") {
+      if (
+        controlKey === "commandTone" ||
+        controlKey === "tone" ||
+        controlKey === "toneCycles" ||
+        controlKey === "frequencyHz" ||
+        controlKey === "toneHz"
+      ) {
         return {
           metricName: "Demodulated Filter Discrimination",
           derivativeSymbol: "∂Q / ∂f_tone",
-          derivativeValue: 1.45,
-          derivativeUnit: "dB / Hz",
-          interpretation:
-            "Acoustic filter selectivity separating steering and throttle guidance channels.",
+          derivativeValue: claim1Active ? lamarr.acousticFilterSelectivitySlope : 0,
+          derivativeUnit: "1 / Hz",
+          interpretation: claim1Active
+            ? "Acoustic reed and resonant LC filter selectivity separating 100-cycle and 500-cycle guidance impulses."
+            : "Claim 1's paired identically slotted records and synchronized receiver actuation are withheld; demodulated filter discrimination is not operative.",
         };
       }
       break;
     }
 
     case "us-2297691-carlson-electrophotography": {
-      const corona = params.coronaVoltageKv ?? params.coronaVoltage ?? 6.5;
-      const exposure = params.exposureLuxSec ?? params.exposure ?? 12;
-      const thickness = params.layerThicknessUm ?? params.layerThickness ?? 30;
-      const fuserTemp = params.fuserTemperatureC ?? params.fuserTemp ?? 185;
+      const corona =
+        params.coronaVoltageKv ??
+        params.coronaVoltage ??
+        params.coronaKv ??
+        params.voltageKv ??
+        6.5;
+      const exposure =
+        params.exposureLuxSec ?? params.exposure ?? params.exposureSec ?? params.luxSec ?? 12;
+      const thickness =
+        params.layerThicknessUm ??
+        params.layerThickness ??
+        params.thickness ??
+        params.thicknessUm ??
+        30;
+      const fuserTemp =
+        params.fuserTemperatureC ??
+        params.fuserTemperature ??
+        params.fuserTemp ??
+        params.fuserTempC ??
+        params.temperature ??
+        185;
+      const claim1Active = params.claim1Active !== undefined ? Boolean(params.claim1Active) : true;
 
       if (
         !Number.isFinite(corona) ||
@@ -1461,43 +1555,76 @@ export function computeParameterSensitivity(
         return null;
       }
 
-      if (controlKey === "coronaVoltageKv" || controlKey === "coronaVoltage") {
+      const carlson = stepCarlsonElectrophotography({
+        coronaVoltageKv: corona,
+        exposureLuxSec: exposure,
+        layerThicknessUm: thickness,
+        fuserTemperatureC: fuserTemp,
+      });
+
+      if (
+        controlKey === "coronaVoltageKv" ||
+        controlKey === "coronaVoltage" ||
+        controlKey === "coronaKv" ||
+        controlKey === "voltageKv"
+      ) {
         return {
           metricName: "Surface Potential Build",
           derivativeSymbol: "∂V_s / ∂V_corona",
-          derivativeValue: 95.0,
+          derivativeValue: claim1Active ? carlson.coronaSlopeVPerKv : 0,
           derivativeUnit: "V / kV",
-          interpretation: "Electrostatic scorotron ion charging of sulfur/selenium layer.",
+          interpretation: claim1Active
+            ? "Electrostatic scorotron ion charging of sulfur/selenium layer."
+            : "Claim 1's photoconductive electrostatic latent image on a conductive backing is withheld; charge dissipates without latent pattern formation.",
         };
       }
-      if (controlKey === "exposureLuxSec" || controlKey === "exposure") {
+      if (
+        controlKey === "exposureLuxSec" ||
+        controlKey === "exposure" ||
+        controlKey === "exposureSec" ||
+        controlKey === "luxSec"
+      ) {
         return {
           metricName: "Photoconductive Discharge Sensitivity",
           derivativeSymbol: "∂V_latent / ∂H_exp",
-          derivativeValue: -18.5,
+          derivativeValue: claim1Active ? carlson.photoconductiveDischargeSlopeVPerLuxSec : 0,
           derivativeUnit: "V / (lx·s)",
-          interpretation:
-            "Photocarrier generation and transit collapsing electrostatic surface charge in illuminated areas.",
+          interpretation: claim1Active
+            ? "Photocarrier generation and transit collapsing electrostatic surface charge in illuminated areas."
+            : "Claim 1's photoconductive electrostatic latent image on a conductive backing is withheld; charge dissipates without latent pattern formation.",
         };
       }
-      if (controlKey === "layerThicknessUm" || controlKey === "layerThickness") {
+      if (
+        controlKey === "layerThicknessUm" ||
+        controlKey === "layerThickness" ||
+        controlKey === "thickness" ||
+        controlKey === "thicknessUm"
+      ) {
         return {
           metricName: "Acceptance Potential Gradient",
-          derivativeSymbol: "∂V_max / ∂d_layer",
-          derivativeValue: 15.0,
-          derivativeUnit: "V / µm",
-          interpretation:
-            "Dielectric layer breakdown voltage ceiling scaling with photoconductive sulfur/selenium film thickness.",
+          derivativeSymbol: "∂E_int / ∂d_layer",
+          derivativeValue: claim1Active ? carlson.internalElectricFieldSlopeKvPerMmPerUm : 0,
+          derivativeUnit: "(kV/mm) / µm",
+          interpretation: claim1Active
+            ? "Dielectric internal electric field gradient scaling inversely with square of photoconductive layer thickness."
+            : "Claim 1's photoconductive electrostatic latent image on a conductive backing is withheld; charge dissipates without latent pattern formation.",
         };
       }
-      if (controlKey === "fuserTemperatureC" || controlKey === "fuserTemp") {
+      if (
+        controlKey === "fuserTemperatureC" ||
+        controlKey === "fuserTemperature" ||
+        controlKey === "fuserTemp" ||
+        controlKey === "fuserTempC" ||
+        controlKey === "temperature"
+      ) {
         return {
-          metricName: "Resin Toner Fixation Viscosity",
-          derivativeSymbol: "∂η_melt / ∂T_fuser",
-          derivativeValue: -0.025,
-          derivativeUnit: "(Pa·s) / °C",
-          interpretation:
-            "Thermal softening and paper fiber penetration of resin toner under heated roller contact.",
+          metricName: "Resin Toner Fixation Quality",
+          derivativeSymbol: "∂Bond / ∂T_fuser",
+          derivativeValue: claim1Active ? carlson.fuserBondSlopePctPerC : 0,
+          derivativeUnit: "% / °C",
+          interpretation: claim1Active
+            ? "Thermal softening and paper fiber penetration rate of resin toner under heated fuser roll contact."
+            : "Claim 1's electrophotographic process is withheld; toner fixation is not operative.",
         };
       }
       break;
@@ -2466,10 +2593,30 @@ export function computeParameterSensitivity(
     }
 
     case "us-942699-baekeland-bakelite": {
-      const tempC = params.curingTempC ?? params.autoclaveTempC ?? params.temp ?? 150;
-      const pressPsi = params.autoclavePressurePsi ?? params.pressure ?? 75;
-      const catPct = params.catalystPct ?? params.catalyst ?? 1.5;
-      const timeMin = params.curingTimeMin ?? params.curingTime ?? 60;
+      const tempC =
+        params.curingTempC ??
+        params.autoclaveTempC ??
+        params.temp ??
+        params.temperature ??
+        params.cureTemp ??
+        params.autoclaveTemp ??
+        150;
+      const pressPsi =
+        params.autoclavePressurePsi ??
+        params.pressure ??
+        params.pressurePsi ??
+        params.autoclavePressure ??
+        params.vesselPressure ??
+        75;
+      const catPct = params.catalystPct ?? params.catalyst ?? params.catPct ?? 1.5;
+      const timeMin =
+        params.curingTimeMin ??
+        params.curingTime ??
+        params.time ??
+        params.timeMin ??
+        params.durationMin ??
+        60;
+      const claim1Active = params.claim1Active !== undefined ? Boolean(params.claim1Active) : true;
 
       if (
         !Number.isFinite(tempC) ||
@@ -2488,28 +2635,59 @@ export function computeParameterSensitivity(
         return null;
       }
 
-      if (controlKey === "autoclavePressurePsi" || controlKey === "pressure") {
+      const bakelite = stepBaekelandBakelite(tempC, pressPsi, catPct, timeMin);
+
+      if (
+        controlKey === "autoclavePressurePsi" ||
+        controlKey === "pressure" ||
+        controlKey === "pressurePsi" ||
+        controlKey === "autoclavePressure" ||
+        controlKey === "vesselPressure"
+      ) {
         return {
           metricName: "Polymer Void Suppression",
           derivativeSymbol: "∂Density / ∂P",
-          derivativeValue: 0.0085,
+          derivativeValue: claim1Active ? bakelite.densitySlopeGPerCm3PerPsi : 0,
           derivativeUnit: "(g/cm³) / psi",
-          interpretation:
-            "Bakelizer autoclave pressure preventing condensation bubble foaming during thermoset cure.",
+          interpretation: claim1Active
+            ? "Bakelizer autoclave pressure preventing condensation bubble foaming during thermoset cure."
+            : "Claim 1's reaction under heat and pressure in a closed vessel is withheld; boiling volatile water and formaldehyde form a porous spongy foam.",
         };
       }
       if (
         controlKey === "curingTempC" ||
         controlKey === "autoclaveTempC" ||
-        controlKey === "temp"
+        controlKey === "temp" ||
+        controlKey === "temperature" ||
+        controlKey === "cureTemp" ||
+        controlKey === "autoclaveTemp"
       ) {
         return {
           metricName: "Crosslinking Kinetics Rate",
           derivativeSymbol: "∂k_crosslink / ∂T",
-          derivativeValue: 0.065,
+          derivativeValue: claim1Active ? bakelite.kRateSlopePerC : 0,
           derivativeUnit: "min⁻¹ / °C",
-          interpretation:
-            "Thermal activation accelerating phenol-formaldehyde 3D network resin solidification.",
+          interpretation: claim1Active
+            ? "Thermal activation accelerating phenol-formaldehyde 3D network resin solidification."
+            : "Claim 1's closed-vessel condensation reaction is withheld; thermal kinetics do not form an insoluble, infusible compact body.",
+        };
+      }
+      if (
+        controlKey === "curingTimeMin" ||
+        controlKey === "curingTime" ||
+        controlKey === "time" ||
+        controlKey === "timeMin" ||
+        controlKey === "durationMin" ||
+        controlKey === "cureTime"
+      ) {
+        return {
+          metricName: "Polycondensation Conversion Rate",
+          derivativeSymbol: "∂p / ∂t",
+          derivativeValue: claim1Active ? bakelite.conversionSlopePerMin : 0,
+          derivativeUnit: "conversion / min",
+          interpretation: claim1Active
+            ? "Fractional conversion progression per minute toward Carothers gel point and C-stage network formation."
+            : "Claim 1's closed-vessel reaction is withheld; polycondensation progression without pressure produces a defective porous mass.",
         };
       }
       break;

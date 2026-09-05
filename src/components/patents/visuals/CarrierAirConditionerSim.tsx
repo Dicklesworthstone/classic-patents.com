@@ -3,13 +3,15 @@
 import { Droplets, RotateCcw, Volume2, VolumeX, Wind } from "lucide-react";
 import { useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function CarrierAirConditionerSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics(
+  const { params, claimStates, updateParam, resetParams } = usePatentPhysics(
     "us-808897-carrier-air-conditioner",
   );
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -324,6 +326,17 @@ export function CarrierAirConditionerSim() {
           allParams={params}
         />
       </div>
+
+      <ClaimConstraintToggle
+        patentId="us-808897-carrier-air-conditioner"
+        claimStates={claimStates}
+        onToggleClaim={(claim, active) => {
+          updateParam(claimConstraintStateParamId(claim), active ? 1 : 0);
+          updateParam("sprayRatePct", active ? 60 : 0);
+        }}
+        className="mt-2"
+      />
+
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs font-mono">
         <div className="rounded-lg border border-cyan-900/50 bg-cyan-950/20 p-2">
           <Droplets className="w-4 h-4 text-cyan-400 mb-1" />

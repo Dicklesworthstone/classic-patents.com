@@ -3014,6 +3014,7 @@ export function stepLamarrRecordControl(params: {
   rudderStep?: number;
   issueCommand?: boolean;
   claim1SynchronizedRecordsPresent?: number | boolean;
+  activeChannels?: number;
 }) {
   const recordPosition = Math.max(0, Math.min(6, Math.round(params.recordPosition ?? 0)));
   const transmitterRow = LAMARR_RECORD_ROWS[recordPosition];
@@ -3022,6 +3023,13 @@ export function stepLamarrRecordControl(params: {
   const commandTone = params.commandTone === 500 ? 500 : 100;
   const commandDelta = commandTone === 500 ? 1 : -1;
   const commandAccepted = Boolean(params.issueCommand) && receiverEffective;
+
+  const channels = Math.max(1, params.activeChannels ?? 88);
+  const processingGainDbUnrounded = 10 * Math.log10(channels);
+  const processingGainDb = Number(processingGainDbUnrounded.toFixed(2));
+  const processingGainSlopeDbPerChannel = 10 / (channels * Math.LN10);
+  const recordIndexSlopePerRow = 1.0;
+  const acousticFilterSelectivitySlope = 1.0 / 50;
 
   return {
     recordPosition,
@@ -3038,6 +3046,11 @@ export function stepLamarrRecordControl(params: {
     commandAccepted,
     rudderStep: (params.rudderStep ?? 0) + (commandAccepted ? commandDelta : 0),
     recordIndexAngleRad: (recordPosition * Math.PI * 2) / LAMARR_RECORD_ROWS.length,
+    processingGainDb,
+    processingGainDbUnrounded,
+    processingGainSlopeDbPerChannel,
+    recordIndexSlopePerRow,
+    acousticFilterSelectivitySlope,
   };
 }
 
@@ -3960,7 +3973,8 @@ export function stepCarlsonElectrophotography(params: {
   }
 
   // Initial surface electrostatic charge potential (V)
-  const initialSurfacePotentialV = Math.round(vCoronaKv * 100);
+  const initialSurfacePotentialVUnrounded = vCoronaKv * 100;
+  const initialSurfacePotentialV = Math.round(initialSurfacePotentialVUnrounded);
   const internalElectricFieldKvPerMm = Number(
     (initialSurfacePotentialV / (thickUm * 1e-3) / 1000).toFixed(2),
   );
@@ -3968,11 +3982,16 @@ export function stepCarlsonElectrophotography(params: {
   // Photo-induced discharge curve: V_exposed = V0 * exp(-eta * exp / sens) + V_res
   const residualPotentialV = 25;
   const decayExponent = (eta * expLuxSec) / sensitivityFactor;
+  const expDecay = Math.exp(-decayExponent);
+  const exposedSurfacePotentialVUnrounded =
+    residualPotentialV + (initialSurfacePotentialVUnrounded - residualPotentialV) * expDecay;
   const exposedSurfacePotentialV = Math.round(
-    residualPotentialV + (initialSurfacePotentialV - residualPotentialV) * Math.exp(-decayExponent),
+    residualPotentialV + (initialSurfacePotentialV - residualPotentialV) * expDecay,
   );
 
   // Electrostatic potential contrast voltage (V)
+  const contrastPotentialVUnrounded =
+    initialSurfacePotentialVUnrounded - exposedSurfacePotentialVUnrounded;
   const contrastPotentialV = initialSurfacePotentialV - exposedSurfacePotentialV;
 
   // Developed toner mass density (mg/cm^2)
@@ -3994,6 +4013,23 @@ export function stepCarlsonElectrophotography(params: {
     fuserBondQualityPct = Math.max(70, Math.round(100 - (tFuserC - 200) * 2));
   }
 
+  // Continuous sensitivities
+  const coronaSlopeVPerKv = 100;
+  const internalElectricFieldSlopeKvPerMmPerUm =
+    thickUm > 0 ? -initialSurfacePotentialVUnrounded / thickUm ** 2 : 0;
+  const photoconductiveDischargeSlopeVPerLuxSec =
+    -(initialSurfacePotentialVUnrounded - residualPotentialV) *
+    (eta / sensitivityFactor) *
+    expDecay;
+  let fuserBondSlopePctPerC = 0;
+  if (tFuserC < 130) {
+    fuserBondSlopePctPerC = 1.0;
+  } else if (tFuserC <= 200) {
+    fuserBondSlopePctPerC = 40 / 70;
+  } else {
+    fuserBondSlopePctPerC = -2.0;
+  }
+
   // Process speed (feet per minute / copies per minute)
   const copiesPerMin = pcType === "selenium" || pcType === "opc" ? 45 : 12;
   const drumDisplayOmegaRadPerS = Number(((copiesPerMin / 45) * 0.8).toFixed(3));
@@ -4005,14 +4041,21 @@ export function stepCarlsonElectrophotography(params: {
     photoconductorBandgapEv: bandgapEv,
     layerThicknessUm: thickUm,
     initialSurfacePotentialV,
+    initialSurfacePotentialVUnrounded,
     exposedSurfacePotentialV,
+    exposedSurfacePotentialVUnrounded,
     contrastPotentialV,
+    contrastPotentialVUnrounded,
     internalElectricFieldKvPerMm,
     exposureLuxSec: expLuxSec,
     tonerMassDensityMgPerCm2,
     opticalDensity,
     fuserTemperatureC: tFuserC,
     fuserBondQualityPct,
+    coronaSlopeVPerKv,
+    internalElectricFieldSlopeKvPerMmPerUm,
+    photoconductiveDischargeSlopeVPerLuxSec,
+    fuserBondSlopePctPerC,
     copiesPerMin,
     drumDisplayOmegaRadPerS,
     fuserDisplayOmegaRadPerS,
@@ -4042,9 +4085,10 @@ export function stepBaekelandBakelite(
 
   // Boiling / foaming suppression: external pressure must exceed vapor pressure of volatile water/formaldehyde
   const isFoamingSuppressed = pressPsi >= waterVaporPressurePsi * 0.95;
-  const voidPorosityPct = isFoamingSuppressed
-    ? Number(Math.max(0.1, 0.8 - pressPsi * 0.008).toFixed(1))
-    : Number(Math.min(45, (waterVaporPressurePsi - pressPsi) * 1.2 + 8).toFixed(1));
+  const voidPorosityPctUnrounded = isFoamingSuppressed
+    ? Math.max(0.1, 0.8 - pressPsi * 0.008)
+    : Math.min(45, (waterVaporPressurePsi - pressPsi) * 1.2 + 8);
+  const voidPorosityPct = Number(voidPorosityPctUnrounded.toFixed(1));
 
   // Step-growth condensation kinetics (Arrhenius)
   // k = A * exp(-Ea / RT) * (1 + 0.8 * catalyst)
@@ -4055,7 +4099,8 @@ export function stepBaekelandBakelite(
 
   // Fractional conversion p (2nd-order polycondensation with t): p = (k*t) / (1 + k*t)
   const kt = kRate * timeMin;
-  const conversionP = Number(Math.min(0.995, kt / (1 + kt)).toFixed(3));
+  const conversionPUnrounded = Math.min(0.995, kt / (1 + kt));
+  const conversionP = Number(conversionPUnrounded.toFixed(3));
 
   // Critical Carothers gel point for phenol (f=3) and formaldehyde (f=2): p_c = 2/f = 0.667
   const gelPointThreshold = 0.667;
@@ -4077,6 +4122,10 @@ export function stepBaekelandBakelite(
     ? Number((((conversionP - gelPointThreshold) / (1 - gelPointThreshold)) * 1.85).toFixed(2))
     : 0;
 
+  // Arrhenius continuous derivative
+  const kRateSlopePerC = kRate * (Ea / (R * tempK ** 2));
+  const conversionSlopePerMin = kRate / (1 + kt) ** 2;
+
   // Mechanical properties (affected by cure conversion, filler ratio, and porosity)
   const baseTensileMpa = 25 + crosslinkDensity * 22;
   const fillerStrengthening = 1 + (filler / 45) * 0.4;
@@ -4091,7 +4140,21 @@ export function stepBaekelandBakelite(
 
   // Density (g/cm^3)
   const solidDensity = 1.25 + (filler / 100) * 0.35;
-  const densityGPerCm3 = Number((solidDensity * (1 - voidPorosityPct / 100)).toFixed(2));
+  const densityGPerCm3Unrounded = solidDensity * (1 - voidPorosityPctUnrounded / 100);
+  const densityGPerCm3 = Number(densityGPerCm3Unrounded.toFixed(2));
+
+  // Density slope with respect to pressure
+  let porositySlopePerPsi = 0;
+  if (isFoamingSuppressed) {
+    if (0.8 - pressPsi * 0.008 > 0.1) {
+      porositySlopePerPsi = -0.008;
+    }
+  } else {
+    if ((waterVaporPressurePsi - pressPsi) * 1.2 + 8 < 45) {
+      porositySlopePerPsi = -1.2;
+    }
+  }
+  const densitySlopeGPerCm3PerPsi = -(solidDensity / 100) * porositySlopePerPsi;
 
   // Heat deflection temperature (°C)
   const heatDeflectionTempC = Math.round(isGelled ? 90 + crosslinkDensity * 55 : 45);
@@ -4107,7 +4170,11 @@ export function stepBaekelandBakelite(
     catalystPct: catPct,
     curingTimeMin: timeMin,
     fillerPct: filler,
+    kRateUnrounded: kRate,
+    kRateSlopePerC,
     conversionP,
+    conversionPUnrounded,
+    conversionSlopePerMin,
     resinStage,
     isGelled,
     isFoamingSuppressed,
@@ -4116,6 +4183,8 @@ export function stepBaekelandBakelite(
     tensileStrengthMpa,
     dielectricBreakdownKvPerMm,
     densityGPerCm3,
+    densityGPerCm3Unrounded,
+    densitySlopeGPerCm3PerPsi,
     heatDeflectionTempC,
     networkDisplayOmegaRadPerS,
   };

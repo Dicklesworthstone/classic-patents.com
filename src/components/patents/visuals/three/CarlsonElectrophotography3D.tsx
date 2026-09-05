@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepCarlsonElectrophotography } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import type { ElectromagneticsState, ThermodynamicsState } from "@/physics/types";
 import {
   globalTransportBus,
@@ -262,6 +263,7 @@ export function CarlsonElectrophotography3D({
             claimStates={claimStates}
             onToggleClaim={(c: number, active: boolean) => {
               setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam(claimConstraintStateParamId(c), active ? 1 : 0);
               updateParam("coronaVoltageKv", active ? 6.5 : 0.5);
             }}
           />
@@ -453,9 +455,10 @@ export function CarlsonElectrophotography3D({
         <ClaimConstraintToggle
           patentId="us-2297691-carlson-electrophotography"
           claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
+          onToggleClaim={(claimNo, active) => {
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0);
+          }}
           className="mt-2"
         />
 

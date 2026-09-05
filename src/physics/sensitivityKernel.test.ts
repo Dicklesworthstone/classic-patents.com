@@ -1,7 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { allPatents } from "@/data/patents";
 import {
+  stepBaekelandBakelite,
   stepBellTelephone,
+  stepCarlsonElectrophotography,
   stepCorlissEngine,
   stepDavenportMotor,
   stepDeForestAudion,
@@ -19,6 +21,7 @@ import {
   stepHallAluminium,
   stepHewittMercuryLamp,
   stepHollerithTabulating,
+  stepLamarrRecordControl,
   stepLincolnBuoy,
   stepMorseTelegraph,
   stepOttoEngine,
@@ -1779,11 +1782,26 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.metricName).toBe("Separator Air Velocity & Pressure Loss");
       expect(sens?.derivativeSymbol).toBe("∂ΔP / ∂CFM");
       expect(sens?.derivativeUnit).toBe("Pa / cfm");
-      expect(sens?.derivativeValue).toBeCloseTo(3.4212e-7 * cfm * 6, 5);
+
+      // Central finite difference verification
+      const h = 1e-4;
+      const fPlus = FrankenSimEngine.stepCarrierAirConditioner({
+        airflowCfm: cfm + h,
+        separatorFaces: 6,
+      }).pressureDropPaUnrounded;
+      const fMinus = FrankenSimEngine.stepCarrierAirConditioner({
+        airflowCfm: cfm - h,
+        separatorFaces: 6,
+      }).pressureDropPaUnrounded;
+      const numDeriv = (fPlus - fMinus) / (2 * h);
+      expect(sens?.derivativeValue).toBeCloseTo(numDeriv, 4);
     }
 
-    for (const faces of [3, 6, 10]) {
-      const sens = computeParameterSensitivity(id, "separatorFaces", { separatorFaces: faces });
+    for (const faces of [3, 6, 8]) {
+      const sens = computeParameterSensitivity(id, "separatorFaces", {
+        separatorFaces: faces,
+        sprayRatePct: 20,
+      });
       expect(sens).toBeDefined();
       expect(sens?.metricName).toBe("Droplet Separation Efficiency");
       expect(sens?.derivativeSymbol).toBe("∂η / ∂Faces");
@@ -1791,8 +1809,11 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeValue).toBe(8.5);
     }
 
-    for (const spray of [20, 60, 90]) {
-      const sens = computeParameterSensitivity(id, "sprayRatePct", { sprayRatePct: spray });
+    for (const spray of [20, 40, 60]) {
+      const sens = computeParameterSensitivity(id, "sprayRatePct", {
+        sprayRatePct: spray,
+        separatorFaces: 4,
+      });
       expect(sens).toBeDefined();
       expect(sens?.metricName).toBe("Droplet Elimination Wet Spray Sensitivity");
       expect(sens?.derivativeSymbol).toBe("∂η / ∂Spray");
@@ -1815,14 +1836,32 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(satFaces?.derivativeValue).toBe(0);
     expect(satFaces?.interpretation).toContain("saturated");
 
+    // Claim 1 gating test
+    const claim1Off = computeParameterSensitivity(id, "airflowCfm", {
+      airflowCfm: 15000,
+      separatorFaces: 6,
+      claim1Active: false,
+    });
+    expect(claim1Off?.derivativeValue).toBe(0);
+    expect(claim1Off?.interpretation).toContain("Claim 1");
+
     // Parameter alias checks
+    const nominalSens = computeParameterSensitivity(id, "airflowCfm", {
+      airflowCfm: 15000,
+      separatorFaces: 6,
+    })?.derivativeValue;
     expect(
       computeParameterSensitivity(id, "airFlowCfm", { airflowCfm: 15000, separatorFaces: 6 })
         ?.derivativeValue,
-    ).toBe(
-      computeParameterSensitivity(id, "airflowCfm", { airflowCfm: 15000, separatorFaces: 6 })
+    ).toBe(nominalSens);
+    expect(
+      computeParameterSensitivity(id, "airflow", { airflowCfm: 15000, separatorFaces: 6 })
         ?.derivativeValue,
-    );
+    ).toBe(nominalSens);
+    expect(
+      computeParameterSensitivity(id, "cfm", { airflowCfm: 15000, separatorFaces: 6 })
+        ?.derivativeValue,
+    ).toBe(nominalSens);
 
     // Invalid parameters
     for (const invalid of [1999, 30001, Number.NaN]) {
@@ -3759,7 +3798,7 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
   });
 
-  test("Baekeland Bakelite derives void suppression and crosslinking kinetics sensitivities", () => {
+  test("Baekeland Bakelite derives void suppression, crosslinking kinetics, and conversion sensitivities", () => {
     const id = "us-942699-baekeland-bakelite";
 
     // Autoclave pressure sensitivity
@@ -3773,7 +3812,13 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensPress?.metricName).toBe("Polymer Void Suppression");
     expect(sensPress?.derivativeSymbol).toBe("∂Density / ∂P");
     expect(sensPress?.derivativeUnit).toBe("(g/cm³) / psi");
-    expect(sensPress?.derivativeValue).toBe(0.0085);
+
+    // Central finite difference verification for pressure
+    const hP = 1e-4;
+    const fPPlus = stepBaekelandBakelite(150, 75 + hP, 1.5, 60).densityGPerCm3Unrounded;
+    const fPMinus = stepBaekelandBakelite(150, 75 - hP, 1.5, 60).densityGPerCm3Unrounded;
+    const numDerivP = (fPPlus - fPMinus) / (2 * hP);
+    expect(sensPress?.derivativeValue).toBeCloseTo(numDerivP, 5);
 
     // Curing temperature sensitivity
     const sensTemp = computeParameterSensitivity(id, "curingTempC", {
@@ -3786,7 +3831,86 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensTemp?.metricName).toBe("Crosslinking Kinetics Rate");
     expect(sensTemp?.derivativeSymbol).toBe("∂k_crosslink / ∂T");
     expect(sensTemp?.derivativeUnit).toBe("min⁻¹ / °C");
-    expect(sensTemp?.derivativeValue).toBe(0.065);
+
+    // Central finite difference verification for temperature
+    const hT = 1e-4;
+    const fTPlus = stepBaekelandBakelite(150 + hT, 75, 1.5, 60).kRateUnrounded;
+    const fTMinus = stepBaekelandBakelite(150 - hT, 75, 1.5, 60).kRateUnrounded;
+    const numDerivT = (fTPlus - fTMinus) / (2 * hT);
+    expect(sensTemp?.derivativeValue).toBeCloseTo(numDerivT, 4);
+
+    // Curing time conversion sensitivity
+    const sensTime = computeParameterSensitivity(id, "curingTimeMin", {
+      curingTempC: 150,
+      autoclavePressurePsi: 75,
+      catalystPct: 1.5,
+      curingTimeMin: 60,
+    });
+    expect(sensTime).toBeDefined();
+    expect(sensTime?.metricName).toBe("Polycondensation Conversion Rate");
+    expect(sensTime?.derivativeSymbol).toBe("∂p / ∂t");
+    expect(sensTime?.derivativeUnit).toBe("conversion / min");
+
+    // Central finite difference verification for curing time
+    const hTime = 1e-4;
+    const fTimePlus = stepBaekelandBakelite(150, 75, 1.5, 60 + hTime).conversionPUnrounded;
+    const fTimeMinus = stepBaekelandBakelite(150, 75, 1.5, 60 - hTime).conversionPUnrounded;
+    const numDerivTime = (fTimePlus - fTimeMinus) / (2 * hTime);
+    expect(sensTime?.derivativeValue).toBeCloseTo(numDerivTime, 4);
+
+    // Claim 1 gating
+    const claim1Off = computeParameterSensitivity(id, "autoclavePressurePsi", {
+      curingTempC: 150,
+      autoclavePressurePsi: 75,
+      claim1Active: false,
+    });
+    expect(claim1Off?.derivativeValue).toBe(0);
+    expect(claim1Off?.interpretation).toContain("Claim 1");
+
+    // Parameter alias checks
+    const nominalP = sensPress?.derivativeValue;
+    expect(
+      computeParameterSensitivity(id, "pressure", {
+        curingTempC: 150,
+        autoclavePressurePsi: 75,
+        catalystPct: 1.5,
+        curingTimeMin: 60,
+      })?.derivativeValue,
+    ).toBe(nominalP);
+    expect(
+      computeParameterSensitivity(id, "pressurePsi", {
+        curingTempC: 150,
+        autoclavePressurePsi: 75,
+        catalystPct: 1.5,
+        curingTimeMin: 60,
+      })?.derivativeValue,
+    ).toBe(nominalP);
+
+    const nominalT = sensTemp?.derivativeValue;
+    expect(
+      computeParameterSensitivity(id, "autoclaveTempC", {
+        curingTempC: 150,
+        autoclavePressurePsi: 75,
+        catalystPct: 1.5,
+        curingTimeMin: 60,
+      })?.derivativeValue,
+    ).toBe(nominalT);
+    expect(
+      computeParameterSensitivity(id, "temp", {
+        curingTempC: 150,
+        autoclavePressurePsi: 75,
+        catalystPct: 1.5,
+        curingTimeMin: 60,
+      })?.derivativeValue,
+    ).toBe(nominalT);
+    expect(
+      computeParameterSensitivity(id, "temperature", {
+        curingTempC: 150,
+        autoclavePressurePsi: 75,
+        catalystPct: 1.5,
+        curingTimeMin: 60,
+      })?.derivativeValue,
+    ).toBe(nominalT);
 
     // Invalid bounds
     for (const invalid of [109, 201, Number.NaN]) {
@@ -3970,7 +4094,24 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensCorona?.metricName).toBe("Surface Potential Build");
     expect(sensCorona?.derivativeSymbol).toBe("∂V_s / ∂V_corona");
     expect(sensCorona?.derivativeUnit).toBe("V / kV");
-    expect(sensCorona?.derivativeValue).toBe(95.0);
+    expect(sensCorona?.derivativeValue).toBe(100);
+
+    // Central finite difference for corona voltage
+    const hCorona = 1e-4;
+    const fCoronaPlus = stepCarlsonElectrophotography({
+      coronaVoltageKv: 6.5 + hCorona,
+      exposureLuxSec: 12,
+      layerThicknessUm: 30,
+      fuserTemperatureC: 185,
+    }).initialSurfacePotentialVUnrounded;
+    const fCoronaMinus = stepCarlsonElectrophotography({
+      coronaVoltageKv: 6.5 - hCorona,
+      exposureLuxSec: 12,
+      layerThicknessUm: 30,
+      fuserTemperatureC: 185,
+    }).initialSurfacePotentialVUnrounded;
+    const numDerivCorona = (fCoronaPlus - fCoronaMinus) / (2 * hCorona);
+    expect(sensCorona?.derivativeValue).toBeCloseTo(numDerivCorona, 4);
 
     // Optical exposure sensitivity
     const sensExp = computeParameterSensitivity(id, "exposureLuxSec", {
@@ -3983,7 +4124,23 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensExp?.metricName).toBe("Photoconductive Discharge Sensitivity");
     expect(sensExp?.derivativeSymbol).toBe("∂V_latent / ∂H_exp");
     expect(sensExp?.derivativeUnit).toBe("V / (lx·s)");
-    expect(sensExp?.derivativeValue).toBe(-18.5);
+
+    // Central finite difference for exposure
+    const hExp = 1e-4;
+    const fExpPlus = stepCarlsonElectrophotography({
+      coronaVoltageKv: 6.5,
+      exposureLuxSec: 12 + hExp,
+      layerThicknessUm: 30,
+      fuserTemperatureC: 185,
+    }).exposedSurfacePotentialVUnrounded;
+    const fExpMinus = stepCarlsonElectrophotography({
+      coronaVoltageKv: 6.5,
+      exposureLuxSec: 12 - hExp,
+      layerThicknessUm: 30,
+      fuserTemperatureC: 185,
+    }).exposedSurfacePotentialVUnrounded;
+    const numDerivExp = (fExpPlus - fExpMinus) / (2 * hExp);
+    expect(sensExp?.derivativeValue).toBeCloseTo(numDerivExp, 4);
 
     // Photoreceptor thickness sensitivity
     const sensThick = computeParameterSensitivity(id, "layerThicknessUm", {
@@ -3994,9 +4151,9 @@ describe("Sensitivities follow the current admitted operating point", () => {
     });
     expect(sensThick).toBeDefined();
     expect(sensThick?.metricName).toBe("Acceptance Potential Gradient");
-    expect(sensThick?.derivativeSymbol).toBe("∂V_max / ∂d_layer");
-    expect(sensThick?.derivativeUnit).toBe("V / µm");
-    expect(sensThick?.derivativeValue).toBe(15.0);
+    expect(sensThick?.derivativeSymbol).toBe("∂E_int / ∂d_layer");
+    expect(sensThick?.derivativeUnit).toBe("(kV/mm) / µm");
+    expect(sensThick?.derivativeValue).toBeCloseTo(-650 / 900, 4);
 
     // Fuser temperature sensitivity
     const sensFuser = computeParameterSensitivity(id, "fuserTemperatureC", {
@@ -4006,10 +4163,78 @@ describe("Sensitivities follow the current admitted operating point", () => {
       fuserTemperatureC: 185,
     });
     expect(sensFuser).toBeDefined();
-    expect(sensFuser?.metricName).toBe("Resin Toner Fixation Viscosity");
-    expect(sensFuser?.derivativeSymbol).toBe("∂η_melt / ∂T_fuser");
-    expect(sensFuser?.derivativeUnit).toBe("(Pa·s) / °C");
-    expect(sensFuser?.derivativeValue).toBe(-0.025);
+    expect(sensFuser?.metricName).toBe("Resin Toner Fixation Quality");
+    expect(sensFuser?.derivativeSymbol).toBe("∂Bond / ∂T_fuser");
+    expect(sensFuser?.derivativeUnit).toBe("% / °C");
+    expect(sensFuser?.derivativeValue).toBeCloseTo(40 / 70, 4);
+
+    // Claim 1 gating
+    const claim1Off = computeParameterSensitivity(id, "exposureLuxSec", {
+      coronaVoltageKv: 6.5,
+      exposureLuxSec: 12,
+      layerThicknessUm: 30,
+      fuserTemperatureC: 185,
+      claim1Active: false,
+    });
+    expect(claim1Off?.derivativeValue).toBe(0);
+    expect(claim1Off?.interpretation).toContain("Claim 1");
+
+    // Parameter alias checks
+    const nominalCorona = sensCorona?.derivativeValue;
+    expect(
+      computeParameterSensitivity(id, "coronaVoltage", {
+        coronaVoltageKv: 6.5,
+        exposureLuxSec: 12,
+      })?.derivativeValue,
+    ).toBe(nominalCorona);
+    expect(
+      computeParameterSensitivity(id, "coronaKv", {
+        coronaVoltageKv: 6.5,
+        exposureLuxSec: 12,
+      })?.derivativeValue,
+    ).toBe(nominalCorona);
+
+    const nominalExp = sensExp?.derivativeValue;
+    expect(
+      computeParameterSensitivity(id, "exposure", {
+        coronaVoltageKv: 6.5,
+        exposureLuxSec: 12,
+      })?.derivativeValue,
+    ).toBe(nominalExp);
+    expect(
+      computeParameterSensitivity(id, "exposureSec", {
+        coronaVoltageKv: 6.5,
+        exposureLuxSec: 12,
+      })?.derivativeValue,
+    ).toBe(nominalExp);
+
+    const nominalThick = sensThick?.derivativeValue;
+    expect(
+      computeParameterSensitivity(id, "layerThickness", {
+        coronaVoltageKv: 6.5,
+        layerThicknessUm: 30,
+      })?.derivativeValue,
+    ).toBe(nominalThick);
+    expect(
+      computeParameterSensitivity(id, "thickness", {
+        coronaVoltageKv: 6.5,
+        layerThicknessUm: 30,
+      })?.derivativeValue,
+    ).toBe(nominalThick);
+
+    const nominalFuser = sensFuser?.derivativeValue;
+    expect(
+      computeParameterSensitivity(id, "fuserTemp", {
+        coronaVoltageKv: 6.5,
+        fuserTemperatureC: 185,
+      })?.derivativeValue,
+    ).toBe(nominalFuser);
+    expect(
+      computeParameterSensitivity(id, "temperature", {
+        coronaVoltageKv: 6.5,
+        fuserTemperatureC: 185,
+      })?.derivativeValue,
+    ).toBe(nominalFuser);
 
     // Bounds checking
     for (const invalid of [3.9, 8.1, Number.NaN]) {
@@ -5119,28 +5344,97 @@ describe("Sensitivities follow the current admitted operating point", () => {
   test("Lamarr frequency hopping derives jamming processing gain and filter discrimination sensitivities", () => {
     const id = "us-2292387-lamarr-frequency-hopping";
 
-    const sensGain = computeParameterSensitivity(id, "recordPosition", {
+    // Record position discrete stepper advance sensitivity
+    const sensPos = computeParameterSensitivity(id, "recordPosition", {
       recordPosition: 3,
+    });
+    expect(sensPos).toBeDefined();
+    expect(sensPos?.metricName).toBe("Record Index Advance");
+    expect(sensPos?.derivativeSymbol).toBe("∂Row / ∂Step");
+    expect(sensPos?.derivativeValue).toBe(1.0);
+    expect(sensPos?.derivativeUnit).toBe("row / step");
+
+    // Spread-spectrum processing gain sensitivity
+    const sensGain = computeParameterSensitivity(id, "activeChannels", {
+      activeChannels: 88,
     });
     expect(sensGain).toBeDefined();
     expect(sensGain?.metricName).toBe("Jamming Processing Gain");
     expect(sensGain?.derivativeSymbol).toBe("∂G_p / ∂N");
-    expect(sensGain?.derivativeValue).toBe(0.22);
     expect(sensGain?.derivativeUnit).toBe("dB / channel");
 
+    // Central finite difference verification for processing gain
+    const hCh = 1e-4;
+    const fPlus = stepLamarrRecordControl({ activeChannels: 88 + hCh }).processingGainDbUnrounded;
+    const fMinus = stepLamarrRecordControl({ activeChannels: 88 - hCh }).processingGainDbUnrounded;
+    const numDeriv = (fPlus - fMinus) / (2 * hCh);
+    expect(sensGain?.derivativeValue).toBeCloseTo(numDeriv, 4);
+
+    // Command tone filter discrimination
     const sensTone = computeParameterSensitivity(id, "commandTone", {
       commandTone: 100,
     });
     expect(sensTone).toBeDefined();
     expect(sensTone?.metricName).toBe("Demodulated Filter Discrimination");
     expect(sensTone?.derivativeSymbol).toBe("∂Q / ∂f_tone");
-    expect(sensTone?.derivativeValue).toBe(1.45);
-    expect(sensTone?.derivativeUnit).toBe("dB / Hz");
+    expect(sensTone?.derivativeValue).toBeCloseTo(0.02, 4);
+    expect(sensTone?.derivativeUnit).toBe("1 / Hz");
+
+    // Claim 1 gating
+    const claim1Off = computeParameterSensitivity(id, "activeChannels", {
+      activeChannels: 88,
+      claim1Active: false,
+    });
+    expect(claim1Off?.derivativeValue).toBe(0);
+    expect(claim1Off?.interpretation).toContain("Claim 1");
+
+    const claim1OffPos = computeParameterSensitivity(id, "recordPosition", {
+      recordPosition: 3,
+      claim1Active: false,
+    });
+    expect(claim1OffPos?.derivativeValue).toBe(0);
+    expect(claim1OffPos?.interpretation).toContain("Claim 1");
+
+    // Parameter alias checks
+    const nominalPos = sensPos?.derivativeValue;
+    expect(
+      computeParameterSensitivity(id, "position", { recordPosition: 3 })?.derivativeValue,
+    ).toBe(nominalPos);
+    expect(computeParameterSensitivity(id, "pos", { recordPosition: 3 })?.derivativeValue).toBe(
+      nominalPos,
+    );
+    expect(
+      computeParameterSensitivity(id, "recordIndex", { recordPosition: 3 })?.derivativeValue,
+    ).toBe(nominalPos);
+
+    const nominalGain = sensGain?.derivativeValue;
+    expect(
+      computeParameterSensitivity(id, "channels", { activeChannels: 88 })?.derivativeValue,
+    ).toBe(nominalGain);
+    expect(
+      computeParameterSensitivity(id, "numChannels", { activeChannels: 88 })?.derivativeValue,
+    ).toBe(nominalGain);
+    expect(
+      computeParameterSensitivity(id, "channelCount", { activeChannels: 88 })?.derivativeValue,
+    ).toBe(nominalGain);
+
+    const nominalTone = sensTone?.derivativeValue;
+    expect(computeParameterSensitivity(id, "tone", { commandTone: 100 })?.derivativeValue).toBe(
+      nominalTone,
+    );
+    expect(
+      computeParameterSensitivity(id, "toneCycles", { commandTone: 100 })?.derivativeValue,
+    ).toBe(nominalTone);
 
     // Bounds checking
-    for (const invalid of [-1, 89, Number.NaN]) {
+    for (const invalid of [-1, 7, Number.NaN]) {
       expect(
         computeParameterSensitivity(id, "recordPosition", { recordPosition: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0, 89, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "activeChannels", { activeChannels: invalid }),
       ).toBeNull();
     }
     for (const invalid of [49, 1001, Number.NaN]) {

@@ -1380,7 +1380,8 @@ export const FrankenSimEngine = {
     const airflowCfm = Math.max(0, params.airflowCfm ?? 15000);
     const sprayRatePct = Math.min(100, Math.max(0, params.sprayRatePct ?? 60));
     const separatorFaces = Math.min(12, Math.max(2, Math.round(params.separatorFaces ?? 6)));
-    const airCurrentMps = Number(((airflowCfm * 0.00047194745) / 0.25).toFixed(3));
+    const airCurrentMpsUnrounded = (airflowCfm * 0.00047194745) / 0.25;
+    const airCurrentMps = Number(airCurrentMpsUnrounded.toFixed(3));
     const wetFilmCoveragePct = Number(
       Math.min(100, sprayRatePct * (0.55 + 0.45 * Math.min(1, separatorFaces / 8))).toFixed(1),
     );
@@ -1390,10 +1391,17 @@ export const FrankenSimEngine = {
     const dropletSeparationPct = Number(
       Math.min(99, (separatorFaces - 1) * 8.5 + sprayRatePct * 0.18).toFixed(1),
     );
-    const pressureDropPa = Number(
-      (0.5 * 1.2 * airCurrentMps ** 2 * (0.08 * separatorFaces)).toFixed(2),
-    );
+    const pressureDropPaUnrounded =
+      0.5 * 1.2 * airCurrentMpsUnrounded ** 2 * (0.08 * separatorFaces);
+    const pressureDropPa = Number(pressureDropPaUnrounded.toFixed(2));
     const airMovementWatts = Number((pressureDropPa * airflowCfm * 0.00047194745).toFixed(2));
+
+    const pressureDropSlopePaPerCfm =
+      airflowCfm > 0 ? (2 * pressureDropPaUnrounded) / airflowCfm : 0;
+    const isSeparationSaturated = (separatorFaces - 1) * 8.5 + sprayRatePct * 0.18 >= 99;
+    const dropletSeparationSlopePerSpray = isSeparationSaturated ? 0 : 0.18;
+    const dropletSeparationSlopePerFace = isSeparationSaturated ? 0 : 8.5;
+
     const boundedDisplayFlowRatio = Math.min(2, airflowCfm / 15000);
     const animation: CarrierAirWasherAnimationState = {
       // These two rates are explicit studio mappings from the SI flow state,
@@ -1415,10 +1423,15 @@ export const FrankenSimEngine = {
         sprayRatePct,
         separatorFaces,
         airCurrentMps,
+        airCurrentMpsUnrounded,
         wetFilmCoveragePct,
         particleCapturePct,
         dropletSeparationPct,
         pressureDropPa,
+        pressureDropPaUnrounded,
+        pressureDropSlopePaPerCfm,
+        dropletSeparationSlopePerSpray,
+        dropletSeparationSlopePerFace,
         airMovementWatts,
         airflowCfm,
         animation,
@@ -1463,10 +1476,15 @@ export const FrankenSimEngine = {
       sprayRatePct,
       separatorFaces,
       airCurrentMps,
+      airCurrentMpsUnrounded,
       wetFilmCoveragePct,
       particleCapturePct,
       dropletSeparationPct,
       pressureDropPa,
+      pressureDropPaUnrounded,
+      pressureDropSlopePaPerCfm,
+      dropletSeparationSlopePerSpray,
+      dropletSeparationSlopePerFace,
       airMovementWatts,
       airflowCfm,
       animation,

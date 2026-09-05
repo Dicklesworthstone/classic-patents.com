@@ -2,6 +2,7 @@
 
 import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { readLamarrRuntimeControls, readLamarrTapeFrame } from "@/physics/lamarrSharedKernel";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -34,7 +35,7 @@ export function LamarrFrequencyHopping3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<LamarrCameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const { frame } = useFrankenSimPhysics("us-2292387-lamarr-frequency-hopping");
+  useFrankenSimPhysics("us-2292387-lamarr-frequency-hopping");
   // Pure consumer of the shared transport tape; no local integration clock.
   const recordState = readLamarrTapeFrame(readLamarrRuntimeControls(effectiveParams));
   const live = useLiveSimParams({ recordState, isCutaway });
@@ -198,27 +199,26 @@ export function LamarrFrequencyHopping3D() {
       </div>
 
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
-        <label className="space-y-2">
-          Transmitter record position
-          <input
-            type="range"
-            min="0"
-            max="6"
+        <div>
+          <SensitivitySlider
+            id="lamarrRecordPosition"
+            patentId="us-2292387-lamarr-frequency-hopping"
+            paramKey="recordPosition"
+            label="Transmitter record position"
             value={recordState.recordPosition}
-            onChange={(event) => {
-              const next = Number(event.target.value);
-              updateParam("recordPosition", next);
-            }}
-            data-audit-primary-control="true"
-            data-runtime-tick={frame.tick}
-            data-runtime-digest={frame.digest}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-purple-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
+            min={0}
+            max={6}
+            step={1}
+            unit="row"
+            auditPrimaryControl={true}
+            onChange={(next) => updateParam("recordPosition", next)}
+            allParams={effectiveParams as Record<string, number>}
           />
-          <span>
+          <span className="text-ink-500 mt-1 block">
             Row {recordState.transmitterRow} · transmitter 7 positions · receiver 4 effective
             positions
           </span>
-        </label>
+        </div>
         <div className="space-y-2">
           <span>Command labels</span>
           <div className="flex gap-2">

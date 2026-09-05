@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { FrankenSimEngine } from "@/physics/engine";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ThermodynamicsState } from "@/physics/types";
@@ -181,6 +182,7 @@ export function CarrierAirConditioner3D() {
             claimStates={claimStates}
             onToggleClaim={(claim, active) => {
               setClaimStates((previous) => ({ ...previous, [claim]: active }));
+              updateParam(claimConstraintStateParamId(claim), active ? 1 : 0);
               updateParam("sprayRatePct", active ? 60 : 0);
             }}
           />

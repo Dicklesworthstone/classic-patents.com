@@ -873,4 +873,162 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       resetPatentPhysicsParams(id);
     }
   });
+
+  test("Carrier Air Conditioner aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-808897-carrier-air-conditioner";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.airflowCfm),
+    );
+    try {
+      setPatentPhysicsParam(id, "cfm", 22000);
+      const params = getPatentPhysicsParams(id);
+      expect(params.airflowCfm).toBe(22000);
+      expect(params.airflow).toBe(22000);
+      expect(params.cfm).toBe(22000);
+      expect(params.flowRateCfm).toBe(22000);
+      expect(observations).toEqual([22000]);
+      expect(getLastParamChange(id)?.id).toBe("airflowCfm");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Separator Pressure Loss")?.value).not.toBe(
+        initial.find((m) => m.label === "Separator Pressure Loss")?.value,
+      );
+
+      setPatentPhysicsParam(id, "spray", 85);
+      expect(getPatentPhysicsParams(id).sprayRatePct).toBe(85);
+      expect(getPatentPhysicsParams(id).sprayRate).toBe(85);
+      expect(getPatentPhysicsParams(id).spray).toBe(85);
+      expect(getPatentPhysicsParams(id).sprayPct).toBe(85);
+
+      setPatentPhysicsParam(id, "faces", 8);
+      expect(getPatentPhysicsParams(id).separatorFaces).toBe(8);
+      expect(getPatentPhysicsParams(id).plates).toBe(8);
+      expect(getPatentPhysicsParams(id).faces).toBe(8);
+      expect(getPatentPhysicsParams(id).turns).toBe(8);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Lamarr Frequency Hopping aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-2292387-lamarr-frequency-hopping";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.recordPosition),
+    );
+    try {
+      setPatentPhysicsParam(id, "position", 4);
+      const params = getPatentPhysicsParams(id);
+      expect(params.recordPosition).toBe(4);
+      expect(params.position).toBe(4);
+      expect(params.pos).toBe(4);
+      expect(params.recordIndex).toBe(4);
+      expect(observations).toEqual([4]);
+      expect(getLastParamChange(id)?.id).toBe("recordPosition");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Transmitter record row")?.value).not.toBe(
+        initial.find((m) => m.label === "Transmitter record row")?.value,
+      );
+
+      setPatentPhysicsParam(id, "tone", 500);
+      expect(getPatentPhysicsParams(id).commandTone).toBe(500);
+      expect(getPatentPhysicsParams(id).tone).toBe(500);
+      expect(getPatentPhysicsParams(id).toneCycles).toBe(500);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Carlson Electrophotography aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-2297691-carlson-electrophotography";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.coronaVoltageKv),
+    );
+    try {
+      setPatentPhysicsParam(id, "coronaKv", 7.5);
+      const params = getPatentPhysicsParams(id);
+      expect(params.coronaVoltageKv).toBe(7.5);
+      expect(params.coronaVoltage).toBe(7.5);
+      expect(params.coronaKv).toBe(7.5);
+      expect(params.gridVoltage).toBe(7.5);
+      expect(observations).toEqual([7.5]);
+      expect(getLastParamChange(id)?.id).toBe("coronaVoltageKv");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Initial Surface Charge")?.value).not.toBe(
+        initial.find((m) => m.label === "Initial Surface Charge")?.value,
+      );
+
+      setPatentPhysicsParam(id, "exposureSec", 20);
+      expect(getPatentPhysicsParams(id).exposureLuxSec).toBe(20);
+      expect(getPatentPhysicsParams(id).exposureSec).toBe(20);
+      expect(getPatentPhysicsParams(id).luxSec).toBe(20);
+
+      setPatentPhysicsParam(id, "thicknessUm", 45);
+      expect(getPatentPhysicsParams(id).layerThicknessUm).toBe(45);
+      expect(getPatentPhysicsParams(id).layerThickness).toBe(45);
+      expect(getPatentPhysicsParams(id).thicknessUm).toBe(45);
+
+      setPatentPhysicsParam(id, "fuserTemp", 200);
+      expect(getPatentPhysicsParams(id).fuserTemperatureC).toBe(200);
+      expect(getPatentPhysicsParams(id).fuserTemp).toBe(200);
+      expect(getPatentPhysicsParams(id).fuserTemperature).toBe(200);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Baekeland Bakelite aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-942699-baekeland-bakelite";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.curingTempC),
+    );
+    try {
+      setPatentPhysicsParam(id, "cureTemp", 165);
+      const params = getPatentPhysicsParams(id);
+      expect(params.curingTempC).toBe(165);
+      expect(params.temp).toBe(165);
+      expect(params.temperature).toBe(165);
+      expect(params.cureTemp).toBe(165);
+      expect(observations).toEqual([165]);
+      expect(getLastParamChange(id)?.id).toBe("curingTempC");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Crosslink Conversion")?.value).not.toBe(
+        initial.find((m) => m.label === "Crosslink Conversion")?.value,
+      );
+
+      setPatentPhysicsParam(id, "pressure", 140);
+      expect(getPatentPhysicsParams(id).autoclavePressurePsi).toBe(140);
+      expect(getPatentPhysicsParams(id).pressure).toBe(140);
+      expect(getPatentPhysicsParams(id).pressurePsi).toBe(140);
+
+      setPatentPhysicsParam(id, "catalyst", 3.5);
+      expect(getPatentPhysicsParams(id).catalystPct).toBe(3.5);
+      expect(getPatentPhysicsParams(id).catalyst).toBe(3.5);
+
+      setPatentPhysicsParam(id, "curingTime", 90);
+      expect(getPatentPhysicsParams(id).curingTimeMin).toBe(90);
+      expect(getPatentPhysicsParams(id).curingTime).toBe(90);
+      expect(getPatentPhysicsParams(id).timeMin).toBe(90);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
 });
