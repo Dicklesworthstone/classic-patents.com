@@ -46,21 +46,45 @@ function normalized(value: number | undefined, fallback: number): number {
 export function readLemelsonWarehouseControls(
   params: Partial<LemelsonWarehouseControls> | Record<string, number | undefined>,
 ): LemelsonWarehouseControls {
+  const p = params as Record<string, number | undefined>;
   return {
     railAddressFraction: normalized(
-      params.railAddressFraction,
+      p.railAddressFraction ??
+        p.railAddress ??
+        p.carrierX ??
+        p.railFraction ??
+        p.xAddress ??
+        p.rail,
       LEMELSON_WAREHOUSE_DEFAULT_CONTROLS.railAddressFraction,
     ),
     levelAddressFraction: normalized(
-      params.levelAddressFraction,
+      p.levelAddressFraction ??
+        p.levelAddress ??
+        p.carrierY ??
+        p.levelFraction ??
+        p.yAddress ??
+        p.verticalAddress ??
+        p.level ??
+        p.vertical,
       LEMELSON_WAREHOUSE_DEFAULT_CONTROLS.levelAddressFraction,
     ),
     shuttleExtensionFraction: normalized(
-      params.shuttleExtensionFraction,
+      p.shuttleExtensionFraction ??
+        p.shuttleExtension ??
+        p.shuttleZ ??
+        p.extensionFraction ??
+        p.zExtension ??
+        p.shuttle ??
+        p.extension,
       LEMELSON_WAREHOUSE_DEFAULT_CONTROLS.shuttleExtensionFraction,
     ),
     automaticAddressing: normalized(
-      params.automaticAddressing,
+      p.automaticAddressing ??
+        p.autoAddressing ??
+        p.presetAddressing ??
+        p.claim1 ??
+        p.addressing ??
+        p.automaticSequence,
       LEMELSON_WAREHOUSE_DEFAULT_CONTROLS.automaticAddressing,
     ),
   };

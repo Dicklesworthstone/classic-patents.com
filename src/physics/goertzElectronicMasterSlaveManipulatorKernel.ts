@@ -90,47 +90,92 @@ function binary(value: number | undefined, fallback: number): number {
 export function readGoertzMasterSlaveControls(
   params: Partial<GoertzMasterSlaveControls> | Record<string, number | undefined>,
 ): GoertzMasterSlaveControls {
+  const p = params as Record<string, number | undefined>;
   return {
     horizontalArmPivot: bounded(
-      params.horizontalArmPivot,
+      p.horizontalArmPivot ??
+        p.hPivot ??
+        p.armPivot ??
+        p.horizontalPivot ??
+        p.axis113b,
       GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.horizontalArmPivot,
     ),
     horizontalArmRoll: bounded(
-      params.horizontalArmRoll,
+      p.horizontalArmRoll ?? p.hRoll ?? p.armRoll ?? p.horizontalRoll,
       GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.horizontalArmRoll,
     ),
     verticalArmPivot: bounded(
-      params.verticalArmPivot,
+      p.verticalArmPivot ??
+        p.vPivot ??
+        p.vertPivot ??
+        p.verticalPivot ??
+        p.axis126,
       GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.verticalArmPivot,
     ),
     verticalArmRoll: bounded(
-      params.verticalArmRoll,
+      p.verticalArmRoll ?? p.vRoll ?? p.vertRoll ?? p.verticalRoll,
       GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.verticalArmRoll,
     ),
-    toolAxis171: bounded(params.toolAxis171, GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.toolAxis171),
-    toolAxis172: bounded(params.toolAxis172, GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.toolAxis172),
+    toolAxis171: bounded(
+      p.toolAxis171 ??
+        p.axis171 ??
+        p.toolPivot171 ??
+        p.wrist171 ??
+        p.pitch171,
+      GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.toolAxis171,
+    ),
+    toolAxis172: bounded(
+      p.toolAxis172 ??
+        p.axis172 ??
+        p.toolPivot172 ??
+        p.wrist172 ??
+        p.yaw172,
+      GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.toolAxis172,
+    ),
     gripperClosure: bounded(
-      params.gripperClosure,
+      p.gripperClosure ??
+        p.gripper ??
+        p.closure ??
+        p.grip ??
+        p.jawClosure ??
+        p.toolClosure,
       GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.gripperClosure,
       0,
       1,
     ),
     contactResistance: bounded(
-      params.contactResistance,
+      p.contactResistance ??
+        p.contact ??
+        p.resistance ??
+        p.obstruction ??
+        p.gripperObstruction,
       GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.contactResistance,
       0,
       1,
     ),
     forceReflectionEnabled: binary(
-      params.forceReflectionEnabled,
+      p.forceReflectionEnabled ??
+        p.forceReflection ??
+        p.reflection ??
+        p.forceFeedback ??
+        p.claim9,
       GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.forceReflectionEnabled,
     ),
     tachometerDampingEnabled: binary(
-      params.tachometerDampingEnabled,
+      p.tachometerDampingEnabled ??
+        p.tachometerDamping ??
+        p.tachometer ??
+        p.damping ??
+        p.rateFeedback ??
+        p.claim11,
       GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.tachometerDampingEnabled,
     ),
     limiterEnabled: binary(
-      params.limiterEnabled,
+      p.limiterEnabled ??
+        p.limiter ??
+        p.saturationLimiter ??
+        p.claim10 ??
+        p.claim12,
       GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.limiterEnabled,
     ),
   };

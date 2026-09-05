@@ -70,24 +70,41 @@ function bits(value: number, width: number): readonly boolean[] {
 }
 
 export function readDevolProgramControls(params: DevolProgramParams): DevolProgramControls {
-  const bitWidth = clamp(finiteInteger(params.bitWidth, DEVOL_DEFAULT_CONTROLS.bitWidth), 2, 8);
+  const p = params as Record<string, number | undefined>;
+  const rawBitWidth = p.bitWidth ?? p.bits ?? p.codeBits ?? p.resolutionBits ?? p.codeWidth;
+  const bitWidth = clamp(finiteInteger(rawBitWidth, DEVOL_DEFAULT_CONTROLS.bitWidth), 2, 8);
   const maximumCode = 2 ** bitWidth - 1;
+  const rawRecorded =
+    p.recordedSlot ??
+    p.recordedCode ??
+    p.programSlot ??
+    p.programCode ??
+    p.recordedPosition ??
+    p.recorded;
+  const rawSensed =
+    p.sensedSlot ?? p.sensedCode ?? p.encoderSlot ?? p.encoderCode ?? p.sensedPosition ?? p.sensed;
+  const rawAnticipation =
+    p.anticipationEnabled ??
+    p.anticipation ??
+    p.claim8 ??
+    p.anticipatorySensing ??
+    p.advanceSensing;
+  const rawMode = p.recordingMode ?? p.recordMode ?? p.claim5 ?? p.teachMode ?? p.mode;
+  const rawGripper =
+    p.gripperClosed ?? p.gripper ?? p.claim6 ?? p.gripperState ?? p.jawClosed ?? p.seizing;
+
   return {
     bitWidth,
     recordedSlot: clamp(
-      finiteInteger(params.recordedSlot, DEVOL_DEFAULT_CONTROLS.recordedSlot),
+      finiteInteger(rawRecorded, DEVOL_DEFAULT_CONTROLS.recordedSlot),
       0,
       maximumCode,
     ),
-    sensedSlot: clamp(
-      finiteInteger(params.sensedSlot, DEVOL_DEFAULT_CONTROLS.sensedSlot),
-      0,
-      maximumCode,
-    ),
+    sensedSlot: clamp(finiteInteger(rawSensed, DEVOL_DEFAULT_CONTROLS.sensedSlot), 0, maximumCode),
     anticipationEnabled:
-      (params.anticipationEnabled ?? Number(DEVOL_DEFAULT_CONTROLS.anticipationEnabled)) >= 0.5,
-    recordingMode: (params.recordingMode ?? Number(DEVOL_DEFAULT_CONTROLS.recordingMode)) >= 0.5,
-    gripperClosed: (params.gripperClosed ?? Number(DEVOL_DEFAULT_CONTROLS.gripperClosed)) >= 0.5,
+      (rawAnticipation ?? Number(DEVOL_DEFAULT_CONTROLS.anticipationEnabled)) >= 0.5,
+    recordingMode: (rawMode ?? Number(DEVOL_DEFAULT_CONTROLS.recordingMode)) >= 0.5,
+    gripperClosed: (rawGripper ?? Number(DEVOL_DEFAULT_CONTROLS.gripperClosed)) >= 0.5,
   };
 }
 

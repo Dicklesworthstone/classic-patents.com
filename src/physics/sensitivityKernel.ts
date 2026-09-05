@@ -2140,37 +2140,112 @@ export function computeParameterSensitivity(
     }
 
     case "us-2929922-townes-laser": {
-      const cavityLengthCm = Number(params.cavityLengthCm ?? 10);
-      const chamberDiameterCm = Number(params.chamberDiameterCm ?? 1);
-      const endReflectivityPct = Number(params.endReflectivityPct ?? 97);
-      const pumpExcitationPct = Number(params.pumpExcitationPct ?? 70);
-      const modeApertureOpenPct = Number(params.modeApertureOpenPct ?? 55);
-      const modulationFieldPct = Number(params.modulationFieldPct ?? 35);
-
+      const rawLength =
+        params.cavityLengthCm ??
+        params.cavityLength ??
+        params.lengthCm ??
+        params.chamberLengthCm ??
+        params.length ??
+        params.chamberLength;
       if (
-        !Number.isFinite(cavityLengthCm) ||
-        cavityLengthCm < 3 ||
-        cavityLengthCm > 40 ||
-        !Number.isFinite(chamberDiameterCm) ||
-        chamberDiameterCm < 0.2 ||
-        chamberDiameterCm > 5.0 ||
-        !Number.isFinite(endReflectivityPct) ||
-        endReflectivityPct < 50 ||
-        endReflectivityPct > 100 ||
-        !Number.isFinite(pumpExcitationPct) ||
-        pumpExcitationPct < 0 ||
-        pumpExcitationPct > 100 ||
-        !Number.isFinite(modeApertureOpenPct) ||
-        modeApertureOpenPct < 0 ||
-        modeApertureOpenPct > 100 ||
-        !Number.isFinite(modulationFieldPct) ||
-        modulationFieldPct < 0 ||
-        modulationFieldPct > 100
+        rawLength !== undefined &&
+        (!Number.isFinite(rawLength) || rawLength < 3 || rawLength > 40)
+      ) {
+        return null;
+      }
+      const cavityLengthCm = Number(rawLength ?? 10);
+
+      const rawDiameter =
+        params.chamberDiameterCm ??
+        params.chamberDiameter ??
+        params.diameterCm ??
+        params.diameter ??
+        params.tubeDiameterCm ??
+        params.boreDiameterCm;
+      if (
+        rawDiameter !== undefined &&
+        (!Number.isFinite(rawDiameter) || rawDiameter < 0.2 || rawDiameter > 5.0)
+      ) {
+        return null;
+      }
+      const chamberDiameterCm = Number(rawDiameter ?? 1);
+
+      const rawReflectivity =
+        params.endReflectivityPct ??
+        params.endReflectivity ??
+        params.reflectivityPct ??
+        params.reflectivity ??
+        params.mirrorReflectivityPct ??
+        params.endMirrorReflectivity;
+      if (
+        rawReflectivity !== undefined &&
+        (!Number.isFinite(rawReflectivity) || rawReflectivity < 50 || rawReflectivity > 100)
+      ) {
+        return null;
+      }
+      const endReflectivityPct = Number(rawReflectivity ?? 97);
+
+      const rawPump =
+        params.pumpExcitationPct ??
+        params.pumpExcitation ??
+        params.excitationPct ??
+        params.pumpPowerPct ??
+        params.pump ??
+        params.excitation;
+      if (rawPump !== undefined && (!Number.isFinite(rawPump) || rawPump < 0 || rawPump > 100)) {
+        return null;
+      }
+
+      const rawAperture =
+        params.modeApertureOpenPct ??
+        params.modeAperture ??
+        params.apertureOpenPct ??
+        params.aperturePct ??
+        params.aperture ??
+        params.modeSelector;
+      if (
+        rawAperture !== undefined &&
+        (!Number.isFinite(rawAperture) || rawAperture < 0 || rawAperture > 100)
       ) {
         return null;
       }
 
-      if (controlKey === "cavityLengthCm") {
+      const rawModulation =
+        params.modulationFieldPct ??
+        params.modulationField ??
+        params.zeemanFieldPct ??
+        params.zeemanField ??
+        params.modulation ??
+        params.fieldPct;
+      if (
+        rawModulation !== undefined &&
+        (!Number.isFinite(rawModulation) || rawModulation < 0 || rawModulation > 100)
+      ) {
+        return null;
+      }
+
+      const rawClaim1 =
+        params.claim1PathPresent ??
+        params.claim1 ??
+        params.claim1Path ??
+        params.communicationsPath ??
+        params.pathPresent;
+      if (
+        rawClaim1 !== undefined &&
+        (!Number.isFinite(Number(rawClaim1)) || Number(rawClaim1) < 0 || Number(rawClaim1) > 1)
+      ) {
+        return null;
+      }
+      const claim1PathPresent = rawClaim1 !== undefined ? Number(rawClaim1) >= 0.5 : true;
+
+      if (
+        controlKey === "cavityLengthCm" ||
+        controlKey === "cavityLength" ||
+        controlKey === "lengthCm" ||
+        controlKey === "chamberLengthCm" ||
+        controlKey === "length" ||
+        controlKey === "chamberLength"
+      ) {
         return {
           metricName: "Chamber Aspect Ratio",
           derivativeSymbol: "∂(L/D) / ∂L",
@@ -2180,7 +2255,14 @@ export function computeParameterSensitivity(
             "Exact geometry derivative for the reader-scaled chamber; the patent's illustrative chamber is about 10 cm long and 1 cm in diameter.",
         };
       }
-      if (controlKey === "chamberDiameterCm") {
+      if (
+        controlKey === "chamberDiameterCm" ||
+        controlKey === "chamberDiameter" ||
+        controlKey === "diameterCm" ||
+        controlKey === "diameter" ||
+        controlKey === "tubeDiameterCm" ||
+        controlKey === "boreDiameterCm"
+      ) {
         return {
           metricName: "Chamber Aspect Ratio",
           derivativeSymbol: "∂(L/D) / ∂D",
@@ -2190,7 +2272,14 @@ export function computeParameterSensitivity(
             "Exact geometry derivative only; no optical gain or output-power sensitivity is inferred.",
         };
       }
-      if (controlKey === "endReflectivityPct") {
+      if (
+        controlKey === "endReflectivityPct" ||
+        controlKey === "endReflectivity" ||
+        controlKey === "reflectivityPct" ||
+        controlKey === "reflectivity" ||
+        controlKey === "mirrorReflectivityPct" ||
+        controlKey === "endMirrorReflectivity"
+      ) {
         return {
           metricName: "Two-End Round-Trip Reflectivity",
           derivativeSymbol: "∂(R²) / ∂R",
@@ -2198,6 +2287,77 @@ export function computeParameterSensitivity(
           derivativeUnit: "% round-trip / % end reflectivity",
           interpretation:
             "Exact dimensionless bookkeeping for equal reader-selected end reflectivities; cavity loss and gain remain refused.",
+        };
+      }
+      if (
+        controlKey === "pumpExcitationPct" ||
+        controlKey === "pumpExcitation" ||
+        controlKey === "excitationPct" ||
+        controlKey === "pumpPowerPct" ||
+        controlKey === "pump" ||
+        controlKey === "excitation"
+      ) {
+        return {
+          metricName: "Illustrative Optical Pump Excitation",
+          derivativeSymbol: "∂P_pump / ∂u_pump",
+          derivativeValue: claim1PathPresent ? 1.0 : 0,
+          derivativeUnit: "% displayed / % reader control",
+          interpretation: claim1PathPresent
+            ? "Normalized teaching excitation command for potassium vapor optical pumping; US 2,929,922 describes potassium pumping lamps but provides no pump wattage or threshold curve."
+            : "Claim 1 communications path withheld: pumping path is disconnected from communications chain (0 % / %).",
+        };
+      }
+      if (
+        controlKey === "modeApertureOpenPct" ||
+        controlKey === "modeAperture" ||
+        controlKey === "apertureOpenPct" ||
+        controlKey === "aperturePct" ||
+        controlKey === "aperture" ||
+        controlKey === "modeSelector"
+      ) {
+        return {
+          metricName: "Illustrative Mode Selection Aperture",
+          derivativeSymbol: "∂A_mode / ∂u_aperture",
+          derivativeValue: claim1PathPresent ? 1.0 : 0,
+          derivativeUnit: "% open / % reader control",
+          interpretation: claim1PathPresent
+            ? "Normalized focal-plane spatial filter aperture; the patent describes focal-plane mode selection of the lowest-order propagation path without publishing an aperture diameter."
+            : "Claim 1 communications path withheld: mode selector is isolated from detector chain (0 % / %).",
+        };
+      }
+      if (
+        controlKey === "modulationFieldPct" ||
+        controlKey === "modulationField" ||
+        controlKey === "zeemanFieldPct" ||
+        controlKey === "zeemanField" ||
+        controlKey === "modulation" ||
+        controlKey === "fieldPct"
+      ) {
+        return {
+          metricName: "Illustrative Zeeman Modulation Field",
+          derivativeSymbol: "∂B_Zeeman / ∂u_field",
+          derivativeValue: claim1PathPresent ? 1.0 : 0,
+          derivativeUnit: "% field / % reader control",
+          interpretation: claim1PathPresent
+            ? "Normalized longitudinal Zeeman magnetic-field modulation command for amplifier 12; US 2,929,922 discloses Zeeman modulation of atomic line center without specifying field gauss or modulation depth."
+            : "Claim 1 communications path withheld: modulation field does not couple to signal path (0 % / %).",
+        };
+      }
+      if (
+        controlKey === "claim1PathPresent" ||
+        controlKey === "claim1" ||
+        controlKey === "claim1Path" ||
+        controlKey === "communicationsPath" ||
+        controlKey === "pathPresent"
+      ) {
+        return {
+          metricName: "Claim 1 Maser Communications Path",
+          derivativeSymbol: "ΔState / ΔClaim1",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation: claim1PathPresent
+            ? "Claim 1 complete communications system path active: generator 10 → modulated amplifier 12 → detector 13."
+            : "Claim 1 communications path interrupted: coherent signal does not traverse from generator to detector.",
         };
       }
       break;
@@ -7303,9 +7463,230 @@ export function computeParameterSensitivity(
     }
 
     case "us-2846084-goertz-electronic-master-slave-manipulator": {
+      const rawHPivot =
+        params.horizontalArmPivot ??
+        params.hPivot ??
+        params.armPivot ??
+        params.horizontalPivot ??
+        params.axis113b;
+      if (
+        rawHPivot !== undefined &&
+        (!Number.isFinite(rawHPivot) || rawHPivot < -1 || rawHPivot > 1)
+      ) {
+        return null;
+      }
+      const rawHRoll =
+        params.horizontalArmRoll ?? params.hRoll ?? params.armRoll ?? params.horizontalRoll;
+      if (rawHRoll !== undefined && (!Number.isFinite(rawHRoll) || rawHRoll < -1 || rawHRoll > 1)) {
+        return null;
+      }
+      const rawVPivot =
+        params.verticalArmPivot ??
+        params.vPivot ??
+        params.vertPivot ??
+        params.verticalPivot ??
+        params.axis126;
+      if (
+        rawVPivot !== undefined &&
+        (!Number.isFinite(rawVPivot) || rawVPivot < -1 || rawVPivot > 1)
+      ) {
+        return null;
+      }
+      const rawVRoll =
+        params.verticalArmRoll ?? params.vRoll ?? params.vertRoll ?? params.verticalRoll;
+      if (rawVRoll !== undefined && (!Number.isFinite(rawVRoll) || rawVRoll < -1 || rawVRoll > 1)) {
+        return null;
+      }
+      const rawAxis171 =
+        params.toolAxis171 ??
+        params.axis171 ??
+        params.toolPivot171 ??
+        params.wrist171 ??
+        params.pitch171;
+      if (
+        rawAxis171 !== undefined &&
+        (!Number.isFinite(rawAxis171) || rawAxis171 < -1 || rawAxis171 > 1)
+      ) {
+        return null;
+      }
+      const rawAxis172 =
+        params.toolAxis172 ??
+        params.axis172 ??
+        params.toolPivot172 ??
+        params.wrist172 ??
+        params.yaw172;
+      if (
+        rawAxis172 !== undefined &&
+        (!Number.isFinite(rawAxis172) || rawAxis172 < -1 || rawAxis172 > 1)
+      ) {
+        return null;
+      }
+      const rawGrip =
+        params.gripperClosure ??
+        params.gripper ??
+        params.closure ??
+        params.grip ??
+        params.jawClosure ??
+        params.toolClosure;
+      if (rawGrip !== undefined && (!Number.isFinite(rawGrip) || rawGrip < 0 || rawGrip > 1)) {
+        return null;
+      }
+      const rawContact =
+        params.contactResistance ??
+        params.contact ??
+        params.resistance ??
+        params.obstruction ??
+        params.gripperObstruction;
+      if (
+        rawContact !== undefined &&
+        (!Number.isFinite(rawContact) || rawContact < 0 || rawContact > 1)
+      ) {
+        return null;
+      }
+      const rawReflection =
+        params.forceReflectionEnabled ??
+        params.forceReflection ??
+        params.reflection ??
+        params.forceFeedback ??
+        params.claim9;
+      if (
+        rawReflection !== undefined &&
+        (!Number.isFinite(Number(rawReflection)) ||
+          Number(rawReflection) < 0 ||
+          Number(rawReflection) > 1)
+      ) {
+        return null;
+      }
+      const rawDamping =
+        params.tachometerDampingEnabled ??
+        params.tachometerDamping ??
+        params.tachometer ??
+        params.damping ??
+        params.rateFeedback ??
+        params.claim11;
+      if (
+        rawDamping !== undefined &&
+        (!Number.isFinite(Number(rawDamping)) || Number(rawDamping) < 0 || Number(rawDamping) > 1)
+      ) {
+        return null;
+      }
+      const rawLimiter =
+        params.limiterEnabled ??
+        params.limiter ??
+        params.saturationLimiter ??
+        params.claim10 ??
+        params.claim12;
+      if (
+        rawLimiter !== undefined &&
+        (!Number.isFinite(Number(rawLimiter)) || Number(rawLimiter) < 0 || Number(rawLimiter) > 1)
+      ) {
+        return null;
+      }
+
       const controls = readGoertzMasterSlaveControls(params);
       const h = 0.01;
-      if (controlKey === "contactResistance") {
+
+      if (
+        controlKey === "horizontalArmPivot" ||
+        controlKey === "hPivot" ||
+        controlKey === "armPivot" ||
+        controlKey === "horizontalPivot" ||
+        controlKey === "axis113b"
+      ) {
+        return {
+          metricName: "Horizontal Arm Pivot Master-Slave Tracking",
+          derivativeSymbol: "∂q_s,113b / ∂q_m,113b",
+          derivativeValue: 1.0,
+          derivativeUnit: "normalized slave / normalized master",
+          interpretation:
+            "Direct 1:1 bilateral synchro electrical correspondence: slave shoulder azimuth tracks master handle azimuth.",
+        };
+      }
+      if (
+        controlKey === "horizontalArmRoll" ||
+        controlKey === "hRoll" ||
+        controlKey === "armRoll" ||
+        controlKey === "horizontalRoll"
+      ) {
+        return {
+          metricName: "Horizontal Arm Roll Master-Slave Tracking",
+          derivativeSymbol: "∂q_s,hroll / ∂q_m,hroll",
+          derivativeValue: 1.0,
+          derivativeUnit: "normalized slave / normalized master",
+          interpretation:
+            "Direct 1:1 bilateral synchro electrical correspondence: slave horizontal arm roll tracks master handle roll.",
+        };
+      }
+      if (
+        controlKey === "verticalArmPivot" ||
+        controlKey === "vPivot" ||
+        controlKey === "vertPivot" ||
+        controlKey === "verticalPivot" ||
+        controlKey === "axis126"
+      ) {
+        return {
+          metricName: "Vertical Arm Pivot Master-Slave Tracking",
+          derivativeSymbol: "∂q_s,126 / ∂q_m,126",
+          derivativeValue: 1.0,
+          derivativeUnit: "normalized slave / normalized master",
+          interpretation:
+            "Direct 1:1 bilateral synchro electrical correspondence: slave elbow elevation tracks master elbow elevation.",
+        };
+      }
+      if (
+        controlKey === "verticalArmRoll" ||
+        controlKey === "vRoll" ||
+        controlKey === "vertRoll" ||
+        controlKey === "verticalRoll"
+      ) {
+        return {
+          metricName: "Vertical Arm Roll Master-Slave Tracking",
+          derivativeSymbol: "∂q_s,vroll / ∂q_m,vroll",
+          derivativeValue: 1.0,
+          derivativeUnit: "normalized slave / normalized master",
+          interpretation:
+            "Direct 1:1 bilateral synchro electrical correspondence: slave vertical forearm roll tracks master forearm roll.",
+        };
+      }
+      if (
+        controlKey === "toolAxis171" ||
+        controlKey === "axis171" ||
+        controlKey === "toolPivot171" ||
+        controlKey === "wrist171" ||
+        controlKey === "pitch171"
+      ) {
+        return {
+          metricName: "Tool Wrist Pitch Master-Slave Tracking",
+          derivativeSymbol: "∂q_s,171 / ∂q_m,171",
+          derivativeValue: 1.0,
+          derivativeUnit: "normalized slave / normalized master",
+          interpretation:
+            "Direct 1:1 bilateral synchro electrical correspondence: slave wrist pitch tracks master handle pitch.",
+        };
+      }
+      if (
+        controlKey === "toolAxis172" ||
+        controlKey === "axis172" ||
+        controlKey === "toolPivot172" ||
+        controlKey === "wrist172" ||
+        controlKey === "yaw172"
+      ) {
+        return {
+          metricName: "Tool Wrist Yaw Master-Slave Tracking",
+          derivativeSymbol: "∂q_s,172 / ∂q_m,172",
+          derivativeValue: 1.0,
+          derivativeUnit: "normalized slave / normalized master",
+          interpretation:
+            "Direct 1:1 bilateral synchro electrical correspondence: slave wrist yaw tracks master handle yaw.",
+        };
+      }
+      if (
+        controlKey === "contactResistance" ||
+        controlKey === "contact" ||
+        controlKey === "resistance" ||
+        controlKey === "obstruction" ||
+        controlKey === "gripperObstruction"
+      ) {
         const contact = controls.contactResistance;
         const plus = stepGoertzMasterSlaveTopology({
           ...controls,
@@ -7327,7 +7708,14 @@ export function computeParameterSensitivity(
             "Central difference of the shared source-topology kernel. It shows how the illustrative remote-obstruction selector affects the normalized Claim 9 reflection cue; it is not a contact force or a servo-performance measurement.",
         };
       }
-      if (controlKey === "gripperClosure") {
+      if (
+        controlKey === "gripperClosure" ||
+        controlKey === "gripper" ||
+        controlKey === "closure" ||
+        controlKey === "grip" ||
+        controlKey === "jawClosure" ||
+        controlKey === "toolClosure"
+      ) {
         const closure = controls.gripperClosure;
         const plus = stepGoertzMasterSlaveTopology({
           ...controls,
@@ -7347,6 +7735,61 @@ export function computeParameterSensitivity(
           derivativeUnit: "normalized mismatch / normalized master coordinate",
           interpretation:
             "Central difference of the explicitly illustrative gripper-obstruction display. The other six channels remain in correspondence; this is not an SI displacement, gain, contact-force, or servo-performance derivative.",
+        };
+      }
+      if (
+        controlKey === "forceReflectionEnabled" ||
+        controlKey === "forceReflection" ||
+        controlKey === "reflection" ||
+        controlKey === "forceFeedback" ||
+        controlKey === "claim9"
+      ) {
+        return {
+          metricName: "Claim 9 Bilateral Force Reflection",
+          derivativeSymbol: "ΔState / ΔReflection",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation:
+            controls.forceReflectionEnabled === 1
+              ? "Claim 9 bilateral servo loop active: slave gripper obstruction generates proportional feedback torque onto operator handle."
+              : "Claim 9 bilateral loop disabled: unilateral position tracking without tactile feedback.",
+        };
+      }
+      if (
+        controlKey === "tachometerDampingEnabled" ||
+        controlKey === "tachometerDamping" ||
+        controlKey === "tachometer" ||
+        controlKey === "damping" ||
+        controlKey === "rateFeedback" ||
+        controlKey === "claim11"
+      ) {
+        return {
+          metricName: "Claim 11 Relative Velocity Damping",
+          derivativeSymbol: "ΔState / ΔDamping",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation:
+            controls.tachometerDampingEnabled === 1
+              ? "Claim 11 tachometer rate circuit active: relative-speed voltage (V_t ∝ q̇_m − q̇_s) suppresses servo hunting and oscillation."
+              : "Claim 11 damping loop disabled: undamped synchro position error drives servos directly.",
+        };
+      }
+      if (
+        controlKey === "limiterEnabled" ||
+        controlKey === "limiter" ||
+        controlKey === "saturationLimiter" ||
+        controlKey === "claim10" ||
+        controlKey === "claim12"
+      ) {
+        return {
+          metricName: "Claims 10/12 Drive Signal Limiter",
+          derivativeSymbol: "ΔState / ΔLimiter",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation:
+            controls.limiterEnabled === 1
+              ? "Claims 10 and 12 limiter circuit active: clamps peak error signal to bound amplifier power and prevent actuator overdrive."
+              : "Limiter disabled: unconstrained error signal can overdrive amplifiers during large step transitions.",
         };
       }
       break;
@@ -7402,18 +7845,87 @@ export function computeParameterSensitivity(
     }
 
     case "us-3119501-lemelson-automatic-warehousing": {
-      if (controlKey === "railAddressFraction") {
+      const rawRail =
+        params.railAddressFraction ??
+        params.railAddress ??
+        params.carrierX ??
+        params.railFraction ??
+        params.xAddress ??
+        params.rail;
+      if (rawRail !== undefined && (!Number.isFinite(rawRail) || rawRail < 0 || rawRail > 1)) {
+        return null;
+      }
+      const rawLevel =
+        params.levelAddressFraction ??
+        params.levelAddress ??
+        params.carrierY ??
+        params.levelFraction ??
+        params.yAddress ??
+        params.verticalAddress ??
+        params.level ??
+        params.vertical;
+      if (rawLevel !== undefined && (!Number.isFinite(rawLevel) || rawLevel < 0 || rawLevel > 1)) {
+        return null;
+      }
+      const rawShuttle =
+        params.shuttleExtensionFraction ??
+        params.shuttleExtension ??
+        params.shuttleZ ??
+        params.extensionFraction ??
+        params.zExtension ??
+        params.shuttle ??
+        params.extension;
+      if (
+        rawShuttle !== undefined &&
+        (!Number.isFinite(rawShuttle) || rawShuttle < 0 || rawShuttle > 1)
+      ) {
+        return null;
+      }
+      const rawAddressing =
+        params.automaticAddressing ??
+        params.autoAddressing ??
+        params.presetAddressing ??
+        params.claim1 ??
+        params.addressing ??
+        params.automaticSequence;
+      if (
+        rawAddressing !== undefined &&
+        (!Number.isFinite(Number(rawAddressing)) ||
+          Number(rawAddressing) < 0 ||
+          Number(rawAddressing) > 1)
+      ) {
+        return null;
+      }
+      const automaticAddressing = rawAddressing !== undefined ? Number(rawAddressing) >= 0.5 : true;
+
+      if (
+        controlKey === "railAddressFraction" ||
+        controlKey === "railAddress" ||
+        controlKey === "carrierX" ||
+        controlKey === "railFraction" ||
+        controlKey === "xAddress" ||
+        controlKey === "rail"
+      ) {
         const pose = stepLemelsonWarehouseTopology(params);
         return {
           metricName: "Normalized Rail Address",
           derivativeSymbol: "∂q_x / ∂a_x",
-          derivativeValue: pose.carrierX === (params.railAddressFraction ?? 0.55) ? 1 : 0,
+          derivativeValue: pose.carrierX === (rawRail ?? 0.55) ? 1 : 0,
           derivativeUnit: "display fraction / address fraction",
           interpretation:
             "The normalized exhibit maps its rail-address control directly to the carrier pose; the grant supplies no bay spacing in meters.",
         };
       }
-      if (controlKey === "levelAddressFraction") {
+      if (
+        controlKey === "levelAddressFraction" ||
+        controlKey === "levelAddress" ||
+        controlKey === "carrierY" ||
+        controlKey === "levelFraction" ||
+        controlKey === "yAddress" ||
+        controlKey === "verticalAddress" ||
+        controlKey === "level" ||
+        controlKey === "vertical"
+      ) {
         return {
           metricName: "Normalized Vertical Address",
           derivativeSymbol: "∂q_z / ∂a_z",
@@ -7423,7 +7935,15 @@ export function computeParameterSensitivity(
             "The normalized exhibit maps its level-address control directly to the lift pose; no shelf height is asserted.",
         };
       }
-      if (controlKey === "shuttleExtensionFraction") {
+      if (
+        controlKey === "shuttleExtensionFraction" ||
+        controlKey === "shuttleExtension" ||
+        controlKey === "shuttleZ" ||
+        controlKey === "extensionFraction" ||
+        controlKey === "zExtension" ||
+        controlKey === "shuttle" ||
+        controlKey === "extension"
+      ) {
         return {
           metricName: "Normalized Shuttle Extension",
           derivativeSymbol: "∂q_y / ∂a_y",
@@ -7433,19 +7953,212 @@ export function computeParameterSensitivity(
             "The normalized exhibit maps the control directly to the transverse transfer pose; no reach, speed, or payload is asserted.",
         };
       }
+      if (
+        controlKey === "automaticAddressing" ||
+        controlKey === "autoAddressing" ||
+        controlKey === "presetAddressing" ||
+        controlKey === "claim1" ||
+        controlKey === "addressing" ||
+        controlKey === "automaticSequence"
+      ) {
+        return {
+          metricName: "Preset-Count Marker Addressing Interlock",
+          derivativeSymbol: "ΔState / ΔAddressing",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation: automaticAddressing
+            ? "Preset-count marker addressing active: carrier automatically decrements bay and level count markers until zero coincidence stops the carriage at the target bin."
+            : "Manual positioning mode: automatic marker counting and sequence progression disabled.",
+        };
+      }
       break;
     }
 
     case "us-2988237-devol-programmed-transfer": {
-      if (controlKey === "recordedSlot" || controlKey === "sensedSlot") {
+      const rawRecorded =
+        params.recordedSlot ??
+        params.recordedCode ??
+        params.programSlot ??
+        params.programCode ??
+        params.recordedPosition ??
+        params.recorded;
+      if (
+        rawRecorded !== undefined &&
+        (!Number.isFinite(rawRecorded) || rawRecorded < 0 || rawRecorded > 255)
+      ) {
+        return null;
+      }
+      const rawSensed =
+        params.sensedSlot ??
+        params.sensedCode ??
+        params.encoderSlot ??
+        params.encoderCode ??
+        params.sensedPosition ??
+        params.sensed;
+      if (
+        rawSensed !== undefined &&
+        (!Number.isFinite(rawSensed) || rawSensed < 0 || rawSensed > 255)
+      ) {
+        return null;
+      }
+      const rawBitWidth =
+        params.bitWidth ??
+        params.bits ??
+        params.codeBits ??
+        params.resolutionBits ??
+        params.codeWidth;
+      if (
+        rawBitWidth !== undefined &&
+        (!Number.isFinite(rawBitWidth) || rawBitWidth < 2 || rawBitWidth > 8)
+      ) {
+        return null;
+      }
+      const rawAnticipation =
+        params.anticipationEnabled ??
+        params.anticipation ??
+        params.claim8 ??
+        params.anticipatorySensing ??
+        params.advanceSensing;
+      if (
+        rawAnticipation !== undefined &&
+        (!Number.isFinite(Number(rawAnticipation)) ||
+          Number(rawAnticipation) < 0 ||
+          Number(rawAnticipation) > 1)
+      ) {
+        return null;
+      }
+      const rawMode =
+        params.recordingMode ??
+        params.recordMode ??
+        params.claim5 ??
+        params.teachMode ??
+        params.mode;
+      if (
+        rawMode !== undefined &&
+        (!Number.isFinite(Number(rawMode)) || Number(rawMode) < 0 || Number(rawMode) > 1)
+      ) {
+        return null;
+      }
+      const rawGripper =
+        params.gripperClosed ??
+        params.gripper ??
+        params.claim6 ??
+        params.gripperState ??
+        params.jawClosed ??
+        params.seizing;
+      if (
+        rawGripper !== undefined &&
+        (!Number.isFinite(Number(rawGripper)) || Number(rawGripper) < 0 || Number(rawGripper) > 1)
+      ) {
+        return null;
+      }
+
+      const anticipationEnabled =
+        rawAnticipation !== undefined ? Number(rawAnticipation) >= 0.5 : true;
+      const recordingMode = rawMode !== undefined ? Number(rawMode) >= 0.5 : false;
+      const gripperClosed = rawGripper !== undefined ? Number(rawGripper) >= 0.5 : false;
+
+      if (
+        controlKey === "recordedSlot" ||
+        controlKey === "recordedCode" ||
+        controlKey === "programSlot" ||
+        controlKey === "programCode" ||
+        controlKey === "recordedPosition" ||
+        controlKey === "recorded"
+      ) {
         return {
-          metricName:
-            controlKey === "recordedSlot" ? "Recorded Position Symbol" : "Sensed Position Symbol",
-          derivativeSymbol: "∂c_{display} / ∂c_{input}",
+          metricName: "Recorded Position Symbol",
+          derivativeSymbol: "∂c_prog / ∂u_slot",
           derivativeValue: 1,
           derivativeUnit: "code value / code value",
           interpretation:
-            "Identity relation for the patent's recorded-versus-sensed code comparison. It does not infer actuator travel, controller latency, hydraulic power, payload, or transfer throughput.",
+            "Identity relation for the magnetic drum's recorded position code; it does not assert physical actuator travel or line speed.",
+        };
+      }
+      if (
+        controlKey === "sensedSlot" ||
+        controlKey === "sensedCode" ||
+        controlKey === "encoderSlot" ||
+        controlKey === "encoderCode" ||
+        controlKey === "sensedPosition" ||
+        controlKey === "sensed"
+      ) {
+        return {
+          metricName: "Sensed Position Symbol",
+          derivativeSymbol: "∂c_enc / ∂u_slot",
+          derivativeValue: 1,
+          derivativeUnit: "code value / code value",
+          interpretation:
+            "Identity relation for the shaft-encoder position code; it does not assert physical joint angle or actuator displacement.",
+        };
+      }
+      if (
+        controlKey === "bitWidth" ||
+        controlKey === "bits" ||
+        controlKey === "codeBits" ||
+        controlKey === "resolutionBits" ||
+        controlKey === "codeWidth"
+      ) {
+        const bitWidth = Number(rawBitWidth ?? 6);
+        return {
+          metricName: "Encoder Address Resolution",
+          derivativeSymbol: "∂N_codes / ∂B",
+          derivativeValue: Number((2 ** bitWidth * Math.LN2).toFixed(2)),
+          derivativeUnit: "codes / bit",
+          interpretation:
+            "Marginal rate of addressable program position expansion (2^B quantization states) with increasing binary track width.",
+        };
+      }
+      if (
+        controlKey === "anticipationEnabled" ||
+        controlKey === "anticipation" ||
+        controlKey === "claim8" ||
+        controlKey === "anticipatorySensing" ||
+        controlKey === "advanceSensing"
+      ) {
+        return {
+          metricName: "Claim 8 Anticipatory Sensing Interlock",
+          derivativeSymbol: "ΔState / ΔAnticipation",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation: anticipationEnabled
+            ? "Claim 8 anticipatory sensing active: advance brushes detect approach to target slot and progressively decelerate hydraulic servos prior to coincidence."
+            : "Claim 8 anticipatory sensing disabled: servos operate at full slew until abrupt true-position dead stop.",
+        };
+      }
+      if (
+        controlKey === "recordingMode" ||
+        controlKey === "recordMode" ||
+        controlKey === "claim5" ||
+        controlKey === "teachMode" ||
+        controlKey === "mode"
+      ) {
+        return {
+          metricName: "Claim 5 Record / Replay Mode",
+          derivativeSymbol: "ΔState / ΔMode",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation: recordingMode
+            ? "Claim 5 teach-in registration: recording heads imprint operator-commanded joint positions onto magnetic drum tracks."
+            : "Claim 5 playback mode: pickup heads read recorded positions and compare against shaft encoders for automated replay.",
+        };
+      }
+      if (
+        controlKey === "gripperClosed" ||
+        controlKey === "gripper" ||
+        controlKey === "claim6" ||
+        controlKey === "gripperState" ||
+        controlKey === "jawClosed" ||
+        controlKey === "seizing"
+      ) {
+        return {
+          metricName: "Claim 6 Article Gripper State",
+          derivativeSymbol: "ΔState / ΔGripper",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation: gripperClosed
+            ? "Claim 6 terminal manipulator actuator: jaws closed in workpiece seizing state."
+            : "Claim 6 article gripper: jaws open for approach and release transfer.",
         };
       }
       break;

@@ -6053,16 +6053,104 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensR?.derivativeUnit).toBe("% round-trip / % end reflectivity");
     expect(sensR?.derivativeValue).toBeCloseTo(1.94, 2);
 
-    // Refused quantitative optical outputs
-    expect(
-      computeParameterSensitivity(id, "pumpExcitationPct", { pumpExcitationPct: 70 }),
-    ).toBeNull();
-    expect(
-      computeParameterSensitivity(id, "modeApertureOpenPct", { modeApertureOpenPct: 50 }),
-    ).toBeNull();
-    expect(
-      computeParameterSensitivity(id, "modulationFieldPct", { modulationFieldPct: 35 }),
-    ).toBeNull();
+    // Normalized teaching controls
+    const sensPump = computeParameterSensitivity(id, "pumpExcitationPct", {
+      pumpExcitationPct: 70,
+    });
+    expect(sensPump).toBeDefined();
+    expect(sensPump?.metricName).toBe("Illustrative Optical Pump Excitation");
+    expect(sensPump?.derivativeSymbol).toBe("∂P_pump / ∂u_pump");
+    expect(sensPump?.derivativeUnit).toBe("% displayed / % reader control");
+    expect(sensPump?.derivativeValue).toBe(1.0);
+
+    const sensAperture = computeParameterSensitivity(id, "modeApertureOpenPct", {
+      modeApertureOpenPct: 50,
+    });
+    expect(sensAperture).toBeDefined();
+    expect(sensAperture?.metricName).toBe("Illustrative Mode Selection Aperture");
+    expect(sensAperture?.derivativeSymbol).toBe("∂A_mode / ∂u_aperture");
+    expect(sensAperture?.derivativeUnit).toBe("% open / % reader control");
+    expect(sensAperture?.derivativeValue).toBe(1.0);
+
+    const sensField = computeParameterSensitivity(id, "modulationFieldPct", {
+      modulationFieldPct: 35,
+    });
+    expect(sensField).toBeDefined();
+    expect(sensField?.metricName).toBe("Illustrative Zeeman Modulation Field");
+    expect(sensField?.derivativeSymbol).toBe("∂B_Zeeman / ∂u_field");
+    expect(sensField?.derivativeUnit).toBe("% field / % reader control");
+    expect(sensField?.derivativeValue).toBe(1.0);
+
+    const sensClaim1 = computeParameterSensitivity(id, "claim1PathPresent", {
+      claim1PathPresent: 1,
+    });
+    expect(sensClaim1).toBeDefined();
+    expect(sensClaim1?.metricName).toBe("Claim 1 Maser Communications Path");
+    expect(sensClaim1?.derivativeSymbol).toBe("ΔState / ΔClaim1");
+    expect(sensClaim1?.derivativeValue).toBe(0);
+
+    // Claim 1 gating
+    const sensPumpGated = computeParameterSensitivity(id, "pumpExcitationPct", {
+      pumpExcitationPct: 70,
+      claim1PathPresent: 0,
+    });
+    expect(sensPumpGated?.derivativeValue).toBe(0);
+
+    // Aliases
+    for (const alias of [
+      "cavityLength",
+      "lengthCm",
+      "chamberLengthCm",
+      "length",
+      "chamberLength",
+    ]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 10 })?.derivativeValue).toBe(1.0);
+    }
+    for (const alias of [
+      "chamberDiameter",
+      "diameterCm",
+      "diameter",
+      "tubeDiameterCm",
+      "boreDiameterCm",
+    ]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(-10.0);
+    }
+    for (const alias of [
+      "endReflectivity",
+      "reflectivityPct",
+      "reflectivity",
+      "mirrorReflectivityPct",
+      "endMirrorReflectivity",
+    ]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 97 })?.derivativeValue).toBeCloseTo(
+        1.94,
+        2,
+      );
+    }
+    for (const alias of ["pumpExcitation", "excitationPct", "pumpPowerPct", "pump", "excitation"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 70 })?.derivativeValue).toBe(1.0);
+    }
+    for (const alias of [
+      "modeAperture",
+      "apertureOpenPct",
+      "aperturePct",
+      "aperture",
+      "modeSelector",
+    ]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 50 })?.derivativeValue).toBe(1.0);
+    }
+    for (const alias of [
+      "modulationField",
+      "zeemanFieldPct",
+      "zeemanField",
+      "modulation",
+      "fieldPct",
+    ]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 35 })?.derivativeValue).toBe(1.0);
+    }
+    for (const alias of ["claim1", "claim1Path", "communicationsPath", "pathPresent"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(0);
+    }
 
     // Bounds checking
     for (const invalid of [2.9, 41, Number.NaN]) {
@@ -6078,6 +6166,20 @@ describe("Sensitivities follow the current admitted operating point", () => {
     for (const invalid of [49, 101, Number.NaN]) {
       expect(
         computeParameterSensitivity(id, "endReflectivityPct", { endReflectivityPct: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-1, 101, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "pumpExcitationPct", { pumpExcitationPct: invalid }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "modeApertureOpenPct", { modeApertureOpenPct: invalid }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "modulationFieldPct", { modulationFieldPct: invalid }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "claim1PathPresent", { claim1PathPresent: invalid }),
       ).toBeNull();
     }
   });
@@ -7520,5 +7622,327 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensClaim6).toBeDefined();
     expect(sensClaim6?.metricName).toBe("Locking & Turning Sequence State");
     expect(sensClaim6?.derivativeSymbol).toBe("ΔKey / ΔClaim6");
+  });
+
+  test("Goertz Electronic Master-Slave Manipulator derives 7-channel correspondence, force reflection, and damping sensitivities", () => {
+    const id = "us-2846084-goertz-electronic-master-slave-manipulator";
+
+    // 1. Bilateral tracking channels
+    const channels = [
+      {
+        key: "horizontalArmPivot",
+        symbol: "∂q_s,113b / ∂q_m,113b",
+        aliases: ["hPivot", "armPivot", "axis113b"],
+      },
+      {
+        key: "horizontalArmRoll",
+        symbol: "∂q_s,hroll / ∂q_m,hroll",
+        aliases: ["hRoll", "armRoll", "horizontalRoll"],
+      },
+      {
+        key: "verticalArmPivot",
+        symbol: "∂q_s,126 / ∂q_m,126",
+        aliases: ["vPivot", "vertPivot", "axis126"],
+      },
+      {
+        key: "verticalArmRoll",
+        symbol: "∂q_s,vroll / ∂q_m,vroll",
+        aliases: ["vRoll", "vertRoll", "verticalRoll"],
+      },
+      {
+        key: "toolAxis171",
+        symbol: "∂q_s,171 / ∂q_m,171",
+        aliases: ["axis171", "toolPivot171", "wrist171"],
+      },
+      {
+        key: "toolAxis172",
+        symbol: "∂q_s,172 / ∂q_m,172",
+        aliases: ["axis172", "toolPivot172", "wrist172"],
+      },
+    ];
+
+    for (const ch of channels) {
+      const sens = computeParameterSensitivity(id, ch.key, { [ch.key]: 0.25 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeSymbol).toBe(ch.symbol);
+      expect(sens?.derivativeUnit).toBe("normalized slave / normalized master");
+      expect(sens?.derivativeValue).toBe(1.0);
+
+      for (const alias of ch.aliases) {
+        expect(computeParameterSensitivity(id, alias, { [alias]: 0.25 })?.derivativeValue).toBe(
+          1.0,
+        );
+      }
+    }
+
+    // 2. Gripper closure and contact resistance
+    const sensClosure = computeParameterSensitivity(id, "gripperClosure", {
+      gripperClosure: 0.5,
+      contactResistance: 0.4,
+    });
+    expect(sensClosure).toBeDefined();
+    expect(sensClosure?.metricName).toBe("Gripper-Closure Mismatch Display");
+    expect(sensClosure?.derivativeSymbol).toBe("∂e_grip / ∂q_m,grip");
+    expect(sensClosure?.derivativeValue).toBeCloseTo(0.4, 2);
+
+    for (const alias of ["gripper", "closure", "grip", "jawClosure", "toolClosure"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { [alias]: 0.5, contactResistance: 0.4 })
+          ?.derivativeValue,
+      ).toBeCloseTo(0.4, 2);
+    }
+
+    const sensContact = computeParameterSensitivity(id, "contactResistance", {
+      gripperClosure: 0.6,
+      contactResistance: 0.3,
+      forceReflectionEnabled: 1,
+    });
+    expect(sensContact).toBeDefined();
+    expect(sensContact?.metricName).toBe("Reflected-Resistance Display");
+    expect(sensContact?.derivativeSymbol).toBe("∂r_display / ∂u_contact");
+    expect(sensContact?.derivativeValue).toBeCloseTo(0.6, 2);
+
+    for (const alias of ["contact", "resistance", "obstruction", "gripperObstruction"]) {
+      expect(
+        computeParameterSensitivity(id, alias, {
+          gripperClosure: 0.6,
+          [alias]: 0.3,
+          forceReflectionEnabled: 1,
+        })?.derivativeValue,
+      ).toBeCloseTo(0.6, 2);
+    }
+
+    // 3. Topology interlocks
+    const sensReflection = computeParameterSensitivity(id, "forceReflectionEnabled", {
+      forceReflectionEnabled: 1,
+    });
+    expect(sensReflection?.metricName).toBe("Claim 9 Bilateral Force Reflection");
+    expect(sensReflection?.derivativeValue).toBe(0);
+
+    for (const alias of ["forceReflection", "reflection", "forceFeedback", "claim9"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(0);
+    }
+
+    const sensDamping = computeParameterSensitivity(id, "tachometerDampingEnabled", {
+      tachometerDampingEnabled: 1,
+    });
+    expect(sensDamping?.metricName).toBe("Claim 11 Relative Velocity Damping");
+    expect(sensDamping?.derivativeValue).toBe(0);
+
+    for (const alias of ["tachometerDamping", "tachometer", "damping", "rateFeedback", "claim11"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(0);
+    }
+
+    const sensLimiter = computeParameterSensitivity(id, "limiterEnabled", { limiterEnabled: 1 });
+    expect(sensLimiter?.metricName).toBe("Claims 10/12 Drive Signal Limiter");
+    expect(sensLimiter?.derivativeValue).toBe(0);
+
+    for (const alias of ["limiter", "saturationLimiter", "claim10", "claim12"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(0);
+    }
+
+    // 4. Bounds checking
+    for (const invalid of [-1.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "horizontalArmPivot", { horizontalArmPivot: invalid }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "verticalArmRoll", { verticalArmRoll: invalid }),
+      ).toBeNull();
+      expect(computeParameterSensitivity(id, "toolAxis171", { toolAxis171: invalid })).toBeNull();
+    }
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "gripperClosure", { gripperClosure: invalid }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "contactResistance", { contactResistance: invalid }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "forceReflectionEnabled", {
+          forceReflectionEnabled: invalid,
+        }),
+      ).toBeNull();
+    }
+  });
+
+  test("Devol Programmed Article Transfer derives slot code, bit width, and anticipatory sensing sensitivities", () => {
+    const id = "us-2988237-devol-programmed-transfer";
+
+    // 1. Position codes
+    const sensRecorded = computeParameterSensitivity(id, "recordedSlot", { recordedSlot: 11 });
+    expect(sensRecorded).toBeDefined();
+    expect(sensRecorded?.metricName).toBe("Recorded Position Symbol");
+    expect(sensRecorded?.derivativeValue).toBe(1);
+
+    for (const alias of [
+      "recordedCode",
+      "programSlot",
+      "programCode",
+      "recordedPosition",
+      "recorded",
+    ]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 11 })?.derivativeValue).toBe(1);
+    }
+
+    const sensSensed = computeParameterSensitivity(id, "sensedSlot", { sensedSlot: 3 });
+    expect(sensSensed).toBeDefined();
+    expect(sensSensed?.metricName).toBe("Sensed Position Symbol");
+    expect(sensSensed?.derivativeValue).toBe(1);
+
+    for (const alias of ["sensedCode", "encoderSlot", "encoderCode", "sensedPosition", "sensed"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 3 })?.derivativeValue).toBe(1);
+    }
+
+    // 2. Bit width resolution expansion
+    const sensBitWidth = computeParameterSensitivity(id, "bitWidth", { bitWidth: 6 });
+    expect(sensBitWidth).toBeDefined();
+    expect(sensBitWidth?.metricName).toBe("Encoder Address Resolution");
+    expect(sensBitWidth?.derivativeSymbol).toBe("∂N_codes / ∂B");
+    expect(sensBitWidth?.derivativeUnit).toBe("codes / bit");
+    expect(sensBitWidth?.derivativeValue).toBeCloseTo(44.36, 1);
+
+    for (const alias of ["bits", "codeBits", "resolutionBits", "codeWidth"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 6 })?.derivativeValue).toBeCloseTo(
+        44.36,
+        1,
+      );
+    }
+
+    // 3. Claims 5, 6, 8 interlocks
+    const sensAnticipation = computeParameterSensitivity(id, "anticipationEnabled", {
+      anticipationEnabled: 1,
+    });
+    expect(sensAnticipation?.metricName).toBe("Claim 8 Anticipatory Sensing Interlock");
+    expect(sensAnticipation?.derivativeValue).toBe(0);
+
+    for (const alias of ["anticipation", "claim8", "anticipatorySensing", "advanceSensing"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(0);
+    }
+
+    const sensMode = computeParameterSensitivity(id, "recordingMode", { recordingMode: 1 });
+    expect(sensMode?.metricName).toBe("Claim 5 Record / Replay Mode");
+    expect(sensMode?.derivativeValue).toBe(0);
+
+    for (const alias of ["recordMode", "claim5", "teachMode", "mode"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(0);
+    }
+
+    const sensGripper = computeParameterSensitivity(id, "gripperClosed", { gripperClosed: 1 });
+    expect(sensGripper?.metricName).toBe("Claim 6 Article Gripper State");
+    expect(sensGripper?.derivativeValue).toBe(0);
+
+    for (const alias of ["gripper", "claim6", "gripperState", "jawClosed", "seizing"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(0);
+    }
+
+    // 4. Bounds checking
+    for (const invalid of [-1, 256, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "recordedSlot", { recordedSlot: invalid })).toBeNull();
+      expect(computeParameterSensitivity(id, "sensedSlot", { sensedSlot: invalid })).toBeNull();
+    }
+    for (const invalid of [1, 9, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "bitWidth", { bitWidth: invalid })).toBeNull();
+    }
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "anticipationEnabled", { anticipationEnabled: invalid }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "recordingMode", { recordingMode: invalid }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "gripperClosed", { gripperClosed: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Lemelson Automatic Warehousing derives rail, vertical level, shuttle extension, and preset addressing sensitivities", () => {
+    const id = "us-3119501-lemelson-automatic-warehousing";
+
+    // 1. Positional fractions
+    const sensRail = computeParameterSensitivity(id, "railAddressFraction", {
+      railAddressFraction: 0.6,
+    });
+    expect(sensRail).toBeDefined();
+    expect(sensRail?.metricName).toBe("Normalized Rail Address");
+    expect(sensRail?.derivativeValue).toBe(1);
+
+    for (const alias of ["railAddress", "carrierX", "railFraction", "xAddress", "rail"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 0.6 })?.derivativeValue).toBe(1);
+    }
+
+    const sensLevel = computeParameterSensitivity(id, "levelAddressFraction", {
+      levelAddressFraction: 0.4,
+    });
+    expect(sensLevel).toBeDefined();
+    expect(sensLevel?.metricName).toBe("Normalized Vertical Address");
+    expect(sensLevel?.derivativeValue).toBe(1);
+
+    for (const alias of [
+      "levelAddress",
+      "carrierY",
+      "levelFraction",
+      "yAddress",
+      "verticalAddress",
+      "level",
+      "vertical",
+    ]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 0.4 })?.derivativeValue).toBe(1);
+    }
+
+    const sensShuttle = computeParameterSensitivity(id, "shuttleExtensionFraction", {
+      shuttleExtensionFraction: 0.5,
+    });
+    expect(sensShuttle).toBeDefined();
+    expect(sensShuttle?.metricName).toBe("Normalized Shuttle Extension");
+    expect(sensShuttle?.derivativeValue).toBe(1);
+
+    for (const alias of [
+      "shuttleExtension",
+      "shuttleZ",
+      "extensionFraction",
+      "zExtension",
+      "shuttle",
+      "extension",
+    ]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 0.5 })?.derivativeValue).toBe(1);
+    }
+
+    // 2. Preset addressing interlock
+    const sensAddressing = computeParameterSensitivity(id, "automaticAddressing", {
+      automaticAddressing: 1,
+    });
+    expect(sensAddressing).toBeDefined();
+    expect(sensAddressing?.metricName).toBe("Preset-Count Marker Addressing Interlock");
+    expect(sensAddressing?.derivativeValue).toBe(0);
+
+    for (const alias of [
+      "autoAddressing",
+      "presetAddressing",
+      "claim1",
+      "addressing",
+      "automaticSequence",
+    ]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(0);
+    }
+
+    // 3. Bounds checking
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "railAddressFraction", { railAddressFraction: invalid }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "levelAddressFraction", { levelAddressFraction: invalid }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "shuttleExtensionFraction", {
+          shuttleExtensionFraction: invalid,
+        }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "automaticAddressing", { automaticAddressing: invalid }),
+      ).toBeNull();
+    }
   });
 });

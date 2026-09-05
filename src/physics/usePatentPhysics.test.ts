@@ -2192,4 +2192,242 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       resetPatentPhysicsParams(id);
     }
   });
+
+  test("Goertz Electronic Master-Slave Manipulator aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-2846084-goertz-electronic-master-slave-manipulator";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.horizontalArmPivot));
+
+    try {
+      setPatentPhysicsParam(id, "armPivot", 0.45);
+      const params = getPatentPhysicsParams(id);
+      expect(params.horizontalArmPivot).toBe(0.45);
+      expect(params.hPivot).toBe(0.45);
+      expect(params.armPivot).toBe(0.45);
+      expect(params.horizontalPivot).toBe(0.45);
+      expect(params.axis113b).toBe(0.45);
+      expect(observations).toEqual([0.45]);
+      expect(getLastParamChange(id)?.id).toBe("horizontalArmPivot");
+
+      setPatentPhysicsParam(id, "hRoll", -0.2);
+      expect(getPatentPhysicsParams(id).horizontalArmRoll).toBe(-0.2);
+      expect(getPatentPhysicsParams(id).hRoll).toBe(-0.2);
+      expect(getPatentPhysicsParams(id).armRoll).toBe(-0.2);
+
+      setPatentPhysicsParam(id, "vertPivot", 0.3);
+      expect(getPatentPhysicsParams(id).verticalArmPivot).toBe(0.3);
+      expect(getPatentPhysicsParams(id).vPivot).toBe(0.3);
+      expect(getPatentPhysicsParams(id).axis126).toBe(0.3);
+
+      setPatentPhysicsParam(id, "vRoll", -0.15);
+      expect(getPatentPhysicsParams(id).verticalArmRoll).toBe(-0.15);
+      expect(getPatentPhysicsParams(id).vertRoll).toBe(-0.15);
+
+      setPatentPhysicsParam(id, "wrist171", 0.6);
+      expect(getPatentPhysicsParams(id).toolAxis171).toBe(0.6);
+      expect(getPatentPhysicsParams(id).axis171).toBe(0.6);
+      expect(getPatentPhysicsParams(id).toolPivot171).toBe(0.6);
+
+      setPatentPhysicsParam(id, "yaw172", -0.4);
+      expect(getPatentPhysicsParams(id).toolAxis172).toBe(-0.4);
+      expect(getPatentPhysicsParams(id).axis172).toBe(-0.4);
+      expect(getPatentPhysicsParams(id).wrist172).toBe(-0.4);
+
+      setPatentPhysicsParam(id, "gripper", 0.85);
+      expect(getPatentPhysicsParams(id).gripperClosure).toBe(0.85);
+      expect(getPatentPhysicsParams(id).closure).toBe(0.85);
+      expect(getPatentPhysicsParams(id).grip).toBe(0.85);
+
+      setPatentPhysicsParam(id, "obstruction", 0.5);
+      expect(getPatentPhysicsParams(id).contactResistance).toBe(0.5);
+      expect(getPatentPhysicsParams(id).resistance).toBe(0.5);
+      expect(getPatentPhysicsParams(id).contact).toBe(0.5);
+
+      setPatentPhysicsParam(id, "forceFeedback", 0);
+      expect(getPatentPhysicsParams(id).forceReflectionEnabled).toBe(0);
+      expect(getPatentPhysicsParams(id).reflection).toBe(0);
+      expect(getPatentPhysicsParams(id).claim9).toBe(0);
+
+      setPatentPhysicsParam(id, "rateFeedback", 0);
+      expect(getPatentPhysicsParams(id).tachometerDampingEnabled).toBe(0);
+      expect(getPatentPhysicsParams(id).damping).toBe(0);
+      expect(getPatentPhysicsParams(id).claim11).toBe(0);
+
+      setPatentPhysicsParam(id, "saturationLimiter", 0);
+      expect(getPatentPhysicsParams(id).limiterEnabled).toBe(0);
+      expect(getPatentPhysicsParams(id).limiter).toBe(0);
+      expect(getPatentPhysicsParams(id).claim10).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Master Channel Commands")?.value).not.toBe(
+        initial.find((m) => m.label === "Master Channel Commands")?.value,
+      );
+      expect(metrics.find((m) => m.label === "Illustrative Remote Obstruction")?.value).toBe(
+        "0.50",
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Townes Laser aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-2929922-townes-laser";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.pumpExcitationPct));
+
+    try {
+      setPatentPhysicsParam(id, "pump", 85);
+      const params = getPatentPhysicsParams(id);
+      expect(params.pumpExcitationPct).toBe(85);
+      expect(params.pumpExcitation).toBe(85);
+      expect(params.excitationPct).toBe(85);
+      expect(params.pumpPowerPct).toBe(85);
+      expect(params.pump).toBe(85);
+      expect(observations).toEqual([85]);
+      expect(getLastParamChange(id)?.id).toBe("pumpExcitationPct");
+
+      setPatentPhysicsParam(id, "chamberLength", 16);
+      expect(getPatentPhysicsParams(id).cavityLengthCm).toBe(16);
+      expect(getPatentPhysicsParams(id).cavityLength).toBe(16);
+      expect(getPatentPhysicsParams(id).lengthCm).toBe(16);
+
+      setPatentPhysicsParam(id, "boreDiameterCm", 1.8);
+      expect(getPatentPhysicsParams(id).chamberDiameterCm).toBe(1.8);
+      expect(getPatentPhysicsParams(id).chamberDiameter).toBe(1.8);
+      expect(getPatentPhysicsParams(id).diameterCm).toBe(1.8);
+
+      setPatentPhysicsParam(id, "mirrorReflectivityPct", 98);
+      expect(getPatentPhysicsParams(id).endReflectivityPct).toBe(98);
+      expect(getPatentPhysicsParams(id).reflectivityPct).toBe(98);
+      expect(getPatentPhysicsParams(id).reflectivity).toBe(98);
+
+      setPatentPhysicsParam(id, "modeSelector", 40);
+      expect(getPatentPhysicsParams(id).modeApertureOpenPct).toBe(40);
+      expect(getPatentPhysicsParams(id).modeAperture).toBe(40);
+      expect(getPatentPhysicsParams(id).aperturePct).toBe(40);
+
+      setPatentPhysicsParam(id, "zeemanField", 60);
+      expect(getPatentPhysicsParams(id).modulationFieldPct).toBe(60);
+      expect(getPatentPhysicsParams(id).modulationField).toBe(60);
+      expect(getPatentPhysicsParams(id).zeemanFieldPct).toBe(60);
+
+      setPatentPhysicsParam(id, "communicationsPath", 0);
+      expect(getPatentPhysicsParams(id).claim1PathPresent).toBe(0);
+      expect(getPatentPhysicsParams(id).claim1).toBe(0);
+      expect(getPatentPhysicsParams(id).pathPresent).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Illustrative Pump Command")?.value).toBe("85");
+      expect(metrics.find((m) => m.label === "Illustrative Pump Command")?.value).not.toBe(
+        initial.find((m) => m.label === "Illustrative Pump Command")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Devol Programmed Article Transfer aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-2988237-devol-programmed-transfer";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.recordedSlot));
+
+    try {
+      setPatentPhysicsParam(id, "programSlot", 42);
+      const params = getPatentPhysicsParams(id);
+      expect(params.recordedSlot).toBe(42);
+      expect(params.recordedCode).toBe(42);
+      expect(params.programSlot).toBe(42);
+      expect(params.programCode).toBe(42);
+      expect(observations).toEqual([42]);
+      expect(getLastParamChange(id)?.id).toBe("recordedSlot");
+
+      setPatentPhysicsParam(id, "encoderSlot", 42);
+      expect(getPatentPhysicsParams(id).sensedSlot).toBe(42);
+      expect(getPatentPhysicsParams(id).sensedCode).toBe(42);
+      expect(getPatentPhysicsParams(id).encoderSlot).toBe(42);
+
+      setPatentPhysicsParam(id, "codeBits", 8);
+      expect(getPatentPhysicsParams(id).bitWidth).toBe(8);
+      expect(getPatentPhysicsParams(id).bits).toBe(8);
+      expect(getPatentPhysicsParams(id).resolutionBits).toBe(8);
+
+      setPatentPhysicsParam(id, "advanceSensing", 0);
+      expect(getPatentPhysicsParams(id).anticipationEnabled).toBe(0);
+      expect(getPatentPhysicsParams(id).anticipation).toBe(0);
+      expect(getPatentPhysicsParams(id).claim8).toBe(0);
+
+      setPatentPhysicsParam(id, "teachMode", 1);
+      expect(getPatentPhysicsParams(id).recordingMode).toBe(1);
+      expect(getPatentPhysicsParams(id).recordMode).toBe(1);
+      expect(getPatentPhysicsParams(id).claim5).toBe(1);
+
+      setPatentPhysicsParam(id, "seizing", 1);
+      expect(getPatentPhysicsParams(id).gripperClosed).toBe(1);
+      expect(getPatentPhysicsParams(id).gripper).toBe(1);
+      expect(getPatentPhysicsParams(id).claim6).toBe(1);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Code Agreement")?.value).toBe("8/8");
+      expect(metrics.find((m) => m.label === "Hamming Distance")?.value).toBe("0");
+      expect(metrics.find((m) => m.label === "Code Agreement")?.value).not.toBe(
+        initial.find((m) => m.label === "Code Agreement")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Lemelson Automatic Warehousing aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-3119501-lemelson-automatic-warehousing";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.railAddressFraction));
+
+    try {
+      setPatentPhysicsParam(id, "carrierX", 0.72);
+      const params = getPatentPhysicsParams(id);
+      expect(params.railAddressFraction).toBe(0.72);
+      expect(params.railAddress).toBe(0.72);
+      expect(params.carrierX).toBe(0.72);
+      expect(params.railFraction).toBe(0.72);
+      expect(observations).toEqual([0.72]);
+      expect(getLastParamChange(id)?.id).toBe("railAddressFraction");
+
+      setPatentPhysicsParam(id, "level", 0.44);
+      expect(getPatentPhysicsParams(id).levelAddressFraction).toBe(0.44);
+      expect(getPatentPhysicsParams(id).levelAddress).toBe(0.44);
+      expect(getPatentPhysicsParams(id).carrierY).toBe(0.44);
+      expect(getPatentPhysicsParams(id).vertical).toBe(0.44);
+
+      setPatentPhysicsParam(id, "shuttleZ", 0.88);
+      expect(getPatentPhysicsParams(id).shuttleExtensionFraction).toBe(0.88);
+      expect(getPatentPhysicsParams(id).shuttleExtension).toBe(0.88);
+      expect(getPatentPhysicsParams(id).shuttleZ).toBe(0.88);
+      expect(getPatentPhysicsParams(id).extension).toBe(0.88);
+
+      setPatentPhysicsParam(id, "presetAddressing", 0);
+      expect(getPatentPhysicsParams(id).automaticAddressing).toBe(0);
+      expect(getPatentPhysicsParams(id).autoAddressing).toBe(0);
+      expect(getPatentPhysicsParams(id).claim1).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Rail Address")?.value).toBe("72");
+      expect(metrics.find((m) => m.label === "Rail Address")?.value).not.toBe(
+        initial.find((m) => m.label === "Rail Address")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
 });
