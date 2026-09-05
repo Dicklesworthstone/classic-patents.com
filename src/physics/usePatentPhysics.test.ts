@@ -1399,4 +1399,110 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       resetPatentPhysicsParams(id);
     }
   });
+
+  test("Colt Revolver updates aliases, notifies reactive subscribers, and enforces claim constraints", () => {
+    const id = "us-x9430-colt-revolver";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.cockingTravelPct));
+
+    try {
+      setPatentPhysicsParam(id, "cockingTravel", 65);
+      const params = getPatentPhysicsParams(id);
+      expect(params.cockingTravelPct).toBe(65);
+      expect(params.cockingTravel).toBe(65);
+      expect(params.cocking).toBe(65);
+      expect(params.travelPct).toBe(65);
+      expect(params.travel).toBe(65);
+      expect(observations).toEqual([65]);
+
+      setPatentPhysicsParam(id, "chamber", 3);
+      expect(getPatentPhysicsParams(id).chamberIndex).toBe(3);
+      expect(getPatentPhysicsParams(id).chamber).toBe(3);
+      expect(getPatentPhysicsParams(id).ward).toBe(3);
+      expect(getPatentPhysicsParams(id).wardIndex).toBe(3);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Ratchet Advance")?.value).not.toBe("0%");
+
+      // Claim 5 constraint toggle
+      const claim5Param = claimConstraintStateParamId(5);
+      setPatentPhysicsParam(id, claim5Param, 0);
+      expect(getPatentPhysicsParams(id)[claim5Param]).toBe(0);
+      const effective5 = getEffectivePatentPhysicsParams(id);
+      expect(effective5.claim5ShacklePresent).toBe(0);
+
+      // Claim 6 constraint toggle
+      const claim6Param = claimConstraintStateParamId(6);
+      setPatentPhysicsParam(id, claim6Param, 0);
+      expect(getPatentPhysicsParams(id)[claim6Param]).toBe(0);
+      const effective6 = getEffectivePatentPhysicsParams(id);
+      expect(effective6.claim6LockingAndTurningPresent).toBe(0);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Otis Hoisting Apparatus updates aliases, notifies reactive subscribers, and enforces claim constraints", () => {
+    const id = "us-31128-otis-elevator";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.driveCommand));
+
+    try {
+      setPatentPhysicsParam(id, "command", 1);
+      const params = getPatentPhysicsParams(id);
+      expect(params.driveCommand).toBe(1);
+      expect(params.command).toBe(1);
+      expect(params.direction).toBe(1);
+      expect(observations).toEqual([1]);
+
+      setPatentPhysicsParam(id, "displayRate", 80);
+      expect(getPatentPhysicsParams(id).displayRatePct).toBe(80);
+      expect(getPatentPhysicsParams(id).displayRate).toBe(80);
+      expect(getPatentPhysicsParams(id).ratePct).toBe(80);
+
+      setPatentPhysicsParam(id, "ropeIntegrity", 0);
+      expect(getPatentPhysicsParams(id).ropeGIntegrityPct).toBe(0);
+      expect(getPatentPhysicsParams(id).ropeIntegrity).toBe(0);
+
+      // With rope severed and default claims active, mode should be rope-failure-hook-lock
+      const metricsHookLock = PATENT_PHYSICS_REGISTRY[id].computeMetrics(
+        getEffectivePatentPhysicsParams(id),
+      );
+      expect(metricsHookLock.find((m) => m.label === "Operating Mode")?.value).toBe(
+        "rope-failure-hook-lock",
+      );
+
+      // Claim 1 constraint toggle: with rope severed and hook lock disabled, free fall counterfactual
+      const claim1Param = claimConstraintStateParamId(1);
+      setPatentPhysicsParam(id, claim1Param, 0);
+      expect(getPatentPhysicsParams(id)[claim1Param]).toBe(0);
+      const effective1 = getEffectivePatentPhysicsParams(id);
+      expect(effective1.claim1HookLockEnabled).toBe(0);
+
+      const metricsFreeFall = PATENT_PHYSICS_REGISTRY[id].computeMetrics(effective1);
+      expect(metricsFreeFall.find((m) => m.label === "Operating Mode")?.value).toBe(
+        "claim-1-free-fall-counterfactual",
+      );
+
+      // Claim 3 constraint toggle
+      const claim3Param = claimConstraintStateParamId(3);
+      setPatentPhysicsParam(id, claim3Param, 0);
+      expect(getPatentPhysicsParams(id)[claim3Param]).toBe(0);
+      const effective3 = getEffectivePatentPhysicsParams(id);
+      expect(effective3.claim3BrakeInterlockEnabled).toBe(0);
+
+      // Claim 4 constraint toggle
+      const claim4Param = claimConstraintStateParamId(4);
+      setPatentPhysicsParam(id, claim4Param, 0);
+      expect(getPatentPhysicsParams(id)[claim4Param]).toBe(0);
+      const effective4 = getEffectivePatentPhysicsParams(id);
+      expect(effective4.claim4CounterpoiseEnabled).toBe(0);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
 });

@@ -62,6 +62,7 @@ export interface OtisTopologyState {
   claim3StopInterlockSatisfied: boolean;
   claim4CounterpoiseTopologySatisfied: boolean;
   mechanismMode: OtisMechanismMode;
+  displayRateSlopePerPct?: number;
 }
 
 function isDriveCommand(value: number): value is OtisDriveCommand {
@@ -69,21 +70,47 @@ function isDriveCommand(value: number): value is OtisDriveCommand {
 }
 
 export function readOtisTopologyControls(
-  params: Record<string, number>,
+  params: Record<string, any>,
   overrides: Partial<OtisTopologyControls> = {},
 ): OtisTopologyControls {
-  const rawCommand = overrides.driveCommand ?? params.driveCommand ?? 0;
+  const rawCommand =
+    overrides.driveCommand ?? params.driveCommand ?? params.command ?? params.direction ?? 0;
+  const ropePct =
+    params.ropeGIntegrityPct ??
+    params.ropeIntegrity ??
+    params.ropeGIntegrity ??
+    params.ropeIntegrityPct ??
+    100;
+  const stopPulled = params.stopRopePulled ?? params.stopRope ?? params.shipperStop ?? 0;
   return {
     platformPositionNormalized:
       overrides.platformPositionNormalized ??
       (params.platformPositionPct ?? OTIS_DEFAULT_PLATFORM_POSITION * 100) / 100,
     drivePhaseRad: overrides.drivePhaseRad ?? 0,
     driveCommand: isDriveCommand(rawCommand) ? rawCommand : 0,
-    ropeGIntact: overrides.ropeGIntact ?? (params.ropeGIntegrityPct ?? 100) >= 15,
-    stopRopePulled: overrides.stopRopePulled ?? params.stopRopePulled === 1,
-    claim1HookLockEnabled: overrides.claim1HookLockEnabled ?? true,
-    claim3BrakeInterlockEnabled: overrides.claim3BrakeInterlockEnabled ?? true,
-    claim4CounterpoiseEnabled: overrides.claim4CounterpoiseEnabled ?? true,
+    ropeGIntact: overrides.ropeGIntact ?? ropePct >= 15,
+    stopRopePulled: overrides.stopRopePulled ?? (stopPulled === 1 || stopPulled === true),
+    claim1HookLockEnabled:
+      overrides.claim1HookLockEnabled ??
+      (params.claim1HookLockEnabled !== undefined
+        ? Boolean(params.claim1HookLockEnabled)
+        : params.claim1Active !== undefined
+          ? Boolean(params.claim1Active)
+          : true),
+    claim3BrakeInterlockEnabled:
+      overrides.claim3BrakeInterlockEnabled ??
+      (params.claim3BrakeInterlockEnabled !== undefined
+        ? Boolean(params.claim3BrakeInterlockEnabled)
+        : params.claim3Active !== undefined
+          ? Boolean(params.claim3Active)
+          : true),
+    claim4CounterpoiseEnabled:
+      overrides.claim4CounterpoiseEnabled ??
+      (params.claim4CounterpoiseEnabled !== undefined
+        ? Boolean(params.claim4CounterpoiseEnabled)
+        : params.claim4Active !== undefined
+          ? Boolean(params.claim4Active)
+          : true),
   };
 }
 
@@ -172,6 +199,7 @@ export function stepOtis1861Topology(controls: OtisTopologyControls): OtisTopolo
     claim3StopInterlockSatisfied: !stopRequested || (bothBeltsIdle && brakeZEngaged),
     claim4CounterpoiseTopologySatisfied: claim4CounterpoiseEnabled,
     mechanismMode,
+    displayRateSlopePerPct: OTIS_DECLARED_MAX_DISPLAY_TRAVEL_PER_S / 100,
   };
 }
 

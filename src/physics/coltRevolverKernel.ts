@@ -100,13 +100,19 @@ export function coltNextChamber(
 }
 
 export function readColtRuntimeControls(raw: ColtRuntimeControlInput): ColtRuntimeControls {
+  const r = raw as Record<string, any>;
   return {
-    cockingTravelPct: Number(raw.cockingTravelPct ?? 0),
-    chamberIndex: normalizeChamberIndex(Number(raw.chamberIndex ?? 1)),
-    claim1CapsPresent: Number(raw.claim1CapsPresent ?? 1) >= 0.5,
-    claim2PartitionsPresent: Number(raw.claim2PartitionsPresent ?? 1) >= 0.5,
-    claim5ShacklePresent: Number(raw.claim5ShacklePresent ?? 1) >= 0.5,
-    claim6LockingAndTurningPresent: Number(raw.claim6LockingAndTurningPresent ?? 1) >= 0.5,
+    cockingTravelPct: Number(
+      r.cockingTravelPct ?? r.cockingTravel ?? r.cocking ?? r.travelPct ?? r.travel ?? 0,
+    ),
+    chamberIndex: normalizeChamberIndex(
+      Number(r.chamberIndex ?? r.chamber ?? r.ward ?? r.wardIndex ?? 1),
+    ),
+    claim1CapsPresent: Number(r.claim1CapsPresent ?? r.claim1Active ?? 1) >= 0.5,
+    claim2PartitionsPresent: Number(r.claim2PartitionsPresent ?? r.claim2Active ?? 1) >= 0.5,
+    claim5ShacklePresent: Number(r.claim5ShacklePresent ?? r.claim5Active ?? 1) >= 0.5,
+    claim6LockingAndTurningPresent:
+      Number(r.claim6LockingAndTurningPresent ?? r.claim6Active ?? 1) >= 0.5,
   };
 }
 

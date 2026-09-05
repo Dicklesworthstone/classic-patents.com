@@ -50,7 +50,11 @@ import {
   readClavelDeltaRobotControls,
   stepClavelDeltaRobotTopology,
 } from "./clavelDeltaRobotKernel";
-import { stepColtLockwork } from "./coltRevolverKernel";
+import {
+  COLT_DISPLAY_CHAMBER_COUNT,
+  readColtRuntimeControls,
+  stepColtLockwork,
+} from "./coltRevolverKernel";
 import { readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
 import { stepDieselEngine } from "./dieselEngineKernel";
 import {
@@ -77,7 +81,11 @@ import { stepMakinoScaraTopology } from "./makinoScaraKernel";
 import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
 import { stepMilacronRobotToolchanger } from "./milacronRobotToolchangerKernel";
 import { readNoycePlanarLeadControls } from "./noycePlanarLeadKernel";
-import { OTIS_DECLARED_MAX_DISPLAY_TRAVEL_PER_S } from "./otisKernel";
+import {
+  OTIS_DECLARED_MAX_DISPLAY_TRAVEL_PER_S,
+  readOtisTopologyControls,
+  stepOtis1861Topology,
+} from "./otisKernel";
 import { ROBOT_END_EFFECTOR_TYPICAL_JAW_OPENING_M } from "./robotEndEffectorKernel";
 import { readSalisburyRobotHandControls } from "./salisburyRobotHandKernel";
 import {
@@ -1856,10 +1864,33 @@ export function computeParameterSensitivity(
     }
 
     case "us-x9430-colt-revolver": {
-      if (controlKey === "cockingTravelPct") {
-        const travel = Number(params.cockingTravelPct ?? 0);
-        const lower = stepColtLockwork({ ...params, cockingTravelPct: travel - 0.5 });
-        const upper = stepColtLockwork({ ...params, cockingTravelPct: travel + 0.5 });
+      if (
+        controlKey === "cockingTravelPct" ||
+        controlKey === "cockingTravel" ||
+        controlKey === "cocking" ||
+        controlKey === "travelPct" ||
+        controlKey === "travel"
+      ) {
+        const travel = Number(
+          params.cockingTravelPct ??
+            params.cockingTravel ??
+            params.cocking ??
+            params.travelPct ??
+            params.travel ??
+            0,
+        );
+        const lowerParams: Record<string, any> = { ...params, cockingTravelPct: travel - 0.5 };
+        delete lowerParams.cockingTravel;
+        delete lowerParams.cocking;
+        delete lowerParams.travelPct;
+        delete lowerParams.travel;
+        const upperParams: Record<string, any> = { ...params, cockingTravelPct: travel + 0.5 };
+        delete upperParams.cockingTravel;
+        delete upperParams.cocking;
+        delete upperParams.travelPct;
+        delete upperParams.travel;
+        const lower = stepColtLockwork(lowerParams);
+        const upper = stepColtLockwork(upperParams);
         return {
           metricName: "Normalized Cylinder Advance",
           derivativeSymbol: "∂q_{cylinder} / ∂u_{cock}",
@@ -1869,6 +1900,44 @@ export function computeParameterSensitivity(
           derivativeUnit: "display-step / % display",
           interpretation:
             "Central difference of the shared source-order display coordinate; it is not a physical angle, time law, torque, or ballistic sensitivity.",
+        };
+      }
+      if (
+        controlKey === "chamberIndex" ||
+        controlKey === "chamber" ||
+        controlKey === "ward" ||
+        controlKey === "wardIndex"
+      ) {
+        const stepAngle = (2 * Math.PI) / COLT_DISPLAY_CHAMBER_COUNT;
+        return {
+          metricName: "Base Cylinder Ward Orientation",
+          derivativeSymbol: "Δθ_{cyl} / Δward",
+          derivativeValue: Number((-stepAngle).toFixed(3)),
+          derivativeUnit: "rad/ward",
+          interpretation:
+            "Discrete step angle of the 5-ward cylinder per index position (–2π/5 rad = –72°/ward). Traced from facsimile Figure 1 display layout.",
+        };
+      }
+      if (controlKey === "claim5ShacklePresent" || controlKey === "claim5Active") {
+        const colt = stepColtLockwork(readColtRuntimeControls(params));
+        return {
+          metricName: "Cylinder-Ratchet Coupling State",
+          derivativeSymbol: "Δq_{cyl} / ΔClaim5",
+          derivativeValue: colt.ratchetAdvanceFraction,
+          derivativeUnit: "fraction / claim",
+          interpretation:
+            "Discrete coupling of ratchet rotation to cylinder through the claimed shackle connection.",
+        };
+      }
+      if (controlKey === "claim6LockingAndTurningPresent" || controlKey === "claim6Active") {
+        const colt = stepColtLockwork(readColtRuntimeControls(params));
+        return {
+          metricName: "Locking & Turning Sequence State",
+          derivativeSymbol: "ΔKey / ΔClaim6",
+          derivativeValue: colt.keyRetraction01,
+          derivativeUnit: "retraction / claim",
+          interpretation:
+            "Discrete key withdrawal and ratchet turning sequence coupled to the hammer cocking motion.",
         };
       }
       break;
@@ -3539,14 +3608,96 @@ export function computeParameterSensitivity(
     }
 
     case "us-31128-otis-elevator": {
-      if (controlKey === "displayRatePct") {
+      const otis = stepOtis1861Topology(readOtisTopologyControls(params));
+
+      if (
+        controlKey === "displayRatePct" ||
+        controlKey === "displayRate" ||
+        controlKey === "ratePct"
+      ) {
         return {
           metricName: "Declared Coordinate-Speed Magnitude",
           derivativeSymbol: "∂|dq_D/dt| / ∂r_display",
-          derivativeValue: OTIS_DECLARED_MAX_DISPLAY_TRAVEL_PER_S / 100,
+          derivativeValue:
+            otis.displayRateSlopePerPct ?? OTIS_DECLARED_MAX_DISPLAY_TRAVEL_PER_S / 100,
           derivativeUnit: "normalized coordinate·s⁻¹ / %",
           interpretation:
             "Sensitivity of the explicitly declared studio display rate. This is a normalized animation coordinate, not a historical speed, load, force, or stopping-distance claim.",
+        };
+      }
+
+      if (controlKey === "driveCommand" || controlKey === "command" || controlKey === "direction") {
+        return {
+          metricName: "Platform Travel Direction",
+          derivativeSymbol: "ΔDirection / ΔCommand",
+          derivativeValue: otis.platformMotionDirection,
+          derivativeUnit: "direction / state",
+          interpretation:
+            "Discrete platform direction response to drive belt command (-1=lower, 0=idle, 1=raise). Refused to 0 when stopped or pawls engage, counterfactually -1 on free fall.",
+        };
+      }
+
+      if (
+        controlKey === "ropeGIntegrityPct" ||
+        controlKey === "ropeIntegrity" ||
+        controlKey === "ropeGIntegrity" ||
+        controlKey === "ropeIntegrityPct"
+      ) {
+        return {
+          metricName: "Pawl Arrest Engagement Margin",
+          derivativeSymbol: "ΔArrest / ΔRopeIntegrity",
+          derivativeValue: otis.claim1HookLockSatisfied ? 1.0 : 0.0,
+          derivativeUnit: "arrest state / failure",
+          interpretation:
+            "Discrete transition of safety pawls f engaging racks C upon severing hoisting rope G (<15% integrity). Gated by Claim 1 hook-form geometry.",
+        };
+      }
+
+      if (
+        controlKey === "stopRopePulled" ||
+        controlKey === "stopRope" ||
+        controlKey === "shipperStop"
+      ) {
+        return {
+          metricName: "Service Brake Engagement",
+          derivativeSymbol: "ΔBrake / ΔStopRope",
+          derivativeValue: otis.claim3StopInterlockSatisfied ? 1.0 : 0.0,
+          derivativeUnit: "brake state / pull",
+          interpretation:
+            "Discrete actuation of brake shoe Z against wheel L and shifting belts to idle pulleys upon pulling stop rope U.",
+        };
+      }
+
+      if (controlKey === "claim1HookLockEnabled" || controlKey === "claim1Active") {
+        return {
+          metricName: "Claim 1 Platform Arrest Lock",
+          derivativeSymbol: "ΔArrest / ΔClaim1",
+          derivativeValue: !otis.ropeGTaut ? 1.0 : 0.0,
+          derivativeUnit: "arrest / claim",
+          interpretation:
+            "Discrete contribution of Claim 1 complementary hook-form pawls f locking into racks C under platform weight upon rope failure.",
+        };
+      }
+
+      if (controlKey === "claim3BrakeInterlockEnabled") {
+        return {
+          metricName: "Claim 3 Shipper-Brake Interlock",
+          derivativeSymbol: "ΔBrake / ΔClaim3",
+          derivativeValue: otis.stopRopeGeometryActive ? 1.0 : 0.0,
+          derivativeUnit: "brake / claim",
+          interpretation:
+            "Discrete automatic engagement of brake shoe Z when the shipper moves drive belts to idle pulleys.",
+        };
+      }
+
+      if (controlKey === "claim4CounterpoiseEnabled") {
+        return {
+          metricName: "Claim 4 Counterpoise Kinematics",
+          derivativeSymbol: "∂q_R / ∂q_D",
+          derivativeValue: -1.0,
+          derivativeUnit: "coordinate / coordinate",
+          interpretation:
+            "Opposite counterpoise motion (dq_R = -dq_D) maintaining dynamic balance on hoisting drum.",
         };
       }
       break;
@@ -4783,6 +4934,30 @@ export function computeParameterSensitivity(
             "Proportional loop slack margin above 40% minimum required for shuttle bobbin pass.",
         };
       }
+
+      if (controlKey === "isCranking" || controlKey === "cranking") {
+        const activeCadence = !claim1Active || !howe.claim1InterlockPossible ? 0 : rpm;
+        return {
+          metricName: "Lockstitch Formation State",
+          derivativeSymbol: "ΔStitches / Δcranking",
+          derivativeValue: activeCadence,
+          derivativeUnit: "stitches/min / state",
+          interpretation:
+            "Discrete transition from stationary rest to declared crank rotation cadence.",
+        };
+      }
+
+      if (controlKey === "claim1Active" || controlKey === "claim1InterlockEnabled") {
+        const deltaCadence = howe.claim1InterlockPossible ? rpm : 0;
+        return {
+          metricName: "Lockstitch Formation Rate",
+          derivativeSymbol: "ΔStitches / ΔClaim1",
+          derivativeValue: deltaCadence,
+          derivativeUnit: "stitches/min / claim",
+          interpretation:
+            "Discrete contribution of Claim 1 eye-pointed needle and shuttle interlock to stitch formation.",
+        };
+      }
       break;
     }
 
@@ -4793,9 +4968,19 @@ export function computeParameterSensitivity(
         params.expansionPct ??
         params.bellowsInflationPct ??
         75;
-      const weight = params.weightTons ?? params.weight ?? params.steamboatWeightTons ?? 380;
+      const weight =
+        params.weightTons ??
+        params.weight ??
+        params.steamboatWeightTons ??
+        params.vesselCargoTons ??
+        380;
       const depth =
-        params.shoalDepth ?? params.depth ?? params.depthFt ?? params.riverShoalDepthFt ?? 3.5;
+        params.shoalDepth ??
+        params.depth ??
+        params.depthFt ??
+        params.riverShoalDepthFt ??
+        params.riverDepthFeet ??
+        3.5;
       const claim1Active = params.claim1Active !== undefined ? Boolean(params.claim1Active) : true;
 
       if (
@@ -4816,13 +5001,15 @@ export function computeParameterSensitivity(
         inflationPct: inflation,
         weightTons: weight,
         shoalDepth: depth,
+        claim1Active,
       });
 
       if (
         controlKey === "inflationPct" ||
         controlKey === "inflation" ||
         controlKey === "expansionPct" ||
-        controlKey === "bellowsInflationPct"
+        controlKey === "bellowsInflationPct" ||
+        controlKey === "bellowsExpansionPercent"
       ) {
         if (!claim1Active) {
           return {
@@ -4846,7 +5033,8 @@ export function computeParameterSensitivity(
       if (
         controlKey === "weightTons" ||
         controlKey === "weight" ||
-        controlKey === "steamboatWeightTons"
+        controlKey === "steamboatWeightTons" ||
+        controlKey === "vesselCargoTons"
       ) {
         return {
           metricName: "Hull Draft Displacement Loading",
@@ -4855,6 +5043,32 @@ export function computeParameterSensitivity(
           derivativeUnit: "ft / ton",
           interpretation:
             "Hydrostatic sinkage slope: waterplane displacement loading per additional ton of cargo or vessel weight.",
+        };
+      }
+      if (
+        controlKey === "shoalDepth" ||
+        controlKey === "depth" ||
+        controlKey === "depthFt" ||
+        controlKey === "riverShoalDepthFt" ||
+        controlKey === "riverDepthFeet"
+      ) {
+        return {
+          metricName: "Shoal Keel Clearance Margin",
+          derivativeSymbol: "∂Clearance / ∂d_{shoal}",
+          derivativeValue: buoy.shoalClearanceSlopeFtPerFt,
+          derivativeUnit: "ft / ft",
+          interpretation:
+            "Linear hydrostatic keel clearance margin over the riverbed shoal per foot of available water depth.",
+        };
+      }
+      if (controlKey === "claim1Active" || controlKey === "claim1ChambersPresent") {
+        return {
+          metricName: "Hull Draft Shoal Reduction",
+          derivativeSymbol: "ΔDraft / ΔClaim1",
+          derivativeValue: buoy.draftReductionFt,
+          derivativeUnit: "ft / claim",
+          interpretation:
+            "Discrete draft reduction contributed by Claim 1 buoyant expandable chambers operating on the steamboat hull.",
         };
       }
       break;

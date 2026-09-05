@@ -170,6 +170,7 @@ export function stepHoweSewingMachine(
   crankRpm: number,
   loopSlackPct: number = 65,
   stitchPitchMm: number = 3.5,
+  claim1Active: boolean = true,
 ) {
   if (
     !Number.isFinite(crankRpm) ||
@@ -189,11 +190,13 @@ export function stepHoweSewingMachine(
   const loopSlackNormalized = loopSlackPct / 100;
   const clothFeedMmPerSUnrounded = stitchFrequencyHzUnrounded * pitch;
   const clothFeedMmPerS = Number((stitchFrequencyHz * pitch).toFixed(1));
-  const formationRateSlopePerRpm = 1.0;
-  const feedSlopeMmPerSPerRpm = pitch / 60;
-  const feedSlopeMmPerSPerMm = rpm / 60;
+  const claim1InterlockPossible = claim1Active && loopSlackPct >= HOWE_MIN_LOOP_SLACK_PCT;
+  const formationRateSlopePerRpm = claim1InterlockPossible ? 1.0 : 0;
+  const feedSlopeMmPerSPerRpm = claim1InterlockPossible ? pitch / 60 : 0;
+  const feedSlopeMmPerSPerMm = claim1InterlockPossible ? rpm / 60 : 0;
   const loopClearanceSlopePctPerPct = 1.0;
   return {
+    claim1Active,
     stitchesPerMinute: rpm,
     stitchesPerMinuteUnrounded: rpm,
     stitchFrequencyHz,
@@ -210,7 +213,7 @@ export function stepHoweSewingMachine(
     loopSlackNormalized,
     minimumLoopSlackPct: HOWE_MIN_LOOP_SLACK_PCT,
     maximumLoopClearancePct: Number((loopSlackPct - HOWE_MIN_LOOP_SLACK_PCT).toFixed(1)),
-    claim1InterlockPossible: loopSlackPct >= HOWE_MIN_LOOP_SLACK_PCT,
+    claim1InterlockPossible,
     needleEyeFromPointIn: HOWE_NEEDLE_EYE_OFFSET_IN,
     needleEyeFromPointMm: Number((HOWE_NEEDLE_EYE_OFFSET_IN * 25.4).toFixed(3)),
     basterPointPitchIn: HOWE_BASTER_POINT_PITCH_IN,

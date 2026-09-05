@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureHoweWasm, type HoweKernelSource, stepHoweTopology } from "@/physics/howeWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
@@ -36,10 +37,11 @@ export function HoweSewingMachine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Mechanical Stitching State Controls
-  const { params, updateParam } = usePatentPhysics("us-4750-howe-sewing-machine");
+  const { params, claimStates, claimConstraintResult, updateParam } = usePatentPhysics(
+    "us-4750-howe-sewing-machine",
+  );
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const stitchingSpeedRpm = (params.crankRpm as number) ?? 240;
   const stitchPitchMm = (params.stitchPitchMm as number) ?? 3.5;
   const loopSlackPct = (params.loopSlackPct as number) ?? 65;
@@ -51,10 +53,12 @@ export function HoweSewingMachine3D() {
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
   // Source-order kinematics from the generic FrankenSim fs-mbd composition.
+  const claim1Active = claimStates[1] !== false;
   const stitchState = FrankenSimEngine.stepHoweSewingMachine(
     stitchingSpeedRpm,
     loopSlackPct,
     stitchPitchMm,
+    claim1Active,
   );
 
   useFrankenSimPhysics("us-4750-howe-sewing-machine", {
@@ -235,10 +239,7 @@ export function HoweSewingMachine3D() {
             patentId="us-4750-howe-sewing-machine"
             claimStates={claimStates}
             onToggleClaim={(c: number, active: boolean) => {
-              setClaimStates((prev) => ({ ...prev, [c]: active }));
-              if (c === 1) {
-                updateParam("claim1Active", active ? 1 : 0);
-              }
+              updateParam(claimConstraintStateParamId(c), active ? 1 : 0);
             }}
           />
           <button
@@ -429,6 +430,21 @@ export function HoweSewingMachine3D() {
             allParams={params}
           />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-4750-howe-sewing-machine"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0)
+          }
+          className="mt-3"
+        />
+
+        {claimConstraintResult.refusalWarning && (
+          <p className="mt-2 rounded-lg border border-rose-500/40 bg-rose-500/10 p-2 text-xs text-rose-900 dark:text-rose-200">
+            {claimConstraintResult.refusalWarning}
+          </p>
+        )}
 
         <p className="mt-3 text-[11px] text-ink-500 dark:text-ink-400">
           No SI power strip is shown: US 4,750 gives no force, torque, inertia, friction, or power

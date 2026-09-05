@@ -1,23 +1,30 @@
 "use client";
 
 import { RotateCcw, Ship, Volume2, VolumeX } from "lucide-react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function LincolnBuoySim() {
-  const { params, updateParam, resetParams } = usePatentPhysics("us-6469-lincoln-buoy");
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics("us-6469-lincoln-buoy");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const bellowsExpansionPercent = params.inflationPct ?? 75;
   const vesselCargoTons = params.weightTons ?? 380;
   const riverDepthFeet = params.shoalDepth ?? 3.5;
+  const claim1Active =
+    (effectiveParams.claim1Active as number | undefined) !== 0 &&
+    (effectiveParams.claim1ChambersPresent as number | undefined) !== 0;
 
   const lincoln = stepLincolnBuoy({
     inflationPct: bellowsExpansionPercent,
     weightTons: vesselCargoTons,
     shoalDepth: riverDepthFeet,
+    claim1Active,
   });
   const effectiveDraftFeet = lincoln.hullDraftFt;
   const clearanceFeet = lincoln.shoalClearanceFt;
@@ -301,6 +308,20 @@ export function LincolnBuoySim() {
               onChange={(val) => updateParam("shoalDepth", val)}
               allParams={params}
             />
+
+            <ClaimConstraintToggle
+              patentId="us-6469-lincoln-buoy"
+              claimStates={claimStates}
+              onToggleClaim={(claimNumber, active) =>
+                updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+              }
+            />
+
+            {claimConstraintResult.refusalWarning && (
+              <p className="rounded-lg border border-rose-500/40 bg-rose-500/10 p-2 text-xs text-rose-900 dark:text-rose-200">
+                {claimConstraintResult.refusalWarning}
+              </p>
+            )}
 
             <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-ink-950 dark:text-parchment-100 text-xs sm:text-sm font-sans">
               <span className="font-bold text-amber-900 dark:text-amber-300 block font-mono text-xs uppercase tracking-wider mb-1">

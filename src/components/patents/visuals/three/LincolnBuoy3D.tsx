@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
@@ -25,7 +26,8 @@ export function LincolnBuoy3D() {
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Hydrostatic & Vessel Parameters
-  const { params, updateParam } = usePatentPhysics("us-6469-lincoln-buoy");
+  const { params, claimStates, claimConstraintResult, updateParam } =
+    usePatentPhysics("us-6469-lincoln-buoy");
   const bellowsInflationPct =
     (params.inflationPct as number) ?? (params.bellowsInflationPct as number) ?? 80;
   const riverShoalDepthFt =
@@ -35,12 +37,12 @@ export function LincolnBuoy3D() {
   const [activeCamera, setActiveCamera] = useState<LincolnBuoyCameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   useGenericWasmSource();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const lincoln = stepLincolnBuoy({
     inflationPct: bellowsInflationPct,
     shoalDepth: riverShoalDepthFt,
     weightTons: steamboatWeightTons,
+    claim1Active: claimStates[1] !== false,
   });
 
   const baseDraftFt = lincoln.baseDraftFt;
@@ -365,14 +367,17 @@ export function LincolnBuoy3D() {
         <ClaimConstraintToggle
           patentId="us-6469-lincoln-buoy"
           claimStates={claimStates}
-          onToggleClaim={(claimNo, active) => {
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
-            if (claimNo === 1) {
-              updateParam("claim1Active", active ? 1 : 0);
-            }
-          }}
+          onToggleClaim={(claimNo, active) =>
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0)
+          }
           className="mt-2"
         />
+
+        {claimConstraintResult.refusalWarning && (
+          <p className="mt-2 rounded-lg border border-rose-500/40 bg-rose-500/10 p-2 text-xs text-rose-900 dark:text-rose-200">
+            {claimConstraintResult.refusalWarning}
+          </p>
+        )}
 
         <PortHamiltonianEnergyStrip
           patentId="us-6469-lincoln-buoy"

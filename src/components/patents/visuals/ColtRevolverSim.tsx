@@ -355,19 +355,35 @@ export function ColtRevolverSim() {
           </button>
         </div>
 
-        <SensitivitySlider
-          id="us-x9430-colt-revolver-sim-cockingtravel"
-          patentId="us-x9430-colt-revolver"
-          paramKey="cockingTravelPct"
-          label="Normalized Cocking Travel"
-          value={lockwork.controls.cockingTravelPct}
-          min={0}
-          max={100}
-          step={1}
-          unit="% display"
-          onChange={(value) => updateParam("cockingTravelPct", value)}
-          allParams={params}
-        />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <SensitivitySlider
+            id="us-x9430-colt-revolver-sim-cockingtravel"
+            patentId="us-x9430-colt-revolver"
+            paramKey="cockingTravelPct"
+            label="Normalized Cocking Travel"
+            value={lockwork.controls.cockingTravelPct}
+            min={0}
+            max={100}
+            step={1}
+            unit="% display"
+            onChange={(value) => updateParam("cockingTravelPct", value)}
+            allParams={params}
+          />
+
+          <SensitivitySlider
+            id="us-x9430-colt-revolver-sim-chamberindex"
+            patentId="us-x9430-colt-revolver"
+            paramKey="chamberIndex"
+            label="Starting Display Ward"
+            value={lockwork.controls.chamberIndex}
+            min={1}
+            max={5}
+            step={1}
+            unit="display index"
+            onChange={(value) => updateParam("chamberIndex", value)}
+            allParams={params}
+          />
+        </div>
 
         <ClaimConstraintToggle
           patentId="us-x9430-colt-revolver"

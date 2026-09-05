@@ -2113,6 +2113,64 @@ export function applyClaimConstraintModifications(
       break;
     }
 
+    case "us-4750-howe-sewing-machine": {
+      const claim1Active = claimStates[1] ?? true;
+      modified.claim1Active = claim1Active ? 1 : 0;
+      modified.claim1InterlockEnabled = claim1Active ? 1 : 0;
+      if (!claim1Active) {
+        activeFailures.push(
+          "Shuttle Misses Upper-Thread Loop: Without the synchronized eye-pointed needle and shuttle passage, the thread loop is not captured.",
+        );
+        refusalWarning =
+          "CLAIM 1 WITHHELD: Shuttle track is offset so shuttle misses the needle thread loop; lockstitch formation halts.";
+      }
+      break;
+    }
+
+    case "us-6469-lincoln-buoy": {
+      const claim1Active = claimStates[1] ?? true;
+      modified.claim1Active = claim1Active ? 1 : 0;
+      modified.claim1ChambersPresent = claim1Active ? 1 : 0;
+      if (!claim1Active) {
+        activeFailures.push(
+          "Shoal Grounding & River Sandbar Stranding: Without expandable buoyant side chambers, rigid hull remains grounded on shallow river shoals.",
+        );
+        refusalWarning =
+          "CLAIM 1 WITHHELD: Rigid unbuoyed hull; vessel lacks expandable side chambers and grounds upon shallow shoals.";
+      }
+      break;
+    }
+
+    case "us-31128-otis-elevator": {
+      const claim1HookLockEnabled = claimStates[1] ?? true;
+      const claim3BrakeInterlockEnabled = claimStates[3] ?? true;
+      const claim4CounterpoiseEnabled = claimStates[4] ?? true;
+      modified.claim1HookLockEnabled = claim1HookLockEnabled ? 1 : 0;
+      modified.claim1Active = claim1HookLockEnabled ? 1 : 0;
+      modified.claim3BrakeInterlockEnabled = claim3BrakeInterlockEnabled ? 1 : 0;
+      modified.claim4CounterpoiseEnabled = claim4CounterpoiseEnabled ? 1 : 0;
+      if (!claim1HookLockEnabled) {
+        activeFailures.push(
+          "Free-Fall Platform Descent: Hook-form pawls f cannot lock into fixed racks C when rope G breaks, leaving platform in free fall.",
+        );
+      }
+      if (!claim3BrakeInterlockEnabled) {
+        activeFailures.push(
+          "Service Brake Disengagement: Brake shoe Z fails to engage wheel L upon stop rope actuation.",
+        );
+      }
+      if (!claim4CounterpoiseEnabled) {
+        activeFailures.push(
+          "Counterpoise Uncoupling: Counterpoise weight R fails to oppose platform motion.",
+        );
+      }
+      if (activeFailures.length > 0) {
+        refusalWarning =
+          "DISCRETE TOPOLOGY PROBE: Selected claimed safety interlocks are withheld; platform arrest or braking is counterfactually refused.";
+      }
+      break;
+    }
+
     case "us-1102653-goddard-rocket": {
       if (!(claimStates[1] ?? true)) {
         modified.auxiliaryReleaseFraction = 0;

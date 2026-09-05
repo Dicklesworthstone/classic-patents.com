@@ -2,6 +2,8 @@
 
 import { Pause, Play, RotateCcw, Scissors, Shield } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import {
   advanceOtisPlatformPosition,
   OTIS_DEFAULT_PLATFORM_POSITION,
@@ -46,15 +48,11 @@ function readAnimationControls(
 }
 
 export function OtisHoistingApparatusSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
+  const { params, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
   const [platformPosition, setPlatformPosition] = useState(OTIS_DEFAULT_PLATFORM_POSITION);
   const [drivePhase, setDrivePhase] = useState(0);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({
-    1: true,
-    3: true,
-    4: true,
-  });
   const positionRef = useRef(platformPosition);
   const phaseRef = useRef(drivePhase);
   const driveCommand = [-1, 0, 1].includes(params.driveCommand)
@@ -171,7 +169,7 @@ export function OtisHoistingApparatusSim() {
           patentId={PATENT_ID}
           claimStates={claimStates}
           onToggleClaim={(claimNumber, active) =>
-            setClaimStates((previous) => ({ ...previous, [claimNumber]: active }))
+            updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
           }
         />
       </div>
@@ -439,22 +437,19 @@ export function OtisHoistingApparatusSim() {
               <Scissors className="mr-1 inline h-4 w-4" />{" "}
               {ropeGIntact ? "Sever rope G" : "Restore rope G"}
             </button>
-            <label className="block space-y-1.5 text-xs font-mono">
-              <span className="flex justify-between">
-                <span>Declared display rate</span>
-                <strong>{displayRatePct}%</strong>
-              </span>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                step="1"
-                value={displayRatePct}
-                onChange={(event) => updateParam("displayRatePct", Number(event.target.value))}
-                className="h-11 w-full accent-amber-600"
-                aria-label="Declared display rate"
-              />
-            </label>
+            <SensitivitySlider
+              id="otis-sim-display-rate"
+              patentId={PATENT_ID}
+              paramKey="displayRatePct"
+              label="Declared display rate"
+              value={displayRatePct}
+              min={0}
+              max={100}
+              step={1}
+              unit="%"
+              onChange={(value) => updateParam("displayRatePct", value)}
+              allParams={params}
+            />
             <button
               type="button"
               onClick={() => {
@@ -480,6 +475,18 @@ export function OtisHoistingApparatusSim() {
               <RotateCcw className="mr-1 inline h-4 w-4" /> Reset apparatus
             </button>
           </div>
+          <ClaimConstraintToggle
+            patentId={PATENT_ID}
+            claimStates={claimStates}
+            onToggleClaim={(claimNumber, active) =>
+              updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+            }
+          />
+          {claimConstraintResult.refusalWarning && (
+            <p className="rounded-lg border border-rose-500/40 bg-rose-500/10 p-2 text-xs text-rose-900 dark:text-rose-200">
+              {claimConstraintResult.refusalWarning}
+            </p>
+          )}
           <div
             className={`rounded-xl border p-4 text-xs ${state.freeFallCounterfactual ? "border-rose-500 bg-rose-500/10 text-rose-800 dark:text-rose-200" : "border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-200"}`}
           >

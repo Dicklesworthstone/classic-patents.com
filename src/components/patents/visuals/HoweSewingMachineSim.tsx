@@ -2,8 +2,10 @@
 
 import { Pause, Play, RotateCcw, Scissors, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useState } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { ensureHoweWasm, stepHoweTopology } from "@/physics/howeWasm";
 import { stepHoweSewingMachine } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -33,7 +35,8 @@ function rotatePoint(
 }
 
 export function HoweSewingMachineSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics("us-4750-howe-sewing-machine");
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics("us-4750-howe-sewing-machine");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [crankAngleDeg, setCrankAngleDeg] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -41,8 +44,11 @@ export function HoweSewingMachineSim() {
   const sewingSpeedRpm = params.crankRpm ?? 240;
   const loopSlackPct = params.loopSlackPct ?? 65;
   const stitchPitchMm = params.stitchPitchMm ?? 3.5;
-  const machine = stepHoweSewingMachine(sewingSpeedRpm, loopSlackPct, stitchPitchMm);
-  const state = stepHoweTopology(crankAngleDeg, loopSlackPct, true);
+  const claim1Active =
+    (effectiveParams.claim1Active as number | undefined) !== 0 &&
+    (effectiveParams.claim1InterlockEnabled as number | undefined) !== 0;
+  const machine = stepHoweSewingMachine(sewingSpeedRpm, loopSlackPct, stitchPitchMm, claim1Active);
+  const state = stepHoweTopology(crankAngleDeg, loopSlackPct, claim1Active);
   const needleEye = rotatePoint(
     NEEDLE_PIVOT_X,
     NEEDLE_PIVOT_Y,
@@ -347,6 +353,20 @@ export function HoweSewingMachineSim() {
             />
 
             <SensitivitySlider
+              id="howe-sim-pitch"
+              patentId="us-4750-howe-sewing-machine"
+              paramKey="stitchPitchMm"
+              label="Declared Display Pitch"
+              value={stitchPitchMm}
+              min={1.0}
+              max={6.0}
+              step={0.1}
+              unit="mm"
+              onChange={(val) => updateParam("stitchPitchMm", val)}
+              allParams={params}
+            />
+
+            <SensitivitySlider
               id="howe-sim-slack"
               patentId="us-4750-howe-sewing-machine"
               paramKey="loopSlackPct"
@@ -359,6 +379,20 @@ export function HoweSewingMachineSim() {
               onChange={(val) => updateParam("loopSlackPct", val)}
               allParams={params}
             />
+
+            <ClaimConstraintToggle
+              patentId="us-4750-howe-sewing-machine"
+              claimStates={claimStates}
+              onToggleClaim={(claimNumber, active) =>
+                updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+              }
+            />
+
+            {claimConstraintResult.refusalWarning && (
+              <p className="rounded-lg border border-rose-500/40 bg-rose-500/10 p-2 text-xs text-rose-900 dark:text-rose-200">
+                {claimConstraintResult.refusalWarning}
+              </p>
+            )}
 
             <div
               className={`p-3.5 rounded-xl border text-xs sm:text-sm ${

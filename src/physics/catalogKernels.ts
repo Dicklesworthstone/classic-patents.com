@@ -3354,15 +3354,17 @@ export function stepLincolnBuoy(params: {
   inflationPct?: number;
   weightTons?: number;
   shoalDepth?: number;
+  claim1Active?: boolean;
 }) {
+  const claim1Active = params.claim1Active !== undefined ? Boolean(params.claim1Active) : true;
   const infl = params.inflationPct ?? 75;
   const weight = params.weightTons ?? 380;
   const depth = params.shoalDepth ?? 3.5;
-  const volM3Unrounded = (infl / 100) * 42.5;
+  const volM3Unrounded = claim1Active ? (infl / 100) * 42.5 : 0;
   const volM3 = Number(volM3Unrounded.toFixed(1));
   const liftKnUnrounded = volM3Unrounded * 9.81;
   const liftKn = Math.round(liftKnUnrounded);
-  const liftKnSlopePerPct = 0.425 * 9.81;
+  const liftKnSlopePerPct = claim1Active ? 0.425 * 9.81 : 0;
   const hullLengthFt = 160;
   const hullBeamFt = 32;
   // Governing equation Δd = ΔF_b / (ρ g A_waterplane): draft change per
@@ -3374,12 +3376,14 @@ export function stepLincolnBuoy(params: {
   const ftPerM3 = 3.28084 / waterplaneAreaM2;
   const draftRedFtUnrounded = volM3Unrounded * ftPerM3;
   const draftRedFt = Number(draftRedFtUnrounded.toFixed(2));
-  const draftReductionSlopeFtPerPct = 0.425 * ftPerM3;
+  const draftReductionSlopeFtPerPct = claim1Active ? 0.425 * ftPerM3 : 0;
   const hullDraftSlopeFtPerTon = ftPerM3;
+  const shoalClearanceSlopeFtPerFt = 1.0;
   const baseDraftFt = 5.0;
   const hullDraftFtUnrounded = baseDraftFt + (weight - 380) * ftPerM3 - draftRedFtUnrounded;
   const hullDraftFt = baseDraftFt + (weight - 380) * ftPerM3 - draftRedFt;
   return {
+    claim1Active,
     displacedVolumeM3: volM3,
     displacedVolumeM3Unrounded: volM3Unrounded,
     displacedVolumeCuFt: Math.round(volM3 * 35.315),
@@ -3393,6 +3397,7 @@ export function stepLincolnBuoy(params: {
     hullDraftFt: Number(hullDraftFt.toFixed(2)),
     hullDraftFtUnrounded,
     hullDraftSlopeFtPerTon,
+    shoalClearanceSlopeFtPerFt,
     shoalClearanceFt: Number((depth - hullDraftFt).toFixed(2)),
     hullLengthFt,
     hullBeamFt,

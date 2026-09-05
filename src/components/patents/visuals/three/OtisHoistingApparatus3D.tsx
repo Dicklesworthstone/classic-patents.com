@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Scissors, Shield, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import {
   advanceOtisPlatformPosition,
   OTIS_DEFAULT_PLATFORM_POSITION,
@@ -51,16 +52,12 @@ export function OtisHoistingApparatus3D() {
   const positionRef = useRef(OTIS_DEFAULT_PLATFORM_POSITION);
   const phaseRef = useRef(0);
   const kernelSourceRef = useRef<OtisKernelSource>("unloaded");
-  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
+  const { params, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
   const [activeCamera, setActiveCamera] = useState<OtisCameraPreset>("overview");
   const [kernelSource, setKernelSource] = useState<OtisKernelSource>("unloaded");
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({
-    1: true,
-    3: true,
-    4: true,
-  });
   const [uiState, setUiState] = useState<OtisMechanismState>(initialState);
 
   const driveCommand = [-1, 0, 1].includes(params.driveCommand)
@@ -397,10 +394,15 @@ export function OtisHoistingApparatus3D() {
             claimStates={claimStates}
             className="min-w-0 flex-1 gap-1.5 max-[480px]:flex-nowrap max-[480px]:gap-1 max-[480px]:[&>button]:min-h-9 max-[480px]:[&>button]:px-2 max-[480px]:[&>button>span]:sr-only"
             onToggleClaim={(claimNumber, active) =>
-              setClaimStates((previous) => ({ ...previous, [claimNumber]: active }))
+              updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
             }
           />
         </div>
+        {claimConstraintResult.refusalWarning && (
+          <p className="mt-2 rounded-lg border border-rose-500/40 bg-rose-500/10 p-2 text-xs text-rose-900 dark:text-rose-200">
+            {claimConstraintResult.refusalWarning}
+          </p>
+        )}
         <SensitivitySlider
           id="otisDisplayRate"
           patentId={PATENT_ID}

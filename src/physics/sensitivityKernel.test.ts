@@ -563,13 +563,88 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
     ).toBeNull();
   });
 
-  test("Otis exposes only its declared normalized display-rate sensitivity", () => {
-    const sens = computeParameterSensitivity("us-31128-otis-elevator", "displayRatePct", {});
-    expect(sens).toBeDefined();
-    expect(sens?.metricName).toBe("Declared Coordinate-Speed Magnitude");
-    expect(sens?.derivativeValue).toBe(0.0012);
-    expect(sens?.interpretation).toContain("not a historical speed");
-    expect(computeParameterSensitivity("us-31128-otis-elevator", "cabPayload", {})).toBeNull();
+  test("Otis Hoisting Apparatus derives display rate, drive command, rope failure, and claim-interlock sensitivities", () => {
+    const id = "us-31128-otis-elevator";
+
+    // 1. Display rate sensitivity
+    const sensRate = computeParameterSensitivity(id, "displayRatePct", { displayRatePct: 60 });
+    expect(sensRate).toBeDefined();
+    expect(sensRate?.metricName).toBe("Declared Coordinate-Speed Magnitude");
+    expect(sensRate?.derivativeSymbol).toBe("∂|dq_D/dt| / ∂r_display");
+    expect(sensRate?.derivativeValue).toBe(0.0012);
+    expect(sensRate?.derivativeUnit).toBe("normalized coordinate·s⁻¹ / %");
+
+    for (const alias of ["displayRate", "ratePct"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, { [alias]: 60 });
+      expect(sensAlias?.derivativeValue).toBe(0.0012);
+    }
+
+    // 2. Drive command direction sensitivity
+    const sensDriveRaise = computeParameterSensitivity(id, "driveCommand", { driveCommand: 1 });
+    expect(sensDriveRaise).toBeDefined();
+    expect(sensDriveRaise?.metricName).toBe("Platform Travel Direction");
+    expect(sensDriveRaise?.derivativeSymbol).toBe("ΔDirection / ΔCommand");
+    expect(sensDriveRaise?.derivativeValue).toBe(1);
+
+    const sensDriveLower = computeParameterSensitivity(id, "driveCommand", { driveCommand: -1 });
+    expect(sensDriveLower?.derivativeValue).toBe(-1);
+
+    const sensDriveIdle = computeParameterSensitivity(id, "driveCommand", { driveCommand: 0 });
+    expect(sensDriveIdle?.derivativeValue).toBe(0);
+
+    for (const alias of ["command", "direction"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, { [alias]: 1 });
+      expect(sensAlias?.derivativeValue).toBe(1);
+    }
+
+    // 3. Rope integrity and safety pawl arrest
+    const sensRopeFail = computeParameterSensitivity(id, "ropeGIntegrityPct", {
+      ropeGIntegrityPct: 0,
+      claim1HookLockEnabled: true,
+    });
+    expect(sensRopeFail).toBeDefined();
+    expect(sensRopeFail?.metricName).toBe("Pawl Arrest Engagement Margin");
+    expect(sensRopeFail?.derivativeSymbol).toBe("ΔArrest / ΔRopeIntegrity");
+    expect(sensRopeFail?.derivativeValue).toBe(1.0);
+
+    const sensRopeFailUnclaimed = computeParameterSensitivity(id, "ropeGIntegrityPct", {
+      ropeGIntegrityPct: 0,
+      claim1HookLockEnabled: false,
+    });
+    expect(sensRopeFailUnclaimed?.derivativeValue).toBe(0.0);
+
+    for (const alias of ["ropeIntegrity", "ropeGIntegrity", "ropeIntegrityPct"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, { [alias]: 0 });
+      expect(sensAlias?.derivativeValue).toBe(1.0);
+    }
+
+    // 4. Stop rope pulled and service brake engagement
+    const sensStopRope = computeParameterSensitivity(id, "stopRopePulled", {
+      stopRopePulled: 1,
+      claim3BrakeInterlockEnabled: true,
+    });
+    expect(sensStopRope).toBeDefined();
+    expect(sensStopRope?.metricName).toBe("Service Brake Engagement");
+    expect(sensStopRope?.derivativeSymbol).toBe("ΔBrake / ΔStopRope");
+    expect(sensStopRope?.derivativeValue).toBe(1.0);
+
+    for (const alias of ["stopRope", "shipperStop"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, { [alias]: 1 });
+      expect(sensAlias?.derivativeValue).toBe(1.0);
+    }
+
+    // 5. Claim discrete sensitivities
+    const sensClaim1 = computeParameterSensitivity(id, "claim1HookLockEnabled", {
+      ropeGIntegrityPct: 0,
+    });
+    expect(sensClaim1?.derivativeValue).toBe(1.0);
+
+    const sensClaim4 = computeParameterSensitivity(id, "claim4CounterpoiseEnabled", {});
+    expect(sensClaim4?.derivativeValue).toBe(-1.0);
+
+    // Invalid parameters refused
+    expect(computeParameterSensitivity(id, "cabPayload", {})).toBeNull();
+    expect(computeParameterSensitivity(id, "counterweightMassKg", {})).toBeNull();
   });
 
   test("Salisbury differentiates the printed Figure 3 tendon-to-torque map", () => {
@@ -3459,6 +3534,38 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sensAlias?.derivativeValue).toBe(sensWeight?.derivativeValue);
     }
 
+    // Shoal water depth sensitivity
+    const sensDepth = computeParameterSensitivity(id, "shoalDepth", {
+      inflationPct: 75,
+      weightTons: 380,
+      shoalDepth: 3.5,
+    });
+    expect(sensDepth).toBeDefined();
+    expect(sensDepth?.metricName).toBe("Shoal Keel Clearance Margin");
+    expect(sensDepth?.derivativeSymbol).toBe("∂Clearance / ∂d_{shoal}");
+    expect(sensDepth?.derivativeUnit).toBe("ft / ft");
+    expect(sensDepth?.derivativeValue).toBe(1.0);
+
+    for (const alias of ["depth", "depthFt", "riverShoalDepthFt", "riverDepthFeet"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, {
+        inflationPct: 75,
+        weightTons: 380,
+        [alias]: 3.5,
+      });
+      expect(sensAlias?.derivativeValue).toBe(1.0);
+    }
+
+    // Discrete Claim 1 sensitivity
+    const sensClaim1 = computeParameterSensitivity(id, "claim1Active", {
+      inflationPct: 75,
+      weightTons: 380,
+      shoalDepth: 3.5,
+    });
+    expect(sensClaim1).toBeDefined();
+    expect(sensClaim1?.metricName).toBe("Hull Draft Shoal Reduction");
+    expect(sensClaim1?.derivativeSymbol).toBe("ΔDraft / ΔClaim1");
+    expect(sensClaim1?.derivativeValue).toBe(buoy.draftReductionFt);
+
     // Claim 1 refusal: when expandable chamber attachment is withheld, draft reduction is 0
     const sensRefused = computeParameterSensitivity(id, "inflationPct", {
       inflationPct: 75,
@@ -3849,6 +3956,36 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensLowSlack?.interpretation).toContain(
       "Loop slack is below 40% threshold required for shuttle pass",
     );
+
+    // Motion state sensitivity (isCranking)
+    const sensCranking = computeParameterSensitivity(id, "isCranking", {
+      crankRpm: 240,
+      stitchPitchMm: 3.5,
+      loopSlackPct: 65,
+    });
+    expect(sensCranking).toBeDefined();
+    expect(sensCranking?.metricName).toBe("Lockstitch Formation State");
+    expect(sensCranking?.derivativeSymbol).toBe("ΔStitches / Δcranking");
+    expect(sensCranking?.derivativeValue).toBe(240);
+    expect(sensCranking?.derivativeUnit).toBe("stitches/min / state");
+
+    const sensCrankingAlias = computeParameterSensitivity(id, "cranking", {
+      crankRpm: 240,
+      stitchPitchMm: 3.5,
+      loopSlackPct: 65,
+    });
+    expect(sensCrankingAlias?.derivativeValue).toBe(240);
+
+    // Discrete Claim 1 sensitivity
+    const sensHoweClaim1 = computeParameterSensitivity(id, "claim1Active", {
+      crankRpm: 240,
+      stitchPitchMm: 3.5,
+      loopSlackPct: 65,
+    });
+    expect(sensHoweClaim1).toBeDefined();
+    expect(sensHoweClaim1?.metricName).toBe("Lockstitch Formation Rate");
+    expect(sensHoweClaim1?.derivativeSymbol).toBe("ΔStitches / ΔClaim1");
+    expect(sensHoweClaim1?.derivativeValue).toBe(240);
 
     // Invalid bounds
     for (const invalid of [59, 421, Number.NaN]) {
@@ -6052,5 +6189,61 @@ describe("Sensitivities follow the current admitted operating point", () => {
         computeParameterSensitivity(id, "packetSizeBytes", { packetSizeBytes: invalid }),
       ).toBeNull();
     }
+  });
+
+  test("Colt Revolver derives cocking travel, ward orientation, and claim-coupling sensitivities", () => {
+    const id = "us-x9430-colt-revolver";
+
+    // 1. Cocking travel sensitivity
+    const sensTravel = computeParameterSensitivity(id, "cockingTravelPct", {
+      cockingTravelPct: 50,
+      chamberIndex: 1,
+    });
+    expect(sensTravel).toBeDefined();
+    expect(sensTravel?.metricName).toBe("Normalized Cylinder Advance");
+    expect(sensTravel?.derivativeSymbol).toBe("∂q_{cylinder} / ∂u_{cock}");
+    expect(sensTravel?.derivativeUnit).toBe("display-step / % display");
+
+    for (const alias of ["cockingTravel", "cocking", "travelPct", "travel"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, {
+        [alias]: 50,
+        chamberIndex: 1,
+      });
+      expect(sensAlias?.derivativeValue).toBe(sensTravel?.derivativeValue);
+    }
+
+    // 2. Chamber index / ward orientation sensitivity
+    const sensWard = computeParameterSensitivity(id, "chamberIndex", {
+      cockingTravelPct: 0,
+      chamberIndex: 1,
+    });
+    expect(sensWard).toBeDefined();
+    expect(sensWard?.metricName).toBe("Base Cylinder Ward Orientation");
+    expect(sensWard?.derivativeSymbol).toBe("Δθ_{cyl} / Δward");
+    expect(sensWard?.derivativeUnit).toBe("rad/ward");
+    expect(sensWard?.derivativeValue).toBeCloseTo(-(2 * Math.PI) / 5, 3);
+
+    for (const alias of ["chamber", "ward", "wardIndex"]) {
+      const sensAlias = computeParameterSensitivity(id, alias, {
+        cockingTravelPct: 0,
+        [alias]: 1,
+      });
+      expect(sensAlias?.derivativeValue).toBe(sensWard?.derivativeValue);
+    }
+
+    // 3. Claim 5 and Claim 6 sensitivities
+    const sensClaim5 = computeParameterSensitivity(id, "claim5ShacklePresent", {
+      cockingTravelPct: 50,
+    });
+    expect(sensClaim5).toBeDefined();
+    expect(sensClaim5?.metricName).toBe("Cylinder-Ratchet Coupling State");
+    expect(sensClaim5?.derivativeSymbol).toBe("Δq_{cyl} / ΔClaim5");
+
+    const sensClaim6 = computeParameterSensitivity(id, "claim6LockingAndTurningPresent", {
+      cockingTravelPct: 50,
+    });
+    expect(sensClaim6).toBeDefined();
+    expect(sensClaim6?.metricName).toBe("Locking & Turning Sequence State");
+    expect(sensClaim6?.derivativeSymbol).toBe("ΔKey / ΔClaim6");
   });
 });

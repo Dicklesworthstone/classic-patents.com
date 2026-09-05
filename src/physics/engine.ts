@@ -903,8 +903,13 @@ export const FrankenSimEngine = {
    * Elias Howe Sewing Machine (US 4,750)
    * 4-Bar Kinematic Linkage & Shuttle Lockstitch Interlock
    */
-  stepHoweSewingMachine(crankRpm: number, loopSlackPct: number, stitchPitchMm?: number) {
-    return stepHoweSewingMachineKernel(crankRpm, loopSlackPct, stitchPitchMm);
+  stepHoweSewingMachine(
+    crankRpm: number,
+    loopSlackPct: number,
+    stitchPitchMm?: number,
+    claim1Active?: boolean,
+  ) {
+    return stepHoweSewingMachineKernel(crankRpm, loopSlackPct, stitchPitchMm, claim1Active);
   },
 
   /**
