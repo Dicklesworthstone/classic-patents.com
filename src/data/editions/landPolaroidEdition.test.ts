@@ -80,6 +80,19 @@ describe("US 2,543,181 Edwin Land Polaroid published manual archival edition", (
     expect(landPolaroidPatent.originalTextAsset).toBeDefined();
   });
 
+  it("preserves the directly checked page-nine masthead, including the Canadian priority line", () => {
+    const masthead = landPolaroidArchivalEdition.blocks.find((block) => block.kind === "masthead");
+    expect(masthead?.kind).toBe("masthead");
+    if (masthead?.kind !== "masthead") return;
+
+    expect(masthead.lines).toContain("Patented Feb. 27, 1951");
+    expect(masthead.lines).toContain("In Canada January 15, 1947");
+    expect(reviewedLedger).toContain(
+      "Patented Feb. 27, 1951. 2,543,181. UNITED STATES PATENT OFFICE.",
+    );
+    expect(reviewedLedger).toContain("In Canada January 15, 1947.");
+  });
+
   it("retains all 116 staged claim nodes without treating them as reviewed publication text", () => {
     for (let c = 1; c <= 116; c++) {
       const claimText = manualLandClaimText(c);

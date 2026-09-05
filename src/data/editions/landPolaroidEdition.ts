@@ -278,12 +278,13 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
     {
       kind: "masthead",
       lines: [
-        "Feb. 27, 1951",
+        "Patented Feb. 27, 1951",
         "UNITED STATES PATENT OFFICE",
         "2,543,181",
         "PHOTOGRAPHIC PRODUCT COMPRISING A RUPTURABLE CONTAINER CARRYING A PHOTOGRAPHIC PROCESSING LIQUID",
         "Edwin H. Land, Cambridge, Mass., assignor to Polaroid Corporation, Cambridge, Mass., a corporation of Delaware",
         "Application December 11, 1948, Serial No. 64,870",
+        "In Canada January 15, 1947",
         "116 Claims. (Cl. 95–8)",
       ],
     },
