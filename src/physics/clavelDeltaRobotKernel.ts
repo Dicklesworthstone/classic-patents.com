@@ -206,27 +206,34 @@ function tangent(index: number): ClavelDeltaVec3 {
 export function readClavelDeltaRobotControls(
   params: ClavelDeltaRobotParams = {},
 ): ClavelDeltaRobotControls {
+  const p = params as Record<string, number | undefined>;
   return {
-    armOneInput: signedUnit(params.armOneInput, CLAVEL_DELTA_ROBOT_DEFAULT_CONTROLS.armOneInput),
-    armTwoInput: signedUnit(params.armTwoInput, CLAVEL_DELTA_ROBOT_DEFAULT_CONTROLS.armTwoInput),
+    armOneInput: signedUnit(
+      p.armOneInput ?? p.arm1 ?? p.arm1Input ?? p.input1,
+      CLAVEL_DELTA_ROBOT_DEFAULT_CONTROLS.armOneInput,
+    ),
+    armTwoInput: signedUnit(
+      p.armTwoInput ?? p.arm2 ?? p.arm2Input ?? p.input2,
+      CLAVEL_DELTA_ROBOT_DEFAULT_CONTROLS.armTwoInput,
+    ),
     armThreeInput: signedUnit(
-      params.armThreeInput,
+      p.armThreeInput ?? p.arm3 ?? p.arm3Input ?? p.input3,
       CLAVEL_DELTA_ROBOT_DEFAULT_CONTROLS.armThreeInput,
     ),
     toolAxisInput: signedUnit(
-      params.toolAxisInput,
+      p.toolAxisInput ?? p.toolAxis ?? p.toolInput ?? p.axis10,
       CLAVEL_DELTA_ROBOT_DEFAULT_CONTROLS.toolAxisInput,
     ),
     claim1TopologyEnabled: binary(
-      params.claim1TopologyEnabled,
+      p.claim1TopologyEnabled ?? p.claim1 ?? p.topologyEnabled,
       CLAVEL_DELTA_ROBOT_DEFAULT_CONTROLS.claim1TopologyEnabled,
     ),
     claim2PairedBarsEnabled: binary(
-      params.claim2PairedBarsEnabled,
+      p.claim2PairedBarsEnabled ?? p.claim2 ?? p.pairedBarsEnabled,
       CLAVEL_DELTA_ROBOT_DEFAULT_CONTROLS.claim2PairedBarsEnabled,
     ),
     claim8BaseMotorEnabled: binary(
-      params.claim8BaseMotorEnabled,
+      p.claim8BaseMotorEnabled ?? p.claim8 ?? p.baseMotorEnabled ?? p.toolMotorEnabled,
       CLAVEL_DELTA_ROBOT_DEFAULT_CONTROLS.claim8BaseMotorEnabled,
     ),
   };

@@ -15,8 +15,40 @@ export interface RoombaControls {
   running?: boolean;
 }
 
-/** Shared arena. 2D and 3D must step the same box (not 5×3.2 vs 4×4). */
 export const ROOMBA_ROOM = { width: 4, height: 4 } as const;
+
+export function readRoombaControls(
+  params: Record<string, number | boolean | undefined> = {},
+): RoombaControls {
+  const speed = params.wheelSpeedMps ?? params.speed ?? params.driveSpeed;
+  const turnRate = params.turnRateRadSec ?? params.turnRate ?? params.deflectionRate;
+  const optical =
+    params.opticalSensorEnabled ?? params.opticalSensor ?? params.optical ?? params.claim1Optical;
+
+  return {
+    wheelSpeedMps: typeof speed === "number" && Number.isFinite(speed) ? speed : 0.3,
+    turnRateRadSec: typeof turnRate === "number" && Number.isFinite(turnRate) ? turnRate : 1.5,
+    roomWidth:
+      typeof params.roomWidth === "number" && Number.isFinite(params.roomWidth)
+        ? params.roomWidth
+        : ROOMBA_ROOM.width,
+    roomHeight:
+      typeof params.roomHeight === "number" && Number.isFinite(params.roomHeight)
+        ? params.roomHeight
+        : ROOMBA_ROOM.height,
+    sensorHeightInches:
+      typeof params.sensorHeightInches === "number" && Number.isFinite(params.sensorHeightInches)
+        ? params.sensorHeightInches
+        : 0.5,
+    wallDistanceInches:
+      typeof params.wallDistanceInches === "number" && Number.isFinite(params.wallDistanceInches)
+        ? params.wallDistanceInches
+        : undefined,
+    opticalSensorEnabled:
+      typeof optical === "boolean" ? optical : typeof optical === "number" ? optical >= 0.5 : true,
+    running: typeof params.running === "boolean" ? params.running : true,
+  };
+}
 
 export interface RoombaFurnitureAssembly {
   id: string;

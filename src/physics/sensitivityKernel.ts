@@ -5835,8 +5835,19 @@ export function computeParameterSensitivity(
     }
 
     case "us-7479949-multitouch": {
-      const sep = params.fingerSeparationMm ?? 50;
-      const count = params.fingerCount ?? 1;
+      const sep =
+        params.fingerSeparationMm ??
+        params.separation ??
+        params.separationMm ??
+        params.fingerSeparation ??
+        50;
+      const count = params.fingerCount ?? params.count ?? params.fingers ?? 1;
+      const rawAngle =
+        params.initialMotionAngleDeg ??
+        params.initialMotionAngle ??
+        params.motionAngle ??
+        params.angleDeg ??
+        params.angle;
 
       if (
         !Number.isFinite(sep) ||
@@ -5844,12 +5855,27 @@ export function computeParameterSensitivity(
         sep > 120 ||
         !Number.isFinite(count) ||
         count < 0 ||
-        count > 2
+        count > 2 ||
+        (rawAngle !== undefined && (!Number.isFinite(rawAngle) || rawAngle < 0 || rawAngle > 90))
       ) {
         return null;
       }
 
-      if (controlKey === "fingerSeparationMm") {
+      const key =
+        controlKey === "separation" ||
+        controlKey === "separationMm" ||
+        controlKey === "fingerSeparation"
+          ? "fingerSeparationMm"
+          : controlKey === "count" || controlKey === "fingers"
+            ? "fingerCount"
+            : controlKey === "initialMotionAngle" ||
+                controlKey === "motionAngle" ||
+                controlKey === "angleDeg" ||
+                controlKey === "angle"
+              ? "initialMotionAngleDeg"
+              : controlKey;
+
+      if (key === "fingerSeparationMm") {
         return {
           metricName: "Illustrative Pinch-to-Zoom Scale Ratio",
           derivativeSymbol: "∂S / ∂d_sep",
@@ -5859,7 +5885,7 @@ export function computeParameterSensitivity(
             "Illustrative display scaling only: 50 mm separation defines a nominal 1.0× reference (S = d / 50 mm). Claim 8 names the zoom-in or zoom-out command but supplies neither this ratio nor any sensing law.",
         };
       }
-      if (controlKey === "fingerCount") {
+      if (key === "fingerCount") {
         return {
           metricName: "Active Touch Contacts",
           derivativeSymbol: "∂Contacts / ∂Count",
@@ -5867,6 +5893,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "pts / finger",
           interpretation:
             "Discrete contact count presented to the Claim 1 command heuristic; the claim does not specify the sensing matrix that detected it.",
+        };
+      }
+      if (key === "initialMotionAngleDeg") {
+        return {
+          metricName: "Initial Contact Motion Angle (Claim 1)",
+          derivativeSymbol: "∂θ_motion / ∂θ_input",
+          derivativeValue: 1.0,
+          derivativeUnit: "° / °",
+          interpretation:
+            "Claim 1 trajectory orientation angle relative to vertical used by the heuristic discriminator to bifurcate between vertical scrolling (θ ≤ threshold) and two-dimensional panning (θ > threshold). Conspicuously labeled reader illustration.",
         };
       }
       break;
@@ -5931,7 +5967,38 @@ export function computeParameterSensitivity(
     }
 
     case "us-6594844-roomba": {
-      if (controlKey === "wheelSpeedMps") {
+      const rawSpeed = params.wheelSpeedMps ?? params.speed ?? params.driveSpeed;
+      if (
+        rawSpeed !== undefined &&
+        (!Number.isFinite(rawSpeed) || rawSpeed < 0.1 || rawSpeed > 1.0)
+      ) {
+        return null;
+      }
+      const rawTurn = params.turnRateRadSec ?? params.turnRate ?? params.deflectionRate;
+      if (rawTurn !== undefined && (!Number.isFinite(rawTurn) || rawTurn < 0.5 || rawTurn > 3.0)) {
+        return null;
+      }
+      const rawOpt =
+        params.opticalSensorEnabled ??
+        params.opticalSensor ??
+        params.optical ??
+        params.claim1Optical;
+      if (rawOpt !== undefined && (!Number.isFinite(rawOpt) || rawOpt < 0 || rawOpt > 1)) {
+        return null;
+      }
+
+      const key =
+        controlKey === "speed" || controlKey === "driveSpeed"
+          ? "wheelSpeedMps"
+          : controlKey === "turnRate" || controlKey === "deflectionRate"
+            ? "turnRateRadSec"
+            : controlKey === "opticalSensor" ||
+                controlKey === "optical" ||
+                controlKey === "claim1Optical"
+              ? "opticalSensorEnabled"
+              : controlKey;
+
+      if (key === "wheelSpeedMps") {
         return {
           metricName: "Contextual Chassis Advance Rate",
           derivativeSymbol: "∂v_chassis / ∂v_command",
@@ -5941,7 +6008,7 @@ export function computeParameterSensitivity(
             "In the straight contextual differential-drive mode, chassis advance equals the shared wheel-speed command. This is not a claimed coverage rate.",
         };
       }
-      if (controlKey === "turnRateRadSec") {
+      if (key === "turnRateRadSec") {
         return {
           metricName: "Contextual In-Place Turn Rate",
           derivativeSymbol: "∂ω / ∂Rate",
@@ -5949,6 +6016,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "rad·s⁻¹ / unit",
           interpretation:
             "During a commanded in-place redirect, the shared kernel applies this yaw rate through equal-and-opposite wheel speeds; the patent claim concerns the optical trigger, not a particular rate.",
+        };
+      }
+      if (key === "opticalSensorEnabled") {
+        return {
+          metricName: "Optical Redirect Interlock (Claim 1)",
+          derivativeSymbol: "ΔInterlock / Δoptical",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete finite sensitivity: enabling Claim 1 optical emitter-detector field overlap arms autonomous surface-absence (cliff) and wall-detection redirection routines.",
         };
       }
       break;
@@ -9458,14 +9535,55 @@ export function computeParameterSensitivity(
     }
 
     case "us-4976582-clavel-delta-robot": {
+      const rawArm1 = params.armOneInput ?? params.arm1 ?? params.arm1Input ?? params.input1;
+      const rawArm2 = params.armTwoInput ?? params.arm2 ?? params.arm2Input ?? params.input2;
+      const rawArm3 = params.armThreeInput ?? params.arm3 ?? params.arm3Input ?? params.input3;
+      const rawTool = params.toolAxisInput ?? params.toolAxis ?? params.toolInput ?? params.axis10;
+      const rawClaim1 = params.claim1TopologyEnabled ?? params.claim1 ?? params.topologyEnabled;
+      const rawClaim2 = params.claim2PairedBarsEnabled ?? params.claim2 ?? params.pairedBarsEnabled;
+      const rawClaim8 =
+        params.claim8BaseMotorEnabled ??
+        params.claim8 ??
+        params.baseMotorEnabled ??
+        params.toolMotorEnabled;
+
       if (
-        controlKey === "armOneInput" ||
-        controlKey === "armTwoInput" ||
-        controlKey === "armThreeInput"
+        (rawArm1 !== undefined && (!Number.isFinite(rawArm1) || rawArm1 < -1 || rawArm1 > 1)) ||
+        (rawArm2 !== undefined && (!Number.isFinite(rawArm2) || rawArm2 < -1 || rawArm2 > 1)) ||
+        (rawArm3 !== undefined && (!Number.isFinite(rawArm3) || rawArm3 < -1 || rawArm3 > 1)) ||
+        (rawTool !== undefined && (!Number.isFinite(rawTool) || rawTool < -1 || rawTool > 1)) ||
+        (rawClaim1 !== undefined &&
+          (!Number.isFinite(rawClaim1) || rawClaim1 < 0 || rawClaim1 > 1)) ||
+        (rawClaim2 !== undefined &&
+          (!Number.isFinite(rawClaim2) || rawClaim2 < 0 || rawClaim2 > 1)) ||
+        (rawClaim8 !== undefined && (!Number.isFinite(rawClaim8) || rawClaim8 < 0 || rawClaim8 > 1))
       ) {
+        return null;
+      }
+
+      const key =
+        controlKey === "arm1" || controlKey === "arm1Input" || controlKey === "input1"
+          ? "armOneInput"
+          : controlKey === "arm2" || controlKey === "arm2Input" || controlKey === "input2"
+            ? "armTwoInput"
+            : controlKey === "arm3" || controlKey === "arm3Input" || controlKey === "input3"
+              ? "armThreeInput"
+              : controlKey === "toolAxis" || controlKey === "toolInput" || controlKey === "axis10"
+                ? "toolAxisInput"
+                : controlKey === "claim1" || controlKey === "topologyEnabled"
+                  ? "claim1TopologyEnabled"
+                  : controlKey === "claim2" || controlKey === "pairedBarsEnabled"
+                    ? "claim2PairedBarsEnabled"
+                    : controlKey === "claim8" ||
+                        controlKey === "baseMotorEnabled" ||
+                        controlKey === "toolMotorEnabled"
+                      ? "claim8BaseMotorEnabled"
+                      : controlKey;
+
+      if (key === "armOneInput" || key === "armTwoInput" || key === "armThreeInput") {
         const controls = readClavelDeltaRobotControls(params);
-        const derivative = kernelDerivative(controls[controlKey] as number, -1, 1, (value) => {
-          const state = stepClavelDeltaRobotTopology({ ...params, [controlKey]: value });
+        const derivative = kernelDerivative(controls[key] as number, -1, 1, (value) => {
+          const state = stepClavelDeltaRobotTopology({ ...params, [key]: value });
           return state.topologyVisible &&
             state.pairedBarsVisible &&
             state.closureStatus === "normalized-closed-chain-solved"
@@ -9482,11 +9600,56 @@ export function computeParameterSensitivity(
             "Central difference of the shared rigid closed-chain display geometry at the current three arm inputs. The grant supplies no dimensions; this is not millimetres per degree or a machine-performance prediction.",
         };
       }
+
+      if (key === "toolAxisInput") {
+        return {
+          metricName: "Working-Member Axis Rotation (Claim 8)",
+          derivativeSymbol: "∂θ_tool / ∂u_tool",
+          derivativeValue: Number(Math.PI.toFixed(6)),
+          derivativeUnit: "rad / normalized input",
+          interpretation:
+            "Linear rate of rotation of working-member axis 10: each normalized unit of base-mounted actuator input drives the traveling-plate tool shaft through π radians via the telescopic cardan shaft transmission.",
+        };
+      }
+
+      if (key === "claim1TopologyEnabled") {
+        return {
+          metricName: "Claim 1 Spatial Parallel Architecture State",
+          derivativeSymbol: "ΔTopology / ΔClaim1",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete finite sensitivity: Claim 1 spatial parallel architecture constraint state (arms three closed kinematic chains preserving traveling-plate attitude).",
+        };
+      }
+
+      if (key === "claim2PairedBarsEnabled") {
+        return {
+          metricName: "Claim 2 Paired Parallel Bars Attitude State",
+          derivativeSymbol: "ΔPairedBars / ΔClaim2",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete finite sensitivity: Claim 2 paired parallel bars constraint state (constrains each forearm to two rigid parallel bars maintaining pure spatial translation without plate rotation).",
+        };
+      }
+
+      if (key === "claim8BaseMotorEnabled") {
+        return {
+          metricName: "Claim 8 Base Motor Transmission State",
+          derivativeSymbol: "ΔBaseMotor / ΔClaim8",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete finite sensitivity: Claim 8 base-mounted tool axis motor state (transmits rotation to the traveling plate via a telescopic cardan shaft).",
+        };
+      }
+
       break;
     }
 
     case "us-6302230-kamen-segway": {
-      const rawPitch = params.riderPitchDeg ?? params.pitch;
+      const rawPitch = params.riderPitchDeg ?? params.pitch ?? params.lean;
       if (
         rawPitch !== undefined &&
         (!Number.isFinite(rawPitch) || rawPitch < -15 || rawPitch > 15)
@@ -9507,11 +9670,11 @@ export function computeParameterSensitivity(
       ) {
         return null;
       }
-      const rawMass = params.riderMassKg ?? params.mass;
+      const rawMass = params.riderMassKg ?? params.mass ?? params.riderMass;
       if (rawMass !== undefined && (!Number.isFinite(rawMass) || rawMass < 40 || rawMass > 120)) {
         return null;
       }
-      const rawSteer = params.steeringInput ?? params.steering;
+      const rawSteer = params.steeringInput ?? params.steering ?? params.yaw;
       if (
         rawSteer !== undefined &&
         (!Number.isFinite(rawSteer) || rawSteer < -1.0 || rawSteer > 1.0)
@@ -9521,15 +9684,16 @@ export function computeParameterSensitivity(
 
       const controls = readKamenSegwayControls({
         ...params,
-        riderPitchDeg: params.riderPitchDeg ?? params.pitch ?? 4.5,
+        riderPitchDeg: params.riderPitchDeg ?? params.pitch ?? params.lean ?? 4.5,
         groundFrictionCoeff: params.groundFrictionCoeff ?? params.friction ?? 0.85,
         speedLimitMS: params.speedLimitMS ?? params.speedLimit ?? 5.5,
+        steeringInput: params.steeringInput ?? params.steering ?? params.yaw ?? 0.0,
       });
       const probe = (
         key: "riderPitchDeg" | "groundFrictionCoeff" | "speedLimitMS",
         value: number,
       ) => stepKamenSegwaySi({ ...controls, [key]: value });
-      if (controlKey === "riderPitchDeg" || controlKey === "pitch") {
+      if (controlKey === "riderPitchDeg" || controlKey === "pitch" || controlKey === "lean") {
         const derivative = kernelDerivative(controls.riderPitchDeg, -15, 15, (value) => {
           const state = probe("riderPitchDeg", value);
           return state.refusalReason ? null : state.gravityOverturningTorqueNm;
@@ -9574,7 +9738,7 @@ export function computeParameterSensitivity(
             "Central difference of the current illustrative balancing-margin model, including the active governor and torque branch. Refused or nonsmooth operating points have no displayed derivative.",
         };
       }
-      if (controlKey === "riderMassKg" || controlKey === "mass") {
+      if (controlKey === "riderMassKg" || controlKey === "mass" || controlKey === "riderMass") {
         const mu = controls.groundFrictionCoeff;
         return {
           metricName: "Payload Traction Grip Force",
@@ -9583,6 +9747,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "N / kg",
           interpretation:
             "Linear increase in available ground traction envelope with rider payload under the current surface friction coefficient.",
+        };
+      }
+      if (controlKey === "steeringInput" || controlKey === "steering" || controlKey === "yaw") {
+        return {
+          metricName: "Differential Steering Motor Torque",
+          derivativeSymbol: "∂Δτ_steer / ∂u_steer",
+          derivativeValue: controls.claim1BalanceEnabled ? 36.0 : 0.0,
+          derivativeUnit: "N·m / yaw",
+          interpretation:
+            "Differential motor torque between right and left wheels driven by the modern illustrative handlebar yaw input (18 N·m bias per side when dynamic balance is active). Not a numerical grant value.",
         };
       }
       break;
@@ -10120,9 +10294,48 @@ export function computeParameterSensitivity(
     }
 
     case "us-4921293-salisbury-robot-hand": {
-      if (controlKey === "tensionT1N") {
-        const controls = readSalisburyRobotHandControls(params);
-        const r1M = (controls.radiusScaleMm * 1.2) / 1000;
+      const rawT1 = params.tensionT1N ?? params.t1 ?? params.tension1 ?? params.T1;
+      const rawT2 = params.tensionT2N ?? params.t2 ?? params.tension2 ?? params.T2;
+      const rawT3 = params.tensionT3N ?? params.t3 ?? params.tension3 ?? params.T3;
+      const rawT4 = params.tensionT4N ?? params.t4 ?? params.tension4 ?? params.T4;
+      const rawR = params.radiusScaleMm ?? params.radiusScale ?? params.rScale ?? params.r2Scale;
+      const rawIdler = params.firstIdlerFixed ?? params.idlerFixed ?? params.claim2Idler;
+
+      if (
+        (rawT1 !== undefined && (!Number.isFinite(rawT1) || rawT1 < 0 || rawT1 > 40)) ||
+        (rawT2 !== undefined && (!Number.isFinite(rawT2) || rawT2 < 0 || rawT2 > 40)) ||
+        (rawT3 !== undefined && (!Number.isFinite(rawT3) || rawT3 < 0 || rawT3 > 40)) ||
+        (rawT4 !== undefined && (!Number.isFinite(rawT4) || rawT4 < 0 || rawT4 > 40)) ||
+        (rawR !== undefined && (!Number.isFinite(rawR) || rawR < 4 || rawR > 20)) ||
+        (rawIdler !== undefined &&
+          typeof rawIdler === "number" &&
+          (!Number.isFinite(rawIdler) || rawIdler < 0 || rawIdler > 1))
+      ) {
+        return null;
+      }
+
+      const key =
+        controlKey === "t1" || controlKey === "tension1" || controlKey === "T1"
+          ? "tensionT1N"
+          : controlKey === "t2" || controlKey === "tension2" || controlKey === "T2"
+            ? "tensionT2N"
+            : controlKey === "t3" || controlKey === "tension3" || controlKey === "T3"
+              ? "tensionT3N"
+              : controlKey === "t4" || controlKey === "tension4" || controlKey === "T4"
+                ? "tensionT4N"
+                : controlKey === "radiusScale" ||
+                    controlKey === "rScale" ||
+                    controlKey === "r2Scale"
+                  ? "radiusScaleMm"
+                  : controlKey === "idlerFixed" || controlKey === "claim2Idler"
+                    ? "firstIdlerFixed"
+                    : controlKey;
+
+      const controls = readSalisburyRobotHandControls(params);
+      const r2M = controls.radiusScaleMm / 1000;
+      const r1M = r2M * 1.2;
+
+      if (key === "tensionT1N") {
         return {
           metricName: "Figure 3 First-Joint Torque",
           derivativeSymbol: "∂τ₁ / ∂T₁",
@@ -10132,6 +10345,68 @@ export function computeParameterSensitivity(
             "Exact static derivative of Figure 3’s printed first-joint equation, τ₁ = −T₁R₁ + T₂R₂ + T₃R₂ − T₄R₁, evaluated at the visitor-declared R₁ study scale. It is a tendon-to-torque relation only; the grant does not disclose dynamic finger motion, contact force, or grasp stability.",
         };
       }
+
+      if (key === "tensionT2N") {
+        return {
+          metricName: "Figure 3 Third-Joint Torque",
+          derivativeSymbol: "∂τ₃ / ∂T₂",
+          derivativeValue: Number(r2M.toFixed(6)),
+          derivativeUnit: "N·m / N",
+          interpretation:
+            "Exact static derivative of Figure 3’s printed third-joint equation, τ₃ = T₂R₂ − T₃R₂, evaluated at the visitor-declared R₂ study scale. Tendon-to-torque static relation only; the grant does not disclose dynamic finger motion.",
+        };
+      }
+
+      if (key === "tensionT3N") {
+        return {
+          metricName: "Figure 3 Third-Joint Torque",
+          derivativeSymbol: "∂τ₃ / ∂T₃",
+          derivativeValue: Number((-r2M).toFixed(6)),
+          derivativeUnit: "N·m / N",
+          interpretation:
+            "Exact static derivative of Figure 3’s printed third-joint equation, τ₃ = T₂R₂ − T₃R₂, evaluated at the visitor-declared R₂ study scale. Tendon-to-torque static relation only.",
+        };
+      }
+
+      if (key === "tensionT4N") {
+        return {
+          metricName: "Figure 3 First-Joint Torque",
+          derivativeSymbol: "∂τ₁ / ∂T₄",
+          derivativeValue: Number((-r1M).toFixed(6)),
+          derivativeUnit: "N·m / N",
+          interpretation:
+            "Exact static derivative of Figure 3’s printed first-joint equation, τ₁ = −T₁R₁ + T₂R₂ + T₃R₂ − T₄R₁, evaluated at the visitor-declared R₁ study scale.",
+        };
+      }
+
+      if (key === "radiusScaleMm") {
+        const dTau1_dR =
+          (-1.2 * controls.tensionT1N +
+            controls.tensionT2N +
+            controls.tensionT3N -
+            1.2 * controls.tensionT4N) /
+          1000;
+        return {
+          metricName: "Figure 3 First-Joint Torque Scale",
+          derivativeSymbol: "∂τ₁ / ∂R_scale",
+          derivativeValue: Number(dTau1_dR.toFixed(6)),
+          derivativeUnit: "N·m / mm",
+          interpretation:
+            "Rate of change of first-joint torque τ₁ with respect to the visitor-declared pulley radius scale R₂ under the current tendon tensions.",
+        };
+      }
+
+      if (key === "firstIdlerFixed") {
+        return {
+          metricName: "Claim 2 Idler Probe State",
+          derivativeSymbol: "ΔProbe / ΔIdler",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete sensitivity: Claim 2 first-idler position constraint state (probe is active when first idler is fixed).",
+        };
+      }
+
       break;
     }
 

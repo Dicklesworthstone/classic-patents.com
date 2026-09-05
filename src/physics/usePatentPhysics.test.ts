@@ -3013,4 +3013,235 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       resetPatentPhysicsParams(id);
     }
   });
+
+  test("Kamen Segway aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-6302230-kamen-segway";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.riderPitchDeg));
+
+    try {
+      setPatentPhysicsParam(id, "pitch", 6);
+      const params = getPatentPhysicsParams(id);
+      expect(params.riderPitchDeg).toBe(6);
+      expect(params.pitch).toBe(6);
+      expect(params.lean).toBe(6);
+      expect(observations).toEqual([6]);
+      expect(getLastParamChange(id)?.id).toBe("riderPitchDeg");
+
+      setPatentPhysicsParam(id, "steering", 0.4);
+      expect(getPatentPhysicsParams(id).steeringInput).toBe(0.4);
+      expect(getPatentPhysicsParams(id).steering).toBe(0.4);
+      expect(getPatentPhysicsParams(id).yaw).toBe(0.4);
+
+      setPatentPhysicsParam(id, "mass", 85);
+      expect(getPatentPhysicsParams(id).riderMassKg).toBe(85);
+      expect(getPatentPhysicsParams(id).mass).toBe(85);
+
+      setPatentPhysicsParam(id, "friction", 0.7);
+      expect(getPatentPhysicsParams(id).groundFrictionCoeff).toBe(0.7);
+      expect(getPatentPhysicsParams(id).friction).toBe(0.7);
+
+      setPatentPhysicsParam(id, "speedLimit", 4.5);
+      expect(getPatentPhysicsParams(id).speedLimitMS).toBe(4.5);
+      expect(getPatentPhysicsParams(id).speedLimit).toBe(4.5);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Balancing Margin")?.value).not.toBe(
+        initial.find((m) => m.label === "Balancing Margin")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Roomba aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-6594844-roomba";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.wheelSpeedMps));
+
+    try {
+      setPatentPhysicsParam(id, "speed", 0.5);
+      const params = getPatentPhysicsParams(id);
+      expect(params.wheelSpeedMps).toBe(0.5);
+      expect(params.speed).toBe(0.5);
+      expect(params.driveSpeed).toBe(0.5);
+      expect(observations).toEqual([0.5]);
+      expect(getLastParamChange(id)?.id).toBe("wheelSpeedMps");
+
+      setPatentPhysicsParam(id, "turnRate", 2.0);
+      expect(getPatentPhysicsParams(id).turnRateRadSec).toBe(2.0);
+      expect(getPatentPhysicsParams(id).turnRate).toBe(2.0);
+      expect(getPatentPhysicsParams(id).deflectionRate).toBe(2.0);
+
+      setPatentPhysicsParam(id, "opticalSensor", 0);
+      expect(getPatentPhysicsParams(id).opticalSensorEnabled).toBe(0);
+      expect(getPatentPhysicsParams(id).opticalSensor).toBe(0);
+      expect(getPatentPhysicsParams(id).optical).toBe(0);
+      expect(getPatentPhysicsParams(id).claim1Optical).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Context Drive Speed")?.value).toBe("0.50");
+      expect(metrics.find((m) => m.label === "Context Drive Speed")?.value).not.toBe(
+        initial.find((m) => m.label === "Context Drive Speed")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Multi-Touch aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-7479949-multitouch";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.fingerSeparationMm));
+
+    try {
+      setPatentPhysicsParam(id, "separation", 70);
+      const params = getPatentPhysicsParams(id);
+      expect(params.fingerSeparationMm).toBe(70);
+      expect(params.separation).toBe(70);
+      expect(params.separationMm).toBe(70);
+      expect(params.fingerSeparation).toBe(70);
+      expect(observations).toEqual([70]);
+      expect(getLastParamChange(id)?.id).toBe("fingerSeparationMm");
+
+      const zoomMetrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(zoomMetrics.find((m) => m.label === "Claim 8 Scale Illustration")?.value).toBe(
+        "1.40x",
+      );
+
+      setPatentPhysicsParam(id, "count", 1);
+      expect(getPatentPhysicsParams(id).fingerCount).toBe(1);
+      expect(getPatentPhysicsParams(id).count).toBe(1);
+      expect(getPatentPhysicsParams(id).fingers).toBe(1);
+
+      setPatentPhysicsParam(id, "motionAngle", 45);
+      expect(getPatentPhysicsParams(id).initialMotionAngleDeg).toBe(45);
+      expect(getPatentPhysicsParams(id).initialMotionAngle).toBe(45);
+      expect(getPatentPhysicsParams(id).motionAngle).toBe(45);
+      expect(getPatentPhysicsParams(id).angleDeg).toBe(45);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Command Classification")?.value).toBe(
+        "Two-Dimensional Translation",
+      );
+      expect(metrics.find((m) => m.label === "Command Classification")?.value).not.toBe(
+        initial.find((m) => m.label === "Command Classification")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Salisbury Robot Hand aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-4921293-salisbury-robot-hand";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.tensionT1N));
+
+    try {
+      setPatentPhysicsParam(id, "t1", 25);
+      const params = getPatentPhysicsParams(id);
+      expect(params.tensionT1N).toBe(25);
+      expect(params.t1).toBe(25);
+      expect(params.tension1).toBe(25);
+      expect(params.T1).toBe(25);
+      expect(observations).toEqual([25]);
+      expect(getLastParamChange(id)?.id).toBe("tensionT1N");
+
+      setPatentPhysicsParam(id, "t2", 30);
+      expect(getPatentPhysicsParams(id).tensionT2N).toBe(30);
+      expect(getPatentPhysicsParams(id).t2).toBe(30);
+
+      setPatentPhysicsParam(id, "t3", 15);
+      expect(getPatentPhysicsParams(id).tensionT3N).toBe(15);
+      expect(getPatentPhysicsParams(id).t3).toBe(15);
+
+      setPatentPhysicsParam(id, "t4", 20);
+      expect(getPatentPhysicsParams(id).tensionT4N).toBe(20);
+      expect(getPatentPhysicsParams(id).t4).toBe(20);
+
+      setPatentPhysicsParam(id, "radiusScale", 15);
+      expect(getPatentPhysicsParams(id).radiusScaleMm).toBe(15);
+      expect(getPatentPhysicsParams(id).radiusScale).toBe(15);
+      expect(getPatentPhysicsParams(id).rScale).toBe(15);
+
+      setPatentPhysicsParam(id, "idlerFixed", 0);
+      expect(getPatentPhysicsParams(id).firstIdlerFixed).toBe(0);
+      expect(getPatentPhysicsParams(id).idlerFixed).toBe(0);
+      expect(getPatentPhysicsParams(id).claim2Idler).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Axis 1 source torque")?.value).not.toBe(
+        initial.find((m) => m.label === "Axis 1 source torque")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Clavel Delta Robot aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-4976582-clavel-delta-robot";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.armOneInput));
+
+    try {
+      setPatentPhysicsParam(id, "arm1", 0.3);
+      const params = getPatentPhysicsParams(id);
+      expect(params.armOneInput).toBe(0.3);
+      expect(params.arm1).toBe(0.3);
+      expect(params.arm1Input).toBe(0.3);
+      expect(params.input1).toBe(0.3);
+      expect(observations).toEqual([0.3]);
+      expect(getLastParamChange(id)?.id).toBe("armOneInput");
+
+      setPatentPhysicsParam(id, "arm2", -0.2);
+      expect(getPatentPhysicsParams(id).armTwoInput).toBe(-0.2);
+      expect(getPatentPhysicsParams(id).arm2).toBe(-0.2);
+
+      setPatentPhysicsParam(id, "arm3", 0.1);
+      expect(getPatentPhysicsParams(id).armThreeInput).toBe(0.1);
+      expect(getPatentPhysicsParams(id).arm3).toBe(0.1);
+
+      setPatentPhysicsParam(id, "toolAxis", 0.5);
+      expect(getPatentPhysicsParams(id).toolAxisInput).toBe(0.5);
+      expect(getPatentPhysicsParams(id).toolAxis).toBe(0.5);
+      expect(getPatentPhysicsParams(id).toolInput).toBe(0.5);
+      expect(getPatentPhysicsParams(id).axis10).toBe(0.5);
+
+      setPatentPhysicsParam(id, "claim1", 0);
+      expect(getPatentPhysicsParams(id).claim1TopologyEnabled).toBe(0);
+      expect(getPatentPhysicsParams(id).claim1).toBe(0);
+      expect(getPatentPhysicsParams(id).topologyEnabled).toBe(0);
+
+      setPatentPhysicsParam(id, "claim2", 0);
+      expect(getPatentPhysicsParams(id).claim2PairedBarsEnabled).toBe(0);
+      expect(getPatentPhysicsParams(id).claim2).toBe(0);
+
+      setPatentPhysicsParam(id, "claim8", 0);
+      expect(getPatentPhysicsParams(id).claim8BaseMotorEnabled).toBe(0);
+      expect(getPatentPhysicsParams(id).claim8).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Claim Topology")?.value).toBe("WITHHELD");
+      expect(metrics.find((m) => m.label === "Claim Topology")?.value).not.toBe(
+        initial.find((m) => m.label === "Claim Topology")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
 });

@@ -95,34 +95,39 @@ const GRAVITY_M_S2 = 9.80665;
 const MAX_MOTOR_TORQUE_TOTAL_NM = 160.0;
 const KV_SPEED = 12.0;
 
-export function readKamenSegwayControls(params: Record<string, number>): KamenSegwayControls {
+export function readKamenSegwayControls(
+  params: Record<string, number | undefined> = {},
+): KamenSegwayControls {
   return {
     riderPitchDeg:
-      params.riderPitchDeg !== undefined
-        ? params.riderPitchDeg
-        : KAMEN_SEGWAY_DEFAULT_CONTROLS.riderPitchDeg,
+      params.riderPitchDeg ??
+      params.pitch ??
+      params.lean ??
+      KAMEN_SEGWAY_DEFAULT_CONTROLS.riderPitchDeg,
     steeringInput:
-      params.steeringInput !== undefined
-        ? params.steeringInput
-        : KAMEN_SEGWAY_DEFAULT_CONTROLS.steeringInput,
+      params.steeringInput ??
+      params.steering ??
+      params.yaw ??
+      KAMEN_SEGWAY_DEFAULT_CONTROLS.steeringInput,
     riderMassKg:
-      params.riderMassKg !== undefined
-        ? params.riderMassKg
-        : KAMEN_SEGWAY_DEFAULT_CONTROLS.riderMassKg,
+      params.riderMassKg ??
+      params.mass ??
+      params.riderMass ??
+      KAMEN_SEGWAY_DEFAULT_CONTROLS.riderMassKg,
     groundFrictionCoeff:
-      params.groundFrictionCoeff !== undefined
-        ? params.groundFrictionCoeff
-        : KAMEN_SEGWAY_DEFAULT_CONTROLS.groundFrictionCoeff,
+      params.groundFrictionCoeff ??
+      params.friction ??
+      KAMEN_SEGWAY_DEFAULT_CONTROLS.groundFrictionCoeff,
     speedLimitMS:
-      params.speedLimitMS !== undefined
-        ? params.speedLimitMS
-        : KAMEN_SEGWAY_DEFAULT_CONTROLS.speedLimitMS,
+      params.speedLimitMS ?? params.speedLimit ?? KAMEN_SEGWAY_DEFAULT_CONTROLS.speedLimitMS,
     claim1BalanceEnabled:
       (params.claim1BalanceEnabled ??
+        params.balanceEnabled ??
         (KAMEN_SEGWAY_DEFAULT_CONTROLS.claim1BalanceEnabled ? 1 : 0)) >= 0.5,
     claim2RippleEnabled:
-      (params.claim2RippleEnabled ?? (KAMEN_SEGWAY_DEFAULT_CONTROLS.claim2RippleEnabled ? 1 : 0)) >=
-      0.5,
+      (params.claim2RippleEnabled ??
+        params.rippleEnabled ??
+        (KAMEN_SEGWAY_DEFAULT_CONTROLS.claim2RippleEnabled ? 1 : 0)) >= 0.5,
   };
 }
 

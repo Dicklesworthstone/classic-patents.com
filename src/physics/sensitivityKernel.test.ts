@@ -861,19 +861,83 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
   });
 
   test("Salisbury differentiates the printed Figure 3 tendon-to-torque map", () => {
-    const sens = computeParameterSensitivity("us-4921293-salisbury-robot-hand", "tensionT1N", {
-      radiusScaleMm: 10,
-    });
-    expect(sens).toMatchObject({
+    const id = "us-4921293-salisbury-robot-hand";
+    const sensT1 = computeParameterSensitivity(id, "tensionT1N", { radiusScaleMm: 10 });
+    expect(sensT1).toMatchObject({
       metricName: "Figure 3 First-Joint Torque",
       derivativeSymbol: "∂τ₁ / ∂T₁",
       derivativeValue: -0.012,
       derivativeUnit: "N·m / N",
     });
-    expect(sens?.interpretation).toContain("printed first-joint equation");
-    expect(
-      computeParameterSensitivity("us-4921293-salisbury-robot-hand", "graspForceN", {}),
-    ).toBeNull();
+    expect(sensT1?.interpretation).toContain("printed first-joint equation");
+
+    const sensT2 = computeParameterSensitivity(id, "tensionT2N", { radiusScaleMm: 10 });
+    expect(sensT2).toMatchObject({
+      metricName: "Figure 3 Third-Joint Torque",
+      derivativeSymbol: "∂τ₃ / ∂T₂",
+      derivativeValue: 0.01,
+      derivativeUnit: "N·m / N",
+    });
+
+    const sensT3 = computeParameterSensitivity(id, "tensionT3N", { radiusScaleMm: 10 });
+    expect(sensT3).toMatchObject({
+      metricName: "Figure 3 Third-Joint Torque",
+      derivativeSymbol: "∂τ₃ / ∂T₃",
+      derivativeValue: -0.01,
+      derivativeUnit: "N·m / N",
+    });
+
+    const sensT4 = computeParameterSensitivity(id, "tensionT4N", { radiusScaleMm: 10 });
+    expect(sensT4).toMatchObject({
+      metricName: "Figure 3 First-Joint Torque",
+      derivativeSymbol: "∂τ₁ / ∂T₄",
+      derivativeValue: -0.012,
+      derivativeUnit: "N·m / N",
+    });
+
+    const sensR = computeParameterSensitivity(id, "radiusScaleMm", {
+      tensionT1N: 18,
+      tensionT2N: 22,
+      tensionT3N: 10,
+      tensionT4N: 14,
+    });
+    expect(sensR).toMatchObject({
+      metricName: "Figure 3 First-Joint Torque Scale",
+      derivativeSymbol: "∂τ₁ / ∂R_scale",
+      derivativeValue: -0.0064,
+      derivativeUnit: "N·m / mm",
+    });
+
+    const sensIdler = computeParameterSensitivity(id, "firstIdlerFixed", {});
+    expect(sensIdler).toMatchObject({
+      metricName: "Claim 2 Idler Probe State",
+      derivativeSymbol: "ΔProbe / ΔIdler",
+      derivativeValue: 1.0,
+      derivativeUnit: "state / state",
+    });
+
+    // Aliases
+    expect(computeParameterSensitivity(id, "t1", { radiusScaleMm: 10 })?.derivativeValue).toBe(
+      -0.012,
+    );
+    expect(computeParameterSensitivity(id, "t2", { radiusScaleMm: 10 })?.derivativeValue).toBe(
+      0.01,
+    );
+    expect(computeParameterSensitivity(id, "t3", { radiusScaleMm: 10 })?.derivativeValue).toBe(
+      -0.01,
+    );
+    expect(computeParameterSensitivity(id, "t4", { radiusScaleMm: 10 })?.derivativeValue).toBe(
+      -0.012,
+    );
+    expect(computeParameterSensitivity(id, "radiusScale", {})?.derivativeValue).toBe(-0.0064);
+    expect(computeParameterSensitivity(id, "idlerFixed", {})?.derivativeValue).toBe(1.0);
+
+    // Bounds checking
+    expect(computeParameterSensitivity(id, "tensionT1N", { tensionT1N: -1 })).toBeNull();
+    expect(computeParameterSensitivity(id, "tensionT1N", { tensionT1N: 45 })).toBeNull();
+    expect(computeParameterSensitivity(id, "radiusScaleMm", { radiusScaleMm: 2 })).toBeNull();
+    expect(computeParameterSensitivity(id, "radiusScaleMm", { radiusScaleMm: 25 })).toBeNull();
+    expect(computeParameterSensitivity(id, "graspForceN", {})).toBeNull();
   });
 
   test("all non-refused patents in registry with valid controls return non-null sensitivities", () => {
@@ -1119,12 +1183,13 @@ describe("Sensitivities follow the current admitted operating point", () => {
   });
 
   test("Clavel follows normalized closed-chain height with all three current inputs", () => {
+    const id = "us-4976582-clavel-delta-robot";
     for (const params of [
       { armOneInput: 0, armTwoInput: 0, armThreeInput: 0 },
       { armOneInput: 0.2, armTwoInput: -0.15, armThreeInput: 0.1 },
     ]) {
       for (const key of ["armOneInput", "armTwoInput", "armThreeInput"] as const) {
-        const result = computeParameterSensitivity("us-4976582-clavel-delta-robot", key, params);
+        const result = computeParameterSensitivity(id, key, params);
         const expected = central(
           (value) => stepClavelDeltaRobotTopology({ ...params, [key]: value }).platformCenter[1],
           params[key],
@@ -1134,15 +1199,67 @@ describe("Sensitivities follow the current admitted operating point", () => {
         expect(result?.derivativeUnit).toBe("normalized / input fraction");
       }
     }
+
+    // Working-member axis 10 rotation
+    const toolSens = computeParameterSensitivity(id, "toolAxisInput", {});
+    expect(toolSens).toMatchObject({
+      metricName: "Working-Member Axis Rotation (Claim 8)",
+      derivativeSymbol: "∂θ_tool / ∂u_tool",
+      derivativeValue: Number(Math.PI.toFixed(6)),
+      derivativeUnit: "rad / normalized input",
+    });
+
+    // Claims
+    const claim1Sens = computeParameterSensitivity(id, "claim1TopologyEnabled", {});
+    expect(claim1Sens).toMatchObject({
+      metricName: "Claim 1 Spatial Parallel Architecture State",
+      derivativeSymbol: "ΔTopology / ΔClaim1",
+      derivativeValue: 1.0,
+      derivativeUnit: "state / state",
+    });
+
+    const claim2Sens = computeParameterSensitivity(id, "claim2PairedBarsEnabled", {});
+    expect(claim2Sens).toMatchObject({
+      metricName: "Claim 2 Paired Parallel Bars Attitude State",
+      derivativeSymbol: "ΔPairedBars / ΔClaim2",
+      derivativeValue: 1.0,
+      derivativeUnit: "state / state",
+    });
+
+    const claim8Sens = computeParameterSensitivity(id, "claim8BaseMotorEnabled", {});
+    expect(claim8Sens).toMatchObject({
+      metricName: "Claim 8 Base Motor Transmission State",
+      derivativeSymbol: "ΔBaseMotor / ΔClaim8",
+      derivativeValue: 1.0,
+      derivativeUnit: "state / state",
+    });
+
+    // Aliases
+    expect(computeParameterSensitivity(id, "arm1", {})).toBeDefined();
+    expect(computeParameterSensitivity(id, "arm2", {})).toBeDefined();
+    expect(computeParameterSensitivity(id, "arm3", {})).toBeDefined();
+    expect(computeParameterSensitivity(id, "toolAxis", {})?.derivativeValue).toBe(
+      Number(Math.PI.toFixed(6)),
+    );
+    expect(computeParameterSensitivity(id, "claim1", {})?.derivativeValue).toBe(1.0);
+    expect(computeParameterSensitivity(id, "claim2", {})?.derivativeValue).toBe(1.0);
+    expect(computeParameterSensitivity(id, "claim8", {})?.derivativeValue).toBe(1.0);
+
+    // Refusals and bounds
     expect(
-      computeParameterSensitivity("us-4976582-clavel-delta-robot", "armOneInput", {
+      computeParameterSensitivity(id, "armOneInput", {
         claim1TopologyEnabled: 0,
       }),
     ).toBeNull();
     expect(
-      computeParameterSensitivity("us-4976582-clavel-delta-robot", "armOneInput", {
+      computeParameterSensitivity(id, "armOneInput", {
         armOneInput: 1,
       }),
+    ).toBeNull();
+    expect(computeParameterSensitivity(id, "armOneInput", { armOneInput: -1.5 })).toBeNull();
+    expect(computeParameterSensitivity(id, "toolAxisInput", { toolAxisInput: 2.0 })).toBeNull();
+    expect(
+      computeParameterSensitivity(id, "claim1TopologyEnabled", { claim1TopologyEnabled: 3 }),
     ).toBeNull();
   });
 
@@ -1175,10 +1292,107 @@ describe("Sensitivities follow the current admitted operating point", () => {
           ?.derivativeValue,
       ).toBeLessThan(0);
     }
+
+    // Steering input derivative
+    const steerSens = computeParameterSensitivity("us-6302230-kamen-segway", "steeringInput", {});
+    expect(steerSens).toMatchObject({
+      metricName: "Differential Steering Motor Torque",
+      derivativeSymbol: "∂Δτ_steer / ∂u_steer",
+      derivativeValue: 36.0,
+      derivativeUnit: "N·m / yaw",
+    });
+    const steerWithheld = computeParameterSensitivity("us-6302230-kamen-segway", "steeringInput", {
+      claim1BalanceEnabled: 0,
+    });
+    expect(steerWithheld?.derivativeValue).toBe(0.0);
+
+    // Aliases
+    expect(computeParameterSensitivity("us-6302230-kamen-segway", "pitch", {})).toBeDefined();
+    expect(computeParameterSensitivity("us-6302230-kamen-segway", "lean", {})).toBeDefined();
+    expect(
+      computeParameterSensitivity("us-6302230-kamen-segway", "steering", {})?.derivativeValue,
+    ).toBe(36.0);
+    expect(computeParameterSensitivity("us-6302230-kamen-segway", "yaw", {})?.derivativeValue).toBe(
+      36.0,
+    );
+    expect(computeParameterSensitivity("us-6302230-kamen-segway", "friction", {})).toBeDefined();
+    expect(computeParameterSensitivity("us-6302230-kamen-segway", "speedLimit", {})).toBeDefined();
+
+    // Bounds checking
+    expect(
+      computeParameterSensitivity("us-6302230-kamen-segway", "riderPitchDeg", {
+        riderPitchDeg: 20,
+      }),
+    ).toBeNull();
+    expect(
+      computeParameterSensitivity("us-6302230-kamen-segway", "riderPitchDeg", {
+        riderPitchDeg: -20,
+      }),
+    ).toBeNull();
+    expect(
+      computeParameterSensitivity("us-6302230-kamen-segway", "steeringInput", {
+        steeringInput: 1.5,
+      }),
+    ).toBeNull();
+    expect(
+      computeParameterSensitivity("us-6302230-kamen-segway", "groundFrictionCoeff", {
+        groundFrictionCoeff: 0.1,
+      }),
+    ).toBeNull();
+    expect(
+      computeParameterSensitivity("us-6302230-kamen-segway", "speedLimitMS", { speedLimitMS: 1.0 }),
+    ).toBeNull();
     expect(
       computeParameterSensitivity("us-6302230-kamen-segway", "riderPitchDeg", {
         claim1BalanceEnabled: 0,
       }),
+    ).toBeNull();
+  });
+
+  test("Roomba derives straight advance rate, in-place turn rate, and optical redirect interlock", () => {
+    const id = "us-6594844-roomba";
+    const sensSpeed = computeParameterSensitivity(id, "wheelSpeedMps", { wheelSpeedMps: 0.3 });
+    expect(sensSpeed).toMatchObject({
+      metricName: "Contextual Chassis Advance Rate",
+      derivativeSymbol: "∂v_chassis / ∂v_command",
+      derivativeValue: 1,
+      derivativeUnit: "(m/s) / (m/s)",
+    });
+
+    const sensTurn = computeParameterSensitivity(id, "turnRateRadSec", { turnRateRadSec: 1.5 });
+    expect(sensTurn).toMatchObject({
+      metricName: "Contextual In-Place Turn Rate",
+      derivativeSymbol: "∂ω / ∂Rate",
+      derivativeValue: 1.0,
+      derivativeUnit: "rad·s⁻¹ / unit",
+    });
+
+    const sensOpt = computeParameterSensitivity(id, "opticalSensorEnabled", {
+      opticalSensorEnabled: 1,
+    });
+    expect(sensOpt).toMatchObject({
+      metricName: "Optical Redirect Interlock (Claim 1)",
+      derivativeSymbol: "ΔInterlock / Δoptical",
+      derivativeValue: 1.0,
+      derivativeUnit: "state / state",
+    });
+
+    // Aliases
+    expect(computeParameterSensitivity(id, "speed", {})?.derivativeValue).toBe(1);
+    expect(computeParameterSensitivity(id, "driveSpeed", {})?.derivativeValue).toBe(1);
+    expect(computeParameterSensitivity(id, "turnRate", {})?.derivativeValue).toBe(1.0);
+    expect(computeParameterSensitivity(id, "deflectionRate", {})?.derivativeValue).toBe(1.0);
+    expect(computeParameterSensitivity(id, "opticalSensor", {})?.derivativeValue).toBe(1.0);
+    expect(computeParameterSensitivity(id, "optical", {})?.derivativeValue).toBe(1.0);
+    expect(computeParameterSensitivity(id, "claim1Optical", {})?.derivativeValue).toBe(1.0);
+
+    // Bounds checking
+    expect(computeParameterSensitivity(id, "wheelSpeedMps", { wheelSpeedMps: 0.05 })).toBeNull();
+    expect(computeParameterSensitivity(id, "wheelSpeedMps", { wheelSpeedMps: 1.5 })).toBeNull();
+    expect(computeParameterSensitivity(id, "turnRateRadSec", { turnRateRadSec: 0.2 })).toBeNull();
+    expect(computeParameterSensitivity(id, "turnRateRadSec", { turnRateRadSec: 4.0 })).toBeNull();
+    expect(
+      computeParameterSensitivity(id, "opticalSensorEnabled", { opticalSensorEnabled: 2 }),
     ).toBeNull();
   });
 
@@ -1587,6 +1801,25 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeValue).toBe(1.0);
     }
 
+    // Initial motion angle
+    for (const angle of [0, 15, 30, 45, 90]) {
+      const sens = computeParameterSensitivity(id, "initialMotionAngleDeg", {
+        initialMotionAngleDeg: angle,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Initial Contact Motion Angle (Claim 1)");
+      expect(sens?.derivativeSymbol).toBe("∂θ_motion / ∂θ_input");
+      expect(sens?.derivativeUnit).toBe("° / °");
+      expect(sens?.derivativeValue).toBe(1.0);
+    }
+
+    // Aliases
+    expect(computeParameterSensitivity(id, "separation", {})?.derivativeValue).toBe(0.02);
+    expect(computeParameterSensitivity(id, "count", {})?.derivativeValue).toBe(1.0);
+    expect(computeParameterSensitivity(id, "initialMotionAngle", {})?.derivativeValue).toBe(1.0);
+    expect(computeParameterSensitivity(id, "motionAngle", {})?.derivativeValue).toBe(1.0);
+    expect(computeParameterSensitivity(id, "angleDeg", {})?.derivativeValue).toBe(1.0);
+
     // Invalid parameters
     for (const invalid of [14, 121, Number.NaN]) {
       expect(
@@ -1595,6 +1828,13 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
     for (const invalid of [-1, 3, Number.NaN]) {
       expect(computeParameterSensitivity(id, "fingerCount", { fingerCount: invalid })).toBeNull();
+    }
+    for (const invalid of [-1, 91, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "initialMotionAngleDeg", {
+          initialMotionAngleDeg: invalid,
+        }),
+      ).toBeNull();
     }
   });
 

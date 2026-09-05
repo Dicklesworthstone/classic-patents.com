@@ -205,36 +205,36 @@ export function stepSalisburyRobotHandSi(
   };
 }
 
-const numberParam = (
-  params: Record<string, number | boolean>,
-  key: string,
-  fallback: number,
-): number => (typeof params[key] === "number" ? params[key] : fallback);
-
 export function readSalisburyRobotHandControls(
-  params: Record<string, number | boolean>,
+  params: Record<string, number | boolean | undefined> = {},
 ): SalisburyRobotHandControls {
+  const p = params as Record<string, number | boolean | undefined>;
+  const t1 = p.tensionT1N ?? p.t1 ?? p.tension1 ?? p.T1;
+  const t2 = p.tensionT2N ?? p.t2 ?? p.tension2 ?? p.T2;
+  const t3 = p.tensionT3N ?? p.t3 ?? p.tension3 ?? p.T3;
+  const t4 = p.tensionT4N ?? p.t4 ?? p.tension4 ?? p.T4;
+  const rScale = p.radiusScaleMm ?? p.radiusScale ?? p.rScale ?? p.r2Scale;
+  const idler = p.firstIdlerFixed ?? p.idlerFixed ?? p.claim2Idler;
+  const routing = p.claim1RoutingEnabled ?? p.claim1RoutingPresent ?? p.claim1;
+
   return {
-    tensionT1N: numberParam(params, "tensionT1N", SALISBURY_HAND_DEFAULT_CONTROLS.tensionT1N),
-    tensionT2N: numberParam(params, "tensionT2N", SALISBURY_HAND_DEFAULT_CONTROLS.tensionT2N),
-    tensionT3N: numberParam(params, "tensionT3N", SALISBURY_HAND_DEFAULT_CONTROLS.tensionT3N),
-    tensionT4N: numberParam(params, "tensionT4N", SALISBURY_HAND_DEFAULT_CONTROLS.tensionT4N),
-    radiusScaleMm: numberParam(
-      params,
-      "radiusScaleMm",
-      SALISBURY_HAND_DEFAULT_CONTROLS.radiusScaleMm,
-    ),
+    tensionT1N: typeof t1 === "number" ? t1 : SALISBURY_HAND_DEFAULT_CONTROLS.tensionT1N,
+    tensionT2N: typeof t2 === "number" ? t2 : SALISBURY_HAND_DEFAULT_CONTROLS.tensionT2N,
+    tensionT3N: typeof t3 === "number" ? t3 : SALISBURY_HAND_DEFAULT_CONTROLS.tensionT3N,
+    tensionT4N: typeof t4 === "number" ? t4 : SALISBURY_HAND_DEFAULT_CONTROLS.tensionT4N,
+    radiusScaleMm:
+      typeof rScale === "number" ? rScale : SALISBURY_HAND_DEFAULT_CONTROLS.radiusScaleMm,
     firstIdlerFixed:
-      typeof params.firstIdlerFixed === "boolean"
-        ? params.firstIdlerFixed
-        : typeof params.firstIdlerFixed === "number"
-          ? params.firstIdlerFixed >= 0.5
+      typeof idler === "boolean"
+        ? idler
+        : typeof idler === "number"
+          ? idler >= 0.5
           : SALISBURY_HAND_DEFAULT_CONTROLS.firstIdlerFixed,
     claim1RoutingPresent:
-      typeof params.claim1RoutingEnabled === "boolean"
-        ? params.claim1RoutingEnabled
-        : typeof params.claim1RoutingEnabled === "number"
-          ? params.claim1RoutingEnabled >= 0.5
+      typeof routing === "boolean"
+        ? routing
+        : typeof routing === "number"
+          ? routing >= 0.5
           : SALISBURY_HAND_DEFAULT_CONTROLS.claim1RoutingPresent,
   };
 }
