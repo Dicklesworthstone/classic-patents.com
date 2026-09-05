@@ -24,6 +24,7 @@ import {
   type LandPolaroidState,
   stepBaekelandBakelite,
   stepBellTelephone,
+  stepCarlsonElectrophotography,
   stepCorlissEngine,
   stepDavenportMotor,
   stepDeLavalSeparator,
@@ -36,6 +37,7 @@ import {
   stepGliddenBarbedWire,
   stepGoodyearRubber as stepGoodyearRubberCatalog,
   stepGrammeDynamo,
+  stepHaberAmmonia,
   stepHallAluminium,
   stepHewittMercuryLamp,
   stepHyattCelluloid,
@@ -72,6 +74,7 @@ import {
   stepDaVinci as stepDaVinciKernel,
 } from "./daVinciKernel";
 import { stepDieselEngine as kernelStepDieselEngine } from "./dieselEngineKernel";
+import { type EInkControls, type EInkState, stepEInk } from "./eInkKernel";
 import { stepFermiKinetics } from "./fermiKinetics";
 import { tryGoddardApparatusWasmStep, tryGoddardWasmStep } from "./goddardWasm";
 import { stepHopkinsPotash } from "./hopkinsPotashKernel";
@@ -1481,6 +1484,31 @@ export const FrankenSimEngine = {
   /** US 4,921,293 nine-joint/12-cable topology and source-printed static torque law. */
   stepSalisburyRobotHand(controls: SalisburyRobotHandControls): SalisburyMechanismState {
     return stepSalisburyTopology(controls);
+  },
+
+  /** US 971,501 Haber catalytic ammonia synthesis equilibrium. */
+  stepHaberAmmonia(params: {
+    pressureAtm?: number;
+    temperatureCelsius?: number;
+    feedFlowRateMolesPerSec?: number;
+    catalystActivity?: number;
+  }) {
+    return stepHaberAmmonia(params);
+  },
+
+  /** US 2,297,691 Carlson electrophotography photoconductive charge and discharge. */
+  stepCarlsonElectrophotography(params: {
+    coronaVoltageKv?: number;
+    exposureLuxSec?: number;
+    layerThicknessUm?: number;
+    fuserTemperatureC?: number;
+  }) {
+    return stepCarlsonElectrophotography(params);
+  },
+
+  /** US 6,120,588 E-Ink electrophoretic microcapsule particle mobility. */
+  stepEInk(controls: EInkControls, dtSec = 0.016, prevState?: EInkState) {
+    return stepEInk(controls, dtSec, prevState);
   },
 
   createTelemetryEnvelope(

@@ -2733,4 +2733,207 @@ describe("Sensitivities follow the current admitted operating point", () => {
       ).toBeNull();
     }
   });
+
+  test("Haber Ammonia derives equilibrium yield, reaction rate, residence time, and catalyst activity sensitivities", () => {
+    const id = "us-971501-haber-ammonia";
+
+    // Pressure sensitivity
+    const sensP = computeParameterSensitivity(id, "pressureAtm", {
+      pressureAtm: 175,
+      temperatureCelsius: 530,
+      feedFlowRateMolesPerSec: 50,
+      catalystActivity: 1.0,
+    });
+    expect(sensP).toBeDefined();
+    expect(sensP?.metricName).toBe("Equilibrium Ammonia Yield");
+    expect(sensP?.derivativeSymbol).toBe("∂X_eq / ∂P");
+    expect(sensP?.derivativeUnit).toBe("% / bar");
+    expect(sensP?.derivativeValue).toBe(0.18);
+
+    // Temperature sensitivity
+    const sensT = computeParameterSensitivity(id, "temperatureCelsius", {
+      pressureAtm: 175,
+      temperatureCelsius: 530,
+      feedFlowRateMolesPerSec: 50,
+      catalystActivity: 1.0,
+    });
+    expect(sensT).toBeDefined();
+    expect(sensT?.metricName).toBe("Catalytic Reaction Rate");
+    expect(sensT?.derivativeSymbol).toBe("∂k_cat / ∂T");
+    expect(sensT?.derivativeUnit).toBe("s⁻¹ / °C");
+    expect(sensT?.derivativeValue).toBe(0.045);
+
+    // Feed flow sensitivity
+    const sensFlow = computeParameterSensitivity(id, "feedFlowRateMolesPerSec", {
+      pressureAtm: 175,
+      temperatureCelsius: 530,
+      feedFlowRateMolesPerSec: 50,
+      catalystActivity: 1.0,
+    });
+    expect(sensFlow).toBeDefined();
+    expect(sensFlow?.metricName).toBe("Space Velocity Residence Time");
+    expect(sensFlow?.derivativeSymbol).toBe("∂τ_res / ∂F_feed");
+    expect(sensFlow?.derivativeUnit).toBe("s / (mol/s)");
+    expect(sensFlow?.derivativeValue).toBe(-0.045);
+
+    // Catalyst activity sensitivity
+    const sensAct = computeParameterSensitivity(id, "catalystActivity", {
+      pressureAtm: 175,
+      temperatureCelsius: 530,
+      feedFlowRateMolesPerSec: 50,
+      catalystActivity: 1.0,
+    });
+    expect(sensAct).toBeDefined();
+    expect(sensAct?.metricName).toBe("Catalytic Turnover Frequency");
+    expect(sensAct?.derivativeSymbol).toBe("∂TOF / ∂a_cat");
+    expect(sensAct?.derivativeUnit).toBe("s⁻¹ / unit_activity");
+    expect(sensAct?.derivativeValue).toBe(1.0);
+
+    // Bounds checking
+    for (const invalid of [49, 301, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "pressureAtm", { pressureAtm: invalid })).toBeNull();
+    }
+    for (const invalid of [349, 651, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "temperatureCelsius", { temperatureCelsius: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [9, 151, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "feedFlowRateMolesPerSec", {
+          feedFlowRateMolesPerSec: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.4, 2.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "catalystActivity", { catalystActivity: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Carlson Electrophotography derives surface potential, discharge, layer thickness, and fuser sensitivities", () => {
+    const id = "us-2297691-carlson-electrophotography";
+
+    // Corona voltage sensitivity
+    const sensCorona = computeParameterSensitivity(id, "coronaVoltageKv", {
+      coronaVoltageKv: 6.5,
+      exposureLuxSec: 12,
+      layerThicknessUm: 30,
+      fuserTemperatureC: 185,
+    });
+    expect(sensCorona).toBeDefined();
+    expect(sensCorona?.metricName).toBe("Surface Potential Build");
+    expect(sensCorona?.derivativeSymbol).toBe("∂V_s / ∂V_corona");
+    expect(sensCorona?.derivativeUnit).toBe("V / kV");
+    expect(sensCorona?.derivativeValue).toBe(95.0);
+
+    // Optical exposure sensitivity
+    const sensExp = computeParameterSensitivity(id, "exposureLuxSec", {
+      coronaVoltageKv: 6.5,
+      exposureLuxSec: 12,
+      layerThicknessUm: 30,
+      fuserTemperatureC: 185,
+    });
+    expect(sensExp).toBeDefined();
+    expect(sensExp?.metricName).toBe("Photoconductive Discharge Sensitivity");
+    expect(sensExp?.derivativeSymbol).toBe("∂V_latent / ∂H_exp");
+    expect(sensExp?.derivativeUnit).toBe("V / (lx·s)");
+    expect(sensExp?.derivativeValue).toBe(-18.5);
+
+    // Photoreceptor thickness sensitivity
+    const sensThick = computeParameterSensitivity(id, "layerThicknessUm", {
+      coronaVoltageKv: 6.5,
+      exposureLuxSec: 12,
+      layerThicknessUm: 30,
+      fuserTemperatureC: 185,
+    });
+    expect(sensThick).toBeDefined();
+    expect(sensThick?.metricName).toBe("Acceptance Potential Gradient");
+    expect(sensThick?.derivativeSymbol).toBe("∂V_max / ∂d_layer");
+    expect(sensThick?.derivativeUnit).toBe("V / µm");
+    expect(sensThick?.derivativeValue).toBe(15.0);
+
+    // Fuser temperature sensitivity
+    const sensFuser = computeParameterSensitivity(id, "fuserTemperatureC", {
+      coronaVoltageKv: 6.5,
+      exposureLuxSec: 12,
+      layerThicknessUm: 30,
+      fuserTemperatureC: 185,
+    });
+    expect(sensFuser).toBeDefined();
+    expect(sensFuser?.metricName).toBe("Resin Toner Fixation Viscosity");
+    expect(sensFuser?.derivativeSymbol).toBe("∂η_melt / ∂T_fuser");
+    expect(sensFuser?.derivativeUnit).toBe("(Pa·s) / °C");
+    expect(sensFuser?.derivativeValue).toBe(-0.025);
+
+    // Bounds checking
+    for (const invalid of [3.9, 8.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "coronaVoltageKv", { coronaVoltageKv: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-1, 31, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "exposureLuxSec", { exposureLuxSec: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [9, 61, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "layerThicknessUm", { layerThicknessUm: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [119, 221, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "fuserTemperatureC", { fuserTemperatureC: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Kwolek Kevlar returns null for withheld material-performance model", () => {
+    const id = "us-3671542-kwolek-kevlar";
+    expect(computeParameterSensitivity(id, "spinSpeed", {})).toBeNull();
+    expect(computeParameterSensitivity(id, "tenacity", {})).toBeNull();
+    expect(computeParameterSensitivity(id, "drawRatio", {})).toBeNull();
+  });
+
+  test("E-Ink derives electrophoretic particle velocity and fluid viscous drag damping sensitivities", () => {
+    const id = "us-6120588-eink";
+
+    // Voltage sensitivity
+    const sensV = computeParameterSensitivity(id, "electrodeVoltageVolts", {
+      electrodeVoltageVolts: 15,
+      fluidViscosityCp: 2.0,
+    });
+    expect(sensV).toBeDefined();
+    expect(sensV?.metricName).toBe("Electrophoretic Particle Velocity");
+    expect(sensV?.derivativeSymbol).toBe("∂v_particle / ∂V_electrode");
+    expect(sensV?.derivativeUnit).toBe("mm·s⁻¹ / V");
+    expect(sensV?.derivativeValue).toBe(0.045);
+
+    // Viscosity sensitivity
+    const sensVisc = computeParameterSensitivity(id, "fluidViscosityCp", {
+      electrodeVoltageVolts: 15,
+      fluidViscosityCp: 2.0,
+    });
+    expect(sensVisc).toBeDefined();
+    expect(sensVisc?.metricName).toBe("Hydrodynamic Viscous Drag Damping");
+    expect(sensVisc?.derivativeSymbol).toBe("∂v_drift / ∂η_fluid");
+    expect(sensVisc?.derivativeUnit).toBe("(mm/s) / cP");
+    expect(sensVisc?.derivativeValue).toBe(-0.018);
+
+    // Bounds checking
+    for (const invalid of [-16, 16, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "electrodeVoltageVolts", {
+          electrodeVoltageVolts: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.4, 5.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "fluidViscosityCp", { fluidViscosityCp: invalid }),
+      ).toBeNull();
+    }
+  });
 });

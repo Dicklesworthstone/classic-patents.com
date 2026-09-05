@@ -1046,6 +1046,28 @@ export function computeParameterSensitivity(
     }
 
     case "us-971501-haber-ammonia": {
+      const pressure = params.pressureAtm ?? params.synthesisPressureBar ?? params.pressure ?? 175;
+      const temp = params.temperatureCelsius ?? params.synthesisTempC ?? params.temperature ?? 530;
+      const feedFlow = params.feedFlowRateMolesPerSec ?? params.feedFlow ?? 50;
+      const activity = params.catalystActivity ?? params.activity ?? 1.0;
+
+      if (
+        !Number.isFinite(pressure) ||
+        pressure < 50 ||
+        pressure > 300 ||
+        !Number.isFinite(temp) ||
+        temp < 350 ||
+        temp > 650 ||
+        !Number.isFinite(feedFlow) ||
+        feedFlow < 10 ||
+        feedFlow > 150 ||
+        !Number.isFinite(activity) ||
+        activity < 0.5 ||
+        activity > 2.0
+      ) {
+        return null;
+      }
+
       if (
         controlKey === "pressureAtm" ||
         controlKey === "synthesisPressureBar" ||
@@ -1070,6 +1092,26 @@ export function computeParameterSensitivity(
           derivativeValue: 0.045,
           derivativeUnit: "s⁻¹ / °C",
           interpretation: "Arrhenius activation rate acceleration over promoted iron catalyst.",
+        };
+      }
+      if (controlKey === "feedFlowRateMolesPerSec" || controlKey === "feedFlow") {
+        return {
+          metricName: "Space Velocity Residence Time",
+          derivativeSymbol: "∂τ_res / ∂F_feed",
+          derivativeValue: -0.045,
+          derivativeUnit: "s / (mol/s)",
+          interpretation:
+            "Increased feed flow shortens catalytic bed contact residence time, shifting reactor output toward kinetic limitation.",
+        };
+      }
+      if (controlKey === "catalystActivity" || controlKey === "activity") {
+        return {
+          metricName: "Catalytic Turnover Frequency",
+          derivativeSymbol: "∂TOF / ∂a_cat",
+          derivativeValue: 1.0,
+          derivativeUnit: "s⁻¹ / unit_activity",
+          interpretation:
+            "Linear scaling of active iron surface site turnover with promoter loading.",
         };
       }
       break;
@@ -1105,6 +1147,28 @@ export function computeParameterSensitivity(
     }
 
     case "us-2297691-carlson-electrophotography": {
+      const corona = params.coronaVoltageKv ?? params.coronaVoltage ?? 6.5;
+      const exposure = params.exposureLuxSec ?? params.exposure ?? 12;
+      const thickness = params.layerThicknessUm ?? params.layerThickness ?? 30;
+      const fuserTemp = params.fuserTemperatureC ?? params.fuserTemp ?? 185;
+
+      if (
+        !Number.isFinite(corona) ||
+        corona < 4.0 ||
+        corona > 8.0 ||
+        !Number.isFinite(exposure) ||
+        exposure < 0 ||
+        exposure > 30 ||
+        !Number.isFinite(thickness) ||
+        thickness < 10 ||
+        thickness > 60 ||
+        !Number.isFinite(fuserTemp) ||
+        fuserTemp < 120 ||
+        fuserTemp > 220
+      ) {
+        return null;
+      }
+
       if (controlKey === "coronaVoltageKv" || controlKey === "coronaVoltage") {
         return {
           metricName: "Surface Potential Build",
@@ -1112,6 +1176,36 @@ export function computeParameterSensitivity(
           derivativeValue: 95.0,
           derivativeUnit: "V / kV",
           interpretation: "Electrostatic scorotron ion charging of sulfur/selenium layer.",
+        };
+      }
+      if (controlKey === "exposureLuxSec" || controlKey === "exposure") {
+        return {
+          metricName: "Photoconductive Discharge Sensitivity",
+          derivativeSymbol: "∂V_latent / ∂H_exp",
+          derivativeValue: -18.5,
+          derivativeUnit: "V / (lx·s)",
+          interpretation:
+            "Photocarrier generation and transit collapsing electrostatic surface charge in illuminated areas.",
+        };
+      }
+      if (controlKey === "layerThicknessUm" || controlKey === "layerThickness") {
+        return {
+          metricName: "Acceptance Potential Gradient",
+          derivativeSymbol: "∂V_max / ∂d_layer",
+          derivativeValue: 15.0,
+          derivativeUnit: "V / µm",
+          interpretation:
+            "Dielectric layer breakdown voltage ceiling scaling with photoconductive sulfur/selenium film thickness.",
+        };
+      }
+      if (controlKey === "fuserTemperatureC" || controlKey === "fuserTemp") {
+        return {
+          metricName: "Resin Toner Fixation Viscosity",
+          derivativeSymbol: "∂η_melt / ∂T_fuser",
+          derivativeValue: -0.025,
+          derivativeUnit: "(Pa·s) / °C",
+          interpretation:
+            "Thermal softening and paper fiber penetration of resin toner under heated roller contact.",
         };
       }
       break;
@@ -2315,7 +2409,21 @@ export function computeParameterSensitivity(
     }
 
     case "us-6120588-eink": {
-      if (controlKey === "electrodeVoltageVolts") {
+      const voltage = params.electrodeVoltageVolts ?? params.voltage ?? 15;
+      const viscosity = params.fluidViscosityCp ?? params.viscosityCp ?? params.viscosity ?? 2.0;
+
+      if (
+        !Number.isFinite(voltage) ||
+        voltage < -15 ||
+        voltage > 15 ||
+        !Number.isFinite(viscosity) ||
+        viscosity < 0.5 ||
+        viscosity > 5.0
+      ) {
+        return null;
+      }
+
+      if (controlKey === "electrodeVoltageVolts" || controlKey === "voltage") {
         return {
           metricName: "Electrophoretic Particle Velocity",
           derivativeSymbol: "∂v_particle / ∂V_electrode",
@@ -2323,6 +2431,20 @@ export function computeParameterSensitivity(
           derivativeUnit: "mm·s⁻¹ / V",
           interpretation:
             "Electrophoretic drift velocity of charged titania particles across microcapsule fluid.",
+        };
+      }
+      if (
+        controlKey === "fluidViscosityCp" ||
+        controlKey === "viscosityCp" ||
+        controlKey === "viscosity"
+      ) {
+        return {
+          metricName: "Hydrodynamic Viscous Drag Damping",
+          derivativeSymbol: "∂v_drift / ∂η_fluid",
+          derivativeValue: -0.018,
+          derivativeUnit: "(mm/s) / cP",
+          interpretation:
+            "Stokes drag retardation reducing electrophoretic particle transit speed through suspending hydrocarbon fluid.",
         };
       }
       break;
