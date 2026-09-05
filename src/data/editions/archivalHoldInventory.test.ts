@@ -51,8 +51,8 @@ describe("archival hold inventory and partition contract (3hc.3)", () => {
       (e) => e.readerDeliveryMode === "transcript",
     ).length;
 
-    expect(editionDeliveries).toBe(90);
-    expect(transcriptDeliveries).toBe(13);
+    expect(editionDeliveries).toBe(88);
+    expect(transcriptDeliveries).toBe(15);
     expect(editionDeliveries + transcriptDeliveries).toBe(103);
   });
 

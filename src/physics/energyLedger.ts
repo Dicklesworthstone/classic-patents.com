@@ -1,17 +1,22 @@
 /**
  * energyLedger.ts
  *
- * Port-Hamiltonian Energy Ledger & Dirac Conservation Structure Engine
- * based on FrankenSim's `fs-phs` and `fs-time` crates.
- *
- * Evaluates the continuous energy balance:
- *   dH/dt = u^T * y - D(x)
- * where H(x) is total stored energy, u^T*y is external port power flow,
- * and D(x) >= 0 is the positive semi-definite dissipation function.
+ * Energy readouts with an explicit distinction between admitted kernel
+ * outputs, legacy illustrative snapshots, and unavailable quantities.
+ * A static snapshot cannot certify dH/dt = Pin - Pout. Only Edison's
+ * shared steady radiative model currently provides a checked power balance.
  */
 
-import { stepEdisonBulb } from "./catalogKernels";
 import { hostStateDigest } from "./deepWasm";
+import {
+  EDISON_DECLARED_FILAMENT_LENGTH_CM,
+  EDISON_DECLARED_HOT_RESISTANCE_OHM,
+  EDISON_SOURCE_MAX_RESISTANCE_OHM,
+  EDISON_SOURCE_MIN_RESISTANCE_OHM,
+  stepEdisonRadiativeBalance,
+} from "./edisonWasm";
+import { ENERGY_CHANNEL_OMISSION_REASONS } from "./energyChannels";
+import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 export interface EnergyComponents {
   kineticJoules: number;
@@ -22,12 +27,19 @@ export interface EnergyComponents {
 }
 
 export interface PortHamiltonianReport {
+  availability: "kernel-partial" | "steady-power" | "illustrative-snapshot" | "unavailable";
+  reason: string;
+  runtimeSource: "host-estimate" | "ts-fallback" | "wasm" | "unavailable";
+  storedEnergyAvailable: boolean;
+  inputPowerAvailable: boolean;
+  dissipatedPowerAvailable: boolean;
   energy: EnergyComponents;
   inputPowerWatts: number;
   dissipatedPowerWatts: number;
   netPowerRateWatts: number;
-  supplyDefectWatts: number;
-  isConservative: boolean;
+  balance:
+    | { kind: "unavailable"; reason: string }
+    | { kind: "steady-state"; residualWatts: number; toleranceWatts: number; balanced: boolean };
   /** Host multiply-xor unless a WASM module actually hashed. Never fake `blake3:`. */
   stateDigest: string;
   digestKind: "host" | "blake3";
@@ -47,22 +59,38 @@ export function computePortHamiltonianEnergy(
   let thermal = 0;
   let powerIn = 0;
   let dissipated = 0;
+  let availability: PortHamiltonianReport["availability"] = "illustrative-snapshot";
+  let runtimeSource: PortHamiltonianReport["runtimeSource"] = "host-estimate";
+  let reason =
+    "Illustrative snapshot with assumed operating constants; not a measured energy balance or a historical performance claim.";
+  let storedEnergyAvailable = true;
+  let inputPowerAvailable = true;
+  const dissipatedPowerAvailable = true;
+  let balance: PortHamiltonianReport["balance"] = {
+    kind: "unavailable",
+    reason:
+      "No accepted energy trajectory and integrated port work are available to measure a conservation residual.",
+  };
+  const omissionReason =
+    ENERGY_CHANNEL_OMISSION_REASONS[patentId as keyof typeof ENERGY_CHANNEL_OMISSION_REASONS];
+  if (
+    omissionReason ||
+    !Number.isFinite(simTimeSec) ||
+    Object.values(params).some((value) => !Number.isFinite(value))
+  ) {
+    return unavailableEnergy(omissionReason ?? "Non-finite energy input.");
+  }
 
   switch (patentId) {
     case "us-821393-wright-flyer": {
-      const airspeed = params.airspeedKts ?? 28.0;
-      const v = airspeed * 0.514444; // m/s
-      const massKg = 340.0; // Airframe + pilot
-      const altitudeM = params.altitudeM ?? 3.5;
-
-      kinetic = 0.5 * massKg * v * v;
-      potential = massKg * 9.80665 * altitudeM;
-
-      // Engine power (12 HP ~ 8950 W)
-      powerIn = (params.throttlePct ?? 80) * 89.5;
-      // Aerodynamic total drag dissipation
-      const totalDragN = 0.5 * 1.225 * v * v * 47.4 * 0.082;
-      dissipated = totalDragN * v;
+      const si = stepWrightFlyerSi(readWrightControls(params));
+      kinetic = si.translationalKineticJoules;
+      dissipated = si.aerodynamicDragPowerWatts;
+      availability = "kernel-partial";
+      runtimeSource = "ts-fallback";
+      inputPowerAvailable = false;
+      reason =
+        "Translational kinetic energy and drag power from the shared Wright SI step at the prescribed mph airspeed and declared gross weight. Engine input, altitude energy, and a complete energy trajectory are not solved.";
       break;
     }
 
@@ -75,15 +103,27 @@ export function computePortHamiltonianEnergy(
 
     case "us-223898-edison-lightbulb":
     case "us-223898-edison-lamp": {
-      const bulb = stepEdisonBulb({
-        voltage: params.voltage ?? params.mainsVoltageV ?? 110,
-        hotResistanceOhm: params.hotResistanceOhm,
+      const resistance = params.hotResistanceOhm ?? EDISON_DECLARED_HOT_RESISTANCE_OHM;
+      if (
+        resistance < EDISON_SOURCE_MIN_RESISTANCE_OHM ||
+        resistance > EDISON_SOURCE_MAX_RESISTANCE_OHM
+      )
+        return unavailableEnergy("Hot resistance is outside the source's 100–500 Ω example range.");
+      const state = stepEdisonRadiativeBalance({
+        voltageV: params.voltage ?? params.mainsVoltageV ?? 110,
+        hotResistanceOhm: resistance,
+        filamentLengthCm: params.filamentLength ?? EDISON_DECLARED_FILAMENT_LENGTH_CM,
       });
-      // Steady admitted rung: no source-backed filament mass or heat capacity
-      // exists for a stored-energy claim, so only the closed power flow is shown.
-      thermal = 0;
-      powerIn = bulb.radiantWatts;
-      dissipated = bulb.radiantWatts;
+      if (!state)
+        return unavailableEnergy("The shared Edison radiative kernel refused these inputs.");
+      powerIn = state.joule_power_w;
+      dissipated = state.radiative_power_w;
+      availability = "steady-power";
+      runtimeSource = state.runtimeSource;
+      storedEnergyAvailable = false;
+      reason =
+        "Steady filament power only: Joule input minus net thermal radiation from the shared kernel. No filament mass or heat capacity is assumed, and no transient stored-energy claim is made.";
+      balance = measureSteadyPowerBalance(powerIn, dissipated);
       break;
     }
 
@@ -855,19 +895,18 @@ export function computePortHamiltonianEnergy(
     }
 
     default: {
-      kinetic = 100.0;
-      potential = 50.0;
-      em = 20.0;
-      thermal = 80.0;
-      powerIn = 150.0;
-      dissipated = 148.0;
-      break;
+      return unavailableEnergy("No energy model is registered for this patent.");
     }
   }
 
   const totalH = kinetic + potential + em + thermal;
   const netPower = powerIn - dissipated;
-  const supplyDefect = Math.abs(netPower * 0.015); // Bounded discrepancy
+  if (
+    ![kinetic, potential, em, thermal, powerIn, dissipated, totalH, netPower].every(Number.isFinite)
+  )
+    return unavailableEnergy("The energy calculation produced a non-finite quantity.");
+  if (availability === "illustrative-snapshot" && totalH === 0 && powerIn === 0 && dissipated === 0)
+    return unavailableEnergy("This source-bounded model supplies no stored-energy or power data.");
 
   const stateDigest = hostStateDigest([
     kinetic,
@@ -877,11 +916,17 @@ export function computePortHamiltonianEnergy(
     powerIn,
     dissipated,
     netPower,
-    supplyDefect,
     simTimeSec,
   ]);
 
   return {
+    availability,
+    reason,
+    runtimeSource,
+    storedEnergyAvailable,
+    inputPowerAvailable,
+    dissipatedPowerAvailable,
+    balance,
     energy: {
       kineticJoules: Number(kinetic.toFixed(2)),
       potentialJoules: Number(potential.toFixed(2)),
@@ -892,9 +937,51 @@ export function computePortHamiltonianEnergy(
     inputPowerWatts: Number(powerIn.toFixed(1)),
     dissipatedPowerWatts: Number(dissipated.toFixed(1)),
     netPowerRateWatts: Number(netPower.toFixed(1)),
-    supplyDefectWatts: Number(supplyDefect.toFixed(3)),
-    isConservative: supplyDefect < 5.0 || supplyDefect / Math.max(1.0, powerIn) < 0.05,
     stateDigest,
     digestKind: "host",
+  };
+}
+
+function unavailableEnergy(reason: string): PortHamiltonianReport {
+  return {
+    availability: "unavailable",
+    reason,
+    runtimeSource: "unavailable",
+    storedEnergyAvailable: false,
+    inputPowerAvailable: false,
+    dissipatedPowerAvailable: false,
+    // Legacy numeric slots are not evidence of zero energy. Consumers must use availability.
+    energy: {
+      kineticJoules: 0,
+      potentialJoules: 0,
+      electromagneticJoules: 0,
+      thermalJoules: 0,
+      totalHamiltonianJoules: 0,
+    },
+    inputPowerWatts: 0,
+    dissipatedPowerWatts: 0,
+    netPowerRateWatts: 0,
+    balance: { kind: "unavailable", reason },
+    stateDigest: "unavailable",
+    digestKind: "host",
+  };
+}
+
+/** A steady power residual in watts, never a transient ΔH claim in joules.
+ * Tolerance is 10 nW absolute plus the larger 1e-8 relative scale. */
+export function measureSteadyPowerBalance(
+  inputWatts: number,
+  outputWatts: number,
+): PortHamiltonianReport["balance"] {
+  if (![inputWatts, outputWatts].every((value) => Number.isFinite(value) && value >= 0)) {
+    return { kind: "unavailable", reason: "Steady power ports must be finite and nonnegative." };
+  }
+  const residualWatts = inputWatts - outputWatts;
+  const toleranceWatts = 1e-8 * Math.max(1, inputWatts, outputWatts);
+  return {
+    kind: "steady-state",
+    residualWatts,
+    toleranceWatts,
+    balanced: Math.abs(residualWatts) <= toleranceWatts,
   };
 }

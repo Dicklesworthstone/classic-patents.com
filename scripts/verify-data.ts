@@ -32,6 +32,7 @@ import {
 } from "../src/physics/coverageManifest";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 import type { CuratedSpecificationBlock, CuratedSpecificationInlines } from "../src/types/patent";
+import { appRouterArchitectureError } from "./app-router-architecture";
 
 const MAX_PDF_TEXT_BUFFER_BYTES = 64 * 1024 * 1024;
 const BARE_DRAWING_REFERENCE = /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|division\s+\d+)\b/i;
@@ -198,17 +199,9 @@ async function main() {
   console.log(`Checking ${allPatents.length} curated historical patents...\n`);
 
   // Architectural Invariant Fail-Safe Gate: Pure Next.js App Router Integrity
-  const pagesDir = path.join(process.cwd(), "src", "pages");
-  const legacyPageSourceFiles = fs.existsSync(pagesDir)
-    ? fs
-        .readdirSync(pagesDir, { recursive: true, encoding: "utf8" })
-        .map((entry) => String(entry))
-        .filter((entry) => /\.(?:[cm]?[jt]sx?)$/.test(entry) && !entry.endsWith(".d.ts"))
-    : [];
-  if (legacyPageSourceFiles.length > 0) {
-    console.error(
-      `🚨 ARCHITECTURAL VIOLATION: legacy Pages Router source detected in src/pages: ${legacyPageSourceFiles.join(", ")}. Next.js 15 App Router apps must NOT contain a src/pages route.`,
-    );
+  const architectureError = appRouterArchitectureError(process.cwd());
+  if (architectureError) {
+    console.error(architectureError);
     process.exit(1);
   }
 

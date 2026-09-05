@@ -85,6 +85,10 @@ const figure = (number: number, label = `Fig. ${number}`) => {
  * draft while the complete primary-source comparison is repaired. The source
  * reader serves the complete page-marked reviewed ledger in the meantime.
  */
+function sourceBoundBlocks(blocks: CuratedSpecificationBlock[]): CuratedSpecificationBlock[] {
+  return blocks.filter((_block, blockIndex) => HELD_SOURCE_BOUND_BLOCK_INDEXES.has(blockIndex));
+}
+
 export const teslaTeleautomatonArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "b92da6bad46cca996f7ecc99a16a87bdd38d12b3e04a0fce11cc5f033aed849b",
@@ -94,7 +98,7 @@ export const teslaTeleautomatonArchivalEdition: CuratedSpecificationEdition = {
   // 2026-09-05 visual comparison. Do not present this candidate as a complete
   // archival edition; this is intentionally fail-open to the full ledger.
   completeFacsimileReviewed: false,
-  blocks: [
+  blocks: sourceBoundBlocks([
     {
       kind: "masthead",
       lines: [
@@ -501,7 +505,7 @@ export const teslaTeleautomatonArchivalEdition: CuratedSpecificationEdition = {
     },
     p([{ kind: "small-caps", text: "NIKOLA TESLA." }]),
     p(text("Witnesses: RAPHAËL NETTER, GEORGE SCHERFF.")),
-  ].filter((_block, blockIndex) => HELD_SOURCE_BOUND_BLOCK_INDEXES.has(blockIndex)),
+  ]),
 };
 
 /** Companion readings are authored against the block positions above; this file

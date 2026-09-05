@@ -2390,4 +2390,28 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
       },
     },
   },
+  "us-7479949-multitouch": {
+    sourcePdfSha256: "9b29747e60aad27302671e1be32fda99680c474d4e3a5ce0ffc93201460bfe1c",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI facsimile review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "direct-facsimile-crop-review",
+    acceptedOccurrenceCount: 6,
+    assets: {
+      "/patents/figures/us-7479949-multitouch/fig-1-source-crop-v1.png": {
+        sha256: "43647ee841f2fb14c715a51e39bd876432b78c4f3e7471247dd5f28c95172acc",
+        width: 2048,
+        height: 2310,
+      },
+      "/patents/figures/us-7479949-multitouch/fig-2-source-crop-v1.png": {
+        sha256: "3dfeee0cd9bce3ae385c629fcd3c2148675529d288a38a67672074955695b41d",
+        width: 2048,
+        height: 2310,
+      },
+      "/patents/figures/us-7479949-multitouch/fig-3-source-crop-v1.png": {
+        sha256: "d6ae607a1d201b525d037a6649d08e5c9c75283821f08d5c1658ae3fc2d66b53",
+        width: 2048,
+        height: 2310,
+      },
+    },
+  },
 } as const satisfies Readonly<Record<string, ArchivalFigureAcceptanceAttestation>>;

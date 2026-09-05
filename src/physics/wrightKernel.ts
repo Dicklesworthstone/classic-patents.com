@@ -29,6 +29,10 @@ export interface WrightControls {
 
 export interface WrightSiState {
   airspeedMps: number;
+  /** Translational energy only, using the declared gross weight; not total aircraft energy. */
+  translationalKineticJoules: number;
+  /** Aerodynamic drag power at the prescribed airspeed; no engine/thrust balance is solved. */
+  aerodynamicDragPowerWatts: number;
   dynamicPressurePa: number;
   liftNewtons: number;
   inducedDragNewtons: number;
@@ -193,6 +197,8 @@ export function stepWrightFlyerSi(controls: WrightControls): WrightSiState {
   );
   return {
     airspeedMps,
+    translationalKineticJoules: 0.5 * (WRIGHT_GROSS_WEIGHT_N / 9.80665) * airspeedMps ** 2,
+    aerodynamicDragPowerWatts: totalDragNewtons * airspeedMps,
     dynamicPressurePa: q,
     liftNewtons,
     inducedDragNewtons,

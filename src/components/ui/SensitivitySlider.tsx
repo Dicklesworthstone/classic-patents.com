@@ -92,7 +92,7 @@ export const SensitivitySlider: React.FC<SensitivitySliderProps> = ({
         }`}
       />
 
-      {/* Live Automatic Differentiation Sensitivity Pill (Hover or Mobile Tap) */}
+      {/* Local model sensitivity (hover or mobile tap). */}
       {sensitivity && (
         <div
           id={`${id}-sensitivity-detail`}

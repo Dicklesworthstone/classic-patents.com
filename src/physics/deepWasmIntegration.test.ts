@@ -139,15 +139,16 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
   });
 
   describe("Port-Hamiltonian Energy Ledger (Phase 3)", () => {
-    test("computes conservative energy balance for Wright Flyer", () => {
+    test("reads Wright kinetic energy and drag without claiming an unmeasured balance", () => {
       const ledger = computePortHamiltonianEnergy("us-821393-wright-flyer", {
-        airspeedKts: 28.0,
+        airspeed: 28.0,
         altitudeM: 3.5,
         throttlePct: 80,
       });
       expect(ledger.energy.totalHamiltonianJoules).toBeGreaterThan(10000);
-      expect(ledger.inputPowerWatts).toBeGreaterThan(5000);
-      expect(ledger.isConservative).toBe(true);
+      expect(ledger.inputPowerAvailable).toBe(false);
+      expect(ledger.dissipatedPowerWatts).toBeGreaterThan(0);
+      expect(ledger.balance.kind).toBe("unavailable");
       expect(ledger.stateDigest).toMatch(/^host:[0-9a-f]{8}$/);
       expect(ledger.digestKind).toBe("host");
     });
@@ -165,7 +166,7 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       });
       expect(ledger.inputPowerWatts).toBe(0);
       expect(ledger.dissipatedPowerWatts).toBe(0);
-      expect(ledger.isConservative).toBe(true);
+      expect(ledger.balance.kind).toBe("unavailable");
     });
 
     test("digests Edison's closed steady power flow as real host state", () => {
@@ -175,7 +176,9 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       });
       expect(ledger.energy.totalHamiltonianJoules).toBe(0);
       expect(ledger.inputPowerWatts).toBeGreaterThan(0);
-      expect(ledger.dissipatedPowerWatts).toBe(ledger.inputPowerWatts);
+      expect(ledger.dissipatedPowerWatts).toBeCloseTo(ledger.inputPowerWatts, 8);
+      expect(ledger.balance).toMatchObject({ kind: "steady-state", balanced: true });
+      expect(ledger.storedEnergyAvailable).toBe(false);
       expect(ledger.stateDigest).toMatch(/^host:[0-9a-f]{8}$/);
       expect(ledger.stateDigest).not.toBe("host:00000000");
     });
@@ -188,7 +191,7 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       });
       expect(ledger.energy.thermalJoules).toBeGreaterThan(5000);
       expect(ledger.inputPowerWatts).toBeGreaterThan(1000);
-      expect(ledger.isConservative).toBe(true);
+      expect(ledger.balance.kind).toBe("unavailable");
     });
 
     test("does not fabricate a Pelton energy ledger beyond the three-sheet source", () => {
@@ -206,7 +209,7 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       });
       expect(ledger.inputPowerWatts).toBe(0);
       expect(ledger.dissipatedPowerWatts).toBe(0);
-      expect(ledger.isConservative).toBe(true);
+      expect(ledger.balance.kind).toBe("unavailable");
     });
 
     test("does not fabricate an Otto energy ledger from unprinted operating data", () => {
@@ -223,7 +226,7 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       });
       expect(ledger.inputPowerWatts).toBe(0);
       expect(ledger.dissipatedPowerWatts).toBe(0);
-      expect(ledger.isConservative).toBe(true);
+      expect(ledger.balance.kind).toBe("unavailable");
     });
 
     test("refuses a stored-energy ledger for Maiman while the stateless pulse model lacks field state", () => {
@@ -235,7 +238,7 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
         expect(ledger.energy.totalHamiltonianJoules).toBe(0);
         expect(ledger.inputPowerWatts).toBe(0);
         expect(ledger.dissipatedPowerWatts).toBe(0);
-        expect(ledger.isConservative).toBe(true);
+        expect(ledger.balance.kind).toBe("unavailable");
       }
     });
 
@@ -254,7 +257,7 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       });
       expect(ledger.inputPowerWatts).toBe(0);
       expect(ledger.dissipatedPowerWatts).toBe(0);
-      expect(ledger.isConservative).toBe(true);
+      expect(ledger.balance.kind).toBe("unavailable");
     });
   });
 

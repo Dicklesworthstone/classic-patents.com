@@ -5,7 +5,10 @@ import path from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { multiTouchArchivalEdition } from "@/data/editions/multiTouchEdition";
 import { multiTouchPatent } from "@/data/patents/multitouch";
-import { completeArchivalEditionForViewer } from "./publicationApproval";
+import {
+  completeArchivalEditionForViewer,
+  evaluateArchivalPublicationState,
+} from "./publicationApproval";
 import { reviewedLedgerTextForViewer } from "./reviewedLedgerPublicationEvidence.server";
 
 const PINNED_SHA256 = "9b29747e60aad27302671e1be32fda99680c474d4e3a5ce0ffc93201460bfe1c";
@@ -91,5 +94,25 @@ describe("US 7,479,949 Apple Multi-Touch Heuristics Archival Edition Contract", 
     const matches = content.match(/--- REVIEWED TRANSCRIPTION PAGE \d+ OF 364 ---/g);
     expect(matches).toBeDefined();
     expect(matches?.length).toBe(364);
+  });
+
+  test("figure manifest binds all 6 occurrences to accepted source-pixel crops", () => {
+    const decision = evaluateArchivalPublicationState(multiTouchPatent);
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 6,
+      acceptedFigureCount: 6,
+      attestation: {
+        acceptanceBasis: "direct-facsimile-crop-review",
+        acceptedOccurrenceCount: 6,
+        matchesEdition: true,
+        matchesLocators: true,
+      },
+    });
+    expect(decision.figureManifest.figures.every((f) => f.status === "accepted")).toBe(true);
+    expect(decision.figureManifest.figures.map((f) => f.sourcePdfPage)).toEqual([5, 6, 7, 5, 6, 7]);
+    for (const figure of decision.figureManifest.figures) {
+      expect(figure.sourceRaster).toEqual({ width: 2560, height: 3300 });
+      expect(figure.sourceRectPixels).toEqual({ x: 256, y: 495, width: 2048, height: 2310 });
+    }
   });
 });

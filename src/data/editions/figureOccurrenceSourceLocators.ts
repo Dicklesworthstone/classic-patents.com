@@ -5252,6 +5252,49 @@ function teslaCoil593138SourceSheetLocator(args: {
   };
 }
 
+const MULTI_TOUCH_SOURCE_RASTER = { width: 2560, height: 3300 } as const;
+const MULTI_TOUCH_EVIDENCE_REFERENCE =
+  "docs/provenance/us-7479949-multitouch.md#figure-crop-review-and-preservation-boundary";
+
+const MULTI_TOUCH_CROPS = {
+  1: {
+    activeAsset: "/patents/figures/us-7479949-multitouch/fig-1-source-crop-v1.png",
+    sourcePdfPage: 5,
+    sourceRectPixels: { x: 256, y: 495, width: 2048, height: 2310 },
+  },
+  2: {
+    activeAsset: "/patents/figures/us-7479949-multitouch/fig-2-source-crop-v1.png",
+    sourcePdfPage: 6,
+    sourceRectPixels: { x: 256, y: 495, width: 2048, height: 2310 },
+  },
+  3: {
+    activeAsset: "/patents/figures/us-7479949-multitouch/fig-3-source-crop-v1.png",
+    sourcePdfPage: 7,
+    sourceRectPixels: { x: 256, y: 495, width: 2048, height: 2310 },
+  },
+} as const;
+
+function multiTouchLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  figure: keyof typeof MULTI_TOUCH_CROPS;
+}): FigureOccurrenceSourceLocator {
+  const crop = MULTI_TOUCH_CROPS[args.figure];
+  return {
+    occurrenceKey: args.occurrenceKey,
+    activeAsset: crop.activeAsset,
+    sourcePdfPage: crop.sourcePdfPage,
+    sourceRaster: MULTI_TOUCH_SOURCE_RASTER,
+    sourceRectPixels: crop.sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      crop.sourceRectPixels,
+      MULTI_TOUCH_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: MULTI_TOUCH_EVIDENCE_REFERENCE,
+  };
+}
+
 export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorRegistry = {
   "us-4575330-hull-stereolithography": [
     hullStereolithographyLocator({
@@ -7312,6 +7355,32 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
     parsonsTurbineSourceSheetLocator({
       occurrenceKey: "edition-block-28-group-0-inline-1",
       sourcePdfPage: 3,
+    }),
+  ],
+  "us-7479949-multitouch": [
+    multiTouchLocator({
+      occurrenceKey: "edition-block-7-group-0-inline-1",
+      figure: 1,
+    }),
+    multiTouchLocator({
+      occurrenceKey: "edition-block-7-group-0-inline-3",
+      figure: 2,
+    }),
+    multiTouchLocator({
+      occurrenceKey: "edition-block-7-group-0-inline-5",
+      figure: 3,
+    }),
+    multiTouchLocator({
+      occurrenceKey: "edition-block-9-group-0-inline-1",
+      figure: 1,
+    }),
+    multiTouchLocator({
+      occurrenceKey: "edition-block-10-group-0-inline-1",
+      figure: 2,
+    }),
+    multiTouchLocator({
+      occurrenceKey: "edition-block-11-group-0-inline-1",
+      figure: 3,
     }),
   ],
   "us-x8277-mccormick-reaper": [

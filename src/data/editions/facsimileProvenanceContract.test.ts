@@ -156,7 +156,7 @@ function parseProvenanceReceipt(markdownContent: string): {
 } {
   const shaMatch = markdownContent.match(/SHA-256.*?:.*?`?([a-f0-9]{64})`?/i);
   const pageMatch = markdownContent.match(
-    /(?:Total Facsimile Page Count|PDF page count|PDF pages|Total Page Count|Page Count)[*:\s]+(\d+)/i,
+    /(?:Total Facsimile Page Count|PDF page count|PDF pages|Total Page Count|Page Count)[*:\s]*[:|][*:\s]*(\d+)/i,
   );
   const hasRightsBasis = /Rights Basis/i.test(markdownContent);
   const hasPreservationBoundaries = /(?:boundar(?:y|ies)|preservation|layer separation)/i.test(

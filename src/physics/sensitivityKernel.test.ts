@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { allPatents } from "@/data/patents";
+import { stepClavelDeltaRobotTopology } from "./clavelDeltaRobotKernel";
+import { readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
+import { EDISON_DECLARED_FILAMENT_LENGTH_CM, stepEdisonRadiativeBalance } from "./edisonWasm";
+import { readKamenSegwayControls, stepKamenSegwaySi } from "./kamenSegwayKernel";
 import { computeParameterSensitivity } from "./sensitivityKernel";
 import { PATENT_PHYSICS_REGISTRY } from "./telemetryData";
 
@@ -253,5 +257,193 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
   test("unknown patent returns null cleanly without throwing", () => {
     const res = computeParameterSensitivity("us-unknown-id", "someControl", {});
     expect(res).toBeNull();
+  });
+});
+
+describe("Sensitivities follow the current admitted operating point", () => {
+  function central(probe: (value: number) => number, value: number, h: number) {
+    return (probe(value + h) - probe(value - h)) / (2 * h);
+  }
+
+  test("Edison uses the selected resistance and canonical voltage, including 110 V / 200 Ω", () => {
+    for (const resistance of [100, 145, 200, 350, 500]) {
+      for (const voltage of [0, 55, 110, 150]) {
+        const params = { voltage, hotResistanceOhm: resistance };
+        const result = computeParameterSensitivity("us-223898-edison-lightbulb", "voltage", params);
+        expect(result?.derivativeValue).toBeCloseTo((2 * voltage) / resistance, 5);
+        expect(result?.derivativeUnit).toBe("W / V");
+        if (voltage > 0) {
+          const probe = (voltageV: number) => {
+            const state = stepEdisonRadiativeBalance({
+              voltageV,
+              hotResistanceOhm: resistance,
+              filamentLengthCm: EDISON_DECLARED_FILAMENT_LENGTH_CM,
+            });
+            expect(state).not.toBeNull();
+            return state?.joule_power_w ?? 0;
+          };
+          expect(result?.derivativeValue).toBeCloseTo(central(probe, voltage, 0.01), 5);
+        }
+      }
+    }
+    expect(
+      computeParameterSensitivity("us-223898-edison-lightbulb", "voltage", {
+        voltage: 110,
+        mainsVoltageV: 220,
+        hotResistanceOhm: 200,
+      })?.derivativeValue,
+    ).toBe(1.1);
+  });
+
+  test("Edison adds the negative resistance sensitivity without leaving the source range", () => {
+    for (const resistance of [100, 200, 500]) {
+      const result = computeParameterSensitivity("us-223898-edison-lightbulb", "hotResistanceOhm", {
+        voltage: 110,
+        hotResistanceOhm: resistance,
+      });
+      expect(result?.derivativeValue).toBeCloseTo(-(110 ** 2) / resistance ** 2, 5);
+      expect(result?.derivativeUnit).toBe("W / Ω");
+    }
+    for (const resistance of [0, 99, 501, Number.NaN, Number.POSITIVE_INFINITY]) {
+      expect(
+        computeParameterSensitivity("us-223898-edison-lightbulb", "voltage", {
+          voltage: 110,
+          hotResistanceOhm: resistance,
+        }),
+      ).toBeNull();
+    }
+  });
+
+  test("Crump temperature slope scales with the actual Arrhenius viscosity", () => {
+    for (const referenceViscosityPaS of [100, 280, 650]) {
+      for (const nozzleTempC of [205, 230, 260]) {
+        const params = {
+          referenceViscosityPaS,
+          nozzleTempC,
+          printSpeedMmS: 20,
+          pinchRollerForceN: 120,
+        };
+        const result = computeParameterSensitivity("us-5121329-crump-fdm", "nozzleTempC", params);
+        const state = stepCrumpFdmSi(readCrumpFdmControls(params));
+        expect(state.refusalReason).toBeUndefined();
+        const exact = (-48 / (8.314e-3 * (nozzleTempC + 273.15) ** 2)) * state.apparentViscosityPaS;
+        expect(result?.derivativeValue).toBeCloseTo(exact, 4);
+        expect(result?.derivativeValue).toBeCloseTo(
+          central(
+            (temperature) =>
+              stepCrumpFdmSi(readCrumpFdmControls({ ...params, nozzleTempC: temperature }))
+                .apparentViscosityPaS,
+            nozzleTempC,
+            0.01,
+          ),
+          4,
+        );
+      }
+    }
+  });
+
+  test("Crump flow and cooling derivatives follow nondefault road geometry", () => {
+    const params = {
+      roadWidthMm: 0.6,
+      layerHeightMm: 0.25,
+      printSpeedMmS: 15,
+      pinchRollerForceN: 120,
+    };
+    expect(
+      computeParameterSensitivity("us-5121329-crump-fdm", "printSpeedMmS", params)?.derivativeValue,
+    ).toBeCloseTo(0.6 * 0.25, 6);
+    expect(
+      computeParameterSensitivity("us-5121329-crump-fdm", "layerHeightMm", params)?.derivativeValue,
+    ).toBeCloseTo(
+      central(
+        (height) =>
+          stepCrumpFdmSi(readCrumpFdmControls({ ...params, layerHeightMm: height }))
+            .coolingTimeConstantSec,
+        0.25,
+        0.001,
+      ),
+      5,
+    );
+  });
+
+  test("Crump does not differentiate across input clamps or a refused extrusion state", () => {
+    const invalidStates: Record<string, number>[] = [
+      { nozzleTempC: 150 },
+      { nozzleTempC: 300 },
+      { nozzleTempC: 310 },
+      { nozzleTempC: Number.NaN },
+      { claim1ApparatusEnabled: 0 },
+      { claim2HeatingEnabled: 0 },
+    ];
+    for (const params of invalidStates) {
+      expect(computeParameterSensitivity("us-5121329-crump-fdm", "nozzleTempC", params)).toBeNull();
+    }
+    expect(
+      computeParameterSensitivity("us-5121329-crump-fdm", "printSpeedMmS", { printSpeedMmS: 5 }),
+    ).toBeNull();
+  });
+
+  test("Clavel follows normalized closed-chain height with all three current inputs", () => {
+    for (const params of [
+      { armOneInput: 0, armTwoInput: 0, armThreeInput: 0 },
+      { armOneInput: 0.2, armTwoInput: -0.15, armThreeInput: 0.1 },
+    ]) {
+      for (const key of ["armOneInput", "armTwoInput", "armThreeInput"] as const) {
+        const result = computeParameterSensitivity("us-4976582-clavel-delta-robot", key, params);
+        const expected = central(
+          (value) => stepClavelDeltaRobotTopology({ ...params, [key]: value }).platformCenter[1],
+          params[key],
+          0.0001,
+        );
+        expect(result?.derivativeValue).toBeCloseTo(expected, 5);
+        expect(result?.derivativeUnit).toBe("normalized / input fraction");
+      }
+    }
+    expect(
+      computeParameterSensitivity("us-4976582-clavel-delta-robot", "armOneInput", {
+        claim1TopologyEnabled: 0,
+      }),
+    ).toBeNull();
+    expect(
+      computeParameterSensitivity("us-4976582-clavel-delta-robot", "armOneInput", {
+        armOneInput: 1,
+      }),
+    ).toBeNull();
+  });
+
+  test("Segway gradients change with rider mass and the live balancing-margin model", () => {
+    for (const riderMassKg of [45, 75, 110]) {
+      const params = { riderMassKg, riderPitchDeg: 3, groundFrictionCoeff: 0.85, speedLimitMS: 4 };
+      for (const [key, output] of [
+        ["riderPitchDeg", "gravityOverturningTorqueNm"],
+        ["groundFrictionCoeff", "maxTractionForceN"],
+        ["speedLimitMS", "balancingMarginRatio"],
+      ] as const) {
+        const result = computeParameterSensitivity("us-6302230-kamen-segway", key, params);
+        const expected = central(
+          (value) =>
+            stepKamenSegwaySi(readKamenSegwayControls({ ...params, [key]: value }))[output],
+          params[key],
+          0.0001,
+        );
+        expect(result?.derivativeValue).toBeCloseTo(
+          expected,
+          key === "groundFrictionCoeff" ? 2 : 4,
+        );
+      }
+      expect(
+        computeParameterSensitivity("us-6302230-kamen-segway", "groundFrictionCoeff", params)
+          ?.derivativeValue,
+      ).toBeCloseTo((riderMassKg + 43) * 9.80665, 2);
+      expect(
+        computeParameterSensitivity("us-6302230-kamen-segway", "speedLimitMS", params)
+          ?.derivativeValue,
+      ).toBeLessThan(0);
+    }
+    expect(
+      computeParameterSensitivity("us-6302230-kamen-segway", "riderPitchDeg", {
+        claim1BalanceEnabled: 0,
+      }),
+    ).toBeNull();
   });
 });

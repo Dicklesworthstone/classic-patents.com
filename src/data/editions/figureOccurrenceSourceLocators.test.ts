@@ -1307,6 +1307,14 @@ const WOZNIAK_APPLE_OCCURRENCES = Object.fromEntries(
   FIGURE_OCCURRENCE_SOURCE_LOCATORS[WOZNIAK_APPLE_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
 );
 
+const MULTI_TOUCH_ID = "us-7479949-multitouch";
+const MULTI_TOUCH_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[MULTI_TOUCH_ID].assets,
+);
+const MULTI_TOUCH_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[MULTI_TOUCH_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
+);
+
 const VALIDATION_OPTIONS = {
   canonicalAssetsByPatent: {
     [WOZNIAK_APPLE_ID]: WOZNIAK_APPLE_ASSETS,
@@ -1395,6 +1403,7 @@ const VALIDATION_OPTIONS = {
     [MAXIM_MACHINE_GUN_ID]: MAXIM_MACHINE_GUN_ASSETS,
     [DAIMLER_ENGINE_ID]: DAIMLER_ENGINE_ASSETS,
     [PARSONS_TURBINE_ID]: PARSONS_TURBINE_ASSETS,
+    [MULTI_TOUCH_ID]: MULTI_TOUCH_ASSETS,
     [MCCORMICK_REAPER_ID]: MCCORMICK_REAPER_ASSETS,
   },
   canonicalOccurrencesByPatent: {
@@ -1484,6 +1493,7 @@ const VALIDATION_OPTIONS = {
     [MAXIM_MACHINE_GUN_ID]: MAXIM_MACHINE_GUN_OCCURRENCES,
     [DAIMLER_ENGINE_ID]: DAIMLER_ENGINE_OCCURRENCES,
     [PARSONS_TURBINE_ID]: PARSONS_TURBINE_OCCURRENCES,
+    [MULTI_TOUCH_ID]: MULTI_TOUCH_OCCURRENCES,
     [MCCORMICK_REAPER_ID]: MCCORMICK_REAPER_OCCURRENCES,
   },
   sourcePdfPageCountsByPatent: {
@@ -1573,6 +1583,7 @@ const VALIDATION_OPTIONS = {
     [MAXIM_MACHINE_GUN_ID]: 5,
     [DAIMLER_ENGINE_ID]: 6,
     [PARSONS_TURBINE_ID]: 8,
+    [MULTI_TOUCH_ID]: 364,
     [MCCORMICK_REAPER_ID]: 3,
   },
 } as const;
@@ -1667,6 +1678,7 @@ describe("figure occurrence source locators", () => {
       MAXIM_MACHINE_GUN_ID,
       DAIMLER_ENGINE_ID,
       PARSONS_TURBINE_ID,
+      MULTI_TOUCH_ID,
       MCCORMICK_REAPER_ID,
     ]);
     expect(locators).toHaveLength(3);
@@ -1937,6 +1949,33 @@ describe("figure occurrence source locators", () => {
       },
     );
     expect(result.valid, result.errors.join("\n")).toBe(true);
+  });
+
+  test("validates US 7,479,949 Apple Multi-Touch figure occurrence locators against active edition", () => {
+    const locators = FIGURE_OCCURRENCE_SOURCE_LOCATORS[MULTI_TOUCH_ID];
+    expect(locators).toHaveLength(6);
+    const result = validateFigureOccurrenceSourceLocators(
+      { [MULTI_TOUCH_ID]: locators },
+      {
+        canonicalAssetsByPatent: { [MULTI_TOUCH_ID]: MULTI_TOUCH_ASSETS },
+        canonicalOccurrencesByPatent: { [MULTI_TOUCH_ID]: MULTI_TOUCH_OCCURRENCES },
+        sourcePdfPageCountsByPatent: { [MULTI_TOUCH_ID]: 364 },
+      },
+    );
+    expect(result.valid, result.errors.join("\n")).toBe(true);
+    expect(locators.map((l) => l.occurrenceKey)).toEqual([
+      "edition-block-7-group-0-inline-1",
+      "edition-block-7-group-0-inline-3",
+      "edition-block-7-group-0-inline-5",
+      "edition-block-9-group-0-inline-1",
+      "edition-block-10-group-0-inline-1",
+      "edition-block-11-group-0-inline-1",
+    ]);
+    expect(locators.map((l) => l.sourcePdfPage)).toEqual([5, 6, 7, 5, 6, 7]);
+    for (const locator of locators) {
+      expect(locator.sourceRaster).toEqual({ width: 2560, height: 3300 });
+      expect(locator.sourceRectPixels).toEqual({ x: 256, y: 495, width: 2048, height: 2310 });
+    }
   });
 
   test("derives normalized rectangles from the exact source pixels", () => {

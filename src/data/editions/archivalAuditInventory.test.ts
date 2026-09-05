@@ -29,9 +29,9 @@ describe("server-only archival audit inventory", () => {
       // reviewed ledgers while their stricter editorial packets are repaired.
       // That is a source-reader change, not a loss of primary-source access.
       readerDeliveryCounts: { edition: 88, transcript: 15, facsimile: 0 },
-      unacceptedFigureOccurrenceCount: 225,
+      unacceptedFigureOccurrenceCount: 219,
       recordsWithAttestedFiguresMissingLocators: 0,
-      recordsMissingFigureAttestationsAndLocators: 3,
+      recordsMissingFigureAttestationsAndLocators: 2,
     });
   }, 30000);
 

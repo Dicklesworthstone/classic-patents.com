@@ -172,16 +172,27 @@ describe("archival publication boundary", () => {
   );
 
   test("keeps existing held editions readable without accepting audit state as a client prop", () => {
-    const heldPatent = allPatents.find((patent) => patent.id === "us-613809-tesla-teleautomaton");
-    if (!heldPatent) throw new Error("Tesla teleautomaton patent not found");
+    const acceptedPatent = allPatents.find((patent) => patent.id === "us-78317-nobel-dynamite");
+    if (!acceptedPatent) throw new Error("Nobel dynamite patent not found");
+
+    if (!acceptedPatent.archivalEdition)
+      throw new Error("Accepted patent must have an archival edition");
+
+    // A complete edition held by an audit override remains readable in the source reader
+    const heldPatent: Patent = {
+      ...acceptedPatent,
+      id: "us-6120588-eink",
+      archivalEdition: {
+        ...acceptedPatent.archivalEdition,
+        completeFacsimileReviewed: true,
+      },
+    };
     const heldDecision = evaluateArchivalPublicationState(heldPatent);
     const heldProjection = patentForSourceReader(heldPatent);
     expect(heldDecision.isPublished).toBe(false);
     expect(heldProjection.archivalEdition).toBe(heldPatent.archivalEdition);
     expect(heldProjection.originalTextAsset).toBeUndefined();
 
-    const acceptedPatent = allPatents.find((patent) => patent.id === "us-78317-nobel-dynamite");
-    if (!acceptedPatent) throw new Error("Nobel dynamite patent not found");
     const acceptedDecision = evaluateArchivalPublicationState(acceptedPatent);
     const acceptedProjection = patentForSourceReader(acceptedPatent);
     expect(acceptedDecision.isPublished).toBe(true);

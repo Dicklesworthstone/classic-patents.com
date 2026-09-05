@@ -11,8 +11,19 @@
  */
 
 import { stepLandPolaroidInstantFilm } from "./catalogKernels";
+import {
+  readClavelDeltaRobotControls,
+  stepClavelDeltaRobotTopology,
+} from "./clavelDeltaRobotKernel";
 import { stepColtLockwork } from "./coltRevolverKernel";
-import { readCrumpFdmControls } from "./crumpFdmKernel";
+import { readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
+import {
+  EDISON_DECLARED_FILAMENT_LENGTH_CM,
+  EDISON_DECLARED_HOT_RESISTANCE_OHM,
+  EDISON_SOURCE_MAX_RESISTANCE_OHM,
+  EDISON_SOURCE_MIN_RESISTANCE_OHM,
+  stepEdisonRadiativeBalance,
+} from "./edisonWasm";
 import { fermiKeff } from "./fermiKinetics";
 import {
   readGoertzMasterSlaveControls,
@@ -22,6 +33,7 @@ import {
   readHullStereolithographyControls,
   stepHullStereolithographySi,
 } from "./hullStereolithographyKernel";
+import { readKamenSegwayControls, stepKamenSegwaySi } from "./kamenSegwayKernel";
 import { stepLemelsonWarehouseTopology } from "./lemelsonWarehouseKernel";
 import { stepMakinoScaraTopology } from "./makinoScaraKernel";
 import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
@@ -42,14 +54,34 @@ export interface SensitivityResult {
   interpretation: string;
 }
 
-/**
- * Computes exact sensitivity for a given patent and control parameter.
- */
+/** Differentiate an admitted, unrounded kernel output. Refuse at a clamp,
+ * discontinuity, or refused probe instead of displaying a fabricated slope. */
+function kernelDerivative(
+  value: number,
+  minimum: number,
+  maximum: number,
+  probe: (value: number) => number | null,
+): number | null {
+  const h = Math.max(1, Math.abs(value)) * 1e-5;
+  if (!Number.isFinite(value) || value - h < minimum || value + h > maximum) return null;
+  const center = probe(value);
+  const lower = probe(value - h);
+  const upper = probe(value + h);
+  if (center === null || lower === null || upper === null) return null;
+  if (![center, lower, upper].every(Number.isFinite)) return null;
+  const left = (center - lower) / h;
+  const right = (upper - center) / h;
+  if (Math.abs(left - right) > 1e-3 * Math.max(1e-6, Math.abs(left), Math.abs(right))) return null;
+  return Number(((left + right) / 2).toPrecision(6));
+}
+
+/** Computes a local sensitivity of the specified model and control. */
 export function computeParameterSensitivity(
   patentId: string,
   controlKey: string,
   params: Record<string, number>,
 ): SensitivityResult | null {
+  if (Object.values(params).some((value) => !Number.isFinite(value))) return null;
   switch (patentId) {
     case "us-821393-wright-flyer": {
       // Central finite differences over the live kernel. Probing through
@@ -104,17 +136,33 @@ export function computeParameterSensitivity(
 
     case "us-223898-edison-lightbulb":
     case "us-223898-edison-lamp": {
+      const v = params.voltage ?? params.mainsVoltageV ?? 110;
+      const r = params.hotResistanceOhm ?? EDISON_DECLARED_HOT_RESISTANCE_OHM;
+      if (r < EDISON_SOURCE_MIN_RESISTANCE_OHM || r > EDISON_SOURCE_MAX_RESISTANCE_OHM) return null;
+      const state = stepEdisonRadiativeBalance({
+        voltageV: v,
+        hotResistanceOhm: r,
+        filamentLengthCm: params.filamentLength ?? EDISON_DECLARED_FILAMENT_LENGTH_CM,
+      });
+      if (!state) return null;
       if (controlKey === "mainsVoltageV" || controlKey === "voltage") {
-        const v = params.mainsVoltageV ?? params.voltage ?? 110.0;
-        const r = 100.0; // Filament resistance ohms
-        // P = V^2 / R -> dP/dV = 2V / R
-        const dP_dv = (2 * v) / r;
         return {
           metricName: "Filament Joule Heat",
           derivativeSymbol: "∂P / ∂V",
-          derivativeValue: Number(dP_dv.toFixed(2)),
+          derivativeValue: Number((2 * state.current_a).toPrecision(6)),
           derivativeUnit: "W / V",
-          interpretation: "Ohmic dissipation scaling with applied mains potential.",
+          interpretation:
+            "Analytic ∂P/∂V = 2V/R at the current hot resistance, from the shared steady radiative model. Resistance is held fixed; this is not a transient heating rate.",
+        };
+      }
+      if (controlKey === "hotResistanceOhm") {
+        return {
+          metricName: "Filament Joule Heat",
+          derivativeSymbol: "∂P / ∂R",
+          derivativeValue: Number((-state.joule_power_w / r).toPrecision(6)),
+          derivativeUnit: "W / Ω",
+          interpretation:
+            "Analytic ∂P/∂R = −V²/R² at the current voltage in the shared steady radiative model. At a source-range endpoint this is the admitted one-sided slope.",
         };
       }
       break;
@@ -2075,47 +2123,82 @@ export function computeParameterSensitivity(
         controlKey === "armTwoInput" ||
         controlKey === "armThreeInput"
       ) {
+        const controls = readClavelDeltaRobotControls(params);
+        const derivative = kernelDerivative(controls[controlKey] as number, -1, 1, (value) => {
+          const state = stepClavelDeltaRobotTopology({ ...params, [controlKey]: value });
+          return state.topologyVisible &&
+            state.pairedBarsVisible &&
+            state.closureStatus === "normalized-closed-chain-solved"
+            ? state.platformCenter[1]
+            : null;
+        });
+        if (derivative === null) return null;
         return {
-          metricName: "Spatial Traveling Plate Displacement",
-          derivativeSymbol: "∂z_plate / ∂θ_arm",
-          derivativeValue: -0.42,
-          derivativeUnit: "mm / deg",
+          metricName: "Normalized Traveling Plate Height",
+          derivativeSymbol: "∂y_plate / ∂u_arm",
+          derivativeValue: derivative,
+          derivativeUnit: "normalized / input fraction",
           interpretation:
-            "Parallel spatial parallelogram kinematics translating base motor rotation into traveling plate Cartesian displacement.",
+            "Central difference of the shared rigid closed-chain display geometry at the current three arm inputs. The grant supplies no dimensions; this is not millimetres per degree or a machine-performance prediction.",
         };
       }
       break;
     }
 
     case "us-6302230-kamen-segway": {
+      const controls = readKamenSegwayControls({
+        ...params,
+        riderPitchDeg: params.riderPitchDeg ?? params.pitch ?? 4.5,
+        groundFrictionCoeff: params.groundFrictionCoeff ?? params.friction ?? 0.85,
+        speedLimitMS: params.speedLimitMS ?? params.speedLimit ?? 5.5,
+      });
+      const probe = (
+        key: "riderPitchDeg" | "groundFrictionCoeff" | "speedLimitMS",
+        value: number,
+      ) => stepKamenSegwaySi({ ...controls, [key]: value });
       if (controlKey === "riderPitchDeg" || controlKey === "pitch") {
+        const derivative = kernelDerivative(controls.riderPitchDeg, -15, 15, (value) => {
+          const state = probe("riderPitchDeg", value);
+          return state.refusalReason ? null : state.gravityOverturningTorqueNm;
+        });
+        if (derivative === null) return null;
         return {
           metricName: "Overturning Gravitational Moment",
           derivativeSymbol: "∂τ_grav / ∂θ",
-          derivativeValue: 18.5,
+          derivativeValue: derivative,
           derivativeUnit: "N·m / deg",
           interpretation:
-            "Gravitational destabilizing moment per degree of rider forward pitch lean requiring proportional servomotor balancing torque.",
+            "Central difference of the shared modern illustrative SI scenario at the current rider mass and pitch. It is not a historical hardware measurement.",
         };
       }
       if (controlKey === "groundFrictionCoeff" || controlKey === "friction") {
+        const derivative = kernelDerivative(controls.groundFrictionCoeff, 0.15, 0.9, (value) => {
+          const state = probe("groundFrictionCoeff", value);
+          return state.refusalReason ? null : state.maxTractionForceN;
+        });
+        if (derivative === null) return null;
         return {
           metricName: "Maximum Ground Grip Traction",
           derivativeSymbol: "∂F_traction / ∂μ",
-          derivativeValue: 1157.0,
+          derivativeValue: derivative,
           derivativeUnit: "N / μ",
           interpretation:
-            "Traction force limit scaling directly with total rider + vehicle weight (118 kg × 9.81 m/s²).",
+            "Central difference of the shared illustrative traction limit at the current rider mass plus the declared 43 kg chassis. This is a modern scenario, not source-specified hardware.",
         };
       }
       if (controlKey === "speedLimitMS" || controlKey === "speedLimit") {
+        const derivative = kernelDerivative(controls.speedLimitMS, 2, 6, (value) => {
+          const state = probe("speedLimitMS", value);
+          return state.refusalReason ? null : state.balancingMarginRatio;
+        });
+        if (derivative === null) return null;
         return {
           metricName: "Balancing Margin Velocity Ceiling",
           derivativeSymbol: "∂Margin / ∂v_max",
-          derivativeValue: 0.18,
+          derivativeValue: derivative,
           derivativeUnit: "1 / (m/s)",
           interpretation:
-            "Higher speed governor increases forward velocity potential while narrowing reserve acceleration balancing buffer.",
+            "Central difference of the current illustrative balancing-margin model, including the active governor and torque branch. Refused or nonsmooth operating points have no displayed derivative.",
         };
       }
       break;
@@ -2250,38 +2333,63 @@ export function computeParameterSensitivity(
 
     case "us-5121329-crump-fdm": {
       const controls = readCrumpFdmControls(params);
+      const probe = (key: "printSpeedMmS" | "nozzleTempC" | "layerHeightMm", value: number) =>
+        stepCrumpFdmSi({ ...controls, [key]: value });
       if (controlKey === "printSpeedMmS") {
-        // dQ / dv_head = w * h
-        const dQ_dVs = controls.roadWidthMm * controls.layerHeightMm;
+        const derivative = kernelDerivative(
+          params.printSpeedMmS ?? controls.printSpeedMmS,
+          5,
+          250,
+          (value) => {
+            const state = probe("printSpeedMmS", value);
+            return state.refusalReason ? null : state.volumetricFlowRateMm3S;
+          },
+        );
+        if (derivative === null) return null;
         return {
           metricName: "Volumetric Extrusion Flow Rate",
           derivativeSymbol: "∂Q / ∂v_{\\text{head}}",
-          derivativeValue: Number(dQ_dVs.toFixed(3)),
+          derivativeValue: derivative,
           derivativeUnit: "mm³/s / (mm/s)",
           interpretation:
             "Volumetric extrusion demand scales linearly with toolhead print velocity, requiring proportional filament feed motor stepping.",
         };
       }
       if (controlKey === "nozzleTempC") {
-        // dmu / dT ~ -Ea/(R*T^2) * mu
-        const T_K = controls.nozzleTempC + 273.15;
-        const dMu_dT = -(48.0 / (8.314e-3 * T_K * T_K)) * 280.0;
+        const derivative = kernelDerivative(
+          params.nozzleTempC ?? controls.nozzleTempC,
+          100,
+          300,
+          (value) => {
+            const state = probe("nozzleTempC", value);
+            return state.refusalReason ? null : state.apparentViscosityPaS;
+          },
+        );
+        if (derivative === null) return null;
         return {
           metricName: "Apparent Melt Viscosity",
           derivativeSymbol: "∂μ / ∂T",
-          derivativeValue: Number(dMu_dT.toFixed(2)),
+          derivativeValue: derivative,
           derivativeUnit: "Pa·s / °C",
           interpretation:
-            "Negative exponential sensitivity from Arrhenius polymer rheology: heating liquefier thins molten polymer and sharply reduces required axial feed force.",
+            "Central difference of the shared illustrative modern ABS screen at the current temperature and reference viscosity. Heating lowers the apparent viscosity; this is not a historical material measurement.",
         };
       }
       if (controlKey === "layerHeightMm") {
-        // dtau / dh = 2h / (pi^2 * alpha)
-        const dTau_dh = (2 * controls.layerHeightMm) / (Math.PI * Math.PI * 0.082);
+        const derivative = kernelDerivative(
+          params.layerHeightMm ?? controls.layerHeightMm,
+          0.05,
+          0.8,
+          (value) => {
+            const state = probe("layerHeightMm", value);
+            return state.refusalReason ? null : state.coolingTimeConstantSec;
+          },
+        );
+        if (derivative === null) return null;
         return {
           metricName: "Road Thermal Cooling Time Constant",
           derivativeSymbol: "∂τ / ∂h",
-          derivativeValue: Number(dTau_dh.toFixed(3)),
+          derivativeValue: derivative,
           derivativeUnit: "s / mm",
           interpretation:
             "Cooling time scales quadratically with layer thickness: thicker slices retain thermal energy longer before freezing below Tg.",
