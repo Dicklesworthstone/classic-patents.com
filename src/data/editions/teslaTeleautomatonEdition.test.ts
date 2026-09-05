@@ -5,19 +5,25 @@ import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import { teslaTeleautomatonPatent } from "@/data/patents/tesla-teleautomaton";
+import { completeArchivalEditionForViewer } from "./publicationApproval";
+import { reviewedLedgerTextForViewer } from "./reviewedLedgerPublicationEvidence.server";
 import { teslaTeleautomatonArchivalEdition } from "./teslaTeleautomatonEdition";
 
 const PINNED_SHA256 = "b92da6bad46cca996f7ecc99a16a87bdd38d12b3e04a0fce11cc5f033aed849b";
 
 describe("US 613,809 Nikola Tesla Teleautomaton manual archival edition", () => {
-  test("pins the thirteen-page source candidate and publishes valid manual edition", () => {
+  test("pins the thirteen-page source candidate without presenting its held draft as complete", () => {
     expect(teslaTeleautomatonPatent.archivalEdition).toBe(teslaTeleautomatonArchivalEdition);
     expect(teslaTeleautomatonPatent.originalTextAsset).toBeDefined();
     expect(teslaTeleautomatonArchivalEdition.sourcePdfSha256).toBe(PINNED_SHA256);
     expect(validateCuratedSpecificationEdition(teslaTeleautomatonArchivalEdition)).toEqual({
-      valid: true,
-      errors: [],
+      valid: false,
+      errors: ["The archival edition must attest that the complete facsimile was reviewed."],
     });
+    expect(completeArchivalEditionForViewer(teslaTeleautomatonPatent)).toBeUndefined();
+    expect(reviewedLedgerTextForViewer(teslaTeleautomatonPatent)).toStartWith(
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 13 ---",
+    );
     const pdf = readFileSync(`${process.cwd()}/public${teslaTeleautomatonPatent.originalPdfUrl}`);
     expect(createHash("sha256").update(pdf).digest("hex")).toBe(PINNED_SHA256);
     expect(teslaTeleautomatonPatent.claims.map((claim) => claim.number)).toEqual([

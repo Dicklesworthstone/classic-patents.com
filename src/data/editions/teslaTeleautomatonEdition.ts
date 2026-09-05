@@ -70,15 +70,19 @@ const figure = (number: number, label = `Fig. ${number}`) => {
 
 /**
  * This is an authored, continuous source face.  It deliberately has no PDF
- * page markers or source-text import: each node below was checked against the
- * pinned facsimile during the 2026-08-18 two-pass review.
+ * page markers or source-text import. It is retained as an editorial working
+ * draft while the complete primary-source comparison is repaired. The source
+ * reader serves the complete page-marked reviewed ledger in the meantime.
  */
 export const teslaTeleautomatonArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "b92da6bad46cca996f7ecc99a16a87bdd38d12b3e04a0fce11cc5f033aed849b",
   preparedBy: "Classic Patents editorial agent (GPT-5.6)",
   preparedAt: "2026-08-18",
-  completeFacsimileReviewed: true,
+  // Pages 8–12 exposed material abridgements and wording drift during the
+  // 2026-09-05 visual comparison. Do not present this candidate as a complete
+  // archival edition; this is intentionally fail-open to the full ledger.
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",

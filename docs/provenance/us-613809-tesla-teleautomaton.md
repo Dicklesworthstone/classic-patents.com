@@ -9,7 +9,7 @@
 - **Application filing date and serial number:** July 1, 1898; Serial No. 684,934. The filing date is printed in the specification masthead on PDF page 6.
 - **Public record:** https://patents.google.com/patent/US613809A/en
 - **Pinned facsimile:** `public/patents/pdfs/us-613809-tesla-teleautomaton.pdf`
-- **Retrieved and fully visually reviewed:** 2026-08-18. Each of the 13 pages was rendered from the pinned PDF and inspected twice.
+- **Retrieved and source-repair review:** 2026-08-18; visual source comparison resumed 2026-09-05. The complete edition remains under repair after material wording and omission findings on PDF pages 8–12.
 - **Rights basis:** This 1898 United States patent's text and drawings are public-domain United States Government material.
 - **SHA-256:** `b92da6bad46cca996f7ecc99a16a87bdd38d12b3e04a0fce11cc5f033aed849b`
 - **PDF page count:** 13
@@ -34,8 +34,8 @@
 
 ## Editorial and preservation boundaries
 
-- The visitor-facing continuous source face is the hand-authored `teslaTeleautomatonArchivalEdition` in `src/data/editions/teslaTeleautomatonEdition.ts`.
-- The page-marked comparison ledger is `public/patents/transcripts/us-613809-tesla-teleautomaton-reviewed.txt`. It preserves the 13-page order, including the five drawing sheets, but is not the public source face.
+- `teslaTeleautomatonArchivalEdition` in `src/data/editions/teslaTeleautomatonEdition.ts` is a retained editorial working draft, not an accepted archival edition. It is not presented under the complete-source reader while its source comparison is repaired.
+- The page-marked reviewed ledger at `public/patents/transcripts/us-613809-tesla-teleautomaton-reviewed.txt` is the current visitor source text. It preserves all 13 pages, including the five drawing sheets; the pinned PDF remains continuously available alongside it.
 - Local figure previews are source crops under `public/patents/figures/us-613809-tesla-teleautomaton/`; each crop derives from the indicated pinned drawing sheet.
 - The grant prints thirteen numbered claims. It prints ten figures, numbered 1 through 10, on five drawing sheets.
 - The older `public/patents/source-text/us-613809-tesla-teleautomaton.txt` is a machine-extracted research aid only. Its errors and layout artifacts are not publication evidence and it is not a reviewed transcription.
@@ -73,3 +73,15 @@ PDF pages 1–5 were rendered directly from the pinned facsimile at 300 DPI (232
 - Sheet 5 (PDF page 5): Fig. 10 system and mechanism diagram
 
 The resulting immutable full-sheet assets are `public/patents/figures/us-613809-tesla-teleautomaton/source-sheet-[1-5]-v1.png`. All thirty authored figure-reference occurrences now lead with their respective full sheet, whose source rectangle is the entire page (`0,0,2320,3408`). The prior versioned figure crops remain preserved as supplemental research assets. This repairs the active citation path's incomplete-crop risk, but does not change the separate candidate hold: the continuous edition still requires independent review of the complete specification and claims before it can be accepted as an archival edition.
+
+## Continuous-edition source-parity correction (2026-09-05)
+
+Direct visual comparison of the pinned specification pages 8–12 found that the
+stored continuous edition contains material abridgements and wording drift in
+the figure-description and remote-control-operation passages. The candidate's
+`completeFacsimileReviewed` attestation has therefore been withdrawn. This
+does **not** withhold any source material: the route now serves the complete
+thirteen-page local reviewed ledger, and the pinned facsimile remains available.
+The working draft is retained for line-by-line primary-source repair; it will
+not be reintroduced as the continuous archival source face until that review
+is complete.
