@@ -4,6 +4,43 @@ import { readWattCondenserControls, stepWattCondenser } from "./wattCondenserKer
 import { WRIGHT_GROSS_WEIGHT_N } from "./wrightKernel";
 
 describe("Energy readouts distinguish partial, steady and unavailable evidence", () => {
+  test("Thomson contact power follows I²R without inventing stored heat or cooling losses", () => {
+    for (const current of [1000, 2000, 4500, 5800, 6000]) {
+      for (const pressure of [10, 35, 60]) {
+        for (const time of [0, 20]) {
+          const report = computePortHamiltonianEnergy(
+            "us-347140-thomson-welding",
+            { weldCurrentAmps: current, clampPressureMpa: pressure },
+            time,
+          );
+          expect(report.inputPowerWatts).toBeCloseTo(current ** 2 * 0.00018, 1);
+          expect(report.inputPowerAvailable).toBe(true);
+          expect(report.availability).toBe("kernel-partial");
+          expect(report.runtimeSource).toBe("ts-fallback");
+          expect(report.storedEnergyAvailable).toBe(false);
+          expect(report.dissipatedPowerAvailable).toBe(false);
+          expect(report.outputPowerWatts).toBeNull();
+          expect(report.balance.kind).toBe("unavailable");
+          expect(report.energy.totalHamiltonianJoules).toBe(0);
+        }
+      }
+    }
+    expect(computePortHamiltonianEnergy("us-347140-thomson-welding", {}).inputPowerWatts).toBe(
+      3645,
+    );
+  });
+
+  test("Thomson energy refuses a current outside the admitted instrument domain", () => {
+    for (const current of [999, 6001, Number.NaN, Number.POSITIVE_INFINITY]) {
+      const report = computePortHamiltonianEnergy("us-347140-thomson-welding", {
+        weldCurrentAmps: current,
+      });
+      expect(report.availability).toBe("unavailable");
+      expect(report.inputPowerAvailable).toBe(false);
+      expect(report.balance.kind).toBe("unavailable");
+    }
+  });
+
   test("Watt power ports follow the shared model without invented stored energy or closure", () => {
     for (const hasSeparateCondenser of [0, 1]) {
       for (const hasSteamJacket of [0, 1]) {

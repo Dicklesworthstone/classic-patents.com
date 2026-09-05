@@ -7,6 +7,7 @@
  * shared steady radiative model currently provides a checked power balance.
  */
 
+import { stepThomsonWelding } from "./catalogKernels";
 import { hostStateDigest } from "./deepWasm";
 import {
   EDISON_DECLARED_FILAMENT_LENGTH_CM,
@@ -76,7 +77,7 @@ export function computePortHamiltonianEnergy(
     "Illustrative snapshot with assumed operating constants; not a measured energy balance or a historical performance claim.";
   let storedEnergyAvailable = true;
   let inputPowerAvailable = true;
-  const dissipatedPowerAvailable = true;
+  let dissipatedPowerAvailable = true;
   let balance: PortHamiltonianReport["balance"] = {
     kind: "unavailable",
     reason:
@@ -601,14 +602,16 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-347140-thomson-welding": {
-      const weldCurrentAmps = params.weldCurrentAmps ?? 2200.0;
-      const clampPressureMpa = params.clampPressureMpa ?? 18.0;
-      const contactResistanceOhms = 0.00045;
-      powerIn = weldCurrentAmps * weldCurrentAmps * contactResistanceOhms + 120.0; // Joule heating + core loss
-      potential = 0.5 * (clampPressureMpa * 1e6 * 0.0002) * 0.0015; // Mechanical clamping screw strain
-      em = 0.5 * 0.00012 * weldCurrentAmps * weldCurrentAmps; // Secondary step-down inductive field
-      thermal = 0.08 * 450.0 * (1350.0 - 293.15); // Steel weld nugget thermal enthalpy
-      dissipated = powerIn * 0.95;
+      const current = params.weldCurrentAmps ?? 4500;
+      if (current < 1000 || current > 6000)
+        return unavailableEnergy("Welding current is outside the model's 1000–6000 A range.");
+      powerIn = stepThomsonWelding({ ...params, weldCurrentAmps: current }).jouleWatts;
+      availability = "kernel-partial";
+      runtimeSource = "ts-fallback";
+      storedEnergyAvailable = false;
+      dissipatedPowerAvailable = false;
+      reason =
+        "Contact electrical power converted to heat by the shared I²R teaching model at a declared 0.18 mΩ resistance. Transformer losses, clamp work, cooling and stored heat are not solved; this is not a historical performance measurement.";
       break;
     }
 
