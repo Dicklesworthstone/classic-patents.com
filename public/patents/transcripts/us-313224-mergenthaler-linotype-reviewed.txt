@@ -326,12 +326,12 @@ The matrix-bars herein described constitute an important feature of my invention
 
 I am aware that an attempt has been made to connect separate dies or matrices, each representing a single character, by means of thin flexible bands or cords to which they were attached. It is to be noted that my bar is continuous; that it possesses considerable stiffness or rigidity, so that it may be pushed or pulled endwise without difficulty; that the characters are formed directly in the bar and in close proximity to each other, instead of being widely separated, as was necessary with dies united by flexible connections.
 
-I believe myself to be the first to produce a solid or continuous matrix-bar having the characters impressed or indented directly therein, and the first to produce a matrix-bar presenting continuous or practically continuous side faces, so that when arranged side by side the bars may be moved past each other without collision and without the necessity of intermediate guides. I also believe myself to be the first to provide a matrix-bar with spacing-surfaces elevated above the level of the characters therein, and the first to locate spacing-surfaces at suitable points between the characters, so that a bar may be stopped at different points in the course of its descent to present a blank surface at the aligning-point.
-
-I also believe myself to be the first to combine with a changeable or convertible matrix—that is to say, a matrix composed of a series of dies or individual matrices adapted for transposition or rearrangement—a mold and a casting mechanism, and it will be manifest to the skilled mechanic that the construction of the mold and of the mechanism for delivering the metal therein may be modified without changing substantially the mode of connection or departing from the limits of my invention.
+I believe myself to be the first to produce a solid or continuous matrix-bar having the characters impressed or indented directly therein, and the first to produce a matrix-bar presenting continuous or practically continuous side faces, so that when arranged side by side the bars may be moved past each other without collision and without the necessity of intermediate guides. I also believe myself to be the first to provide a matrix-bar with spacing-surfaces elevated above the level of the characters therein, and the first to locate spac-
 
 --- REVIEWED TRANSCRIPTION PAGE 31 OF 35 ---
-Specification page 18: Opening of the formal claims (Claims 1 through 15).
+ing-surfaces at suitable points between the characters, so that a bar may be stopped at different points in the course of its descent to present a blank surface at the aligning-point.
+
+I also believe myself to be the first to combine with a changeable or convertible matrix—that is to say, a matrix composed of a series of dies or individual matrices adapted for transposition or rearrangement—a mold and a casting mechanism, and it will be manifest to the skilled mechanic that the construction of the mold and of the mechanism for delivering the metal therein may be modified without changing substantially the mode of connection or departing from the limits of my invention.
 
 Having thus described my invention, what I claim is:
 
@@ -366,8 +366,6 @@ Having thus described my invention, what I claim is:
 15. The combination, substantially as described, of the sliding heads D, having the tapered matrix-bars attached, the grooved guide-plates for said heads, the slides F, the cords or chains E, passing over pulleys from slides F to the alternate matrix-bars, and the two series of stop-pins extending rearward different distances to engage the heads and slides, respectively, as shown.
 
 --- REVIEWED TRANSCRIPTION PAGE 32 OF 35 ---
-Specification page 19: Claims 16 through 30.
-
 16. In combination with the matrix-bars and stop-pins, the adjusting-pins slotted at one end, and the crank-shafts extended through said slots, as shown.
 
 17. The vertically-grooved guide-plates i i, the latter provided with shoulders or notches, in combination with the sliding heads D, having the matrix-bars attached, the dogs Q, pivoted to said heads and provided with the two shoulders at the lower end, the springs to actuate said dogs, the lifting-head P, and the stop-pins.
@@ -399,8 +397,6 @@ Specification page 19: Claims 16 through 30.
 30. The independent tapered matrix-bars, each provided with a plurality of spacing-surfaces, the row of stop-pins for each bar, the series of adjusting-pins mounted in the laterally-movable frame, the finger-keys and connections whereby they are enabled to project the adjusting-pins, the bar V, provided with the slides to arrest the backward movement of the adjusting-pin frame, the space-indicating bar and its connections to project the slides, and the devices, substantially as described, to restore said slides connected with all the spacing-keys, whereby the operator is enabled to first adjust the stop-pins for all the characters in a line and subsequently adjust the intermediate stop-pins for the spaces.
 
 --- REVIEWED TRANSCRIPTION PAGE 33 OF 35 ---
-Specification page 20: Claims 31 through 45.
-
 31. In combination with the matrix-bars and stop-pins, the laterally-movable adjusting-pin frame K, the rack-bar V, the slides t′ therein, the shaft provided with the pinion and the two escape-wheels k′ r′, the detent e′, the lever u′, to project the slides rearward, the arm l′, to restore the slides and engage the detent-wheel r′, and devices, substantially as described, connecting the lever u′ with the spacing-bar U, and the arm l′ with the space-keys, as described, whereby the operator is enabled at will to set the machine for the use of spaces of any desired width.
 
 32. In combination with the matrix-bars provided with spacing-surfaces, the finger-keys and intermediate mechanism whereby the keys are enabled to arrest the bars with the designated characters or spaces at the aligning-point, the counting or indicating mechanism, substantially as described, to show the aggregate width of the selected characters and spaces, a connection between said mechanism, substantially as described, and those finger-keys which represent characters, and a separate connection, substantially as described, between said indicating mechanism and the independent space-bar U, as described, whereby the aggregate width of the selected characters and intermediate spaces of minimum width may be indicated and the devices adjusted to bring the characters in position previous to adjusting the devices for bringing the spaces in position, so that the operator may effect the spacing or justification of each line after the designation of the characters therein.
@@ -432,8 +428,6 @@ Specification page 20: Claims 31 through 45.
 45. The mold, in combination with the series of matrix-bars to close the same on one side and the melting-pot having a delivery-mouth to close the same on the opposite side.
 
 --- REVIEWED TRANSCRIPTION PAGE 34 OF 35 ---
-Specification page 21: Claims 46 through 60.
-
 46. In a machine for producing printing-bars, the combination, substantially as hereinbefore described and shown, of the independently-movable matrix-bars, the finger-keys to designate the characters, the intermediate stop mechanism, substantially as described, connected with the keys to arrest the motion of the individual bars, the clamps to hold the adjusted bars, the mold extending across the bars, and the melting-pot and force-pump, said members organized for joint operation, as described.
 
 47. In a machine for producing stereotype-bars, the combination, substantially as hereinbefore described, of the changeable or convertible matrix, the mold co-operating therewith, and appliances, substantially such as shown, for melting metal and forcing the same into the mold.
@@ -465,8 +459,6 @@ Specification page 21: Claims 46 through 60.
 60. In combination with the matrix-bars, the pivoted melting-pot provided with the face to close the mold, and with the delivery-orifice in said face, and mechanism, substantially as described, to effect the rocking motion, whereby it is caused to serve the additional purpose of a clamp to hold the bars in position.
 
 --- REVIEWED TRANSCRIPTION PAGE 35 OF 35 ---
-Specification page 22: Claims 61 through 70 and witness signatures.
-
 61. In combination with the laterally-movable pin-frame K, the indicating mechanism, and the stop-pin frame movable forward and backward, the hand-lever M, and connections therewith, substantially as described, whereby the various parts may be instantly restored to their initial positions to permit the commencement of a new line in the event of an error having been committed.
 
 62. In combination with the indicator-rod q² and dogs f′ f², the striker provided with arms to trip the dogs, the detent r², and the slide q², having inclined surfaces to trip the detent and striker and subsequently reset the striker.
@@ -490,5 +482,5 @@ Specification page 22: Claims 61 through 70 and witness signatures.
 OTTMAR MERGENTHALER.
 
 Witnesses:
-F. E. STEPHENS,
-C. E. TULLY.
+M. RABENAU,
+JULIEN P. FRIEZ.

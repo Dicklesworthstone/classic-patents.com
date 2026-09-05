@@ -117,3 +117,18 @@ still drawing sheets requiring literal-drawing and crop acceptance, and the
 remaining continuous specification still requires fresh block-level review.
 The visitor continues to receive the page-complete reviewed ledger and pinned
 facsimile while that work proceeds.
+
+### Bounded closing-specification and claims review (2026-09-05)
+
+Pages 22 through 35 were rendered from the pinned PDF at 180 DPI and read
+directly. The review covers the stop-pin and adjusting-pin frames,
+justification, indicator and alarm, clamping and casting mechanisms, the
+operating sequence, modifications, all seventy numbered claims, execution,
+and witnesses. It corrected the ledger's cross-page continuation at the end
+of printed specification page 13: `spac-` ends the PDF's page 30 image and
+`ing-surfaces` begins its page 31 image. It also removed non-source
+"Specification page" labels and restored the printed witnesses **M. Rabenau**
+and **Julien P. Friez**. These repairs do not accept the record: the seventeen
+drawing sheets still lack literal figure/numeral transcription and accepted
+source crops, and the staged edition still needs an independent continuous
+block-by-block comparison before it can bind to the catalogue record.

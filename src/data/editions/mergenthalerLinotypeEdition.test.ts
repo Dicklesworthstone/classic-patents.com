@@ -133,6 +133,24 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
     expect(ledger).not.toContain("Application filed February 12, 1884");
   });
 
+  test("keeps the directly reviewed final specification and execution on their source pages", () => {
+    const ledger = readFileSync(
+      publicFile("/patents/transcripts/us-313224-mergenthaler-linotype-reviewed.txt"),
+      "utf8",
+    );
+    expect(ledger).toContain(
+      "the first to locate spac-\n\n--- REVIEWED TRANSCRIPTION PAGE 31 OF 35 ---\ning-surfaces at suitable points",
+    );
+    expect(ledger).toContain("OTTMAR MERGENTHALER.\n\nWitnesses:\nM. RABENAU,\nJULIEN P. FRIEZ.");
+    expect(ledger).not.toContain("Specification page 18:");
+    expect(ledger).not.toContain("Specification page 19:");
+    expect(ledger).not.toContain("Specification page 20:");
+    expect(ledger).not.toContain("Specification page 21:");
+    expect(ledger).not.toContain("Specification page 22:");
+    expect(ledger).not.toContain("F. E. STEPHENS");
+    expect(ledger).not.toContain("C. E. TULLY");
+  });
+
   test("uses the directly reviewed opening rather than the later-machine staging copy", () => {
     const masthead = mergenthalerLinotypeArchivalEdition.blocks[0];
     const opening = mergenthalerLinotypeArchivalEdition.blocks[2];
