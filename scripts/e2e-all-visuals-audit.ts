@@ -12,6 +12,10 @@ import { type Browser, chromium } from "playwright";
 import { allPatents } from "../src/data/patents";
 
 const BASE_URL = process.env.E2E_BASE_URL || "http://127.0.0.1:3088";
+// Cold WebGL shader compilation can exceed six seconds on a fresh browser
+// context. This is a liveness check, not a frame-time budget; the dedicated
+// Three.js audit owns performance measurements.
+const VISUAL_MOUNT_TIMEOUT_MS = 15_000;
 
 interface PatentTestResult {
   id: string;
@@ -115,7 +119,7 @@ async function runVisualsAudit() {
               'canvas, [data-testid="three-d-source-boundary"], section[aria-labelledby="source-visual-unavailable-title"]',
             )
             .first()
-            .waitFor({ state: "visible", timeout: 6000 });
+            .waitFor({ state: "visible", timeout: VISUAL_MOUNT_TIMEOUT_MS });
           canvasFound = (await page.locator("canvas:visible").count()) > 0;
           visualBoundaryFound =
             (await page.getByTestId("three-d-source-boundary").count()) > 0 ||
