@@ -3155,7 +3155,7 @@ describe("Sensitivities follow the current admitted operating point", () => {
   test("Arkwright Water Frame derives flyer spindle speed and draft attenuation sensitivities", () => {
     const id = "gb-931-arkwright-water-frame";
 
-    // Flyer spindle speed sensitivity (18.5 RPM / RPM)
+    // Flyer spindle speed sensitivity (18.5 RPM / RPM) & aliases
     for (const rpm of [60, 120, 180, 260]) {
       const sens = computeParameterSensitivity(id, "waterWheelRpm", { waterWheelRpm: rpm });
       expect(sens).toBeDefined();
@@ -3164,8 +3164,13 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeUnit).toBe("RPM / RPM");
       expect(sens?.derivativeValue).toBe(18.5);
     }
+    for (const alias of ["rpm", "wheelRpm", "speedRpm", "wheelSpeed"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 160 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(18.5);
+    }
 
-    // Draft ratio attenuation sensitivity
+    // Draft ratio attenuation sensitivity & aliases
     for (const draft of [3.0, 6.0, 10.0]) {
       const sens = computeParameterSensitivity(id, "totalDraftRatio", {
         totalDraftRatio: draft,
@@ -3176,6 +3181,77 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeSymbol).toBe("∂Ne / ∂Draft");
       expect(sens?.derivativeUnit).toBe("count / ratio");
       expect(sens?.derivativeValue).toBe(1.5);
+    }
+    for (const alias of ["draftRatio", "draft", "draftD"]) {
+      const sens = computeParameterSensitivity(id, alias, {
+        [alias]: 5.0,
+        inputRovingCountNe: 1.2,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(1.2);
+    }
+
+    // Roller clamping weight sensitivity (below and above grip slip threshold ~2.04 kg)
+    const sensWeightSlip = computeParameterSensitivity(id, "rollerClampingWeightKg", {
+      rollerClampingWeightKg: 1.5,
+      totalDraftRatio: 6.0,
+    });
+    expect(sensWeightSlip).toBeDefined();
+    expect(sensWeightSlip?.metricName).toBe("Fiber Parallelization");
+    expect(sensWeightSlip?.derivativeSymbol).toBe("∂Parallelization / ∂M_clamp");
+    expect(sensWeightSlip?.derivativeUnit).toBe("% / kg");
+    expect(sensWeightSlip?.derivativeValue).toBeGreaterThan(0);
+
+    const sensWeightGrip = computeParameterSensitivity(id, "rollerClampingWeightKg", {
+      rollerClampingWeightKg: 3.5,
+      totalDraftRatio: 6.0,
+    });
+    expect(sensWeightGrip).toBeDefined();
+    expect(sensWeightGrip?.derivativeValue).toBe(0.0);
+
+    for (const alias of ["clampingWeightKg", "clampingWeight", "weightKg", "rollerWeight"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 1.5, totalDraftRatio: 6.0 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBeGreaterThan(0);
+    }
+
+    // Staple length sensitivity (tensile breaking load slope)
+    const sensStapleNormal = computeParameterSensitivity(id, "stapleLengthMm", {
+      stapleLengthMm: 28,
+    });
+    expect(sensStapleNormal).toBeDefined();
+    expect(sensStapleNormal?.metricName).toBe("Yarn Breaking Strength");
+    expect(sensStapleNormal?.derivativeSymbol).toBe("∂F_break / ∂L_staple");
+    expect(sensStapleNormal?.derivativeUnit).toBe("N / mm");
+    expect(sensStapleNormal?.derivativeValue).toBeGreaterThan(0);
+
+    const sensStapleSat = computeParameterSensitivity(id, "stapleLengthMm", {
+      stapleLengthMm: 35,
+    });
+    expect(sensStapleSat).toBeDefined();
+    expect(sensStapleSat?.derivativeValue).toBe(0.0);
+
+    for (const alias of ["stapleLength", "fiberLength", "staple"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 26 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBeGreaterThan(0);
+    }
+
+    // Input roving count sensitivity
+    const sensRoving = computeParameterSensitivity(id, "inputRovingCountNe", {
+      inputRovingCountNe: 1.0,
+      totalDraftRatio: 6.0,
+    });
+    expect(sensRoving).toBeDefined();
+    expect(sensRoving?.metricName).toBe("Yarn Count Attenuation");
+    expect(sensRoving?.derivativeSymbol).toBe("∂Ne_out / ∂Ne_in");
+    expect(sensRoving?.derivativeUnit).toBe("count / count");
+    expect(sensRoving?.derivativeValue).toBe(6.0);
+
+    for (const alias of ["rovingCountNe", "rovingCount", "inputRoving"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 1.2, totalDraftRatio: 5.5 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(5.5);
     }
 
     // Invalid bounds
@@ -3211,7 +3287,7 @@ describe("Sensitivities follow the current admitted operating point", () => {
   test("Watt Rotary Engine derives epicyclic speed multiplication and gear ratio sensitivities", () => {
     const id = "gb-1306-watt-rotary-engine";
 
-    // Stroke rate sensitivity
+    // Stroke rate sensitivity & aliases
     for (const ratio of [0.5, 1.0, 1.5, 2.0]) {
       const sens = computeParameterSensitivity(id, "strokeRateSpm", {
         strokeRateSpm: 20,
@@ -3223,8 +3299,13 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeUnit).toBe("RPM / SPM");
       expect(sens?.derivativeValue).toBeCloseTo(1.0 + ratio, 3);
     }
+    for (const alias of ["spm", "strokeRate", "speedSpm", "beamSpm"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 24, gearRatioNpOverNs: 1.0 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(2.0);
+    }
 
-    // Gear ratio sensitivity
+    // Gear ratio sensitivity & aliases
     const sensRatio = computeParameterSensitivity(id, "gearRatioNpOverNs", {
       gearRatioNpOverNs: 1.0,
     });
@@ -3233,6 +3314,51 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensRatio?.derivativeSymbol).toBe("∂Mult / ∂Ratio");
     expect(sensRatio?.derivativeUnit).toBe("multiplier / ratio");
     expect(sensRatio?.derivativeValue).toBe(1.0);
+
+    for (const alias of ["gearRatio", "ratio", "toothRatio", "gearRatioNpNs"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 1.5 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(1.0);
+    }
+
+    // Boiler pressure power sensitivity & aliases
+    const sensBoiler = computeParameterSensitivity(id, "boilerPressureKpa", {
+      boilerPressureKpa: 70,
+      strokeRateSpm: 20,
+    });
+    expect(sensBoiler).toBeDefined();
+    expect(sensBoiler?.metricName).toBe("Scenario Ideal Shaft Power");
+    expect(sensBoiler?.derivativeSymbol).toBe("∂P_mean / ∂P_boiler");
+    expect(sensBoiler?.derivativeUnit).toBe("kW / kPa");
+    expect(sensBoiler?.derivativeValue).toBeCloseTo((0.453646 * 1.8 * 20) / 60, 3);
+
+    for (const alias of ["boilerPressure", "pressureKpa", "steamPressure", "pressure"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 80, strokeRateSpm: 25 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBeCloseTo((0.453646 * 1.8 * 25) / 60, 3);
+    }
+
+    // Flywheel mass kinetic energy sensitivity & aliases
+    const sensFlywheel = computeParameterSensitivity(id, "flywheelMassKg", {
+      flywheelMassKg: 3500,
+      strokeRateSpm: 20,
+      gearRatioNpOverNs: 1.0,
+    });
+    expect(sensFlywheel).toBeDefined();
+    expect(sensFlywheel?.metricName).toBe("Flywheel Kinetic Energy");
+    expect(sensFlywheel?.derivativeSymbol).toBe("∂E_flywheel / ∂M_flywheel");
+    expect(sensFlywheel?.derivativeUnit).toBe("kJ / kg");
+    expect(sensFlywheel?.derivativeValue).toBeGreaterThan(0);
+
+    for (const alias of ["flywheelMass", "massKg", "flywheelWeight"]) {
+      const sens = computeParameterSensitivity(id, alias, {
+        [alias]: 4000,
+        strokeRateSpm: 20,
+        gearRatioNpOverNs: 1.0,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBeGreaterThan(0);
+    }
 
     // Invalid bounds
     for (const invalid of [9, 31, Number.NaN]) {
@@ -3260,7 +3386,7 @@ describe("Sensitivities follow the current admitted operating point", () => {
   test("Cort Puddling & Rolling derives decarburization rate and rabble stirring sensitivities", () => {
     const id = "gb-1420-cort-puddling-rolling";
 
-    // Furnace temperature sensitivity
+    // Furnace temperature sensitivity & aliases
     const sensTemp = computeParameterSensitivity(id, "furnaceTemperatureCelsius", {
       furnaceTemperatureCelsius: 1350,
     });
@@ -3270,7 +3396,20 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensTemp?.derivativeUnit).toBe("%/min / °C");
     expect(sensTemp?.derivativeValue).toBe(0.015);
 
-    // Rabble stirring sensitivity
+    for (const alias of [
+      "furnaceTemp",
+      "temperatureCelsius",
+      "temperatureC",
+      "tempC",
+      "furnaceTemperature",
+      "temperature",
+    ]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 1400 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(0.015);
+    }
+
+    // Rabble stirring sensitivity & aliases
     const sensRabble = computeParameterSensitivity(id, "rabbleStirringRpm", {
       rabbleStirringRpm: 15,
     });
@@ -3279,6 +3418,65 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensRabble?.derivativeSymbol).toBe("∂Rate_decarb / ∂RPM_rabble");
     expect(sensRabble?.derivativeUnit).toBe("%/min / RPM");
     expect(sensRabble?.derivativeValue).toBe(0.022);
+
+    for (const alias of ["rabbleRpm", "stirringRpm", "rabbleSpeed"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 20 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(0.022);
+    }
+
+    // Initial carbon percent sensitivity & aliases
+    const sensInitialC = computeParameterSensitivity(id, "initialCarbonPercent", {
+      initialCarbonPercent: 3.8,
+      puddlingDurationMinutes: 90,
+      furnaceTemperatureCelsius: 1350,
+    });
+    expect(sensInitialC).toBeDefined();
+    expect(sensInitialC?.metricName).toBe("Residual Carbon");
+    expect(sensInitialC?.derivativeSymbol).toBe("∂[%C_res] / ∂[%C_init]");
+    expect(sensInitialC?.derivativeUnit).toBe("% C / % C");
+    expect(sensInitialC?.derivativeValue).toBeGreaterThan(0);
+    expect(sensInitialC?.derivativeValue).toBeLessThanOrEqual(1.0);
+
+    for (const alias of ["initialCarbon", "carbonPercent", "pigIronCarbon", "c0"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 3.5 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBeGreaterThan(0);
+    }
+
+    // Puddling duration sensitivity & aliases
+    const sensDuration = computeParameterSensitivity(id, "puddlingDurationMinutes", {
+      puddlingDurationMinutes: 90,
+      initialCarbonPercent: 3.8,
+      furnaceTemperatureCelsius: 1350,
+    });
+    expect(sensDuration).toBeDefined();
+    expect(sensDuration?.metricName).toBe("Residual Carbon");
+    expect(sensDuration?.derivativeSymbol).toBe("∂[%C_res] / ∂t_puddle");
+    expect(sensDuration?.derivativeUnit).toBe("% C / min");
+    expect(sensDuration?.derivativeValue).toBeLessThan(0);
+
+    for (const alias of ["puddlingTime", "durationMinutes", "puddleDuration", "timeMinutes"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 75 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBeLessThan(0);
+    }
+
+    // Roller passes sensitivity (discrete slag squeeze) & aliases
+    const sensPasses = computeParameterSensitivity(id, "rollerPassCount", {
+      rollerPassCount: 5,
+    });
+    expect(sensPasses).toBeDefined();
+    expect(sensPasses?.metricName).toBe("Residual Slag Content");
+    expect(sensPasses?.derivativeSymbol).toBe("ΔSlag / ΔPass");
+    expect(sensPasses?.derivativeUnit).toBe("% / pass");
+    expect(sensPasses?.derivativeValue).toBeLessThan(0);
+
+    for (const alias of ["rollerPasses", "passes", "passCount"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 4 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBeLessThan(0);
+    }
 
     // Invalid bounds
     for (const invalid of [1149, 1551, Number.NaN]) {
@@ -3315,7 +3513,7 @@ describe("Sensitivities follow the current admitted operating point", () => {
   test("Hopkins Potash derives calcination purity and leaching solubility sensitivities", () => {
     const id = "us-x1-hopkins-potash";
 
-    // Roasting temperature sensitivity
+    // Roasting temperature sensitivity & aliases
     const sensRoast = computeParameterSensitivity(id, "roastTempC", { roastTempC: 750 });
     expect(sensRoast).toBeDefined();
     expect(sensRoast?.metricName).toBe("Potash Carbon Burnout Purity");
@@ -3323,13 +3521,67 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensRoast?.derivativeUnit).toBe("% / °C");
     expect(sensRoast?.derivativeValue).toBe(0.05);
 
-    // Leaching water temperature sensitivity
+    for (const alias of [
+      "tempC",
+      "furnaceTemp",
+      "furnaceTempC",
+      "roastTemperature",
+      "temperatureC",
+    ]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 800 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(0.05);
+    }
+
+    // Leaching water temperature sensitivity & aliases
     const sensWater = computeParameterSensitivity(id, "waterTempC", { waterTempC: 80 });
     expect(sensWater).toBeDefined();
     expect(sensWater?.metricName).toBe("Potassium Carbonate Leaching Solubility");
     expect(sensWater?.derivativeSymbol).toBe("∂C_sat / ∂T_water");
     expect(sensWater?.derivativeUnit).toBe("(g/L) / °C");
     expect(sensWater?.derivativeValue).toBe(4.4);
+
+    for (const alias of ["leachTempC", "leachWaterTemp", "leachWaterTempC", "waterTemperature"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 60 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBe(4.4);
+    }
+
+    // Roasting time sensitivity (carbon combustion rate) & aliases
+    const sensTime = computeParameterSensitivity(id, "roastTimeHours", {
+      roastTimeHours: 2.5,
+      roastTempC: 750,
+    });
+    expect(sensTime).toBeDefined();
+    expect(sensTime?.metricName).toBe("Carbon Combustion");
+    expect(sensTime?.derivativeSymbol).toBe("∂η_comb / ∂t_roast");
+    expect(sensTime?.derivativeUnit).toBe("% / hr");
+    expect(sensTime?.derivativeValue).toBeGreaterThan(0);
+
+    for (const alias of ["roastingTime", "timeHours", "roastTime", "roastHours", "durationHours"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 2.0, roastTempC: 750 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBeGreaterThan(0);
+    }
+
+    // Raw ash batch yield sensitivity & aliases
+    const sensBatch = computeParameterSensitivity(id, "ashBatchKg", {
+      ashBatchKg: 200,
+      roastTempC: 750,
+      waterTempC: 80,
+    });
+    expect(sensBatch).toBeDefined();
+    expect(sensBatch?.metricName).toBe("Pearl Ash Yield");
+    expect(sensBatch?.derivativeSymbol).toBe("∂m_yield / ∂m_ash");
+    expect(sensBatch?.derivativeUnit).toBe("kg / kg");
+    expect(sensBatch?.derivativeValue).toBeGreaterThan(0.05);
+    expect(sensBatch?.derivativeValue).toBeLessThan(0.2);
+
+    for (const alias of ["batchKg", "ashBatch", "ashMass", "rawAshKg"]) {
+      const sens = computeParameterSensitivity(id, alias, { [alias]: 150 });
+      expect(sens).toBeDefined();
+      expect(sens?.derivativeValue).toBeGreaterThan(0);
+    }
 
     // Invalid bounds
     for (const invalid of [499, 951, Number.NaN]) {

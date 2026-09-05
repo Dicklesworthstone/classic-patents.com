@@ -1,18 +1,8 @@
 "use client";
 
-import {
-  Activity,
-  Cog,
-  Flame,
-  Gauge,
-  Pause,
-  Play,
-  RotateCcw,
-  RotateCw,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { Activity, Cog, Pause, Play, RotateCcw, RotateCw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
@@ -722,85 +712,61 @@ export function WattRotaryEngineSim() {
 
       {/* Interactive Sliders Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-stone-900/40 p-4 rounded-xl border border-stone-800">
-        {/* Stroke Rate */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between text-xs">
-            <span className="text-stone-400 flex items-center gap-1">
-              <Activity className="w-3.5 h-3.5 text-amber-400" /> Scenario Beam Stroke Rate
-            </span>
-            <span className="font-mono text-amber-300">{strokeRateSpm} SPM</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Scenario beam stroke rate in strokes per minute"
-            min="10"
-            max="30"
-            step="2"
-            value={strokeRateSpm}
-            onChange={(e) => updateParam("strokeRateSpm", Number(e.target.value))}
-            className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
-          />
-        </div>
+        <SensitivitySlider
+          id="watt-rotary-stroke-rate"
+          patentId="gb-1306-watt-rotary-engine"
+          paramKey="strokeRateSpm"
+          label="Scenario Beam Stroke Rate"
+          value={strokeRateSpm}
+          min={10}
+          max={30}
+          step={2}
+          unit="SPM"
+          onChange={(val) => updateParam("strokeRateSpm", val)}
+          allParams={params}
+        />
 
-        {/* Boiler Steam Pressure */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between text-xs">
-            <span className="text-stone-400 flex items-center gap-1">
-              <Flame className="w-3.5 h-3.5 text-rose-400" /> Scenario Effective Pressure
-            </span>
-            <span className="font-mono text-rose-300">{boilerPressureKpa} kPa</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Scenario effective steam pressure in kilopascals"
-            min="40"
-            max="120"
-            step="5"
-            value={boilerPressureKpa}
-            onChange={(e) => updateParam("boilerPressureKpa", Number(e.target.value))}
-            className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-rose-500"
-          />
-        </div>
+        <SensitivitySlider
+          id="watt-rotary-boiler-pressure"
+          patentId="gb-1306-watt-rotary-engine"
+          paramKey="boilerPressureKpa"
+          label="Scenario Effective Pressure"
+          value={boilerPressureKpa}
+          min={40}
+          max={120}
+          step={5}
+          unit="kPa"
+          onChange={(val) => updateParam("boilerPressureKpa", val)}
+          allParams={params}
+        />
 
-        {/* Planet / Sun Gear Ratio */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between text-xs">
-            <span className="text-stone-400 flex items-center gap-1">
-              <Cog className="w-3.5 h-3.5 text-cyan-400" /> Gear Tooth Ratio
-            </span>
-            <span className="font-mono text-cyan-300">{gearRatioNpOverNs.toFixed(2)} : 1</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Planet-to-sun gear tooth ratio"
-            min="0.5"
-            max="2.0"
-            step="0.25"
-            value={gearRatioNpOverNs}
-            onChange={(e) => updateParam("gearRatioNpOverNs", Number(e.target.value))}
-            className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
-          />
-        </div>
+        <SensitivitySlider
+          id="watt-rotary-gear-ratio"
+          patentId="gb-1306-watt-rotary-engine"
+          paramKey="gearRatioNpOverNs"
+          label="Gear Tooth Ratio"
+          value={gearRatioNpOverNs}
+          min={0.5}
+          max={2.0}
+          step={0.25}
+          unit="ratio"
+          onChange={(val) => updateParam("gearRatioNpOverNs", val)}
+          allParams={params}
+        />
 
-        {/* Flywheel Mass */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between text-xs">
-            <span className="text-stone-400 flex items-center gap-1">
-              <Gauge className="w-3.5 h-3.5 text-purple-400" /> Scenario Flywheel Mass
-            </span>
-            <span className="font-mono text-purple-300">{flywheelMassKg} kg</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Scenario flywheel mass in kilograms"
-            min="1000"
-            max="6000"
-            step="250"
-            value={flywheelMassKg}
-            onChange={(e) => updateParam("flywheelMassKg", Number(e.target.value))}
-            className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
-          />
-        </div>
+        <SensitivitySlider
+          id="watt-rotary-flywheel-mass"
+          patentId="gb-1306-watt-rotary-engine"
+          paramKey="flywheelMassKg"
+          label="Scenario Flywheel Mass"
+          value={flywheelMassKg}
+          min={1000}
+          max={6000}
+          step={250}
+          unit="kg"
+          onChange={(val) => updateParam("flywheelMassKg", val)}
+          allParams={params}
+        />
       </div>
     </div>
   );

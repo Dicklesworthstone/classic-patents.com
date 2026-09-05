@@ -10,6 +10,7 @@
  * use automatic differentiation; the unused Dual class was removed.
  */
 
+import { stepArkwrightWaterFrame } from "./arkwrightKernel";
 import { stepBardeenPointContact } from "./bardeenPointContactKernel";
 import {
   stepBaekelandBakelite,
@@ -4515,12 +4516,35 @@ export function computeParameterSensitivity(
     }
 
     case "gb-931-arkwright-water-frame": {
-      const waterWheelRpm = params.waterWheelRpm ?? params.rpm ?? 180;
-      const totalDraftRatio = params.totalDraftRatio ?? params.draftRatio ?? 6.0;
-      const rollerClampingWeightKg =
-        params.rollerClampingWeightKg ?? params.clampingWeightKg ?? 3.5;
-      const stapleLengthMm = params.stapleLengthMm ?? params.stapleLength ?? 28;
-      const inputRovingCountNe = params.inputRovingCountNe ?? params.rovingCountNe ?? 1.0;
+      const waterWheelRpm = Number(
+        params.waterWheelRpm ??
+          params.rpm ??
+          params.wheelRpm ??
+          params.speedRpm ??
+          params.wheelSpeed ??
+          180,
+      );
+      const totalDraftRatio = Number(
+        params.totalDraftRatio ?? params.draftRatio ?? params.draft ?? params.draftD ?? 6.0,
+      );
+      const rollerClampingWeightKg = Number(
+        params.rollerClampingWeightKg ??
+          params.clampingWeightKg ??
+          params.clampingWeight ??
+          params.weightKg ??
+          params.rollerWeight ??
+          3.5,
+      );
+      const stapleLengthMm = Number(
+        params.stapleLengthMm ?? params.stapleLength ?? params.fiberLength ?? params.staple ?? 28,
+      );
+      const inputRovingCountNe = Number(
+        params.inputRovingCountNe ??
+          params.rovingCountNe ??
+          params.rovingCount ??
+          params.inputRoving ??
+          1.0,
+      );
 
       if (
         !Number.isFinite(waterWheelRpm) ||
@@ -4542,7 +4566,13 @@ export function computeParameterSensitivity(
         return null;
       }
 
-      if (controlKey === "waterWheelRpm" || controlKey === "rpm") {
+      if (
+        controlKey === "waterWheelRpm" ||
+        controlKey === "rpm" ||
+        controlKey === "wheelRpm" ||
+        controlKey === "speedRpm" ||
+        controlKey === "wheelSpeed"
+      ) {
         return {
           metricName: "Flyer Spindle Rotation Speed",
           derivativeSymbol: "∂N_spindle / ∂RPM_wheel",
@@ -4552,7 +4582,12 @@ export function computeParameterSensitivity(
             "Water-wheel step-up gearing ratio (18.5:1 declared teaching transmission) driving continuous spinning flyers.",
         };
       }
-      if (controlKey === "totalDraftRatio" || controlKey === "draftRatio") {
+      if (
+        controlKey === "totalDraftRatio" ||
+        controlKey === "draftRatio" ||
+        controlKey === "draft" ||
+        controlKey === "draftD"
+      ) {
         return {
           metricName: "Yarn Count Attenuation",
           derivativeSymbol: "∂Ne / ∂Draft",
@@ -4562,14 +4597,101 @@ export function computeParameterSensitivity(
             "Differential roller speed drawing ratio reducing roving linear mass density (Ne_out = Ne_in · Draft).",
         };
       }
+      if (
+        controlKey === "rollerClampingWeightKg" ||
+        controlKey === "clampingWeightKg" ||
+        controlKey === "clampingWeight" ||
+        controlKey === "weightKg" ||
+        controlKey === "rollerWeight"
+      ) {
+        const threshold = 20.0 / 9.80665;
+        const slope =
+          rollerClampingWeightKg < threshold
+            ? (1 - Math.exp(-0.48 * totalDraftRatio)) * 9.80665
+            : 0.0;
+        return {
+          metricName: "Fiber Parallelization",
+          derivativeSymbol: "∂Parallelization / ∂M_clamp",
+          derivativeValue: Number(slope.toFixed(2)),
+          derivativeUnit: "% / kg",
+          interpretation:
+            "Sensitivity of fiber alignment to roller normal clamping weight. Below ~2.04 kg (20 N grip threshold) slip degrades drafting; above 2.04 kg full drafting grip is achieved.",
+        };
+      }
+      if (
+        controlKey === "stapleLengthMm" ||
+        controlKey === "stapleLength" ||
+        controlKey === "fiberLength" ||
+        controlKey === "staple"
+      ) {
+        const baseOut = stepArkwrightWaterFrame({
+          waterWheelRpm,
+          totalDraftRatio,
+          rollerClampingWeightKg,
+          stapleLengthMm,
+          inputRovingCountNe,
+        });
+        const dStrength =
+          stapleLengthMm < 28.0 * 1.15 ? baseOut.yarnBreakingForceN / stapleLengthMm : 0.0;
+        return {
+          metricName: "Yarn Breaking Strength",
+          derivativeSymbol: "∂F_break / ∂L_staple",
+          derivativeValue: Number(dStrength.toFixed(3)),
+          derivativeUnit: "N / mm",
+          interpretation:
+            "Sensitivity of yarn tensile breaking load to raw cotton staple length. Longer fibers increase inter-fiber frictional cohesion up to the 32.2 mm saturation ceiling.",
+        };
+      }
+      if (
+        controlKey === "inputRovingCountNe" ||
+        controlKey === "rovingCountNe" ||
+        controlKey === "rovingCount" ||
+        controlKey === "inputRoving"
+      ) {
+        return {
+          metricName: "Yarn Count Attenuation",
+          derivativeSymbol: "∂Ne_out / ∂Ne_in",
+          derivativeValue: Number(totalDraftRatio.toFixed(3)),
+          derivativeUnit: "count / count",
+          interpretation:
+            "Proportional scaling of finished yarn count with input roving count at the current draft ratio (Ne_out = Ne_in · Draft).",
+        };
+      }
       break;
     }
 
     case "gb-1306-watt-rotary-engine": {
-      const strokeRateSpm = params.strokeRateSpm ?? params.spm ?? 20;
-      const boilerPressureKpa = params.boilerPressureKpa ?? params.boilerPressure ?? 70;
-      const gearRatioNpOverNs = params.gearRatioNpOverNs ?? params.gearRatio ?? 1.0;
-      const flywheelMassKg = params.flywheelMassKg ?? params.flywheelMass ?? 3500;
+      const strokeRateSpm = Number(
+        params.strokeRateSpm ??
+          params.spm ??
+          params.strokeRate ??
+          params.speedSpm ??
+          params.beamSpm ??
+          20,
+      );
+      const boilerPressureKpa = Number(
+        params.boilerPressureKpa ??
+          params.boilerPressure ??
+          params.pressureKpa ??
+          params.steamPressure ??
+          params.pressure ??
+          70,
+      );
+      const gearRatioNpOverNs = Number(
+        params.gearRatioNpOverNs ??
+          params.gearRatio ??
+          params.ratio ??
+          params.toothRatio ??
+          params.gearRatioNpNs ??
+          1.0,
+      );
+      const flywheelMassKg = Number(
+        params.flywheelMassKg ??
+          params.flywheelMass ??
+          params.massKg ??
+          params.flywheelWeight ??
+          3500,
+      );
 
       if (
         !Number.isFinite(strokeRateSpm) ||
@@ -4588,7 +4710,13 @@ export function computeParameterSensitivity(
         return null;
       }
 
-      if (controlKey === "strokeRateSpm" || controlKey === "spm") {
+      if (
+        controlKey === "strokeRateSpm" ||
+        controlKey === "spm" ||
+        controlKey === "strokeRate" ||
+        controlKey === "speedSpm" ||
+        controlKey === "beamSpm"
+      ) {
         const mult = Number((1.0 + gearRatioNpOverNs).toFixed(3));
         return {
           metricName: "Shaft Rotational Speed",
@@ -4599,7 +4727,13 @@ export function computeParameterSensitivity(
             "Sun and planet epicyclic gear doubling shaft speed per complete beam reciprocation cycle (1 + N_p/N_s multiplier).",
         };
       }
-      if (controlKey === "gearRatioNpOverNs" || controlKey === "gearRatio") {
+      if (
+        controlKey === "gearRatioNpOverNs" ||
+        controlKey === "gearRatio" ||
+        controlKey === "ratio" ||
+        controlKey === "toothRatio" ||
+        controlKey === "gearRatioNpNs"
+      ) {
         return {
           metricName: "Shaft Speed Multiplier",
           derivativeSymbol: "∂Mult / ∂Ratio",
@@ -4609,16 +4743,81 @@ export function computeParameterSensitivity(
             "Linear speed-multiplier increase per unit increase in planet-to-sun gear ratio.",
         };
       }
+      if (
+        controlKey === "boilerPressureKpa" ||
+        controlKey === "boilerPressure" ||
+        controlKey === "pressureKpa" ||
+        controlKey === "steamPressure" ||
+        controlKey === "pressure"
+      ) {
+        const dPowerDkpa = (0.453646 * 1.8 * strokeRateSpm) / 60;
+        return {
+          metricName: "Scenario Ideal Shaft Power",
+          derivativeSymbol: "∂P_mean / ∂P_boiler",
+          derivativeValue: Number(dPowerDkpa.toFixed(3)),
+          derivativeUnit: "kW / kPa",
+          interpretation:
+            "Sensitivity of mean indicated shaft power to effective boiler steam pressure based on swept cylinder volume (0.817 m³) per stroke.",
+        };
+      }
+      if (
+        controlKey === "flywheelMassKg" ||
+        controlKey === "flywheelMass" ||
+        controlKey === "massKg" ||
+        controlKey === "flywheelWeight"
+      ) {
+        const meanShaftRpm = strokeRateSpm * (1.0 + gearRatioNpOverNs);
+        const omega = (meanShaftRpm * 2 * Math.PI) / 60;
+        const dEdM = (0.5 * 2.89 * omega * omega) / 1000;
+        return {
+          metricName: "Flywheel Kinetic Energy",
+          derivativeSymbol: "∂E_flywheel / ∂M_flywheel",
+          derivativeValue: Number(dEdM.toFixed(4)),
+          derivativeUnit: "kJ / kg",
+          interpretation:
+            "Sensitivity of stored flywheel rim kinetic energy to added mass at the current mean rotational speed.",
+        };
+      }
       break;
     }
 
     case "gb-1420-cort-puddling-rolling": {
-      const tempC =
-        params.furnaceTemperatureCelsius ?? params.temperatureCelsius ?? params.temperature ?? 1350;
-      const c0 = params.initialCarbonPercent ?? params.carbonPercent ?? 3.8;
-      const rabbleRpm = params.rabbleStirringRpm ?? params.rabbleRpm ?? 15;
-      const durationMin = params.puddlingDurationMinutes ?? params.durationMinutes ?? 90;
-      const passes = params.rollerPassCount ?? params.passCount ?? 5;
+      const tempC = Number(
+        params.furnaceTemperatureCelsius ??
+          params.furnaceTemp ??
+          params.temperatureCelsius ??
+          params.temperatureC ??
+          params.tempC ??
+          params.furnaceTemperature ??
+          params.temperature ??
+          1350,
+      );
+      const c0 = Number(
+        params.initialCarbonPercent ??
+          params.initialCarbon ??
+          params.carbonPercent ??
+          params.pigIronCarbon ??
+          params.c0 ??
+          3.8,
+      );
+      const rabbleRpm = Number(
+        params.rabbleStirringRpm ??
+          params.rabbleRpm ??
+          params.stirringRpm ??
+          params.rabbleSpeed ??
+          15,
+      );
+      const durationMin = Number(
+        params.puddlingDurationMinutes ??
+          params.puddlingTime ??
+          params.durationMinutes ??
+          params.puddleDuration ??
+          params.timeMinutes ??
+          90,
+      );
+      const passes = Number(
+        params.rollerPassCount ?? params.rollerPasses ?? params.passes ?? params.passCount ?? 5,
+      );
 
       if (
         !Number.isFinite(tempC) ||
@@ -4642,7 +4841,11 @@ export function computeParameterSensitivity(
 
       if (
         controlKey === "furnaceTemperatureCelsius" ||
+        controlKey === "furnaceTemp" ||
         controlKey === "temperatureCelsius" ||
+        controlKey === "temperatureC" ||
+        controlKey === "tempC" ||
+        controlKey === "furnaceTemperature" ||
         controlKey === "temperature"
       ) {
         return {
@@ -4654,7 +4857,12 @@ export function computeParameterSensitivity(
             "Reverberatory slag bath reaction kinetics burning carbon out of molten cast pig iron.",
         };
       }
-      if (controlKey === "rabbleStirringRpm" || controlKey === "rabbleRpm") {
+      if (
+        controlKey === "rabbleStirringRpm" ||
+        controlKey === "rabbleRpm" ||
+        controlKey === "stirringRpm" ||
+        controlKey === "rabbleSpeed"
+      ) {
         return {
           metricName: "Slag Contact Decarburization Enhancement",
           derivativeSymbol: "∂Rate_decarb / ∂RPM_rabble",
@@ -4664,14 +4872,116 @@ export function computeParameterSensitivity(
             "Manual rabbling stirring rate increasing fresh molten metal exposure to oxidizing fayalite slag.",
         };
       }
+      if (
+        controlKey === "initialCarbonPercent" ||
+        controlKey === "initialCarbon" ||
+        controlKey === "carbonPercent" ||
+        controlKey === "pigIronCarbon" ||
+        controlKey === "c0"
+      ) {
+        const tempK = tempC + 273.15;
+        const activationEnergyJ = 115000;
+        const gasConstR = 8.314;
+        const preExpA = 12500;
+        const stirFactor = 1 + (rabbleRpm / 15) * 1.6;
+        const kDecarb = preExpA * Math.exp(-activationEnergyJ / (gasConstR * tempK)) * stirFactor;
+        const dResidualDInit = Math.exp(-kDecarb * (durationMin / 60));
+        return {
+          metricName: "Residual Carbon",
+          derivativeSymbol: "∂[%C_res] / ∂[%C_init]",
+          derivativeValue: Number(dResidualDInit.toPrecision(6)),
+          derivativeUnit: "% C / % C",
+          interpretation:
+            "Fraction of initial pig-iron carbon persisting in the puddle ball after the elapsed decarburization duration.",
+        };
+      }
+      if (
+        controlKey === "puddlingDurationMinutes" ||
+        controlKey === "puddlingTime" ||
+        controlKey === "durationMinutes" ||
+        controlKey === "puddleDuration" ||
+        controlKey === "timeMinutes"
+      ) {
+        const tempK = tempC + 273.15;
+        const activationEnergyJ = 115000;
+        const gasConstR = 8.314;
+        const preExpA = 12500;
+        const stirFactor = 1 + (rabbleRpm / 15) * 1.6;
+        const kDecarb = preExpA * Math.exp(-activationEnergyJ / (gasConstR * tempK)) * stirFactor;
+        const cInf = 0.035;
+        const dResidualDTime =
+          -(c0 - cInf) * (kDecarb / 60) * Math.exp(-kDecarb * (durationMin / 60));
+        return {
+          metricName: "Residual Carbon",
+          derivativeSymbol: "∂[%C_res] / ∂t_puddle",
+          derivativeValue: Number(dResidualDTime.toPrecision(6)),
+          derivativeUnit: "% C / min",
+          interpretation:
+            "Decarburization rate of carbon removal per minute of puddling exposure to reverberatory flame and FeO slag.",
+        };
+      }
+      if (
+        controlKey === "rollerPassCount" ||
+        controlKey === "rollerPasses" ||
+        controlKey === "passes" ||
+        controlKey === "passCount"
+      ) {
+        const initialSlagPct = 16.0;
+        const squeezeEfficiencyPerPass = 0.42;
+        const pRound = Math.round(passes);
+        const prevPasses = Math.max(0, pRound - 1);
+        const currentSlag = initialSlagPct * (1 - squeezeEfficiencyPerPass) ** pRound;
+        const prevSlag = initialSlagPct * (1 - squeezeEfficiencyPerPass) ** prevPasses;
+        const deltaSlag = currentSlag - prevSlag;
+        return {
+          metricName: "Residual Slag Content",
+          derivativeSymbol: "ΔSlag / ΔPass",
+          derivativeValue: Number(deltaSlag.toFixed(2)),
+          derivativeUnit: "% / pass",
+          interpretation:
+            "Discrete slag percentage expelled per grooved roller compression pass (hydrostatic cinder squeeze).",
+        };
+      }
       break;
     }
 
     case "us-x1-hopkins-potash": {
-      const roastTempC = params.roastTempC ?? params.tempC ?? 750;
-      const roastTimeHours = params.roastTimeHours ?? params.timeHours ?? 2.5;
-      const ashBatchKg = params.ashBatchKg ?? params.batchKg ?? 200;
-      const waterTempC = params.waterTempC ?? params.leachTempC ?? 80;
+      const roastTempC = Number(
+        params.roastTempC ??
+          params.roastTemp ??
+          params.tempC ??
+          params.furnaceTemp ??
+          params.furnaceTempC ??
+          params.roastTemperature ??
+          params.temperatureC ??
+          750,
+      );
+      const roastTimeHours = Number(
+        params.roastTimeHours ??
+          params.roastingTime ??
+          params.timeHours ??
+          params.roastTime ??
+          params.roastHours ??
+          params.durationHours ??
+          2.5,
+      );
+      const ashBatchKg = Number(
+        params.ashBatchKg ??
+          params.batchKg ??
+          params.ashBatch ??
+          params.ashMass ??
+          params.rawAshKg ??
+          200,
+      );
+      const waterTempC = Number(
+        params.waterTempC ??
+          params.waterTemp ??
+          params.leachTempC ??
+          params.leachWaterTemp ??
+          params.leachWaterTempC ??
+          params.waterTemperature ??
+          80,
+      );
 
       if (
         !Number.isFinite(roastTempC) ||
@@ -4690,7 +5000,15 @@ export function computeParameterSensitivity(
         return null;
       }
 
-      if (controlKey === "roastTempC" || controlKey === "tempC") {
+      if (
+        controlKey === "roastTempC" ||
+        controlKey === "roastTemp" ||
+        controlKey === "tempC" ||
+        controlKey === "furnaceTemp" ||
+        controlKey === "furnaceTempC" ||
+        controlKey === "roastTemperature" ||
+        controlKey === "temperatureC"
+      ) {
         return {
           metricName: "Potash Carbon Burnout Purity",
           derivativeSymbol: "∂Purity / ∂T_roast",
@@ -4700,7 +5018,14 @@ export function computeParameterSensitivity(
             "Secondary furnace combustion incinerating black carbon residue into pure pearlash.",
         };
       }
-      if (controlKey === "waterTempC" || controlKey === "leachTempC") {
+      if (
+        controlKey === "waterTempC" ||
+        controlKey === "waterTemp" ||
+        controlKey === "leachTempC" ||
+        controlKey === "leachWaterTemp" ||
+        controlKey === "leachWaterTempC" ||
+        controlKey === "waterTemperature"
+      ) {
         return {
           metricName: "Potassium Carbonate Leaching Solubility",
           derivativeSymbol: "∂C_sat / ∂T_water",
@@ -4708,6 +5033,59 @@ export function computeParameterSensitivity(
           derivativeUnit: "(g/L) / °C",
           interpretation:
             "Aqueous solubility temperature coefficient: K2CO3 dissolution rate in hot leaching vats.",
+        };
+      }
+      if (
+        controlKey === "roastTimeHours" ||
+        controlKey === "roastingTime" ||
+        controlKey === "timeHours" ||
+        controlKey === "roastTime" ||
+        controlKey === "roastHours" ||
+        controlKey === "durationHours"
+      ) {
+        const T_roastK = roastTempC + 273.15;
+        const R_GAS = 8.314;
+        const E_A = 62000;
+        const A_PRE = 2000;
+        const k_ox = A_PRE * Math.exp(-E_A / (R_GAS * T_roastK));
+        const decarbonizationFraction = 1 - Math.exp(-k_ox * roastTimeHours);
+        const decarbonizationPct = decarbonizationFraction * 100;
+        const dDecarb =
+          decarbonizationPct < 99.8 ? 100 * k_ox * Math.exp(-k_ox * roastTimeHours) : 0.0;
+        return {
+          metricName: "Carbon Combustion",
+          derivativeSymbol: "∂η_comb / ∂t_roast",
+          derivativeValue: Number(dDecarb.toFixed(2)),
+          derivativeUnit: "% / hr",
+          interpretation:
+            "Kinetic rate of carbon combustion and pore-unclogging per hour of furnace roasting.",
+        };
+      }
+      if (
+        controlKey === "ashBatchKg" ||
+        controlKey === "batchKg" ||
+        controlKey === "ashBatch" ||
+        controlKey === "ashMass" ||
+        controlKey === "rawAshKg"
+      ) {
+        const T_roastK = roastTempC + 273.15;
+        const R_GAS = 8.314;
+        const E_A = 62000;
+        const A_PRE = 2000;
+        const k_ox = A_PRE * Math.exp(-E_A / (R_GAS * T_roastK));
+        const decarbonizationFraction = 1 - Math.exp(-k_ox * roastTimeHours);
+        const decarbonizationPct = Math.min(99.8, Math.max(10, decarbonizationFraction * 100));
+        const carbonPoreFactor = 0.45 + 0.55 * (decarbonizationPct / 100);
+        const tempLeachFactor = 0.65 + 0.35 * (waterTempC / 100);
+        const extractionEfficiency = Math.min(0.96, carbonPoreFactor * tempLeachFactor);
+        const dYieldDmass = 0.125 * extractionEfficiency * 0.98;
+        return {
+          metricName: "Pearl Ash Yield",
+          derivativeSymbol: "∂m_yield / ∂m_ash",
+          derivativeValue: Number(dYieldDmass.toFixed(4)),
+          derivativeUnit: "kg / kg",
+          interpretation:
+            "Marginal potash yield per kilogram of raw hardwood ash batch (0.125 K₂CO₃ mass fraction · extraction efficiency · crystallization factor).",
         };
       }
       break;

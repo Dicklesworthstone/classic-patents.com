@@ -1505,4 +1505,154 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       resetPatentPhysicsParams(id);
     }
   });
+
+  test("Arkwright Water Frame updates aliases, notifies reactive subscribers, and updates metrics", () => {
+    const id = "gb-931-arkwright-water-frame";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.waterWheelRpm));
+
+    try {
+      setPatentPhysicsParam(id, "wheelRpm", 200);
+      const params = getPatentPhysicsParams(id);
+      expect(params.waterWheelRpm).toBe(200);
+      expect(params.wheelRpm).toBe(200);
+      expect(params.rpm).toBe(200);
+      expect(observations).toEqual([200]);
+
+      setPatentPhysicsParam(id, "draftRatio", 7.5);
+      expect(getPatentPhysicsParams(id).totalDraftRatio).toBe(7.5);
+      expect(getPatentPhysicsParams(id).draftRatio).toBe(7.5);
+
+      setPatentPhysicsParam(id, "clampingWeight", 4.0);
+      expect(getPatentPhysicsParams(id).rollerClampingWeightKg).toBe(4.0);
+      expect(getPatentPhysicsParams(id).clampingWeight).toBe(4.0);
+
+      setPatentPhysicsParam(id, "stapleLength", 32);
+      expect(getPatentPhysicsParams(id).stapleLengthMm).toBe(32);
+      expect(getPatentPhysicsParams(id).stapleLength).toBe(32);
+
+      setPatentPhysicsParam(id, "rovingCount", 1.4);
+      expect(getPatentPhysicsParams(id).inputRovingCountNe).toBe(1.4);
+      expect(getPatentPhysicsParams(id).rovingCount).toBe(1.4);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Flyer Spindle Speed")?.value).toContain("RPM");
+      expect(metrics.find((m) => m.label === "Yarn Count (English)")?.value).toContain("Ne");
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Watt Rotary Engine updates aliases, notifies reactive subscribers, and updates metrics", () => {
+    const id = "gb-1306-watt-rotary-engine";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.strokeRateSpm));
+
+    try {
+      setPatentPhysicsParam(id, "spm", 25);
+      const params = getPatentPhysicsParams(id);
+      expect(params.strokeRateSpm).toBe(25);
+      expect(params.spm).toBe(25);
+      expect(params.strokeRate).toBe(25);
+      expect(observations).toEqual([25]);
+
+      setPatentPhysicsParam(id, "boilerPressure", 85);
+      expect(getPatentPhysicsParams(id).boilerPressureKpa).toBe(85);
+      expect(getPatentPhysicsParams(id).boilerPressure).toBe(85);
+
+      setPatentPhysicsParam(id, "gearRatio", 1.5);
+      expect(getPatentPhysicsParams(id).gearRatioNpOverNs).toBe(1.5);
+      expect(getPatentPhysicsParams(id).gearRatio).toBe(1.5);
+
+      setPatentPhysicsParam(id, "flywheelMass", 4200);
+      expect(getPatentPhysicsParams(id).flywheelMassKg).toBe(4200);
+      expect(getPatentPhysicsParams(id).flywheelMass).toBe(4200);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Driveshaft Speed")?.value).toContain("RPM");
+      expect(metrics.find((m) => m.label === "Scenario Ideal Shaft Power")?.value).toContain("kW");
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Cort Puddling & Rolling updates aliases, notifies reactive subscribers, and updates metrics", () => {
+    const id = "gb-1420-cort-puddling-rolling";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) =>
+      observations.push(p.furnaceTemperatureCelsius),
+    );
+
+    try {
+      setPatentPhysicsParam(id, "furnaceTemp", 1400);
+      const params = getPatentPhysicsParams(id);
+      expect(params.furnaceTemperatureCelsius).toBe(1400);
+      expect(params.furnaceTemp).toBe(1400);
+      expect(params.tempC).toBe(1400);
+      expect(observations).toEqual([1400]);
+
+      setPatentPhysicsParam(id, "rabbleRpm", 20);
+      expect(getPatentPhysicsParams(id).rabbleStirringRpm).toBe(20);
+      expect(getPatentPhysicsParams(id).rabbleRpm).toBe(20);
+
+      setPatentPhysicsParam(id, "initialCarbon", 4.0);
+      expect(getPatentPhysicsParams(id).initialCarbonPercent).toBe(4.0);
+      expect(getPatentPhysicsParams(id).initialCarbon).toBe(4.0);
+
+      setPatentPhysicsParam(id, "puddlingTime", 80);
+      expect(getPatentPhysicsParams(id).puddlingDurationMinutes).toBe(80);
+      expect(getPatentPhysicsParams(id).puddlingTime).toBe(80);
+
+      setPatentPhysicsParam(id, "rollerPasses", 6);
+      expect(getPatentPhysicsParams(id).rollerPassCount).toBe(6);
+      expect(getPatentPhysicsParams(id).rollerPasses).toBe(6);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Residual Carbon")?.value).toContain("% C");
+      expect(metrics.find((m) => m.label === "Tensile Strength")?.value).toContain("MPa");
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Hopkins Potash updates aliases, notifies reactive subscribers, and updates metrics", () => {
+    const id = "us-x1-hopkins-potash";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.roastTempC));
+
+    try {
+      setPatentPhysicsParam(id, "roastTemp", 800);
+      const params = getPatentPhysicsParams(id);
+      expect(params.roastTempC).toBe(800);
+      expect(params.roastTemp).toBe(800);
+      expect(params.furnaceTemp).toBe(800);
+      expect(observations).toEqual([800]);
+
+      setPatentPhysicsParam(id, "roastTime", 3.5);
+      expect(getPatentPhysicsParams(id).roastTimeHours).toBe(3.5);
+      expect(getPatentPhysicsParams(id).roastTime).toBe(3.5);
+
+      setPatentPhysicsParam(id, "ashBatch", 250);
+      expect(getPatentPhysicsParams(id).ashBatchKg).toBe(250);
+      expect(getPatentPhysicsParams(id).ashBatch).toBe(250);
+
+      setPatentPhysicsParam(id, "waterTemp", 90);
+      expect(getPatentPhysicsParams(id).waterTempC).toBe(90);
+      expect(getPatentPhysicsParams(id).waterTemp).toBe(90);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Pearl Ash Yield")?.value).toContain("kg");
+      expect(metrics.find((m) => m.label === "Carbon Combustion")?.value).toContain("%");
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
 });

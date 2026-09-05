@@ -1,6 +1,7 @@
 "use client";
 
 import { Flame, FlaskConical, Pause, Play, Sparkles, Volume2, VolumeX, Waves } from "lucide-react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import {
   getHopkinsTapeFrame,
   HOPKINS_DEFAULT_CONTROLS,
@@ -563,81 +564,61 @@ export function HopkinsPotashSim() {
 
       {/* Interactive Controls Sliders */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-parchment-200 dark:border-ink-800">
-        <div>
-          <label
-            htmlFor="hopkins-roast-temp"
-            className="block text-xs font-mono font-medium text-ink-700 dark:text-parchment-300 mb-1"
-          >
-            Furnace Temp: <span className="font-bold text-amber-600">{roastTempC}°C</span>
-          </label>
-          <input
-            id="hopkins-roast-temp"
-            type="range"
-            min="500"
-            max="950"
-            step="25"
-            value={roastTempC}
-            onChange={(e) => updateParam("roastTempC", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="hopkins-roast-temp"
+          patentId="us-x1-hopkins-potash"
+          paramKey="roastTempC"
+          label="Furnace Temp"
+          value={roastTempC}
+          min={500}
+          max={950}
+          step={25}
+          unit="°C"
+          onChange={(val) => updateParam("roastTempC", val)}
+          allParams={params}
+        />
 
-        <div>
-          <label
-            htmlFor="hopkins-roast-time"
-            className="block text-xs font-mono font-medium text-ink-700 dark:text-parchment-300 mb-1"
-          >
-            Roasting Time: <span className="font-bold text-amber-600">{roastTimeHours} hrs</span>
-          </label>
-          <input
-            id="hopkins-roast-time"
-            type="range"
-            min="0.5"
-            max="6.0"
-            step="0.5"
-            value={roastTimeHours}
-            onChange={(e) => updateParam("roastTimeHours", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="hopkins-roast-time"
+          patentId="us-x1-hopkins-potash"
+          paramKey="roastTimeHours"
+          label="Roasting Time"
+          value={roastTimeHours}
+          min={0.5}
+          max={6.0}
+          step={0.5}
+          unit=" hrs"
+          onChange={(val) => updateParam("roastTimeHours", val)}
+          allParams={params}
+        />
 
-        <div>
-          <label
-            htmlFor="hopkins-ash-batch"
-            className="block text-xs font-mono font-medium text-ink-700 dark:text-parchment-300 mb-1"
-          >
-            Raw Ash Batch: <span className="font-bold text-amber-600">{ashBatchKg} kg</span>
-          </label>
-          <input
-            id="hopkins-ash-batch"
-            type="range"
-            min="50"
-            max="500"
-            step="25"
-            value={ashBatchKg}
-            onChange={(e) => updateParam("ashBatchKg", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="hopkins-ash-batch"
+          patentId="us-x1-hopkins-potash"
+          paramKey="ashBatchKg"
+          label="Raw Ash Batch"
+          value={ashBatchKg}
+          min={50}
+          max={500}
+          step={25}
+          unit=" kg"
+          onChange={(val) => updateParam("ashBatchKg", val)}
+          allParams={params}
+        />
 
-        <div>
-          <label
-            htmlFor="hopkins-water-temp"
-            className="block text-xs font-mono font-medium text-ink-700 dark:text-parchment-300 mb-1"
-          >
-            Water Temp: <span className="font-bold text-amber-600">{waterTempC}°C</span>
-          </label>
-          <input
-            id="hopkins-water-temp"
-            type="range"
-            min="20"
-            max="100"
-            step="5"
-            value={waterTempC}
-            onChange={(e) => updateParam("waterTempC", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="hopkins-water-temp"
+          patentId="us-x1-hopkins-potash"
+          paramKey="waterTempC"
+          label="Water Temp"
+          value={waterTempC}
+          min={20}
+          max={100}
+          step={5}
+          unit="°C"
+          onChange={(val) => updateParam("waterTempC", val)}
+          allParams={params}
+        />
       </div>
     </div>
   );

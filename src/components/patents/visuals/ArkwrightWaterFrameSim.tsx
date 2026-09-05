@@ -2,6 +2,7 @@
 
 import { Cog, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useId } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import {
   ARKWRIGHT_DEFAULT_CONTROLS,
   ARKWRIGHT_FRANKENSIM_BOUNDARY,
@@ -578,85 +579,61 @@ export function ArkwrightWaterFrameSim() {
 
           {/* Interactive Sliders */}
           <div className="bg-stone-950/70 p-4 rounded-xl border border-stone-800 space-y-3.5">
-            <div>
-              <div className="flex justify-between text-xs font-mono mb-1">
-                <label htmlFor={speedId} className="text-stone-300">
-                  Water Wheel Speed
-                </label>
-                <span className="text-amber-400 font-bold">{wheelRpm} RPM</span>
-              </div>
-              <input
-                id={speedId}
-                type="range"
-                min="60"
-                max="260"
-                step="10"
-                value={wheelRpm}
-                onChange={(e) => updateParam("waterWheelRpm", Number(e.target.value))}
-                className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
-              />
-            </div>
+            <SensitivitySlider
+              id={speedId}
+              patentId={EXHIBIT_ID}
+              paramKey="waterWheelRpm"
+              label="Water Wheel Speed"
+              value={wheelRpm}
+              min={60}
+              max={260}
+              step={10}
+              unit="RPM"
+              onChange={(val) => updateParam("waterWheelRpm", val)}
+              allParams={params}
+            />
 
-            <div>
-              <div className="flex justify-between text-xs font-mono mb-1">
-                <label htmlFor={draftId} className="text-stone-300">
-                  Differential Draft Ratio (D = v4 / v1)
-                </label>
-                <span className="text-cyan-400 font-bold">{draftRatio.toFixed(1)}×</span>
-              </div>
-              <input
-                id={draftId}
-                type="range"
-                min="3.0"
-                max="10.0"
-                step="0.5"
-                value={draftRatio}
-                onChange={(e) => updateParam("totalDraftRatio", Number(e.target.value))}
-                className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
-              />
-            </div>
+            <SensitivitySlider
+              id={draftId}
+              patentId={EXHIBIT_ID}
+              paramKey="totalDraftRatio"
+              label="Differential Draft Ratio (D = v4 / v1)"
+              value={draftRatio}
+              min={3.0}
+              max={10.0}
+              step={0.5}
+              unit="×"
+              onChange={(val) => updateParam("totalDraftRatio", val)}
+              allParams={params}
+            />
 
-            <div>
-              <div className="flex justify-between text-xs font-mono mb-1">
-                <label htmlFor={weightId} className="text-stone-300">
-                  Roller Clamping Weight (Lead Saddles)
-                </label>
-                <span className="text-emerald-400 font-bold">
-                  {(controls.rollerClampingWeightKg ?? 3.5).toFixed(1)} kg
-                </span>
-              </div>
-              <input
-                id={weightId}
-                type="range"
-                min="1.0"
-                max="6.0"
-                step="0.5"
-                value={controls.rollerClampingWeightKg ?? 3.5}
-                onChange={(e) => updateParam("rollerClampingWeightKg", Number(e.target.value))}
-                className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-              />
-            </div>
+            <SensitivitySlider
+              id={weightId}
+              patentId={EXHIBIT_ID}
+              paramKey="rollerClampingWeightKg"
+              label="Roller Clamping Weight (Lead Saddles)"
+              value={controls.rollerClampingWeightKg ?? 3.5}
+              min={1.0}
+              max={6.0}
+              step={0.5}
+              unit="kg"
+              onChange={(val) => updateParam("rollerClampingWeightKg", val)}
+              allParams={params}
+            />
 
-            <div>
-              <div className="flex justify-between text-xs font-mono mb-1">
-                <label htmlFor={stapleId} className="text-stone-300">
-                  Cotton Staple Fiber Length
-                </label>
-                <span className="text-purple-400 font-bold">
-                  {controls.stapleLengthMm ?? 28} mm
-                </span>
-              </div>
-              <input
-                id={stapleId}
-                type="range"
-                min="20"
-                max="38"
-                step="1"
-                value={controls.stapleLengthMm ?? 28}
-                onChange={(e) => updateParam("stapleLengthMm", Number(e.target.value))}
-                className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
-              />
-            </div>
+            <SensitivitySlider
+              id={stapleId}
+              patentId={EXHIBIT_ID}
+              paramKey="stapleLengthMm"
+              label="Cotton Staple Fiber Length"
+              value={controls.stapleLengthMm ?? 28}
+              min={20}
+              max={38}
+              step={1}
+              unit="mm"
+              onChange={(val) => updateParam("stapleLengthMm", val)}
+              allParams={params}
+            />
           </div>
 
           {/* Explicitly scaled teaching-scenario output */}

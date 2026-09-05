@@ -2,6 +2,7 @@
 
 import { Flame, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import {
   CORT_DEFAULT_CONTROLS,
   CORT_FRANKENSIM_BOUNDARY,
@@ -723,100 +724,75 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
 
       {/* Interactive Sliders */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-2 border-t border-ink-800">
-        <div>
-          <label
-            htmlFor="cort-furnace-temp"
-            className="block text-xs font-mono text-parchment-300 mb-1"
-          >
-            Furnace Temperature: {furnaceTempC} °C
-          </label>
-          <input
-            id="cort-furnace-temp"
-            type="range"
-            min={1150}
-            max={1550}
-            step={25}
-            value={furnaceTempC}
-            onChange={(e) => updateParam("furnaceTemperatureCelsius", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-ink-800 dark:[&::-webkit-slider-runnable-track]:bg-ink-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-ink-800 dark:[&::-moz-range-track]:bg-ink-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="cort-furnace-temp"
+          patentId="gb-1420-cort-puddling-rolling"
+          paramKey="furnaceTemperatureCelsius"
+          label="Furnace Temperature"
+          value={furnaceTempC}
+          min={1150}
+          max={1550}
+          step={25}
+          unit="°C"
+          onChange={(val) => updateParam("furnaceTemperatureCelsius", val)}
+          allParams={params}
+        />
 
-        <div>
-          <label
-            htmlFor="cort-initial-carbon"
-            className="block text-xs font-mono text-parchment-300 mb-1"
-          >
-            Pig Iron Carbon: {initialCarbonPct.toFixed(1)}% C
-          </label>
-          <input
-            id="cort-initial-carbon"
-            type="range"
-            min={2.8}
-            max={4.5}
-            step={0.1}
-            value={initialCarbonPct}
-            onChange={(e) => updateParam("initialCarbonPercent", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-ink-800 dark:[&::-webkit-slider-runnable-track]:bg-ink-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-ink-800 dark:[&::-moz-range-track]:bg-ink-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="cort-initial-carbon"
+          patentId="gb-1420-cort-puddling-rolling"
+          paramKey="initialCarbonPercent"
+          label="Pig Iron Carbon"
+          value={initialCarbonPct}
+          min={2.8}
+          max={4.5}
+          step={0.1}
+          unit="% C"
+          onChange={(val) => updateParam("initialCarbonPercent", val)}
+          allParams={params}
+        />
 
-        <div>
-          <label
-            htmlFor="cort-rabble-rpm"
-            className="block text-xs font-mono text-parchment-300 mb-1"
-          >
-            Rabble Stirring: {rabbleRpm} RPM
-          </label>
-          <input
-            id="cort-rabble-rpm"
-            type="range"
-            min={0}
-            max={25}
-            step={5}
-            value={rabbleRpm}
-            onChange={(e) => updateParam("rabbleStirringRpm", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-ink-800 dark:[&::-webkit-slider-runnable-track]:bg-ink-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-ink-800 dark:[&::-moz-range-track]:bg-ink-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="cort-rabble-rpm"
+          patentId="gb-1420-cort-puddling-rolling"
+          paramKey="rabbleStirringRpm"
+          label="Rabble Stirring"
+          value={rabbleRpm}
+          min={0}
+          max={25}
+          step={5}
+          unit="RPM"
+          onChange={(val) => updateParam("rabbleStirringRpm", val)}
+          allParams={params}
+        />
 
-        <div>
-          <label
-            htmlFor="cort-puddling-time"
-            className="block text-xs font-mono text-parchment-300 mb-1"
-          >
-            Puddling Duration: {puddlingTimeMin} min
-          </label>
-          <input
-            id="cort-puddling-time"
-            type="range"
-            min={30}
-            max={150}
-            step={10}
-            value={puddlingTimeMin}
-            onChange={(e) => updateParam("puddlingDurationMinutes", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-ink-800 dark:[&::-webkit-slider-runnable-track]:bg-ink-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-ink-800 dark:[&::-moz-range-track]:bg-ink-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="cort-puddling-time"
+          patentId="gb-1420-cort-puddling-rolling"
+          paramKey="puddlingDurationMinutes"
+          label="Puddling Duration"
+          value={puddlingTimeMin}
+          min={30}
+          max={150}
+          step={10}
+          unit="min"
+          onChange={(val) => updateParam("puddlingDurationMinutes", val)}
+          allParams={params}
+        />
 
-        <div>
-          <label
-            htmlFor="cort-roller-passes"
-            className="block text-xs font-mono text-parchment-300 mb-1"
-          >
-            Grooved Roll Passes: {rollerPasses} passes
-          </label>
-          <input
-            id="cort-roller-passes"
-            type="range"
-            min={1}
-            max={8}
-            step={1}
-            value={rollerPasses}
-            onChange={(e) => updateParam("rollerPassCount", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-ink-800 dark:[&::-webkit-slider-runnable-track]:bg-ink-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-ink-800 dark:[&::-moz-range-track]:bg-ink-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="cort-roller-passes"
+          patentId="gb-1420-cort-puddling-rolling"
+          paramKey="rollerPassCount"
+          label="Grooved Roll Passes"
+          value={rollerPasses}
+          min={1}
+          max={8}
+          step={1}
+          unit="passes"
+          onChange={(val) => updateParam("rollerPassCount", val)}
+          allParams={params}
+        />
       </div>
     </div>
   );
