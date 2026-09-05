@@ -12,12 +12,20 @@ import {
 } from "./amfVersatranKernel";
 import { stepArkwrightWaterFrame } from "./arkwrightKernel";
 import {
+  type BellPhotophoneInput,
+  type BellPhotophoneState,
+  stepBellPhotophone,
+} from "./bellPhotophoneKernel";
+import {
   stepBardeenTransistor as catalogStepBardeen,
   stepColtRevolver as catalogStepColt,
   stepHollerithTabulating as catalogStepHollerith,
   stepKevlarContinuum as catalogStepKevlar,
   stepLegacyDaimlerEngineUS349983 as catalogStepLegacyDaimlerEngineUS349983,
   stepLincolnBuoy as catalogStepLincolnBuoy,
+  type DeForestAudionKernelInput,
+  type DeForestAudionKernelOutput,
+  type FessendenWirelessControlParams,
   farnsworthDisplaySweepRates,
   goddardSchematicStack,
   type LandPolaroidInput,
@@ -28,12 +36,14 @@ import {
   stepCarlsonElectrophotography,
   stepCorlissEngine,
   stepDavenportMotor,
+  stepDeForestAudion,
   stepDeLavalSeparator,
   stepEdisonBulb,
   stepEdisonPhonograph,
   stepEinsteinRefrigerator as stepEinsteinRefrigeratorCatalog,
   stepEngelbartMouse,
   stepEricssonPropeller,
+  stepFessendenWireless,
   stepGatlingGun,
   stepGliddenBarbedWire,
   stepGoodyearRubber as stepGoodyearRubberCatalog,
@@ -1533,6 +1543,21 @@ export const FrankenSimEngine = {
   /** US 3,353,115 Maiman ruby laser optical pumping, metastable relaxation, and coherent resonator feedback. */
   stepMaimanRubyLaser(controls: MaimanRubyLaserControls = {}) {
     return stepMaimanRubyLaser(controls);
+  },
+
+  /** US 235,199 Bell photophone optical sound transmission. */
+  stepBellPhotophone(input: BellPhotophoneInput = {}): BellPhotophoneState {
+    return stepBellPhotophone(input);
+  },
+
+  /** US 706,737 Fessenden continuous-wave wireless high-frequency alternator & liquid barretter demodulator. */
+  stepFessendenWireless(params: FessendenWirelessControlParams = {}) {
+    return stepFessendenWireless(params);
+  },
+
+  /** US 879,532 De Forest Audion thermionic triode vacuum tube & electrostatic grid control. */
+  stepDeForestAudion(params: DeForestAudionKernelInput = {}): DeForestAudionKernelOutput {
+    return stepDeForestAudion(params);
   },
 
   createTelemetryEnvelope(

@@ -743,6 +743,32 @@ export function computeParameterSensitivity(
     }
 
     case "us-1647-morse-telegraph": {
+      const current = params.currentMa ?? params.lineCurrentMa ?? params.current ?? 65;
+      const turns = params.wireTurns ?? 1200;
+      const volts = params.lineVoltageV ?? params.lineVoltage ?? params.voltage ?? 24;
+      const miles = params.lineLengthMiles ?? 44;
+      const wpm = params.wpmSpeed ?? 20;
+
+      if (
+        !Number.isFinite(current) ||
+        current < 5 ||
+        current > 300 ||
+        !Number.isFinite(turns) ||
+        turns < 200 ||
+        turns > 5000 ||
+        !Number.isFinite(volts) ||
+        volts < 3 ||
+        volts > 100 ||
+        !Number.isFinite(miles) ||
+        miles < 5 ||
+        miles > 300 ||
+        !Number.isFinite(wpm) ||
+        wpm < 2 ||
+        wpm > 60
+      ) {
+        return null;
+      }
+
       if (
         controlKey === "currentMa" ||
         controlKey === "lineCurrentMa" ||
@@ -762,8 +788,8 @@ export function computeParameterSensitivity(
         controlKey === "lineVoltageV" ||
         controlKey === "voltage"
       ) {
-        const rLine = params.lineResistance ?? 120.0;
-        const rTotal = rLine + 80.0;
+        const rLine = params.lineResistance ?? miles * 12.5;
+        const rTotal = rLine + 150.0;
         const dI_dV = (1.0 / rTotal) * 1000.0; // mA / V
         return {
           metricName: "Loop Signal Current",
@@ -779,9 +805,9 @@ export function computeParameterSensitivity(
         controlKey === "resistance" ||
         controlKey === "lineLengthMiles"
       ) {
-        const v = params.lineVoltage ?? 24.0;
-        const rLine = params.lineResistance ?? 120.0;
-        const rTotal = rLine + 80.0;
+        const v = volts;
+        const rLine = params.lineResistance ?? miles * 12.5;
+        const rTotal = rLine + 150.0;
         const dI_dR = -(v / (rTotal * rTotal)) * 1000.0; // mA / Ohm
         return {
           metricName: "Signal Current Attenuation",
@@ -789,6 +815,17 @@ export function computeParameterSensitivity(
           derivativeValue: Number(dI_dR.toFixed(3)),
           derivativeUnit: "mA / Ω",
           interpretation: "Line attenuation rate as wire distance increases.",
+        };
+      }
+      if (controlKey === "wpmSpeed") {
+        const dTau_dWpm = Number((-1200 / (wpm * wpm)).toFixed(2));
+        return {
+          metricName: "Code Element Unit Duration",
+          derivativeSymbol: "∂τ_unit / ∂WPM",
+          derivativeValue: dTau_dWpm,
+          derivativeUnit: "ms / WPM",
+          interpretation:
+            "Morse timing element duration scaling inversely with words-per-minute transmission rate.",
         };
       }
       break;
@@ -1374,6 +1411,28 @@ export function computeParameterSensitivity(
     }
 
     case "us-235199-bell-photophone": {
+      const dist = params.transmissionDistanceM ?? 213;
+      const spl = params.voiceSplDb ?? 75;
+      const irr = params.solarIrradianceWPerM2 ?? params.beamPowerWatts ?? 950;
+      const dia = params.collectorDiameterM ?? 0.5;
+
+      if (
+        !Number.isFinite(dist) ||
+        dist < 5 ||
+        dist > 1000 ||
+        !Number.isFinite(spl) ||
+        spl < 30 ||
+        spl > 120 ||
+        !Number.isFinite(irr) ||
+        irr < 50 ||
+        irr > 2000 ||
+        !Number.isFinite(dia) ||
+        dia < 0.1 ||
+        dia > 2.0
+      ) {
+        return null;
+      }
+
       if (
         controlKey === "solarIrradianceWPerM2" ||
         controlKey === "beamPowerWatts" ||
@@ -1388,7 +1447,22 @@ export function computeParameterSensitivity(
             "Photo-conductive modulation current generated across parabolic selenium receiver.",
         };
       }
+      if (controlKey === "voiceSplDb") {
+        return {
+          metricName: "Diaphragm Optical Beam Divergence Modulation",
+          derivativeSymbol: "∂θ_beam / ∂SPL",
+          derivativeValue: 0.08,
+          derivativeUnit: "mrad / dB",
+          interpretation:
+            "Acoustic mirror flexure altering specular light beam angular divergence and focus.",
+        };
+      }
       break;
+    }
+
+    case "us-586193-marconi-radio": {
+      // Source-bounded fixed-step causal tape; quantitative RF link budget withheld.
+      return null;
     }
 
     case "us-247804-delaval-separator": {
@@ -1576,6 +1650,28 @@ export function computeParameterSensitivity(
     }
 
     case "us-613809-tesla-teleautomaton": {
+      const pulseCount = params.pulseCount ?? 0;
+      const rfFreq = params.rfFrequency ?? params.transmitterFreqKhz ?? 150;
+      const rudder = params.rudderAngle ?? params.rudderAngleDeg ?? 0;
+      const throttle = params.propellerThrottlePct ?? params.throttlePct ?? 75;
+
+      if (
+        !Number.isFinite(pulseCount) ||
+        pulseCount < 0 ||
+        pulseCount > 50 ||
+        !Number.isFinite(rfFreq) ||
+        rfFreq < 50 ||
+        rfFreq > 500 ||
+        !Number.isFinite(rudder) ||
+        rudder < -45 ||
+        rudder > 45 ||
+        !Number.isFinite(throttle) ||
+        throttle < 0 ||
+        throttle > 100
+      ) {
+        return null;
+      }
+
       if (controlKey === "rudderAngleDeg" || controlKey === "rudderAngle") {
         return {
           metricName: "Vessel Turning Rate",
@@ -1586,10 +1682,47 @@ export function computeParameterSensitivity(
             "Hydrodynamic rudder yaw turning moment from wireless pulse-stepped actuator.",
         };
       }
+      if (
+        controlKey === "propellerThrottlePct" ||
+        controlKey === "throttlePct" ||
+        controlKey === "throttle"
+      ) {
+        return {
+          metricName: "Electric Propulsion Motor Thrust",
+          derivativeSymbol: "∂T_thrust / ∂throttle",
+          derivativeValue: 0.85,
+          derivativeUnit: "N / %",
+          interpretation:
+            "Electric motor screw propeller thrust scaling with battery pulse throttle setting.",
+        };
+      }
       break;
     }
 
     case "us-706737-fessenden-wireless": {
+      const fCarrier =
+        params.carrierFrequencyKhz ?? params.carrierFreqKhz ?? params.carrierFreq ?? 75;
+      const modPct = params.audioModulationPct ?? params.modDepthPct ?? params.modulation ?? 65;
+      const lUh = params.antennaTuningUh ?? params.tuningUh ?? 450;
+      const distKm = params.transmissionDistanceKm ?? params.distanceKm ?? 25;
+
+      if (
+        !Number.isFinite(fCarrier) ||
+        fCarrier < 10 ||
+        fCarrier > 200 ||
+        !Number.isFinite(modPct) ||
+        modPct < 0 ||
+        modPct > 100 ||
+        !Number.isFinite(lUh) ||
+        lUh < 50 ||
+        lUh > 1500 ||
+        !Number.isFinite(distKm) ||
+        distKm < 1 ||
+        distKm > 200
+      ) {
+        return null;
+      }
+
       if (
         controlKey === "carrierFrequencyKhz" ||
         controlKey === "carrierFreqKhz" ||
@@ -1618,11 +1751,61 @@ export function computeParameterSensitivity(
             "Voice amplitude modulation depth converting microphone acoustic signals to sideband energy.",
         };
       }
+      if (
+        controlKey === "transmissionDistanceKm" ||
+        controlKey === "distanceKm" ||
+        controlKey === "distance"
+      ) {
+        return {
+          metricName: "Electrolytic Barretter Received RF Power Attenuation",
+          derivativeSymbol: "∂P_rx / ∂d",
+          derivativeValue: -0.048,
+          derivativeUnit: "µW / km",
+          interpretation:
+            "Inverse-square path loss attenuation rate over transatlantic coastal transmission distances.",
+        };
+      }
       break;
     }
 
     case "us-879532-de-forest-audion": {
-      if (controlKey === "gridVoltageV" || controlKey === "gridVoltage") {
+      const plateV = params.plateVoltageV ?? params.plateVoltage ?? 45;
+      const gridV =
+        params.gridBiasVoltageV ??
+        params.gridBiasV ??
+        params.gridVoltageV ??
+        params.gridVoltage ??
+        -1.5;
+      const ifil = params.filamentCurrentA ?? params.filamentCurrent ?? 1.0;
+      const rfIn = params.gridSignalAmplitudeMv ?? params.rfInputMv ?? 50;
+      const rLoad = params.loadResistanceKOhms ?? params.loadResistance ?? 20;
+
+      if (
+        !Number.isFinite(plateV) ||
+        plateV < 5 ||
+        plateV > 200 ||
+        !Number.isFinite(gridV) ||
+        gridV < -10.0 ||
+        gridV > 5.0 ||
+        !Number.isFinite(ifil) ||
+        ifil < 0.2 ||
+        ifil > 2.5 ||
+        !Number.isFinite(rfIn) ||
+        rfIn < 1 ||
+        rfIn > 500 ||
+        !Number.isFinite(rLoad) ||
+        rLoad < 1 ||
+        rLoad > 100
+      ) {
+        return null;
+      }
+
+      if (
+        controlKey === "gridVoltageV" ||
+        controlKey === "gridVoltage" ||
+        controlKey === "gridBiasVoltageV" ||
+        controlKey === "gridBiasV"
+      ) {
         return {
           metricName: "Triode Transconductance (gm)",
           derivativeSymbol: "∂I_p / ∂V_g",
@@ -1640,6 +1823,20 @@ export function computeParameterSensitivity(
           derivativeUnit: "V / V",
           interpretation:
             "Active voltage amplification factor achieved by third-electrode electrostatic control.",
+        };
+      }
+      if (
+        controlKey === "loadResistanceKOhms" ||
+        controlKey === "loadResistance" ||
+        controlKey === "loadResistanceKohm"
+      ) {
+        return {
+          metricName: "Stage Voltage Gain Sensitivity",
+          derivativeSymbol: "∂A_v / ∂R_L",
+          derivativeValue: 0.106,
+          derivativeUnit: "(V/V) / kΩ",
+          interpretation:
+            "Anode stage voltage gain scaling with external resistive plate load impedance.",
         };
       }
       break;
@@ -2082,7 +2279,21 @@ export function computeParameterSensitivity(
     }
 
     case "us-200521-edison-phonograph": {
-      if (controlKey === "mandrelRpm") {
+      const rpm = params.mandrelRpm ?? params.rpm ?? 60;
+      const vol = params.voiceVolumeDb ?? params.voiceVolume ?? 75;
+
+      if (
+        !Number.isFinite(rpm) ||
+        rpm < 20 ||
+        rpm > 200 ||
+        !Number.isFinite(vol) ||
+        vol < 20 ||
+        vol > 130
+      ) {
+        return null;
+      }
+
+      if (controlKey === "mandrelRpm" || controlKey === "rpm") {
         return {
           metricName: "Groove Surface Linear Speed",
           derivativeSymbol: "∂v_linear / ∂RPM",
@@ -2090,6 +2301,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "m·s⁻¹ / RPM",
           interpretation:
             "Tangential foil speed dictating high-frequency recording fidelity and stylus track pitch.",
+        };
+      }
+      if (controlKey === "voiceVolumeDb" || controlKey === "voiceVolume") {
+        return {
+          metricName: "Stylus Indentation Amplitude (Illustrative)",
+          derivativeSymbol: "∂A_stylus / ∂SPL",
+          derivativeValue: 0.000017,
+          derivativeUnit: "mm / dB",
+          interpretation:
+            "Illustrative diaphragm acoustic deflection scaling with input sound pressure level.",
         };
       }
       break;
@@ -2553,7 +2774,7 @@ export function computeParameterSensitivity(
 
     case "us-7479949-multitouch": {
       const sep = params.fingerSeparationMm ?? 50;
-      const count = params.fingerCount ?? 2;
+      const count = params.fingerCount ?? 1;
 
       if (
         !Number.isFinite(sep) ||
@@ -2568,12 +2789,12 @@ export function computeParameterSensitivity(
 
       if (controlKey === "fingerSeparationMm") {
         return {
-          metricName: "Affine Pinch-to-Zoom Scale Factor",
+          metricName: "Illustrative Pinch-to-Zoom Scale Ratio",
           derivativeSymbol: "∂S / ∂d_sep",
           derivativeValue: 0.02,
           derivativeUnit: "scale / mm",
           interpretation:
-            "Linear pinch gesture affine scaling: 50 mm contact separation defines nominal 1.0× unity display scale (S = d / 50 mm).",
+            "Illustrative display scaling only: 50 mm separation defines a nominal 1.0× reference (S = d / 50 mm). Claim 8 names the zoom-in or zoom-out command but supplies neither this ratio nor any sensing law.",
         };
       }
       if (controlKey === "fingerCount") {

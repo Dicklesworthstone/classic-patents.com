@@ -942,7 +942,7 @@ describe("Sensitivities follow the current admitted operating point", () => {
         fingerSeparationMm: sep,
       });
       expect(sens).toBeDefined();
-      expect(sens?.metricName).toBe("Affine Pinch-to-Zoom Scale Factor");
+      expect(sens?.metricName).toBe("Illustrative Pinch-to-Zoom Scale Ratio");
       expect(sens?.derivativeSymbol).toBe("∂S / ∂d_sep");
       expect(sens?.derivativeUnit).toBe("scale / mm");
       expect(sens?.derivativeValue).toBe(0.02);
@@ -3139,6 +3139,347 @@ describe("Sensitivities follow the current admitted operating point", () => {
         computeParameterSensitivity(id, "crystalTemperatureKelvin", {
           crystalTemperatureKelvin: invalid,
         }),
+      ).toBeNull();
+    }
+  });
+
+  test("Morse telegraph derives magnetizing force, signal current, attenuation, and WPM timing sensitivities", () => {
+    const id = "us-1647-morse-telegraph";
+
+    // Current sensitivity
+    const sensCurrent = computeParameterSensitivity(id, "currentMa", {
+      currentMa: 65,
+      wireTurns: 1500,
+    });
+    expect(sensCurrent).toBeDefined();
+    expect(sensCurrent?.metricName).toBe("Relay Magnetomotive Force");
+    expect(sensCurrent?.derivativeSymbol).toBe("∂F / ∂I_line");
+    expect(sensCurrent?.derivativeValue).toBe(0.045);
+    expect(sensCurrent?.derivativeUnit).toBe("N / mA");
+
+    // Voltage sensitivity
+    const sensVolt = computeParameterSensitivity(id, "lineVoltageV", {
+      lineVoltageV: 24,
+      lineLengthMiles: 44,
+    });
+    expect(sensVolt).toBeDefined();
+    expect(sensVolt?.metricName).toBe("Loop Signal Current");
+    expect(sensVolt?.derivativeSymbol).toBe("∂I / ∂V");
+    expect(sensVolt?.derivativeUnit).toBe("mA / V");
+    expect(sensVolt?.derivativeValue).toBeCloseTo(1.43, 2);
+
+    // WPM duration sensitivity
+    const sensWpm = computeParameterSensitivity(id, "wpmSpeed", {
+      wpmSpeed: 20,
+    });
+    expect(sensWpm).toBeDefined();
+    expect(sensWpm?.metricName).toBe("Code Element Unit Duration");
+    expect(sensWpm?.derivativeSymbol).toBe("∂τ_unit / ∂WPM");
+    expect(sensWpm?.derivativeValue).toBe(-3.0);
+    expect(sensWpm?.derivativeUnit).toBe("ms / WPM");
+
+    // Bounds checking
+    for (const invalid of [4, 301, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "currentMa", { currentMa: invalid })).toBeNull();
+    }
+    for (const invalid of [199, 5001, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "wireTurns", { wireTurns: invalid })).toBeNull();
+    }
+    for (const invalid of [2, 101, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "lineVoltageV", { lineVoltageV: invalid })).toBeNull();
+    }
+    for (const invalid of [4, 301, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "lineLengthMiles", { lineLengthMiles: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [1, 61, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "wpmSpeed", { wpmSpeed: invalid })).toBeNull();
+    }
+  });
+
+  test("Bell telephone derives acoustic frequency, air gap, and voice amplitude sensitivities", () => {
+    const id = "us-174465-bell-telephone";
+
+    const sensFreq = computeParameterSensitivity(id, "acousticFrequencyHz", {
+      acousticFrequencyHz: 440,
+    });
+    expect(sensFreq).toBeDefined();
+    expect(sensFreq?.metricName).toBe("Acoustic Angular Frequency");
+    expect(sensFreq?.derivativeSymbol).toBe("∂ω / ∂f_acoustic");
+    expect(sensFreq?.derivativeValue).toBe(6.283185);
+    expect(sensFreq?.derivativeUnit).toBe("rad·s⁻¹ / Hz");
+
+    const sensSpl = computeParameterSensitivity(id, "voiceAmplitude", {
+      voiceAmplitude: 75,
+    });
+    expect(sensSpl).toBeDefined();
+    expect(sensSpl?.metricName).toBe("Modulated Signal Current");
+    expect(sensSpl?.derivativeSymbol).toBe("∂I_mod / ∂SPL");
+    expect(sensSpl?.derivativeUnit).toBe("mA / dB");
+
+    // Bounds checking
+    for (const invalid of [39, 96, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "voiceAmplitude", { voiceAmplitude: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [199, 801, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "acousticFrequencyHz", { acousticFrequencyHz: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.09, 0.81, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "airGap", { airGap: invalid })).toBeNull();
+    }
+    for (const invalid of [0.9, 12.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "batteryVoltage", { batteryVoltage: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.19, 3.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "liquidConductivity", { liquidConductivity: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Edison phonograph derives mandrel RPM linear speed and voice volume displacement sensitivities", () => {
+    const id = "us-200521-edison-phonograph";
+
+    const sensRpm = computeParameterSensitivity(id, "mandrelRpm", {
+      mandrelRpm: 60,
+    });
+    expect(sensRpm).toBeDefined();
+    expect(sensRpm?.metricName).toBe("Groove Surface Linear Speed");
+    expect(sensRpm?.derivativeSymbol).toBe("∂v_linear / ∂RPM");
+    expect(sensRpm?.derivativeValue).toBe(0.0052);
+    expect(sensRpm?.derivativeUnit).toBe("m·s⁻¹ / RPM");
+
+    const sensVol = computeParameterSensitivity(id, "voiceVolumeDb", {
+      voiceVolumeDb: 75,
+    });
+    expect(sensVol).toBeDefined();
+    expect(sensVol?.metricName).toBe("Stylus Indentation Amplitude (Illustrative)");
+    expect(sensVol?.derivativeSymbol).toBe("∂A_stylus / ∂SPL");
+    expect(sensVol?.derivativeValue).toBe(0.000017);
+    expect(sensVol?.derivativeUnit).toBe("mm / dB");
+
+    // Bounds checking
+    for (const invalid of [19, 201, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "mandrelRpm", { mandrelRpm: invalid })).toBeNull();
+    }
+    for (const invalid of [19, 131, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "voiceVolumeDb", { voiceVolumeDb: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Bell photophone derives solar irradiance and voice SPL beam divergence sensitivities", () => {
+    const id = "us-235199-bell-photophone";
+
+    const sensIrr = computeParameterSensitivity(id, "solarIrradianceWPerM2", {
+      solarIrradianceWPerM2: 950,
+    });
+    expect(sensIrr).toBeDefined();
+    expect(sensIrr?.metricName).toBe("Selenium Photocell Responsivity");
+    expect(sensIrr?.derivativeSymbol).toBe("∂I_photo / ∂Φ");
+    expect(sensIrr?.derivativeValue).toBe(4.5);
+    expect(sensIrr?.derivativeUnit).toBe("µA / W");
+
+    const sensSpl = computeParameterSensitivity(id, "voiceSplDb", {
+      voiceSplDb: 75,
+    });
+    expect(sensSpl).toBeDefined();
+    expect(sensSpl?.metricName).toBe("Diaphragm Optical Beam Divergence Modulation");
+    expect(sensSpl?.derivativeSymbol).toBe("∂θ_beam / ∂SPL");
+    expect(sensSpl?.derivativeValue).toBe(0.08);
+    expect(sensSpl?.derivativeUnit).toBe("mrad / dB");
+
+    // Bounds checking
+    for (const invalid of [4, 1001, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "transmissionDistanceM", {
+          transmissionDistanceM: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [29, 121, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "voiceSplDb", { voiceSplDb: invalid })).toBeNull();
+    }
+    for (const invalid of [49, 2001, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "solarIrradianceWPerM2", {
+          solarIrradianceWPerM2: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.09, 2.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "collectorDiameterM", { collectorDiameterM: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Marconi radio returns null due to fixed-step causal tape architecture", () => {
+    const id = "us-586193-marconi-radio";
+    expect(computeParameterSensitivity(id, "sparkGapMm", { sparkGapMm: 2.5 })).toBeNull();
+    expect(
+      computeParameterSensitivity(id, "aerialHeightMeters", { aerialHeightMeters: 30 }),
+    ).toBeNull();
+  });
+
+  test("Tesla teleautomaton derives rudder turning rate and propeller thrust sensitivities", () => {
+    const id = "us-613809-tesla-teleautomaton";
+
+    const sensRudder = computeParameterSensitivity(id, "rudderAngleDeg", {
+      rudderAngleDeg: 15,
+    });
+    expect(sensRudder).toBeDefined();
+    expect(sensRudder?.metricName).toBe("Vessel Turning Rate");
+    expect(sensRudder?.derivativeSymbol).toBe("∂ω_turn / ∂θ_rudder");
+    expect(sensRudder?.derivativeValue).toBe(0.35);
+    expect(sensRudder?.derivativeUnit).toBe("deg/s / deg");
+
+    const sensThrottle = computeParameterSensitivity(id, "propellerThrottlePct", {
+      propellerThrottlePct: 75,
+    });
+    expect(sensThrottle).toBeDefined();
+    expect(sensThrottle?.metricName).toBe("Electric Propulsion Motor Thrust");
+    expect(sensThrottle?.derivativeSymbol).toBe("∂T_thrust / ∂throttle");
+    expect(sensThrottle?.derivativeValue).toBe(0.85);
+    expect(sensThrottle?.derivativeUnit).toBe("N / %");
+
+    // Bounds checking
+    for (const invalid of [-1, 51, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "pulseCount", { pulseCount: invalid })).toBeNull();
+    }
+    for (const invalid of [49, 501, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "rfFrequency", { rfFrequency: invalid })).toBeNull();
+    }
+    for (const invalid of [-46, 46, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "rudderAngle", { rudderAngle: invalid })).toBeNull();
+    }
+    for (const invalid of [-1, 101, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "propellerThrottlePct", { propellerThrottlePct: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Fessenden wireless derives frequency scaling, modulation power, and path loss attenuation sensitivities", () => {
+    const id = "us-706737-fessenden-wireless";
+
+    const sensFreq = computeParameterSensitivity(id, "carrierFrequencyKhz", {
+      carrierFrequencyKhz: 75,
+    });
+    expect(sensFreq).toBeDefined();
+    expect(sensFreq?.metricName).toBe("Alternator Frequency Scaling");
+    expect(sensFreq?.derivativeSymbol).toBe("∂f / ∂RPM");
+    expect(sensFreq?.derivativeValue).toBe(0.05);
+    expect(sensFreq?.derivativeUnit).toBe("kHz / RPM");
+
+    const sensMod = computeParameterSensitivity(id, "audioModulationPct", {
+      audioModulationPct: 65,
+    });
+    expect(sensMod).toBeDefined();
+    expect(sensMod?.metricName).toBe("Audio Modulation Sideband Power");
+    expect(sensMod?.derivativeSymbol).toBe("∂P_sideband / ∂m");
+    expect(sensMod?.derivativeValue).toBe(12.5);
+    expect(sensMod?.derivativeUnit).toBe("W / %");
+
+    const sensDist = computeParameterSensitivity(id, "transmissionDistanceKm", {
+      transmissionDistanceKm: 25,
+    });
+    expect(sensDist).toBeDefined();
+    expect(sensDist?.metricName).toBe("Electrolytic Barretter Received RF Power Attenuation");
+    expect(sensDist?.derivativeSymbol).toBe("∂P_rx / ∂d");
+    expect(sensDist?.derivativeValue).toBe(-0.048);
+    expect(sensDist?.derivativeUnit).toBe("µW / km");
+
+    // Bounds checking
+    for (const invalid of [9, 201, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "carrierFrequencyKhz", { carrierFrequencyKhz: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-1, 101, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "audioModulationPct", { audioModulationPct: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [49, 1501, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "antennaTuningUh", { antennaTuningUh: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.9, 201, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "transmissionDistanceKm", {
+          transmissionDistanceKm: invalid,
+        }),
+      ).toBeNull();
+    }
+  });
+
+  test("De Forest Audion derives transconductance, amplification factor, and stage gain sensitivities", () => {
+    const id = "us-879532-de-forest-audion";
+
+    const sensGm = computeParameterSensitivity(id, "gridVoltageV", {
+      gridVoltageV: -1.5,
+      plateVoltageV: 45,
+    });
+    expect(sensGm).toBeDefined();
+    expect(sensGm?.metricName).toBe("Triode Transconductance (gm)");
+    expect(sensGm?.derivativeSymbol).toBe("∂I_p / ∂V_g");
+    expect(sensGm?.derivativeValue).toBe(420.0);
+    expect(sensGm?.derivativeUnit).toBe("µS");
+
+    const sensMu = computeParameterSensitivity(id, "plateVoltageV", {
+      plateVoltageV: 45,
+    });
+    expect(sensMu).toBeDefined();
+    expect(sensMu?.metricName).toBe("Voltage Amplification Factor (µ)");
+    expect(sensMu?.derivativeSymbol).toBe("∂V_p / ∂V_g");
+    expect(sensMu?.derivativeValue).toBe(8.5);
+    expect(sensMu?.derivativeUnit).toBe("V / V");
+
+    const sensGain = computeParameterSensitivity(id, "loadResistanceKOhms", {
+      loadResistanceKOhms: 20,
+    });
+    expect(sensGain).toBeDefined();
+    expect(sensGain?.metricName).toBe("Stage Voltage Gain Sensitivity");
+    expect(sensGain?.derivativeSymbol).toBe("∂A_v / ∂R_L");
+    expect(sensGain?.derivativeValue).toBe(0.106);
+    expect(sensGain?.derivativeUnit).toBe("(V/V) / kΩ");
+
+    // Bounds checking
+    for (const invalid of [4, 201, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "plateVoltageV", { plateVoltageV: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-10.1, 5.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "gridBiasVoltageV", { gridBiasVoltageV: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.19, 2.51, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "filamentCurrentA", { filamentCurrentA: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.9, 501, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "gridSignalAmplitudeMv", {
+          gridSignalAmplitudeMv: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.9, 101, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "loadResistanceKOhms", { loadResistanceKOhms: invalid }),
       ).toBeNull();
     }
   });
