@@ -12,7 +12,7 @@ command -v bun >/dev/null
 command -v jq >/dev/null
 xcodegen generate --spec project.yml
 git diff --exit-code -- FrankenPatents.xcodeproj Sources/Info.plist
-bun check-native-parity.ts
+(cd "$repo_root" && bun ios/check-native-parity.ts)
 git ls-files -z -- '*.swift' | xargs -0 xcrun swiftc -parse
 plutil -lint Sources/Info.plist
 plutil -lint Sources/PrivacyInfo.xcprivacy

@@ -9,7 +9,7 @@ settings:
   base:
     SWIFT_VERSION: "5.10"
     MARKETING_VERSION: "1.0"
-    CURRENT_PROJECT_VERSION: "2"
+    CURRENT_PROJECT_VERSION: "3"
     DEVELOPMENT_TEAM: AU8V2Z6NKY
     CODE_SIGN_STYLE: Automatic
     ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -68,6 +68,7 @@ targets:
             --exclude='transcripts/us-3671542-kwolek-kevlar.txt' \
             --exclude='transcripts/us-3671542-kwolek-kevlar-reviewed.txt' \
             "${SOURCE_ARCHIVE}" "${BUNDLE_ARCHIVE}"
+          /usr/bin/xattr -cr "${TARGET_BUILD_DIR}/${WRAPPER_NAME}"
         inputFiles:
           - $(SRCROOT)/../public/patents
         basedOnDependencyAnalysis: false

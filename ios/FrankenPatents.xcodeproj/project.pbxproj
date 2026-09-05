@@ -708,7 +708,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -euo pipefail\nSOURCE_ARCHIVE=\"${SRCROOT}/../public/patents/\"\nBUNDLE_ARCHIVE=\"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/patents/\"\nmkdir -p \"${BUNDLE_ARCHIVE}\"\nrsync -a --exclude='*.pdf' \\\n  --exclude='figures/us-3671542-kwolek-kevlar/' \\\n  --exclude='source-text/us-3671542-kwolek-kevlar.txt' \\\n  --exclude='transcripts/us-3671542-kwolek-kevlar.txt' \\\n  --exclude='transcripts/us-3671542-kwolek-kevlar-reviewed.txt' \\\n  \"${SOURCE_ARCHIVE}\" \"${BUNDLE_ARCHIVE}\"\n";
+			shellScript = "set -euo pipefail\nSOURCE_ARCHIVE=\"${SRCROOT}/../public/patents/\"\nBUNDLE_ARCHIVE=\"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/patents/\"\nmkdir -p \"${BUNDLE_ARCHIVE}\"\nrsync -a --exclude='*.pdf' \\\n  --exclude='figures/us-3671542-kwolek-kevlar/' \\\n  --exclude='source-text/us-3671542-kwolek-kevlar.txt' \\\n  --exclude='transcripts/us-3671542-kwolek-kevlar.txt' \\\n  --exclude='transcripts/us-3671542-kwolek-kevlar-reviewed.txt' \\\n  \"${SOURCE_ARCHIVE}\" \"${BUNDLE_ARCHIVE}\"\n/usr/bin/xattr -cr \"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -882,7 +882,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = AU8V2Z6NKY;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -978,7 +978,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = AU8V2Z6NKY;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
