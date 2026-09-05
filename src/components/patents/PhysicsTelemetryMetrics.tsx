@@ -124,7 +124,7 @@ function CouplingSummary({
           <div className="text-[11px] font-semibold text-ink-900 dark:text-parchment-100">
             {sliderSensitivity.metricName}
           </div>
-          <div className="text-[9px] uppercase tracking-wider font-mono text-ink-500 dark:text-ink-400">
+          <div className="text-[9px] tracking-wider font-mono text-ink-500 dark:text-ink-400">
             {sliderSensitivity.derivativeSymbol} (host sensitivity)
           </div>
           <div className="text-[11px] font-mono font-bold text-ink-900 dark:text-parchment-100">

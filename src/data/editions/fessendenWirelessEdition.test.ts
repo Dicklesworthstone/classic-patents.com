@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fessendenWirelessPatent } from "@/data/patents/fessenden-wireless";
+import { validateReviewedTranscriptionPageAnchors } from "@/data/patents/sourceTextValidation";
 import {
   fessendenWirelessArchivalEdition,
   fessendenWirelessParallelReadings,
@@ -199,6 +200,16 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     expect(content).toContain("REGINALD A. FESSENDEN,");
     expect(content).toContain("W. B. FEARING,");
     expect(content).toContain("S. C. GRAY.");
+    const originalTextAsset = fessendenWirelessPatent.originalTextAsset;
+    expect(originalTextAsset).toBeDefined();
+    if (!originalTextAsset) throw new Error("Expected originalTextAsset to be defined");
+    expect(
+      validateReviewedTranscriptionPageAnchors(
+        content,
+        originalTextAsset.pageCount,
+        originalTextAsset.pageAnchors,
+      ),
+    ).toEqual({ valid: true });
   });
 
   test("exposes the 21 claims actually printed by the pinned facsimile", () => {
