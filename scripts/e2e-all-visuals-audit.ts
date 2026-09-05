@@ -101,17 +101,21 @@ async function runVisualsAudit() {
         threeDStatus = "FAIL";
       }
 
-      // 2. Test 2D Schematic Switcher
+      // 2. Test the source-drawing / schematic face. Its visitor-facing
+      // label deliberately changed from "2D Schematic" to "Schematic & Pins";
+      // the face id is the stable contract used by the navigation component.
       let twoDStatus: "PASS" | "FAIL" = "PASS";
-      const twoDButton = page.getByRole("button", { name: "2D Schematic" });
+      const twoDButton = page.locator('button[data-patent-face="schematic-sheet"]');
       if ((await twoDButton.count()) !== 1) {
         twoDStatus = "FAIL";
       } else {
         await twoDButton.click();
         await page.waitForTimeout(300);
 
-        // Verify the actual vector schematic is present after the mode change.
-        if ((await page.locator("svg").count()) === 0) {
+        // Only a visible vector is evidence for this face. Other faces can
+        // remain mounted offscreen, so a document-wide SVG count is not
+        // meaningful here.
+        if ((await page.locator("svg:visible").count()) === 0) {
           twoDStatus = "FAIL";
         }
       }
