@@ -2,6 +2,19 @@
 
 US006120588A
 
+United States Patent
+Jacobson
+Patent Number: 6,120,588
+Date of Patent: Sep. 19, 2000
+ELECTRONICALLY ADDRESSABLE MICROENCAPSULATED INK AND DISPLAY THEREOF
+Inventor: Joseph M. Jacobson, Cambridge, Mass.
+Assignee: E Ink Corporation, Cambridge, Mass.
+Appl. No.: 08/935,800
+Filed: Sep. 23, 1997
+
+ABSTRACT
+We describe a system of electronically active inks which may include electronically addressable contrast media, conductors, insulators, resistors, semiconductive materials, magnetic materials, spin materials, piezoelectric materials, optoelectronic, thermoelectric or radio frequency materials. We further describe a printing system capable of laying down said materials in a definite pattern. Such a system may be used for instance to: print a flat panel display complete with onboard drive logic; print a working logic circuit onto any of a large class of substrates; print an electrostatic or piezoelectric motor with onboard logic and feedback or print a working radio transmitter or receiver.
+
 United States Patent [5 11] Patent Number: 6,120,588
 9 9
 Jacobson 45] Date of Patent: Sep. 19, 2000

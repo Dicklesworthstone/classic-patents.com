@@ -38,6 +38,52 @@ describe("US 6,120,588 E-Ink Archival Edition Contract", () => {
     expect(diskSha).toBe(PINNED_SHA256);
   });
 
+  test("keeps front-page identity fields literal to the pinned grant", () => {
+    const transcriptPath = path.join(
+      process.cwd(),
+      "public",
+      "patents",
+      "transcripts",
+      "us-6120588-eink-reviewed.txt",
+    );
+    const transcript = fs.readFileSync(transcriptPath, "utf-8");
+    const masthead = einkArchivalEdition.blocks[0];
+    if (masthead?.kind !== "masthead") {
+      throw new Error("E Ink archival edition is missing its front-page masthead.");
+    }
+
+    for (const line of masthead.lines) {
+      expect(transcript).toContain(line);
+    }
+    expect(masthead.lines).not.toContain("Jacobson et al.");
+    expect(masthead.lines).not.toContain("Patent No.: US 6,120,588");
+  });
+
+  test("reconciles the printed abstract ahead of the raw two-column reference extraction", () => {
+    const transcriptPath = path.join(
+      process.cwd(),
+      "public",
+      "patents",
+      "transcripts",
+      "us-6120588-eink-reviewed.txt",
+    );
+    const transcript = fs.readFileSync(transcriptPath, "utf-8");
+    const abstract = einkArchivalEdition.blocks.find(
+      (block) =>
+        block.kind === "paragraph" &&
+        block.inlines
+          .map((inline) => inline.text)
+          .join("")
+          .startsWith("We describe a system"),
+    );
+    if (abstract?.kind !== "paragraph") {
+      throw new Error("E Ink archival edition is missing the printed abstract.");
+    }
+
+    expect(transcript).toContain("ABSTRACT");
+    expect(transcript).toContain(abstract.inlines.map((inline) => inline.text).join(""));
+  });
+
   test("contains all 18 printed claims and keeps the record dynamically sourced", () => {
     const claims = einkArchivalEdition.blocks.filter((b) => b.kind === "claim");
     expect(claims.length).toBe(18);

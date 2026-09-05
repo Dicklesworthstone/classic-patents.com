@@ -110,13 +110,14 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       kind: "masthead",
       lines: [
         "United States Patent",
-        "Jacobson et al.",
-        "Patent No.: US 6,120,588",
+        "Jacobson",
+        "Patent Number: 6,120,588",
         "Date of Patent: Sep. 19, 2000",
         "ELECTRONICALLY ADDRESSABLE MICROENCAPSULATED INK AND DISPLAY THEREOF",
         "Inventor: Joseph M. Jacobson, Cambridge, Mass.",
         "Assignee: E Ink Corporation, Cambridge, Mass.",
-        "Application No.: 08/935,800 · Filed: Sep. 23, 1997",
+        "Appl. No.: 08/935,800",
+        "Filed: Sep. 23, 1997",
       ],
     },
     {
