@@ -2,6 +2,7 @@
 
 import { Droplets, RotateCcw, Volume2, VolumeX, Wind } from "lucide-react";
 import { useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -283,54 +284,45 @@ export function CarrierAirConditionerSim() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-neutral-900/50 p-4 rounded-xl border border-neutral-800">
-        <label className="text-xs font-mono text-neutral-300">
-          <span className="flex justify-between mb-1.5">
-            <span>Air current through casing</span>
-            <span className="text-orange-400 font-bold">{airflowCfm} cfm</span>
-          </span>
-          <input
-            aria-label="Air current through Carrier casing"
-            type="range"
-            min={2000}
-            max={30000}
-            step={500}
-            value={airflowCfm}
-            onChange={(e) => updateParam("airflowCfm", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-orange-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-orange-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </label>
-        <label className="text-xs font-mono text-neutral-300">
-          <span className="flex justify-between mb-1.5">
-            <span>Fine spray rate</span>
-            <span className="text-cyan-400 font-bold">{sprayRatePct}%</span>
-          </span>
-          <input
-            aria-label="Fine liquid spray rate"
-            type="range"
-            min={10}
-            max={100}
-            step={5}
-            value={sprayRatePct}
-            onChange={(e) => updateParam("sprayRatePct", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </label>
-        <label className="text-xs font-mono text-neutral-300">
-          <span className="flex justify-between mb-1.5">
-            <span>Separator faces and flanges</span>
-            <span className="text-amber-400 font-bold">{separatorFaces}</span>
-          </span>
-          <input
-            aria-label="Number of sinuous separator faces"
-            type="range"
-            min={2}
-            max={12}
-            step={1}
-            value={separatorFaces}
-            onChange={(e) => updateParam("separatorFaces", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </label>
+        <SensitivitySlider
+          id="carrierAirflow2D"
+          patentId="us-808897-carrier-air-conditioner"
+          paramKey="airflowCfm"
+          label="Air current through casing"
+          value={airflowCfm}
+          min={2000}
+          max={30000}
+          step={500}
+          unit="cfm"
+          onChange={(value) => updateParam("airflowCfm", value)}
+          allParams={params}
+        />
+        <SensitivitySlider
+          id="carrierSprayRate2D"
+          patentId="us-808897-carrier-air-conditioner"
+          paramKey="sprayRatePct"
+          label="Fine liquid spray"
+          value={sprayRatePct}
+          min={10}
+          max={100}
+          step={5}
+          unit="%"
+          onChange={(value) => updateParam("sprayRatePct", value)}
+          allParams={params}
+        />
+        <SensitivitySlider
+          id="carrierSeparatorFaces2D"
+          patentId="us-808897-carrier-air-conditioner"
+          paramKey="separatorFaces"
+          label="Separator faces and flanges"
+          value={separatorFaces}
+          min={2}
+          max={12}
+          step={1}
+          unit="faces"
+          onChange={(value) => updateParam("separatorFaces", value)}
+          allParams={params}
+        />
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs font-mono">
         <div className="rounded-lg border border-cyan-900/50 bg-cyan-950/20 p-2">

@@ -18,11 +18,13 @@ import {
   stepEngelbartMouse,
   stepEricssonPropeller,
   stepGoodyearRubber,
+  stepHaberAmmonia,
   stepHallAluminium,
   stepHewittMercuryLamp,
   stepHollerithTabulating,
   stepLandPolaroidInstantFilm,
   stepOttoEngine,
+  stepParsonsTurbine,
   stepThomsonWelding,
   stepWozniakApple,
   stepYaleLock,
@@ -754,25 +756,53 @@ export function computeParameterSensitivity(
     }
 
     case "us-328710-parsons-turbine": {
+      const rpm = params.rotorRpm ?? params.turbineRpm ?? params.rpm ?? 3000;
+      const psi =
+        params.inletPressurePsi ??
+        (params.steamPressureBar !== undefined ? params.steamPressureBar * 14.5038 : undefined) ??
+        params.pressure ??
+        180;
+
+      if (
+        !Number.isFinite(rpm) ||
+        rpm < 1000 ||
+        rpm > 6000 ||
+        !Number.isFinite(psi) ||
+        psi < 60 ||
+        psi > 300
+      ) {
+        return null;
+      }
+
+      const parsons = stepParsonsTurbine({
+        rotorRpm: rpm,
+        inletPressurePsi: psi,
+      });
+
       if (controlKey === "rotorRpm" || controlKey === "turbineRpm" || controlKey === "rpm") {
         return {
           metricName: "Shaft Reaction Power",
           derivativeSymbol: "∂P / ∂N",
-          derivativeValue: 0.42,
+          derivativeValue: Number(parsons.shaftPowerSlopeKwPerRpm.toPrecision(6)),
           derivativeUnit: "kW / RPM",
           interpretation:
             "Turbine blading peripheral speed approaching optimal 0.5 steam velocity ratio.",
         };
       }
-      if (
-        controlKey === "inletPressurePsi" ||
-        controlKey === "steamPressureBar" ||
-        controlKey === "pressure"
-      ) {
+      if (controlKey === "inletPressurePsi" || controlKey === "pressure") {
         return {
           metricName: "Isentropic Enthalpy Drop",
           derivativeSymbol: "∂Δh / ∂P",
-          derivativeValue: 6.8,
+          derivativeValue: Number(parsons.enthalpySlopeKjKgPerPsi.toPrecision(6)),
+          derivativeUnit: "kJ/kg / psi",
+          interpretation: "Expanding steam pressure differential across reaction blading stages.",
+        };
+      }
+      if (controlKey === "steamPressureBar") {
+        return {
+          metricName: "Isentropic Enthalpy Drop",
+          derivativeSymbol: "∂Δh / ∂P",
+          derivativeValue: Number(parsons.enthalpySlopeKjKgPerBar.toPrecision(6)),
           derivativeUnit: "kJ/kg / bar",
           interpretation: "Expanding steam pressure differential across reaction blading stages.",
         };
@@ -1056,24 +1086,29 @@ export function computeParameterSensitivity(
             "Dynamic pressure drop across sinuous separator plates scaling quadratically with airflow under the fluid impaction model.",
         };
       }
+      const unclampedSeparation = (faces - 1) * 8.5 + spray * 0.18;
+      const isSaturated = unclampedSeparation >= 99;
+
       if (controlKey === "sprayRatePct") {
         return {
           metricName: "Droplet Elimination Wet Spray Sensitivity",
           derivativeSymbol: "∂η / ∂Spray",
-          derivativeValue: 0.18,
+          derivativeValue: isSaturated ? 0 : 0.18,
           derivativeUnit: "% / %",
-          interpretation:
-            "Nozzle spray rate sensitivity contributing to fine particle and droplet capture across wet plate surfaces.",
+          interpretation: isSaturated
+            ? "Droplet separation is saturated at maximum 99% capture limit across current plate geometry."
+            : "Nozzle spray rate sensitivity contributing to fine particle and droplet capture across wet plate surfaces.",
         };
       }
       if (controlKey === "separatorFaces") {
         return {
           metricName: "Droplet Separation Efficiency",
           derivativeSymbol: "∂η / ∂Faces",
-          derivativeValue: 8.5,
+          derivativeValue: isSaturated ? 0 : 8.5,
           derivativeUnit: "% / face",
-          interpretation:
-            "Inertial droplet impact and capture per sinuous plate turn and drainage gutter.",
+          interpretation: isSaturated
+            ? "Droplet separation is saturated at maximum 99% capture limit across current plate geometry."
+            : "Inertial droplet impact and capture per sinuous plate turn and drainage gutter.",
         };
       }
       break;
@@ -1143,15 +1178,27 @@ export function computeParameterSensitivity(
         return null;
       }
 
-      if (
-        controlKey === "pressureAtm" ||
-        controlKey === "synthesisPressureBar" ||
-        controlKey === "pressure"
-      ) {
+      const haber = stepHaberAmmonia({
+        pressureAtm: pressure,
+        temperatureCelsius: temp,
+        feedFlowRateMolesPerSec: feedFlow,
+        catalystActivity: activity,
+      });
+
+      if (controlKey === "pressureAtm" || controlKey === "pressure") {
         return {
           metricName: "Equilibrium Ammonia Yield",
           derivativeSymbol: "∂X_eq / ∂P",
-          derivativeValue: 0.18,
+          derivativeValue: Number(haber.equilibriumAmmoniaSlopePctPerAtm.toPrecision(6)),
+          derivativeUnit: "% / atm",
+          interpretation: "Le Chatelier pressure displacement toward 2NH₃ volume contraction.",
+        };
+      }
+      if (controlKey === "synthesisPressureBar") {
+        return {
+          metricName: "Equilibrium Ammonia Yield",
+          derivativeSymbol: "∂X_eq / ∂P",
+          derivativeValue: Number(haber.equilibriumAmmoniaSlopePctPerBar.toPrecision(6)),
           derivativeUnit: "% / bar",
           interpretation: "Le Chatelier pressure displacement toward 2NH₃ volume contraction.",
         };
@@ -1164,7 +1211,7 @@ export function computeParameterSensitivity(
         return {
           metricName: "Catalytic Reaction Rate",
           derivativeSymbol: "∂k_cat / ∂T",
-          derivativeValue: 0.045,
+          derivativeValue: Number(haber.kRateSlopePerCelsius.toPrecision(6)),
           derivativeUnit: "s⁻¹ / °C",
           interpretation: "Arrhenius activation rate acceleration over promoted iron catalyst.",
         };
@@ -1173,7 +1220,7 @@ export function computeParameterSensitivity(
         return {
           metricName: "Space Velocity Residence Time",
           derivativeSymbol: "∂τ_res / ∂F_feed",
-          derivativeValue: -0.045,
+          derivativeValue: Number(haber.spaceTimeSlopePerMolSec.toPrecision(6)),
           derivativeUnit: "s / (mol/s)",
           interpretation:
             "Increased feed flow shortens catalytic bed contact residence time, shifting reactor output toward kinetic limitation.",
@@ -1183,7 +1230,7 @@ export function computeParameterSensitivity(
         return {
           metricName: "Catalytic Turnover Frequency",
           derivativeSymbol: "∂TOF / ∂a_cat",
-          derivativeValue: 1.0,
+          derivativeValue: Number(haber.kRateSlopePerActivity.toPrecision(6)),
           derivativeUnit: "s⁻¹ / unit_activity",
           interpretation:
             "Linear scaling of active iron surface site turnover with promoter loading.",

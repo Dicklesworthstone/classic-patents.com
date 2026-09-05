@@ -8,9 +8,11 @@ import {
   stepEngelbartMouse,
   stepEricssonPropeller,
   stepGoodyearRubber,
+  stepHaberAmmonia,
   stepHallAluminium,
   stepHollerithTabulating,
   stepOttoEngine,
+  stepParsonsTurbine,
   stepThomsonWelding,
   stepWozniakApple,
   stepZeppelinAirship,
@@ -1643,6 +1645,30 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeValue).toBe(0.18);
     }
 
+    // Saturated regime (unclamped >= 99% cap gives 0 sensitivity)
+    const satSpray = computeParameterSensitivity(id, "sprayRatePct", {
+      separatorFaces: 12,
+      sprayRatePct: 60,
+    });
+    expect(satSpray?.derivativeValue).toBe(0);
+    expect(satSpray?.interpretation).toContain("saturated");
+
+    const satFaces = computeParameterSensitivity(id, "separatorFaces", {
+      separatorFaces: 12,
+      sprayRatePct: 60,
+    });
+    expect(satFaces?.derivativeValue).toBe(0);
+    expect(satFaces?.interpretation).toContain("saturated");
+
+    // Parameter alias checks
+    expect(
+      computeParameterSensitivity(id, "airFlowCfm", { airflowCfm: 15000, separatorFaces: 6 })
+        ?.derivativeValue,
+    ).toBe(
+      computeParameterSensitivity(id, "airflowCfm", { airflowCfm: 15000, separatorFaces: 6 })
+        ?.derivativeValue,
+    );
+
     // Invalid parameters
     for (const invalid of [1999, 30001, Number.NaN]) {
       expect(computeParameterSensitivity(id, "airflowCfm", { airflowCfm: invalid })).toBeNull();
@@ -2161,6 +2187,105 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
     for (const invalid of [-0.1, 1.1, Number.NaN]) {
       expect(computeParameterSensitivity(id, "throttle", { throttle: invalid })).toBeNull();
+    }
+  });
+
+  test("Parsons Reaction Steam Turbine derives shaft power and isentropic enthalpy drop sensitivities", () => {
+    const id = "us-328710-parsons-turbine";
+
+    for (const rpm of [1500, 3000, 4800]) {
+      for (const psi of [100, 180, 260]) {
+        const sensRpm = computeParameterSensitivity(id, "rotorRpm", {
+          rotorRpm: rpm,
+          inletPressurePsi: psi,
+        });
+        expect(sensRpm).toBeDefined();
+        expect(sensRpm?.metricName).toBe("Shaft Reaction Power");
+        expect(sensRpm?.derivativeSymbol).toBe("∂P / ∂N");
+        expect(sensRpm?.derivativeUnit).toBe("kW / RPM");
+
+        const parsons = stepParsonsTurbine({ rotorRpm: rpm, inletPressurePsi: psi });
+        expect(sensRpm?.derivativeValue).toBe(
+          Number(parsons.shaftPowerSlopeKwPerRpm.toPrecision(6)),
+        );
+
+        // Finite difference verification
+        const hRpm = 1e-4;
+        const pHi = stepParsonsTurbine({
+          rotorRpm: rpm + hRpm,
+          inletPressurePsi: psi,
+        }).shaftPowerKwUnrounded;
+        const pLo = stepParsonsTurbine({
+          rotorRpm: rpm - hRpm,
+          inletPressurePsi: psi,
+        }).shaftPowerKwUnrounded;
+        const fdRpm = (pHi - pLo) / (2 * hRpm);
+        expect(sensRpm?.derivativeValue).toBeCloseTo(fdRpm, 4);
+
+        // Alias equivalence
+        const sensRpmAlias = computeParameterSensitivity(id, "rpm", {
+          rpm,
+          inletPressurePsi: psi,
+        });
+        expect(sensRpmAlias?.derivativeValue).toBe(sensRpm?.derivativeValue);
+        const sensTurbineRpm = computeParameterSensitivity(id, "turbineRpm", {
+          turbineRpm: rpm,
+          inletPressurePsi: psi,
+        });
+        expect(sensTurbineRpm?.derivativeValue).toBe(sensRpm?.derivativeValue);
+
+        // Enthalpy drop sensitivity
+        const sensPsi = computeParameterSensitivity(id, "inletPressurePsi", {
+          rotorRpm: rpm,
+          inletPressurePsi: psi,
+        });
+        expect(sensPsi).toBeDefined();
+        expect(sensPsi?.metricName).toBe("Isentropic Enthalpy Drop");
+        expect(sensPsi?.derivativeSymbol).toBe("∂Δh / ∂P");
+        expect(sensPsi?.derivativeUnit).toBe("kJ/kg / psi");
+        expect(sensPsi?.derivativeValue).toBe(
+          Number(parsons.enthalpySlopeKjKgPerPsi.toPrecision(6)),
+        );
+
+        const hPsi = 1e-4;
+        const hHi = stepParsonsTurbine({
+          rotorRpm: rpm,
+          inletPressurePsi: psi + hPsi,
+        }).enthalpyKjKgUnrounded;
+        const hLo = stepParsonsTurbine({
+          rotorRpm: rpm,
+          inletPressurePsi: psi - hPsi,
+        }).enthalpyKjKgUnrounded;
+        const fdPsi = (hHi - hLo) / (2 * hPsi);
+        expect(sensPsi?.derivativeValue).toBeCloseTo(fdPsi, 4);
+
+        const sensPressureAlias = computeParameterSensitivity(id, "pressure", {
+          rotorRpm: rpm,
+          pressure: psi,
+        });
+        expect(sensPressureAlias?.derivativeValue).toBe(sensPsi?.derivativeValue);
+
+        // Bar alias sensitivity
+        const sensBar = computeParameterSensitivity(id, "steamPressureBar", {
+          rotorRpm: rpm,
+          inletPressurePsi: psi,
+        });
+        expect(sensBar).toBeDefined();
+        expect(sensBar?.derivativeUnit).toBe("kJ/kg / bar");
+        expect(sensBar?.derivativeValue).toBe(
+          Number(parsons.enthalpySlopeKjKgPerBar.toPrecision(6)),
+        );
+      }
+    }
+
+    // Domain bounds checking
+    for (const invalid of [999, 6001, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "rotorRpm", { rotorRpm: invalid })).toBeNull();
+    }
+    for (const invalid of [59, 301, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "inletPressurePsi", { inletPressurePsi: invalid }),
+      ).toBeNull();
     }
   });
 
@@ -3035,58 +3160,129 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("Haber Ammonia derives equilibrium yield, reaction rate, residence time, and catalyst activity sensitivities", () => {
     const id = "us-971501-haber-ammonia";
-
-    // Pressure sensitivity
-    const sensP = computeParameterSensitivity(id, "pressureAtm", {
+    const nominal = {
       pressureAtm: 175,
       temperatureCelsius: 530,
       feedFlowRateMolesPerSec: 50,
       catalystActivity: 1.0,
-    });
+    };
+    const haberNominal = stepHaberAmmonia(nominal);
+
+    // Pressure sensitivity (atm and bar)
+    const sensP = computeParameterSensitivity(id, "pressureAtm", nominal);
     expect(sensP).toBeDefined();
     expect(sensP?.metricName).toBe("Equilibrium Ammonia Yield");
     expect(sensP?.derivativeSymbol).toBe("∂X_eq / ∂P");
-    expect(sensP?.derivativeUnit).toBe("% / bar");
-    expect(sensP?.derivativeValue).toBe(0.18);
+    expect(sensP?.derivativeUnit).toBe("% / atm");
+    expect(sensP?.derivativeValue).toBe(
+      Number(haberNominal.equilibriumAmmoniaSlopePctPerAtm.toPrecision(6)),
+    );
+
+    // Pressure finite-difference check
+    const hP = 1e-4;
+    const xEqHi = stepHaberAmmonia({
+      ...nominal,
+      pressureAtm: nominal.pressureAtm + hP,
+    }).equilibriumAmmoniaPctUnrounded;
+    const xEqLo = stepHaberAmmonia({
+      ...nominal,
+      pressureAtm: nominal.pressureAtm - hP,
+    }).equilibriumAmmoniaPctUnrounded;
+    const fdP = (xEqHi - xEqLo) / (2 * hP);
+    expect(sensP?.derivativeValue).toBeCloseTo(fdP, 4);
+
+    // Pressure bar alias
+    const sensBar = computeParameterSensitivity(id, "synthesisPressureBar", nominal);
+    expect(sensBar).toBeDefined();
+    expect(sensBar?.derivativeUnit).toBe("% / bar");
+    expect(sensBar?.derivativeValue).toBe(
+      Number(haberNominal.equilibriumAmmoniaSlopePctPerBar.toPrecision(6)),
+    );
 
     // Temperature sensitivity
-    const sensT = computeParameterSensitivity(id, "temperatureCelsius", {
-      pressureAtm: 175,
-      temperatureCelsius: 530,
-      feedFlowRateMolesPerSec: 50,
-      catalystActivity: 1.0,
-    });
+    const sensT = computeParameterSensitivity(id, "temperatureCelsius", nominal);
     expect(sensT).toBeDefined();
     expect(sensT?.metricName).toBe("Catalytic Reaction Rate");
     expect(sensT?.derivativeSymbol).toBe("∂k_cat / ∂T");
     expect(sensT?.derivativeUnit).toBe("s⁻¹ / °C");
-    expect(sensT?.derivativeValue).toBe(0.045);
+    expect(sensT?.derivativeValue).toBe(Number(haberNominal.kRateSlopePerCelsius.toPrecision(6)));
+
+    // Temperature finite-difference check
+    const hT = 1e-4;
+    const kHi = stepHaberAmmonia({
+      ...nominal,
+      temperatureCelsius: nominal.temperatureCelsius + hT,
+    }).kRateUnrounded;
+    const kLo = stepHaberAmmonia({
+      ...nominal,
+      temperatureCelsius: nominal.temperatureCelsius - hT,
+    }).kRateUnrounded;
+    const fdT = (kHi - kLo) / (2 * hT);
+    expect(sensT?.derivativeValue).toBeCloseTo(fdT, 4);
+
+    // Temperature alias checks
+    expect(computeParameterSensitivity(id, "synthesisTempC", nominal)?.derivativeValue).toBe(
+      sensT?.derivativeValue,
+    );
+    expect(computeParameterSensitivity(id, "temperature", nominal)?.derivativeValue).toBe(
+      sensT?.derivativeValue,
+    );
 
     // Feed flow sensitivity
-    const sensFlow = computeParameterSensitivity(id, "feedFlowRateMolesPerSec", {
-      pressureAtm: 175,
-      temperatureCelsius: 530,
-      feedFlowRateMolesPerSec: 50,
-      catalystActivity: 1.0,
-    });
+    const sensFlow = computeParameterSensitivity(id, "feedFlowRateMolesPerSec", nominal);
     expect(sensFlow).toBeDefined();
     expect(sensFlow?.metricName).toBe("Space Velocity Residence Time");
     expect(sensFlow?.derivativeSymbol).toBe("∂τ_res / ∂F_feed");
     expect(sensFlow?.derivativeUnit).toBe("s / (mol/s)");
-    expect(sensFlow?.derivativeValue).toBe(-0.045);
+    expect(sensFlow?.derivativeValue).toBe(
+      Number(haberNominal.spaceTimeSlopePerMolSec.toPrecision(6)),
+    );
+
+    // Feed flow finite-difference check
+    const hFlow = 1e-4;
+    const tauHi = stepHaberAmmonia({
+      ...nominal,
+      feedFlowRateMolesPerSec: nominal.feedFlowRateMolesPerSec + hFlow,
+    }).spaceTimeSecUnrounded;
+    const tauLo = stepHaberAmmonia({
+      ...nominal,
+      feedFlowRateMolesPerSec: nominal.feedFlowRateMolesPerSec - hFlow,
+    }).spaceTimeSecUnrounded;
+    const fdFlow = (tauHi - tauLo) / (2 * hFlow);
+    expect(sensFlow?.derivativeValue).toBeCloseTo(fdFlow, 4);
+
+    // Feed flow alias
+    expect(computeParameterSensitivity(id, "feedFlow", nominal)?.derivativeValue).toBe(
+      sensFlow?.derivativeValue,
+    );
 
     // Catalyst activity sensitivity
-    const sensAct = computeParameterSensitivity(id, "catalystActivity", {
-      pressureAtm: 175,
-      temperatureCelsius: 530,
-      feedFlowRateMolesPerSec: 50,
-      catalystActivity: 1.0,
-    });
+    const sensAct = computeParameterSensitivity(id, "catalystActivity", nominal);
     expect(sensAct).toBeDefined();
     expect(sensAct?.metricName).toBe("Catalytic Turnover Frequency");
     expect(sensAct?.derivativeSymbol).toBe("∂TOF / ∂a_cat");
     expect(sensAct?.derivativeUnit).toBe("s⁻¹ / unit_activity");
-    expect(sensAct?.derivativeValue).toBe(1.0);
+    expect(sensAct?.derivativeValue).toBe(
+      Number(haberNominal.kRateSlopePerActivity.toPrecision(6)),
+    );
+
+    // Catalyst activity finite-difference check
+    const hAct = 1e-4;
+    const kActHi = stepHaberAmmonia({
+      ...nominal,
+      catalystActivity: nominal.catalystActivity + hAct,
+    }).kRateUnrounded;
+    const kActLo = stepHaberAmmonia({
+      ...nominal,
+      catalystActivity: nominal.catalystActivity - hAct,
+    }).kRateUnrounded;
+    const fdAct = (kActHi - kActLo) / (2 * hAct);
+    expect(sensAct?.derivativeValue).toBeCloseTo(fdAct, 4);
+
+    // Catalyst activity alias
+    expect(computeParameterSensitivity(id, "activity", nominal)?.derivativeValue).toBe(
+      sensAct?.derivativeValue,
+    );
 
     // Bounds checking
     for (const invalid of [49, 301, Number.NaN]) {

@@ -488,7 +488,8 @@ export function ottoStrokePhase(
 export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi?: number }) {
   const rpm = params.rotorRpm ?? 3000;
   const psi = params.inletPressurePsi ?? 180;
-  const enthalpyKjKg = Math.round(550 * (psi / 180));
+  const enthalpyKjKgUnrounded = 550 * (psi / 180);
+  const enthalpyKjKg = Math.round(enthalpyKjKgUnrounded);
   const meanRadiusM = 0.45;
   const bladeSpeedMps = (rpm * 2 * Math.PI * meanRadiusM) / 60;
   // Axial steam speed scales with the isentropic drop; 320 m/s is the 180 psi design.
@@ -496,11 +497,22 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
   const rotorOmegaRadPerS = (rpm * 2 * Math.PI) / 60;
   // 3000 rpm is a blur in the studio; 0.08 keeps u/c readable.
   const displaySlowdown = 0.08;
+  const shaftPowerKwUnrounded = 28 * enthalpyKjKgUnrounded * 0.84 * (rpm / 3000);
   const shaftPowerKw = Math.round(28 * enthalpyKjKg * 0.84 * (rpm / 3000));
   const steamCrate = parsonsSteamCrate(rpm);
+  const enthalpySlopeKjKgPerPsi = 550 / 180;
+  const enthalpySlopeKjKgPerBar = (550 / 180) * 14.5038;
+  const shaftPowerSlopeKwPerRpm = (28 * enthalpyKjKgUnrounded * 0.84) / 3000;
+  const shaftPowerSlopeKwPerPsi = (28 * (550 / 180) * 0.84 * rpm) / 3000;
   return {
     enthalpyKjKg,
+    enthalpyKjKgUnrounded,
+    enthalpySlopeKjKgPerPsi,
+    enthalpySlopeKjKgPerBar,
     shaftPowerKw,
+    shaftPowerKwUnrounded,
+    shaftPowerSlopeKwPerRpm,
+    shaftPowerSlopeKwPerPsi,
     inletMpa: Number((psi * 0.00689476).toFixed(2)),
     stageCount: 48,
     isentropicEfficiencyPct: 84,
@@ -4216,6 +4228,31 @@ export function stepHaberAmmonia(params: {
   const catalystParticleAdvance = Number((compressorDisplayOmegaRadPerS * 10).toFixed(3));
   const condenserDripAdvance = Number((compressorDisplayOmegaRadPerS * 15).toFixed(3));
 
+  const equilibriumAmmoniaPctUnrounded = eqFraction * 100;
+  // ∂X_eq / ∂P_atm = 100 * (0.32476 * kpAtm) / (1 + bFactor)^2
+  const equilibriumAmmoniaSlopePctPerAtm = (32.476 * kpAtm) / (1 + bFactor) ** 2;
+  // ∂X_eq / ∂P_bar = (∂X_eq / ∂P_atm) / 1.01325
+  const equilibriumAmmoniaSlopePctPerBar = equilibriumAmmoniaSlopePctPerAtm / 1.01325;
+
+  const kRateUnrounded = kRate;
+  // ∂k_cat / ∂T_C = kRate * (eaJ / (rGas * tempK^2))
+  const kRateSlopePerCelsius = kRate * (eaJ / (rGas * tempK ** 2));
+
+  const spaceTimeSecUnrounded = spaceTimeSec;
+  // ∂τ_res / ∂F_feed = -spaceTimeSec / flowMolS
+  const spaceTimeSlopePerMolSec = -spaceTimeSec / flowMolS;
+
+  // ∂k_cat / ∂a_cat = k0 * exp(-eaJ / (rGas * tempK))
+  const kRateSlopePerActivity = k0 * Math.exp(-eaJ / (rGas * tempK));
+
+  const ammoniaYieldPctUnrounded = ammoniaMoleFraction * 100;
+  const nh3ProducedMolesPerSecUnrounded =
+    flowMolS * (ammoniaMoleFraction / (1 + ammoniaMoleFraction));
+  const ammoniaProductionKgPerHourUnrounded =
+    nh3ProducedMolesPerSecUnrounded * molarMassNh3KgPerMol * 3600;
+  const reactionHeatGeneratedKwUnrounded =
+    nh3ProducedMolesPerSecUnrounded * heatOfFormationKjPerMol;
+
   return {
     pressureAtm: pAtm,
     pressureMpa: pMpa,
@@ -4223,11 +4260,23 @@ export function stepHaberAmmonia(params: {
     feedFlowRateMolesPerSec: flowMolS,
     catalystActivityMultiplier: catActivity,
     equilibriumAmmoniaPct: Number((eqFraction * 100).toFixed(2)),
+    equilibriumAmmoniaPctUnrounded,
+    equilibriumAmmoniaSlopePctPerAtm,
+    equilibriumAmmoniaSlopePctPerBar,
     approachToEquilibriumPct: Number((approachToEquilibrium * 100).toFixed(1)),
+    kRateUnrounded,
+    kRateSlopePerCelsius,
+    spaceTimeSecUnrounded,
+    spaceTimeSlopePerMolSec,
+    kRateSlopePerActivity,
     ammoniaYieldPct,
+    ammoniaYieldPctUnrounded,
     nh3ProducedMolesPerSec,
+    nh3ProducedMolesPerSecUnrounded,
     ammoniaProductionKgPerHour,
+    ammoniaProductionKgPerHourUnrounded,
     reactionHeatGeneratedKw,
+    reactionHeatGeneratedKwUnrounded,
     feedPreheatTemperatureCelsius,
     n2ConsumptionKgPerHour,
     h2ConsumptionKgPerHour,

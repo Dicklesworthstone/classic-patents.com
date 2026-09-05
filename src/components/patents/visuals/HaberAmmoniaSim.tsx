@@ -2,6 +2,7 @@
 
 import { Activity, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHaberAmmonia } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -576,81 +577,61 @@ export function HaberAmmoniaSim({
 
       {/* Control Sliders Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-parchment-100/80 dark:bg-ink-900/60 rounded-xl border border-parchment-200 dark:border-ink-800">
-        {/* Reactor Pressure */}
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between text-xs font-semibold">
-            <span className="text-cyan-400">Reactor Pressure</span>
-            <span className="font-mono text-cyan-300">{pressureAtm} atm</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Reactor pressure in atmospheres"
-            min={50}
-            max={300}
-            step={5}
-            value={pressureAtm}
-            onChange={(e) => updateParam("pressureAtm", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
-          />
-          <span className="text-[10px] text-slate-400">Super-atmospheric compression</span>
-        </div>
+        <SensitivitySlider
+          id="haberPressure2D"
+          patentId="us-971501-haber-ammonia"
+          paramKey="pressureAtm"
+          label="Reactor Pressure"
+          value={pressureAtm}
+          min={50}
+          max={300}
+          step={5}
+          unit="atm"
+          onChange={(val) => updateParam("pressureAtm", val)}
+          allParams={params}
+        />
 
-        {/* Catalyst Bed Temperature */}
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between text-xs font-semibold">
-            <span className="text-amber-400">Catalyst Temp</span>
-            <span className="font-mono text-amber-300">{temperatureCelsius} °C</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Catalyst temperature in degrees Celsius"
-            min={350}
-            max={650}
-            step={5}
-            value={temperatureCelsius}
-            onChange={(e) => updateParam("temperatureCelsius", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500"
-          />
-          <span className="text-[10px] text-slate-400">Kinetic rate vs equilibrium yield</span>
-        </div>
+        <SensitivitySlider
+          id="haberTemp2D"
+          patentId="us-971501-haber-ammonia"
+          paramKey="temperatureCelsius"
+          label="Catalyst Temp"
+          value={temperatureCelsius}
+          min={350}
+          max={650}
+          step={5}
+          unit="°C"
+          onChange={(val) => updateParam("temperatureCelsius", val)}
+          allParams={params}
+        />
 
-        {/* Feed Gas Flow Rate */}
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between text-xs font-semibold">
-            <span className="text-emerald-400">Feed Flow Rate</span>
-            <span className="font-mono text-emerald-300">{feedFlowRateMolesPerSec} mol/s</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Stoichiometric feed flow rate in moles per second"
-            min={10}
-            max={100}
-            step={2}
-            value={feedFlowRateMolesPerSec}
-            onChange={(e) => updateParam("feedFlowRateMolesPerSec", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-          />
-          <span className="text-[10px] text-slate-400">1 N₂ : 3 H₂ stoichiometric feed</span>
-        </div>
+        <SensitivitySlider
+          id="haberFlowRate2D"
+          patentId="us-971501-haber-ammonia"
+          paramKey="feedFlowRateMolesPerSec"
+          label="Feed Flow Rate"
+          value={feedFlowRateMolesPerSec}
+          min={10}
+          max={100}
+          step={2}
+          unit="mol/s"
+          onChange={(val) => updateParam("feedFlowRateMolesPerSec", val)}
+          allParams={params}
+        />
 
-        {/* Catalyst Activity */}
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between text-xs font-semibold">
-            <span className="text-purple-400">Catalyst Activity</span>
-            <span className="font-mono text-purple-300">{catalystActivity.toFixed(1)}x</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Catalyst activity multiplier"
-            min={0.2}
-            max={2.0}
-            step={0.1}
-            value={catalystActivity}
-            onChange={(e) => updateParam("catalystActivity", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
-          />
-          <span className="text-[10px] text-slate-400">Osmium / Promoted Fe contact mass</span>
-        </div>
+        <SensitivitySlider
+          id="haberActivity2D"
+          patentId="us-971501-haber-ammonia"
+          paramKey="catalystActivity"
+          label="Catalyst Activity"
+          value={catalystActivity}
+          min={0.5}
+          max={2.0}
+          step={0.1}
+          unit="x"
+          onChange={(val) => updateParam("catalystActivity", val)}
+          allParams={params}
+        />
       </div>
     </div>
   );

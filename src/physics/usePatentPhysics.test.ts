@@ -193,6 +193,71 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
     }
   });
 
+  test("Haber ammonia aliases (synthesisPressureBar, synthesisTempC, feedFlow, activity) update canonical controls and notify subscribers", () => {
+    const id = "us-971501-haber-ammonia";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.pressureAtm),
+    );
+    try {
+      setPatentPhysicsParam(id, "synthesisPressureBar", 200);
+      const params = getPatentPhysicsParams(id);
+      expect(params.pressureAtm).toBeCloseTo(200 / 1.01325, 2);
+      expect(observations.length).toBe(1);
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Ammonia Conversion Yield")?.value).not.toBe(
+        initial.find((m) => m.label === "Ammonia Conversion Yield")?.value,
+      );
+
+      setPatentPhysicsParam(id, "synthesisTempC", 580);
+      expect(getPatentPhysicsParams(id).temperatureCelsius).toBe(580);
+      expect(getPatentPhysicsParams(id).synthesisTempC).toBe(580);
+
+      setPatentPhysicsParam(id, "feedFlow", 80);
+      expect(getPatentPhysicsParams(id).feedFlowRateMolesPerSec).toBe(80);
+      expect(getPatentPhysicsParams(id).feedFlow).toBe(80);
+
+      setPatentPhysicsParam(id, "activity", 1.5);
+      expect(getPatentPhysicsParams(id).catalystActivity).toBe(1.5);
+      expect(getPatentPhysicsParams(id).activity).toBe(1.5);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Parsons Reaction Turbine aliases (steamPressureBar, rpm, turbineRpm, pressure) update canonical controls and notify subscribers", () => {
+    const id = "us-328710-parsons-turbine";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.inletPressurePsi),
+    );
+    try {
+      setPatentPhysicsParam(id, "steamPressureBar", 15);
+      const params = getPatentPhysicsParams(id);
+      expect(params.inletPressurePsi).toBeCloseTo(15 * 14.5038, 2);
+      expect(observations.length).toBe(1);
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Shaft Power Output")?.value).not.toBe(
+        initial.find((m) => m.label === "Shaft Power Output")?.value,
+      );
+
+      setPatentPhysicsParam(id, "rpm", 4500);
+      expect(getPatentPhysicsParams(id).rotorRpm).toBe(4500);
+      expect(getPatentPhysicsParams(id).rpm).toBe(4500);
+      expect(getPatentPhysicsParams(id).turbineRpm).toBe(4500);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
   test("shares claim state across subscribers while retaining raw controls and deriving effective topology", () => {
     const goertzId = "us-2846084-goertz-electronic-master-slave-manipulator";
     resetPatentPhysicsParams(goertzId);

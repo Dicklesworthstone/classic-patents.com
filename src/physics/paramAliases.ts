@@ -119,6 +119,22 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
       toCanonical: (bar) => bar * 14.5038,
       fromCanonical: (psi) => psi / 14.5038,
     },
+    rpm: same("rotorRpm"),
+    turbineRpm: same("rotorRpm"),
+    pressure: same("inletPressurePsi"),
+  },
+  "us-971501-haber-ammonia": {
+    synthesisPressureBar: {
+      canonical: "pressureAtm",
+      toCanonical: (bar) => bar / 1.01325,
+      fromCanonical: (atm) => atm * 1.01325,
+    },
+    pressure: same("pressureAtm"),
+    synthesisTempC: same("temperatureCelsius"),
+    temp: same("temperatureCelsius"),
+    temperature: same("temperatureCelsius"),
+    feedFlow: same("feedFlowRateMolesPerSec"),
+    activity: same("catalystActivity"),
   },
   "us-608969-parsons-turbine": {
     steamPressureBar: {
@@ -132,6 +148,7 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
   "us-1781541-einstein-refrigerator": { auxiliaryGasRatio: same("ammoniaRatio") },
   "us-808897-carrier-air-conditioner": {
     airflow: same("airflowCfm"),
+    airFlowCfm: same("airflowCfm"),
     sprayRate: same("sprayRatePct"),
     plateFaces: same("separatorFaces"),
   },

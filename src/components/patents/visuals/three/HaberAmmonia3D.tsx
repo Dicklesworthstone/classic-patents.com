@@ -455,7 +455,7 @@ export default function HaberAmmonia3D({
             <SensitivitySlider
               id="haberFlowRate"
               patentId="us-971501-haber-ammonia"
-              paramKey="pressure"
+              paramKey="feedFlowRateMolesPerSec"
               label="Feed Flow Rate"
               value={feedFlowRateMolesPerSec}
               min={10}
