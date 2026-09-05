@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { readWattCondenserControls, stepWattCondenser } from "./wattCondenserKernel";
 import {
   coupleLinks,
   datedScenarios,
@@ -13,6 +14,25 @@ import {
 } from "./weaveSurfaces";
 
 describe("FrankenSim Weave Surfaces Boundary", () => {
+  test("Watt's furnace-to-indicated link follows the selected condensation mode", () => {
+    const params = {
+      boilerPressurePsi: 6,
+      condenserTempC: 50,
+      cylinderBoreInches: 60,
+      pistonStrokeFeet: 8,
+      strokesPerMinute: 20,
+    };
+    const links = [0, 1].map((hasSeparateCondenser) => {
+      const p = { ...params, hasSeparateCondenser };
+      const link = coupleLinks("gb-913-watt-separate-condenser", p)[0];
+      expect(link.watts).toBeCloseTo(
+        stepWattCondenser(readWattCondenserControls(p)).indicatedPowerKw * 1000,
+        6,
+      );
+      return link;
+    });
+    expect(links[1].watts).toBeGreaterThan(links[0].watts);
+  });
   test("computes material probes for representative patents", () => {
     const wrightProbe = materialProbe("us-821393-wright-flyer", "wing", {
       airspeed: 30,

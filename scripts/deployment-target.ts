@@ -263,143 +263,157 @@ export async function runSourceReaderBrowserSweep(
 
   fs.mkdirSync(evidenceDir, { recursive: true });
 
+  const externalTmp = process.env.TMPDIR?.startsWith("/Volumes/") ? process.env.TMPDIR : undefined;
+  if (externalTmp) {
+    delete process.env.TMPDIR;
+  }
+
   const startTime = Date.now();
   const results: RouteSweepResult[] = [];
-  const browser = await chromium.launch({ headless: true });
 
   try {
-    const queue = [...routes];
-    const workerPromises = Array.from({ length: concurrency }, async () => {
-      const context = await browser.newContext({
-        viewport: { width: 1440, height: 900 },
-        userAgent: "ClassicPatents-ReleaseGate-Sweep/1.0",
-      });
+    const browser = await chromium.launch({ headless: true });
 
-      while (queue.length > 0) {
-        const route = queue.shift();
-        if (!route) break;
+    try {
+      const queue = [...routes];
+      const workerPromises = Array.from({ length: concurrency }, async () => {
+        const context = await browser.newContext({
+          viewport: { width: 1440, height: 900 },
+          userAgent: "ClassicPatents-ReleaseGate-Sweep/1.0",
+        });
 
-        const routeStartTime = Date.now();
-        const consoleErrors: string[] = [];
-        const pageErrors: string[] = [];
-        const page = await context.newPage();
+        while (queue.length > 0) {
+          const route = queue.shift();
+          if (!route) break;
 
-        page.on("console", (msg) => {
-          if (msg.type() === "error") {
-            const text = msg.text();
-            if (!text.includes("ERR_ABORTED") && !text.includes("favicon.ico")) {
-              consoleErrors.push(text);
+          const routeStartTime = Date.now();
+          const consoleErrors: string[] = [];
+          const pageErrors: string[] = [];
+          const page = await context.newPage();
+
+          page.on("console", (msg) => {
+            if (msg.type() === "error") {
+              const text = msg.text();
+              if (!text.includes("ERR_ABORTED") && !text.includes("favicon.ico")) {
+                consoleErrors.push(text);
+              }
             }
-          }
-        });
-
-        page.on("pageerror", (err) => {
-          pageErrors.push(err.message);
-        });
-
-        let routeStatus: "pass" | "fail" = "pass";
-        let failureError: string | undefined;
-        let actualDelivery: SourceDeliveryMode | "missing" | "error" = "missing";
-
-        try {
-          const targetUrl = `${options.baseUrl.replace(/\/$/, "")}${route.specUrl}`;
-          const response = await page.goto(targetUrl, {
-            timeout: timeoutMs,
-            waitUntil: "domcontentloaded",
           });
 
-          if (!response || response.status() >= 400) {
-            throw new Error(`HTTP ${response?.status() ?? "unknown"} loading ${targetUrl}`);
-          }
+          page.on("pageerror", (err) => {
+            pageErrors.push(err.message);
+          });
 
-          // Wait for viewer hydration
-          const viewerLocator = page.locator('[data-testid="dual-projection-viewer"]');
-          await viewerLocator.waitFor({ state: "visible", timeout: timeoutMs });
+          let routeStatus: "pass" | "fail" = "pass";
+          let failureError: string | undefined;
+          let actualDelivery: SourceDeliveryMode | "missing" | "error" = "missing";
 
-          const deliveryAttr = await viewerLocator.getAttribute("data-source-delivery");
-          actualDelivery = (deliveryAttr as SourceDeliveryMode) || "missing";
-
-          if (actualDelivery !== route.expectedDeliveryMode) {
-            throw new Error(
-              `Expected delivery mode "${route.expectedDeliveryMode}", but received "${actualDelivery}"`,
-            );
-          }
-
-          // Check for forbidden audit hold strings anywhere on the page
-          const bodyText = (await page.textContent("body")) ?? "";
-          for (const forbidden of FORBIDDEN_AUDIT_HOLD_STRINGS) {
-            if (bodyText.includes(forbidden)) {
-              throw new Error(
-                `Found forbidden audit hold string on visitor source reader: "${forbidden}"`,
-              );
-            }
-          }
-
-          // Delivery-mode-specific verification
-          if (actualDelivery === "edition") {
-            const specHeading = page.getByRole("heading", {
-              name: /Specification of Letters Patent/i,
+          try {
+            const targetUrl = `${options.baseUrl.replace(/\/$/, "")}${route.specUrl}`;
+            const response = await page.goto(targetUrl, {
+              timeout: timeoutMs,
+              waitUntil: "domcontentloaded",
             });
-            await specHeading.waitFor({ state: "visible", timeout: 5_000 });
-          } else if (actualDelivery === "transcript") {
-            const transcriptFallback = page.locator('[data-testid="reviewed-transcript-fallback"]');
-            await transcriptFallback.waitFor({ state: "visible", timeout: 5_000 });
-            const preText = (await transcriptFallback.locator("pre").textContent()) ?? "";
-            if (!preText.includes("--- REVIEWED TRANSCRIPTION PAGE 1 OF ")) {
+
+            if (!response || response.status() >= 400) {
+              throw new Error(`HTTP ${response?.status() ?? "unknown"} loading ${targetUrl}`);
+            }
+
+            // Wait for viewer hydration
+            const viewerLocator = page.locator('[data-testid="dual-projection-viewer"]');
+            await viewerLocator.waitFor({ state: "visible", timeout: timeoutMs });
+
+            const deliveryAttr = await viewerLocator.getAttribute("data-source-delivery");
+            actualDelivery = (deliveryAttr as SourceDeliveryMode) || "missing";
+
+            if (actualDelivery !== route.expectedDeliveryMode) {
               throw new Error(
-                `Transcript mode did not render page markers; prefix: ${preText.slice(0, 50)}`,
+                `Expected delivery mode "${route.expectedDeliveryMode}", but received "${actualDelivery}"`,
               );
             }
-          } else if (actualDelivery === "facsimile") {
-            const facsimileFallback = page.locator('[data-testid="source-facsimile-fallback"]');
-            await facsimileFallback.waitFor({ state: "visible", timeout: 5_000 });
+
+            // Check for forbidden audit hold strings anywhere on the page
+            const bodyText = (await page.textContent("body")) ?? "";
+            for (const forbidden of FORBIDDEN_AUDIT_HOLD_STRINGS) {
+              if (bodyText.includes(forbidden)) {
+                throw new Error(
+                  `Found forbidden audit hold string on visitor source reader: "${forbidden}"`,
+                );
+              }
+            }
+
+            // Delivery-mode-specific verification
+            if (actualDelivery === "edition") {
+              const specHeading = page.getByRole("heading", {
+                name: /Specification of Letters Patent/i,
+              });
+              await specHeading.waitFor({ state: "visible", timeout: 5_000 });
+            } else if (actualDelivery === "transcript") {
+              const transcriptFallback = page.locator(
+                '[data-testid="reviewed-transcript-fallback"]',
+              );
+              await transcriptFallback.waitFor({ state: "visible", timeout: 5_000 });
+              const preText = (await transcriptFallback.locator("pre").textContent()) ?? "";
+              if (!preText.includes("--- REVIEWED TRANSCRIPTION PAGE 1 OF ")) {
+                throw new Error(
+                  `Transcript mode did not render page markers; prefix: ${preText.slice(0, 50)}`,
+                );
+              }
+            } else if (actualDelivery === "facsimile") {
+              const facsimileFallback = page.locator('[data-testid="source-facsimile-fallback"]');
+              await facsimileFallback.waitFor({ state: "visible", timeout: 5_000 });
+            }
+
+            if (pageErrors.length > 0) {
+              throw new Error(`Uncaught page error(s): ${pageErrors.join("; ")}`);
+            }
+          } catch (err: unknown) {
+            routeStatus = "fail";
+            failureError = err instanceof Error ? err.message : String(err);
+
+            // Capture failure artifacts
+            const screenshotPath = path.join(evidenceDir, `${route.patentId}-failure.png`);
+            const htmlPath = path.join(evidenceDir, `${route.patentId}-failure.html`);
+            await page.screenshot({ path: screenshotPath, fullPage: true }).catch(() => undefined);
+            const html = await page.content().catch(() => "");
+            if (html) {
+              fs.writeFileSync(htmlPath, html, "utf8");
+            }
+          } finally {
+            await page.close().catch(() => undefined);
           }
 
-          if (pageErrors.length > 0) {
-            throw new Error(`Uncaught page error(s): ${pageErrors.join("; ")}`);
-          }
-        } catch (err: unknown) {
-          routeStatus = "fail";
-          failureError = err instanceof Error ? err.message : String(err);
+          const durationMs = Date.now() - routeStartTime;
+          results.push({
+            patentId: route.patentId,
+            specUrl: route.specUrl,
+            expectedDeliveryMode: route.expectedDeliveryMode,
+            actualDeliveryMode: actualDelivery,
+            durationMs,
+            status: routeStatus,
+            error: failureError,
+            consoleErrors,
+            pageErrors,
+          });
 
-          // Capture failure artifacts
-          const screenshotPath = path.join(evidenceDir, `${route.patentId}-failure.png`);
-          const htmlPath = path.join(evidenceDir, `${route.patentId}-failure.html`);
-          await page.screenshot({ path: screenshotPath, fullPage: true }).catch(() => undefined);
-          const html = await page.content().catch(() => "");
-          if (html) {
-            fs.writeFileSync(htmlPath, html, "utf8");
+          if (routeStatus === "pass") {
+            process.stdout.write(".");
+          } else {
+            process.stdout.write(`\n❌ [${route.patentId}]: ${failureError}\n`);
           }
-        } finally {
-          await page.close().catch(() => undefined);
         }
 
-        const durationMs = Date.now() - routeStartTime;
-        results.push({
-          patentId: route.patentId,
-          specUrl: route.specUrl,
-          expectedDeliveryMode: route.expectedDeliveryMode,
-          actualDeliveryMode: actualDelivery,
-          durationMs,
-          status: routeStatus,
-          error: failureError,
-          consoleErrors,
-          pageErrors,
-        });
+        await context.close();
+      });
 
-        if (routeStatus === "pass") {
-          process.stdout.write(".");
-        } else {
-          process.stdout.write(`\n❌ [${route.patentId}]: ${failureError}\n`);
-        }
-      }
-
-      await context.close();
-    });
-
-    await Promise.all(workerPromises);
+      await Promise.all(workerPromises);
+    } finally {
+      await browser.close();
+    }
   } finally {
-    await browser.close();
+    if (externalTmp) {
+      process.env.TMPDIR = externalTmp;
+    }
   }
 
   const totalDuration = Date.now() - startTime;

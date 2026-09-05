@@ -1,5 +1,135 @@
 import { describe, expect, test } from "bun:test";
 import { allPatents } from "@/data/patents";
+import {
+  stepBellTelephone,
+  stepCorlissEngine,
+  stepEinsteinRefrigerator,
+  stepEngelbartMouse,
+  stepEricssonPropeller,
+  stepGoodyearRubber,
+  stepHollerithTabulating,
+  stepThomsonWelding,
+  stepWozniakApple,
+  stepZeppelinAirship,
+} from "./catalogKernels";
+
+describe("Thomson and Goodyear sensitivities use the displayed model", () => {
+  test("welding current uses the current I²R derivative, including one-sided endpoints", () => {
+    const id = "us-347140-thomson-welding";
+    for (const current of [1000, 2000, 4500, 5800, 6000]) {
+      const params = { weldCurrentAmps: current, clampPressureMpa: 50 };
+      const slope = computeParameterSensitivity(id, "weldCurrentAmps", params);
+      expect(slope).toBeDefined();
+      if (!slope) throw new Error("Expected slope");
+      expect(slope.derivativeValue).toBeCloseTo(2 * current * 0.00018, 6);
+      expect(slope.derivativeUnit).toBe("W / A");
+      const lo = Math.max(1000, current - 0.01),
+        hi = Math.min(6000, current + 0.01);
+      const numerical =
+        (stepThomsonWelding({ ...params, weldCurrentAmps: hi }).jouleWatts -
+          stepThomsonWelding({ ...params, weldCurrentAmps: lo }).jouleWatts) /
+        (hi - lo);
+      expect(slope.derivativeValue).toBeCloseTo(numerical, 5);
+      expect(
+        computeParameterSensitivity(id, "currentAmperes", {
+          currentAmperes: current,
+          clampPressureMpa: 50,
+        }),
+      ).toEqual(slope);
+    }
+    expect(
+      computeParameterSensitivity(id, "weldCurrentAmps", { weldCurrentAmps: 4500 })
+        ?.derivativeValue,
+    ).toBe(1.62);
+  });
+
+  test("welding pressure differentiates burr width before 0.1 mm display rounding", () => {
+    for (const pressure of [10, 35, 60]) {
+      const slope = computeParameterSensitivity("us-347140-thomson-welding", "clampPressureMpa", {
+        clampPressureMpa: pressure,
+        weldCurrentAmps: 5800,
+      });
+      expect(slope).toBeDefined();
+      if (!slope) throw new Error("Expected slope");
+      expect(slope.derivativeUnit).toBe("mm / MPa");
+      const lo = Math.max(10, pressure - 0.01),
+        hi = Math.min(60, pressure + 0.01);
+      const numerical =
+        (stepThomsonWelding({ clampPressureMpa: hi }).upsetBurrWidthMmUnrounded -
+          stepThomsonWelding({ clampPressureMpa: lo }).upsetBurrWidthMmUnrounded) /
+        (hi - lo);
+      expect(slope.derivativeValue).toBeCloseTo(numerical, 6);
+    }
+  });
+
+  test("rubber stretch slope follows sulfur and cure state instead of a fixed modulus", () => {
+    const id = "us-3633-goodyear-rubber";
+    for (const vulcanTemp of [110, 145, 190]) {
+      for (const sulfurPct of [0, 4, 8, 30]) {
+        for (const stretch of [1, 1.8, 2.1, 2.5]) {
+          const params = {
+            vulcanTemp,
+            sulfurPct,
+            appliedTensileStretch: stretch,
+            specimenTempC: 20,
+          };
+          const slope = computeParameterSensitivity(id, "appliedTensileStretch", params);
+          expect(slope).toBeDefined();
+          if (!slope) throw new Error("Expected slope");
+          const lo = Math.max(1, stretch - 1e-5),
+            hi = Math.min(2.5, stretch + 1e-5);
+          const probe = (lambda: number) =>
+            stepGoodyearRubber(vulcanTemp, sulfurPct, 30, lambda, 20).stressMpaUnrounded;
+          expect(slope.derivativeValue).toBeCloseTo((probe(hi) - probe(lo)) / (hi - lo), 2);
+          expect(slope.derivativeUnit).toBe("MPa / λ");
+          expect(slope.interpretation).toContain("illustrative");
+        }
+      }
+    }
+    const common = { vulcanTemp: 145, appliedTensileStretch: 2.1 };
+    const low = computeParameterSensitivity(id, "appliedTensileStretch", {
+      ...common,
+      sulfurPct: 4,
+    });
+    expect(low).toBeDefined();
+    if (!low) throw new Error("Expected low");
+    const high = computeParameterSensitivity(id, "appliedTensileStretch", {
+      ...common,
+      sulfurPct: 8,
+    });
+    expect(high).toBeDefined();
+    if (!high) throw new Error("Expected high");
+    expect(low.derivativeValue).toBeCloseTo(11.734, 4);
+    expect(high.derivativeValue).toBeCloseTo(23.4802, 4);
+    expect(high.derivativeValue).toBeGreaterThan(low.derivativeValue * 1.99);
+    expect(
+      computeParameterSensitivity(id, "stretch", { vulcanTemp: 145, sulfurPct: 8, stretch: 2.1 }),
+    ).toEqual(high);
+  });
+
+  test("out-of-range and non-finite controls do not produce plausible-looking slopes", () => {
+    for (const invalid of [0, 999, 6001, Number.NaN, Number.POSITIVE_INFINITY]) {
+      expect(
+        computeParameterSensitivity("us-347140-thomson-welding", "weldCurrentAmps", {
+          weldCurrentAmps: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [9, 61])
+      expect(
+        computeParameterSensitivity("us-347140-thomson-welding", "clampPressureMpa", {
+          clampPressureMpa: invalid,
+        }),
+      ).toBeNull();
+    for (const invalid of [0.99, 2.51, Number.NaN])
+      expect(
+        computeParameterSensitivity("us-3633-goodyear-rubber", "appliedTensileStretch", {
+          appliedTensileStretch: invalid,
+        }),
+      ).toBeNull();
+  });
+});
+
 import { stepClavelDeltaRobotTopology } from "./clavelDeltaRobotKernel";
 import { readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
 import { EDISON_DECLARED_FILAMENT_LENGTH_CM, stepEdisonRadiativeBalance } from "./edisonWasm";
@@ -122,11 +252,72 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
     expect(sens?.derivativeSymbol).toBe("∂P / ∂V");
   });
 
-  test("Bell telephone computes Faraday induction acoustic sensitivity", () => {
-    const sens = computeParameterSensitivity("us-174465-bell-telephone", "voiceAmplitude", {});
-    expect(sens).toBeDefined();
-    expect(sens?.metricName).toBe("Induced Electromagnetic Potential");
-    expect(sens?.derivativeValue).toBeGreaterThan(0);
+  test("Bell telephone computes modulated signal current sensitivity and matches numerical difference", () => {
+    const id = "us-174465-bell-telephone";
+    for (const voiceAmplitude of [40, 60, 75, 90, 95]) {
+      for (const airGap of [0.1, 0.35, 0.8]) {
+        const params = { voiceAmplitude, airGap };
+        const sens = computeParameterSensitivity(id, "voiceAmplitude", params);
+        expect(sens).toBeDefined();
+        expect(sens?.metricName).toBe("Modulated Signal Current");
+        expect(sens?.derivativeSymbol).toBe("∂I_mod / ∂SPL");
+        expect(sens?.derivativeUnit).toBe("mA / dB");
+        expect(sens?.derivativeValue).toBeGreaterThan(0);
+
+        const eps = 1e-4;
+        const lo = Math.max(40, voiceAmplitude - eps);
+        const hi = Math.min(95, voiceAmplitude + eps);
+        const numDiff =
+          (stepBellTelephone({ ...params, voiceAmplitude: hi }).modulatedMaUnrounded -
+            stepBellTelephone({ ...params, voiceAmplitude: lo }).modulatedMaUnrounded) /
+          (hi - lo);
+        expect(sens?.derivativeValue).toBeCloseTo(numDiff, 4);
+      }
+    }
+
+    // Invalid parameters
+    for (const invalid of [39, 96, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "voiceAmplitude", { voiceAmplitude: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Einstein refrigerator computes evaporator duty from current cycle COP and state", () => {
+    const id = "us-1781541-einstein-refrigerator";
+    // Default operating point
+    const defaultSens = computeParameterSensitivity(id, "heatInput", {});
+    expect(defaultSens).toBeDefined();
+    expect(defaultSens?.metricName).toBe("Refrigeration Evaporator Duty");
+    expect(defaultSens?.derivativeSymbol).toBe("∂Q_evap / ∂Q_gen");
+    expect(defaultSens?.derivativeUnit).toBe("W / W");
+    const defaultState = stepEinsteinRefrigerator({});
+    expect(defaultSens?.derivativeValue).toBe(defaultState.cop);
+
+    // Varied pressure and ammonia ratio
+    for (const totalPressure of [8, 15, 20]) {
+      for (const ammoniaRatio of [0.45, 0.65, 0.85]) {
+        const params = { heatInput: 250, totalPressure, ammoniaRatio };
+        const sens = computeParameterSensitivity(id, "heatInput", params);
+        expect(sens).toBeDefined();
+        const state = stepEinsteinRefrigerator(params);
+        expect(sens?.derivativeValue).toBe(state.cop);
+      }
+    }
+
+    // Refusal when Claim 1 liquid-lift path is withheld
+    const withheldSens = computeParameterSensitivity(id, "heatInput", {
+      claim1LiftPathPresent: false,
+    });
+    expect(withheldSens).toBeDefined();
+    expect(withheldSens?.derivativeValue).toBe(0);
+    expect(withheldSens?.interpretation).toContain("withheld");
+
+    // Invalid heat input or pressure
+    for (const invalid of [79, 501, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "heatInput", { heatInput: invalid })).toBeNull();
+    }
+    expect(computeParameterSensitivity(id, "heatInput", { totalPressure: 5 })).toBeNull();
   });
 
   test("Morse telegraph computes relay electromagnetic force sensitivity", () => {
@@ -532,5 +723,509 @@ describe("Sensitivities follow the current admitted operating point", () => {
         claim1BalanceEnabled: 0,
       }),
     ).toBeNull();
+  });
+
+  test("Zeppelin airship derives buoyant lift and pitch trim from admitted model", () => {
+    const id = "us-621195-zeppelin-airship";
+    for (const alt of [0, 300, 1000, 2000]) {
+      for (const inflation of [75, 85, 95, 100]) {
+        const params = { flightAlt: alt, gasInflation: inflation };
+        const sens = computeParameterSensitivity(id, "gasInflation", params);
+        expect(sens).toBeDefined();
+        expect(sens?.metricName).toBe("Gross Aerostatic Buoyant Lift");
+        expect(sens?.derivativeSymbol).toBe("∂L_buoy / ∂%_inflation");
+        expect(sens?.derivativeUnit).toBe("N / %");
+        const zep = stepZeppelinAirship(params);
+        expect(sens?.derivativeValue).toBeCloseTo(zep.buoyantSlopeNPerPct, 1);
+      }
+    }
+
+    // Trim weight sensitivity
+    const trimSens = computeParameterSensitivity(id, "trimWeight", { trimWeight: 5 });
+    expect(trimSens).toBeDefined();
+    expect(trimSens?.metricName).toBe("Longitudinal Pitch Trim");
+    expect(trimSens?.derivativeSymbol).toBe("∂θ_pitch / ∂x_trim");
+    expect(trimSens?.derivativeUnit).toBe("deg / m");
+    expect(trimSens?.derivativeValue).toBeCloseTo((300 * 9.81) / 15000, 4);
+
+    // Invalid parameters
+    for (const invalid of [74, 101, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "gasInflation", { gasInflation: invalid })).toBeNull();
+    }
+    expect(computeParameterSensitivity(id, "gasInflation", { flightAlt: -1 })).toBeNull();
+    expect(computeParameterSensitivity(id, "trimWeight", { trimWeight: 20 })).toBeNull();
+  });
+
+  test("Sikorsky helicopter derives thrust and yaw sensitivity from scenario state", () => {
+    const id = "us-2318259-sikorsky-helicopter";
+    // Baseline collective pitch sensitivity
+    const collSens = computeParameterSensitivity(id, "collectivePitchDeg", {});
+    expect(collSens).toBeDefined();
+    expect(collSens?.metricName).toBe("Main Rotor Thrust");
+    expect(collSens?.derivativeSymbol).toBe("∂T_main / ∂θ_coll");
+    expect(collSens?.derivativeUnit).toBe("N / deg");
+    expect(collSens?.derivativeValue).toBeGreaterThan(500);
+
+    // Tail rotor anti-torque sensitivity when enabled vs disabled
+    const pedalEnabled = computeParameterSensitivity(id, "tailRotorPedalPercent", {
+      auxiliaryRotorEnabled: 1,
+    });
+    expect(pedalEnabled).toBeDefined();
+    expect(pedalEnabled?.derivativeValue).toBe(-21.6);
+    expect(pedalEnabled?.derivativeUnit).toBe("N·m / %");
+
+    const pedalDisabled = computeParameterSensitivity(id, "tailRotorPedalPercent", {
+      auxiliaryRotorEnabled: 0,
+    });
+    expect(pedalDisabled).toBeDefined();
+    expect(pedalDisabled?.derivativeValue).toBe(0);
+    expect(pedalDisabled?.interpretation).toContain("disabled");
+
+    // Engine throttle sensitivity when running vs autorotating
+    const throttleRunning = computeParameterSensitivity(id, "engineThrottlePercent", {
+      engineRunning: 1,
+    });
+    expect(throttleRunning).toBeDefined();
+    expect(throttleRunning?.derivativeValue).toBe(0.8);
+
+    const throttleOff = computeParameterSensitivity(id, "engineThrottlePercent", {
+      engineRunning: 0,
+    });
+    expect(throttleOff).toBeDefined();
+    expect(throttleOff?.derivativeValue).toBe(0);
+    expect(throttleOff?.interpretation).toContain("autorotation");
+
+    // Invalid parameters
+    for (const invalid of [1.9, 16.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "collectivePitchDeg", { collectivePitchDeg: invalid }),
+      ).toBeNull();
+    }
+    expect(
+      computeParameterSensitivity(id, "tailRotorPedalPercent", { tailRotorPedalPercent: 105 }),
+    ).toBeNull();
+  });
+
+  test("Hollerith tabulator derives tally rate, solenoid force, and voltage sensitivities", () => {
+    const id = "us-395781-hollerith-tabulating";
+
+    for (const cpm of [20, 40, 60, 90]) {
+      const sens = computeParameterSensitivity(id, "cardsPerMin", { cardsPerMin: cpm });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Electromechanical Dial Tally Rate");
+      expect(sens?.derivativeValue).toBe(1.0);
+      expect(sens?.derivativeUnit).toBe("tallies/min / (card/min)");
+    }
+
+    for (const v of [6, 12, 18, 24]) {
+      const sens = computeParameterSensitivity(id, "batteryVolts", { batteryVolts: v });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Solenoid Electromagnetic Tractive Force");
+      expect(sens?.derivativeUnit).toBe("N / V");
+      const hol = stepHollerithTabulating({ supplyVoltageV: v });
+      expect(sens?.derivativeValue).toBeCloseTo(hol.forceVoltageSlopeNPerV, 2);
+    }
+
+    for (const relays of [1, 10, 16, 32, 40]) {
+      const sens = computeParameterSensitivity(id, "activeRelays", { activeRelays: relays });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Solenoid Total Attraction Force");
+      expect(sens?.derivativeUnit).toBe("N / relay");
+      const hol = stepHollerithTabulating({ activeRelays: relays });
+      expect(sens?.derivativeValue).toBeCloseTo(hol.forceRelaySlopeNPerRelay, 2);
+    }
+
+    // Invalid parameters
+    for (const invalid of [19, 91, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "cardsPerMin", { cardsPerMin: invalid })).toBeNull();
+    }
+    for (const invalid of [5, 25, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "batteryVolts", { batteryVolts: invalid })).toBeNull();
+    }
+    for (const invalid of [0, 41, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "activeRelays", { activeRelays: invalid })).toBeNull();
+    }
+  });
+
+  test("Engelbart mouse derives angular velocity and pulse rate sensitivities from rolling model", () => {
+    const id = "us-3541541-engelbart-mouse";
+
+    for (const v of [100, 250, 350, 800]) {
+      const sens = computeParameterSensitivity(id, "mouseSpeed", {
+        mouseSpeed: v,
+        wheelRadius: 10,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Wheel Angular Velocity");
+      expect(sens?.derivativeSymbol).toBe("∂ω / ∂v_mouse");
+      expect(sens?.derivativeUnit).toBe("(rad/s) / (mm/s)");
+      const mouse = stepEngelbartMouse({ mouseSpeed: v, wheelRadius: 10 });
+      expect(sens?.derivativeValue).toBeCloseTo(mouse.omegaSpeedSlopeRadPerSPerMmPerS, 4);
+    }
+
+    for (const r of [6, 10, 14, 18]) {
+      const sens = computeParameterSensitivity(id, "wheelRadius", {
+        mouseSpeed: 350,
+        wheelRadius: r,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Wheel Angular Velocity");
+      expect(sens?.derivativeSymbol).toBe("∂ω / ∂R_wheel");
+      expect(sens?.derivativeUnit).toBe("(rad/s) / mm");
+      const mouse = stepEngelbartMouse({ mouseSpeed: 350, wheelRadius: r });
+      expect(sens?.derivativeValue).toBeCloseTo(mouse.omegaRadiusSlopeRadPerSPerMm, 3);
+    }
+
+    for (const ppr of [50, 100, 200, 400]) {
+      const sens = computeParameterSensitivity(id, "pulsesPerRev", {
+        mouseSpeed: 350,
+        wheelRadius: 10,
+        pulsesPerRev: ppr,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Encoder Pulse Generation Rate");
+      expect(sens?.derivativeSymbol).toBe("∂f_pulse / ∂N_ppr");
+      expect(sens?.derivativeUnit).toBe("Hz / (pulse/rev)");
+      expect(sens?.derivativeValue).toBeCloseTo(350 / (2 * Math.PI * 10), 2);
+    }
+
+    // Invalid parameters
+    for (const invalid of [99, 801, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "mouseSpeed", { mouseSpeed: invalid })).toBeNull();
+    }
+    for (const invalid of [5, 19, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "wheelRadius", { wheelRadius: invalid })).toBeNull();
+    }
+    for (const invalid of [19, 401, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "pulsesPerRev", { pulsesPerRev: invalid })).toBeNull();
+    }
+  });
+
+  test("Wozniak Apple II derives microprocessor clock and RAM sensitivities from master crystal", () => {
+    const id = "us-4136359-wozniak-apple";
+
+    for (const f of [10.0, 14.318, 20.0, 28.0]) {
+      const sens = computeParameterSensitivity(id, "crystalFreq", { crystalFreq: f });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Microprocessor Clock Speed");
+      expect(sens?.derivativeSymbol).toBe("∂f_cpu / ∂f_xtal");
+      expect(sens?.derivativeUnit).toBe("MHz / MHz");
+      const apple = stepWozniakApple({ crystalFreq: f });
+      expect(sens?.derivativeValue).toBeCloseTo(apple.cpuClockSlopeMhzPerMhz, 4);
+    }
+
+    for (const ram of [4, 16, 32, 48]) {
+      const sens = computeParameterSensitivity(id, "ramCapacityKb", { ramCapacityKb: ram });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Accessible Video & Program RAM");
+      expect(sens?.derivativeSymbol).toBe("∂RAM / ∂Capacity");
+      expect(sens?.derivativeValue).toBe(1.0);
+      expect(sens?.derivativeUnit).toBe("KB / KB");
+    }
+
+    // Invalid parameters
+    for (const invalid of [6.9, 28.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "crystalFreq", { crystalFreq: invalid })).toBeNull();
+    }
+    for (const invalid of [3, 49, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "ramCapacityKb", { ramCapacityKb: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Multi-Touch derives affine pinch zoom and contact count sensitivities", () => {
+    const id = "us-7479949-multitouch";
+
+    for (const sep of [15, 30, 50, 80, 120]) {
+      const sens = computeParameterSensitivity(id, "fingerSeparationMm", {
+        fingerSeparationMm: sep,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Affine Pinch-to-Zoom Scale Factor");
+      expect(sens?.derivativeSymbol).toBe("∂S / ∂d_sep");
+      expect(sens?.derivativeUnit).toBe("scale / mm");
+      expect(sens?.derivativeValue).toBe(0.02);
+    }
+
+    for (const count of [0, 1, 2]) {
+      const sens = computeParameterSensitivity(id, "fingerCount", { fingerCount: count });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Active Touch Contacts");
+      expect(sens?.derivativeSymbol).toBe("∂Contacts / ∂Count");
+      expect(sens?.derivativeUnit).toBe("pts / finger");
+      expect(sens?.derivativeValue).toBe(1.0);
+    }
+
+    // Invalid parameters
+    for (const invalid of [14, 121, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "fingerSeparationMm", { fingerSeparationMm: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-1, 3, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "fingerCount", { fingerCount: invalid })).toBeNull();
+    }
+  });
+
+  test("Corliss Steam Engine derives indicated power and thermal efficiency slopes", () => {
+    const id = "us-6162-corliss-steam-engine";
+
+    for (const psi of [50, 100, 150]) {
+      const sens = computeParameterSensitivity(id, "steamPressurePsi", {
+        steamPressurePsi: psi,
+        engineRpm: 65,
+        cutoffPct: 25,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Indicated Cylinder Power");
+      expect(sens?.derivativeSymbol).toBe("∂IHP / ∂P_boiler");
+      expect(sens?.derivativeUnit).toBe("HP / psi");
+      const corliss = stepCorlissEngine({
+        steamPressurePsi: psi,
+        engineRpm: 65,
+        cutoffPct: 25,
+      });
+      expect(sens?.derivativeValue).toBeCloseTo(corliss.ihpPressureSlopeHpPerPsi, 2);
+    }
+
+    for (const rpm of [40, 65, 100]) {
+      const sens = computeParameterSensitivity(id, "engineRpm", {
+        steamPressurePsi: 100,
+        engineRpm: rpm,
+        cutoffPct: 25,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Flywheel Shaft Power");
+      expect(sens?.derivativeSymbol).toBe("∂P / ∂RPM");
+      expect(sens?.derivativeUnit).toBe("HP / RPM");
+      const corliss = stepCorlissEngine({
+        steamPressurePsi: 100,
+        engineRpm: rpm,
+        cutoffPct: 25,
+      });
+      expect(sens?.derivativeValue).toBeCloseTo(corliss.ihpRpmSlopeHpPerRpm, 2);
+    }
+
+    for (const cutoff of [15, 25, 45]) {
+      const sens = computeParameterSensitivity(id, "cutoffPct", {
+        steamPressurePsi: 100,
+        engineRpm: 65,
+        cutoffPct: cutoff,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Expansion Thermal Efficiency");
+      expect(sens?.derivativeSymbol).toBe("∂η_th / ∂Cutoff");
+      expect(sens?.derivativeUnit).toBe("% / %");
+      expect(sens?.derivativeValue).toBe(-0.12);
+    }
+
+    // Invalid parameters
+    for (const invalid of [39, 181, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "steamPressurePsi", { steamPressurePsi: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [29, 121, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "engineRpm", { engineRpm: invalid })).toBeNull();
+    }
+    for (const invalid of [4, 61, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "cutoffPct", { cutoffPct: invalid })).toBeNull();
+    }
+  });
+
+  test("Ericsson Propeller derives thrust and blade pitch angle sensitivities", () => {
+    const id = "us-588-ericsson-propeller";
+
+    for (const rpm of [60, 120, 180, 240]) {
+      const sens = computeParameterSensitivity(id, "shaftRpm", {
+        shaftRpm: rpm,
+        bladePitchAngleDeg: 35,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Submerged Propeller Hydrodynamic Thrust");
+      expect(sens?.derivativeSymbol).toBe("∂T / ∂RPM");
+      expect(sens?.derivativeUnit).toBe("kN / RPM");
+      const ericsson = stepEricssonPropeller({ shaftRpm: rpm, bladePitchAngleDeg: 35 });
+      expect(sens?.derivativeValue).toBeCloseTo(ericsson.thrustRpmSlopeKnPerRpm, 4);
+    }
+
+    for (const pitch of [25, 35, 45, 55]) {
+      const sens = computeParameterSensitivity(id, "bladePitchAngleDeg", {
+        shaftRpm: 120,
+        bladePitchAngleDeg: pitch,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Propeller Hydrodynamic Thrust Pitch Sensitivity");
+      expect(sens?.derivativeSymbol).toBe("∂T / ∂θ_pitch");
+      expect(sens?.derivativeUnit).toBe("kN / deg");
+      expect(sens?.derivativeValue).toBeGreaterThan(0);
+    }
+
+    // Invalid parameters
+    for (const invalid of [39, 241, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "shaftRpm", { shaftRpm: invalid })).toBeNull();
+    }
+    for (const invalid of [19, 56, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "bladePitchAngleDeg", { bladePitchAngleDeg: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Gatling Gun derives cyclic rate of fire scaling from barrel cluster and crank", () => {
+    const id = "us-36836-gatling-gun";
+
+    for (const rpm of [30, 60, 100]) {
+      for (const barrels of [4, 6, 8, 10]) {
+        const sensRpm = computeParameterSensitivity(id, "crankRpm", {
+          crankRpm: rpm,
+          barrelCount: barrels,
+        });
+        expect(sensRpm).toBeDefined();
+        expect(sensRpm?.metricName).toBe("Cluster Cyclic Fire Rate");
+        expect(sensRpm?.derivativeSymbol).toBe("∂ROF / ∂CrankRPM");
+        expect(sensRpm?.derivativeValue).toBe(barrels);
+        expect(sensRpm?.derivativeUnit).toBe("RPM / RPM");
+
+        const sensBarrels = computeParameterSensitivity(id, "barrelCount", {
+          crankRpm: rpm,
+          barrelCount: barrels,
+        });
+        expect(sensBarrels).toBeDefined();
+        expect(sensBarrels?.metricName).toBe("Cluster Barrel Scaling");
+        expect(sensBarrels?.derivativeSymbol).toBe("∂ROF / ∂N_barrels");
+        expect(sensBarrels?.derivativeValue).toBe(rpm);
+        expect(sensBarrels?.derivativeUnit).toBe("rounds/min / barrel");
+      }
+    }
+
+    // Invalid parameters
+    for (const invalid of [19, 121, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "crankRpm", { crankRpm: invalid })).toBeNull();
+    }
+    for (const invalid of [3, 11, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "barrelCount", { barrelCount: invalid })).toBeNull();
+    }
+  });
+
+  test("Whitney Cotton Gin derives throughput and grate stroke sensitivities", () => {
+    const id = "us-x72-whitney-cotton-gin";
+
+    for (const rpm of [30, 60, 120]) {
+      const sens = computeParameterSensitivity(id, "crankRpm", { crankRpm: rpm });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Clean Lint Extraction Throughput");
+      expect(sens?.derivativeSymbol).toBe("∂m_lint / ∂RPM_crank");
+      expect(sens?.derivativeUnit).toBe("lb/day / RPM");
+      expect(sens?.derivativeValue).toBeCloseTo(50 / 60, 4);
+    }
+
+    for (const clr of [2.0, 3.2, 5.0]) {
+      const sens = computeParameterSensitivity(id, "seedGridClearance", { seedGridClearance: clr });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Grate Stroke Pitch Clearance");
+      expect(sens?.derivativeSymbol).toBe("∂Stroke / ∂Clearance");
+      expect(sens?.derivativeUnit).toBe("px / mm");
+      expect(sens?.derivativeValue).toBe(2.5);
+    }
+
+    // Invalid parameters
+    for (const invalid of [19, 181, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "crankRpm", { crankRpm: invalid })).toBeNull();
+    }
+    for (const invalid of [0.9, 10.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "seedGridClearance", { seedGridClearance: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("McCormick Reaper derives kinematic cutter reciprocation frequency scaling", () => {
+    const id = "us-x8277-mccormick-reaper";
+
+    for (const speed of [1.0, 2.5, 4.0, 5.0]) {
+      const sens = computeParameterSensitivity(id, "forwardSpeedMph", { forwardSpeedMph: speed });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Cutter Reciprocation Frequency");
+      expect(sens?.derivativeSymbol).toBe("∂f_cut / ∂v_ground");
+      expect(sens?.derivativeUnit).toBe("Hz / MPH");
+      expect(sens?.derivativeValue).toBe(2.33);
+    }
+
+    // Invalid parameters
+    for (const invalid of [0.4, 6.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "forwardSpeedMph", { forwardSpeedMph: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Yale Lock derives pin tumbler shear alignment and plug rotational velocity", () => {
+    const id = "us-48475-yale-lock";
+
+    // Unlocked with fully inserted authorized key
+    const unlockedAlign = computeParameterSensitivity(id, "keyInsertion", {
+      keyInsertion: 1.0,
+      appliedTorqueNm: 0.15,
+    });
+    expect(unlockedAlign).toBeDefined();
+    expect(unlockedAlign?.metricName).toBe("Pin Tumbler Shear Line Alignment");
+    expect(unlockedAlign?.derivativeValue).toBe(1.0);
+
+    const unlockedTorque = computeParameterSensitivity(id, "appliedTorqueNm", {
+      keyInsertion: 1.0,
+      appliedTorqueNm: 0.15,
+    });
+    expect(unlockedTorque).toBeDefined();
+    expect(unlockedTorque?.metricName).toBe("Plug Rotational Angular Velocity");
+    expect(unlockedTorque?.derivativeSymbol).toBe("∂ω_plug / ∂τ");
+    expect(unlockedTorque?.derivativeValue).toBe(18.0);
+    expect(unlockedTorque?.derivativeUnit).toBe("(rad/s) / (N·m)");
+
+    // Locked when key partially inserted
+    const lockedAlign = computeParameterSensitivity(id, "keyInsertion", {
+      keyInsertion: 0.5,
+      appliedTorqueNm: 0.15,
+    });
+    expect(lockedAlign).toBeDefined();
+    expect(lockedAlign?.derivativeValue).toBe(0.0);
+
+    const lockedTorque = computeParameterSensitivity(id, "appliedTorqueNm", {
+      keyInsertion: 0.5,
+      appliedTorqueNm: 0.15,
+    });
+    expect(lockedTorque).toBeDefined();
+    expect(lockedTorque?.derivativeValue).toBe(0.0);
+
+    // Invalid parameters
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "keyInsertion", { keyInsertion: invalid })).toBeNull();
+    }
+    for (const invalid of [-0.1, 0.6, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "appliedTorqueNm", { appliedTorqueNm: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Sholes Typewriter derives demonstration event cadence scaling", () => {
+    const id = "us-79265-sholes-typewriter";
+
+    for (const cadence of [20, 40, 80, 120]) {
+      const sens = computeParameterSensitivity(id, "typingSpeedWpm", { typingSpeedWpm: cadence });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Demonstration Event Frequency");
+      expect(sens?.derivativeSymbol).toBe("∂f_event / ∂Cadence");
+      expect(sens?.derivativeUnit).toBe("strokes/s / (strokes/min)");
+      expect(sens?.derivativeValue).toBeCloseTo(1 / 60, 4);
+    }
+
+    // Invalid parameters
+    for (const invalid of [9, 121, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "typingSpeedWpm", { typingSpeedWpm: invalid }),
+      ).toBeNull();
+    }
   });
 });

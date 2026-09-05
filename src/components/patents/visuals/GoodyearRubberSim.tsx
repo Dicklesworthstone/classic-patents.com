@@ -1,7 +1,11 @@
 "use client";
 
 import { Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { goodyearChainPost, stepGoodyearRubber } from "@/physics/catalogKernels";
+import {
+  GOODYEAR_SULFUR_RANGE,
+  goodyearChainPost,
+  stepGoodyearRubber,
+} from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -22,7 +26,12 @@ export function GoodyearRubberSim() {
   const isBrittle = rubber.isRawGumBrittle;
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
+    <div
+      data-testid="goodyear-rubber-two"
+      data-goodyear-stress-mpa={rubber.trueStressMpa}
+      data-goodyear-stress-runtime="ts-fallback"
+      className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6"
+    >
       {/* Header */}
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
@@ -56,7 +65,9 @@ export function GoodyearRubberSim() {
                 ? "✗ RAW GUM: Hardened / brittle in cold"
                 : isElastic
                   ? "✓ HEAT-TREATED COMPOUND: Stable elastic fabric"
-                  : "✓ HIGH-SULFUR: Hard ebonite resin"}
+                  : isEbonite
+                    ? "HIGH-SULFUR: Ebonite comparison"
+                    : "UNCURED: Outside the model's resilient cure state"}
           </span>
           <button
             type="button"
@@ -91,7 +102,7 @@ export function GoodyearRubberSim() {
           <svg
             viewBox="0 0 440 220"
             role="img"
-            aria-label={`Goodyear rubber vulcanization simulation: specimen with ${sulfurPercent} percent sulfur at ${specimenTempC} degrees Celsius, ${isMelted ? "raw gum melted by heat" : isBrittle ? "raw gum brittle in the cold" : isElastic ? "heat-treated compound elastic and stable" : "high-sulfur hard ebonite resin"}`}
+            aria-label={`Goodyear rubber vulcanization simulation: specimen with ${sulfurPercent} percent sulfur at ${specimenTempC} degrees Celsius, ${isMelted ? "raw gum melted by heat" : isBrittle ? "raw gum brittle in the cold" : isElastic ? "heat-treated compound elastic and stable" : isEbonite ? "high-sulfur hard ebonite comparison" : "uncured compound outside the model's resilient cure state"}`}
             className="w-full max-w-md h-auto select-none"
           >
             {/* Molecular Polyisoprene Chains */}
@@ -196,8 +207,7 @@ export function GoodyearRubberSim() {
               <input
                 type="range"
                 aria-label="Sulfur Compounding Content"
-                min="0"
-                max="30"
+                {...GOODYEAR_SULFUR_RANGE}
                 value={sulfurPercent}
                 onChange={(e) => updateParam("sulfurPct", Number(e.target.value))}
                 className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
@@ -273,6 +283,9 @@ export function GoodyearRubberSim() {
                 onChange={(e) => updateParam("appliedTensileStretch", Number(e.target.value))}
                 className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-blue-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
               />
+              <p className="text-xs font-mono text-ink-600 dark:text-ink-400">
+                Tensile stress (model): {rubber.trueStressMpa.toFixed(2)} MPa
+              </p>
             </div>
           </div>
         </div>

@@ -2,6 +2,42 @@ import { describe, expect, test } from "bun:test";
 import { specClausesFor } from "./specClauses";
 
 describe("Specification Clauses & Interactive Telemetry Weave", () => {
+  test("Watt's hot-cylinder clause follows the jacket and actual model temperatures", () => {
+    const params = {
+      boilerPressurePsi: 6,
+      condenserTempC: 50,
+      hasSeparateCondenser: 1,
+      hasSteamJacket: 1,
+    };
+    const jacketed = specClausesFor("gb-913-watt-separate-condenser", params);
+    const unjacketed = specClausesFor("gb-913-watt-separate-condenser", {
+      ...params,
+      hasSteamJacket: 0,
+    });
+    const newcomen = specClausesFor("gb-913-watt-separate-condenser", {
+      ...params,
+      hasSeparateCondenser: 0,
+    });
+    expect(jacketed.find((c) => c.id === "cylinder-hot")).toMatchObject({
+      active: true,
+      tone: "held",
+    });
+    expect(unjacketed.find((c) => c.id === "cylinder-hot")).toMatchObject({
+      active: false,
+      tone: "broken",
+    });
+    expect(unjacketed.find((c) => c.id === "cylinder-hot")?.caption).toContain("100.3°C");
+    expect(unjacketed.find((c) => c.id === "cylinder-hot")?.caption).toContain("108.3°C");
+    expect(newcomen.find((c) => c.id === "cylinder-hot")?.caption).toContain("79.1°C");
+    expect(newcomen.find((c) => c.id === "separate-condenser")).toMatchObject({
+      active: false,
+      tone: "broken",
+    });
+    expect(newcomen.find((c) => c.id === "separate-condenser")?.caption).toContain(
+      "50°C injection water",
+    );
+    expect(JSON.stringify(newcomen)).not.toContain("75%");
+  });
   test("Wright Flyer lights exact specification phrases based on live roll/yaw kinematics", () => {
     // Coupled warp case
     const coupled = specClausesFor("us-821393-wright-flyer", { wingWarp: 8, coupled: 1 });

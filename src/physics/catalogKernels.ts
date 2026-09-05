@@ -587,13 +587,18 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
         )
       : 0.15;
   const shaftOmegaRadPerS = (rpm * 2 * Math.PI) / 60;
-  const thrustKn = Math.round((rpm / 120) ** 2 * 18 * pitchFactor);
+  const rawThrustKn = (rpm / 120) ** 2 * 18 * pitchFactor;
+  const thrustKn = Math.round(rawThrustKn);
+  const thrustRpmSlopeKnPerRpm = Number(((2 * rawThrustKn) / rpm).toFixed(4));
+  const speedRpmSlopeKnotsPerRpm = Number(((8.5 * pitchFactor) / 120).toFixed(4));
   return {
     isIllustrativeDisplayModel: true,
     sourceSpiralAdvanceDiameters: 3,
     sourceCasingClearanceInches: 0.125,
     shipSpeedKnots,
     thrustKn,
+    thrustRpmSlopeKnPerRpm,
+    speedRpmSlopeKnotsPerRpm,
     pitchMeters,
     theoreticalSpeedKnots,
     slipFraction,
@@ -1098,8 +1103,14 @@ export function stepCorlissEngine(params: {
   // Default 25% cutoff keeps the historical IHP; earlier cutoff admits less steam.
   const mepFactor = 0.75 + cutoff;
   const crank = rpmToOmega(rpm);
+  const ihpPressureSlopeHpPerPsi = Number((rpm * 0.45 * mepFactor).toFixed(2));
+  const ihpRpmSlopeHpPerRpm = Number((psi * 0.45 * mepFactor).toFixed(2));
+  const thermalEfficiencySlopePctPerPct = -0.12;
   return {
     indicatedHp: Math.round(psi * rpm * 0.25 * 1.8 * mepFactor),
+    ihpPressureSlopeHpPerPsi,
+    ihpRpmSlopeHpPerRpm,
+    thermalEfficiencySlopePctPerPct,
     thermalEfficiencyPct: Number((24.5 + (0.25 - cutoff) * 12).toFixed(1)),
     boilerMpa: Number((psi * 0.00689476).toFixed(2)),
     expansionRatio: Number((1 / Math.max(0.05, cutoff)).toFixed(1)),
@@ -1556,22 +1567,31 @@ export function phonographAxialTravelMm(
   return Number((((cylinderAngleDeg / 360) * leadScrewPitchMm) % wrapMm).toFixed(1));
 }
 
+/** Declared contact resistance in the illustrative welding model, not a grant measurement. */
+export const THOMSON_CONTACT_RESISTANCE_OHM = 0.00018;
+
 export function stepThomsonWelding(params: {
   weldCurrentAmps?: number;
   clampPressureMpa?: number;
 }) {
   const i = params.weldCurrentAmps ?? 4500;
   const press = params.clampPressureMpa ?? 35;
-  const kw = Number(((i ** 2 * 0.00018) / 1000).toFixed(2));
+  const jouleWatts = i ** 2 * THOMSON_CONTACT_RESISTANCE_OHM;
+  const kw = Number((jouleWatts / 1000).toFixed(2));
   const tempC = Math.round(25 + (kw / 3.645) * 850);
-  const upsetBurrWidthMm = Number(((press / 35) * 3.8).toFixed(1));
+  const upsetBurrWidthMmUnrounded = (press / 35) * 3.8;
+  const upsetBurrWidthMm = Number(upsetBurrWidthMmUnrounded.toFixed(1));
   return {
     jouleKw: kw,
     interfaceTempC: tempC,
     isForged: tempC >= 1150 && press >= 25,
     upsetBurrWidthMm,
+    upsetBurrWidthMmUnrounded,
+    upsetSlopeMmPerMpa: 3.8 / 35,
     burrSvgRx: Number((upsetBurrWidthMm * 1.5).toFixed(2)),
-    jouleWatts: kw * 1000,
+    // Keep the physical power continuous; round only its kW display.
+    jouleWatts,
+    jouleSlopeWattsPerAmp: 2 * i * THOMSON_CONTACT_RESISTANCE_OHM,
     weldPulseMs: Math.round(Math.max(200, 5.4e6 / Math.max(500, i))),
     weldGlowIntensity: Number((Math.min(1.5, Math.max(0, tempC / 1300)) * 1.8).toFixed(3)),
     weldSeamScale: Number((1 + (press / 35) * 0.35).toFixed(4)),
@@ -1628,9 +1648,13 @@ export function stepZeppelinAirship(params: {
   const grossBuoyancyKn = Number(((totalVolumeM3 * 9.81 * (rhoAir - rhoH2)) / 1000).toFixed(1));
   const netLiftKn = Number((grossBuoyancyKn - 98.0).toFixed(1));
   const propellerRpm = Math.round((speedKmh / 1.60934 / 17.5) * 1000);
+  const buoyantSlopeNPerPct = 113 * 9.81 * (rhoAir - rhoH2);
+  const pitchTrimSlopeDegPerM = (300 * 9.81) / 15000;
   return {
     grossBuoyancyKn,
     netLiftKn,
+    buoyantSlopeNPerPct,
+    pitchTrimSlopeDegPerM,
     pitchTrimDeg: Number(((trimM * 300 * 9.81) / 15000).toFixed(1)),
     parasiteDragKn: Number(((0.5 * rhoAir * (speedKmh / 3.6) ** 2 * 85 * 0.025) / 1000).toFixed(2)),
     ambientAirDensityKgM3: Number(rhoAir.toFixed(3)),
@@ -1805,12 +1829,16 @@ export function stepHollerithTabulating(params: {
   const registerDialCount = 40;
   const relays = params.activeRelays ?? sensingPinCount;
   const press = rpmToOmega(cpm);
-  const solenoidForceN = Number(
-    (((relays * (v / 12) * 45) ** 2 * 1.256e-6 * 0.0004) / (2 * 0.002 ** 2)).toFixed(2),
-  );
+  const rawForce = ((relays * (v / 12) * 45) ** 2 * 1.256e-6 * 0.0004) / (2 * 0.002 ** 2);
+  const solenoidForceN = Number(rawForce.toFixed(2));
+  const forceVoltageSlopeNPerV = Number(((2 * rawForce) / v).toFixed(3));
+  const forceRelaySlopeNPerRelay = Number(((2 * rawForce) / relays).toFixed(3));
   return {
     cycleTimeMs: Math.round(60000 / cpm),
     solenoidForceN,
+    forceVoltageSlopeNPerV,
+    forceRelaySlopeNPerRelay,
+    tallyRateSlopePerCpm: 1.0,
     inductiveTauMs: Number(((0.08 / (v / 2.4)) * 1000).toFixed(1)),
     contactResistanceOhms: 0.08,
     sensingPinCount,
@@ -2048,7 +2076,8 @@ export function stepBellTelephone(params: {
 }) {
   const db = params.voiceAmplitude ?? 75;
   const gap = Math.max(0.05, params.airGap ?? 0.35);
-  const displUm = Number((10 ** ((db - 40) / 30) * 0.45).toFixed(2));
+  const displUmUnrounded = 10 ** ((db - 40) / 30) * 0.45;
+  const displUm = Number(displUmUnrounded.toFixed(2));
   const voiceNorm = Math.max(0, Math.min(1, (db - 40) / 55));
   const volts = params.batteryVoltage ?? 6;
   const sigma = Math.max(0.1, params.liquidConductivity ?? 1.2);
@@ -2056,9 +2085,17 @@ export function stepBellTelephone(params: {
   const resistanceModulationOhms = Number((baseResistanceOhms * 0.45 * voiceNorm).toFixed(1));
   const currentBaselineAmps = Number((volts / baseResistanceOhms).toFixed(3));
   const freqHz = Math.max(1, params.acousticFrequencyHz ?? 440);
+  const modulatedMaUnrounded = (displUmUnrounded / (gap * 1000)) * 18.5;
+  const modulatedMa = Number(modulatedMaUnrounded.toFixed(2));
+  const voiceSlopeMaPerDb = (modulatedMaUnrounded * Math.LN10) / 30;
+  const gapSlopeMaPerMm = -modulatedMaUnrounded / gap;
   return {
     diaphragmUm: displUm,
-    modulatedMa: Number(((displUm / (gap * 1000)) * 18.5).toFixed(2)),
+    diaphragmUmUnrounded: displUmUnrounded,
+    modulatedMa,
+    modulatedMaUnrounded,
+    voiceSlopeMaPerDb,
+    gapSlopeMaPerMm,
     sensitivityMvPerPa: Number((18.5 / (gap + 0.1)).toFixed(1)),
     baseResistanceOhms,
     resistanceModulationOhms,
@@ -2385,11 +2422,17 @@ export function stepEngelbartMouse(params: {
   const ppr = params.pulsesPerRev ?? 200;
   const diameterMm = r * 2;
   const circumferenceMm = Math.PI * diameterMm;
+  const omegaSpeedSlopeRadPerSPerMmPerS = Number((1 / r).toFixed(4));
+  const omegaRadiusSlopeRadPerSPerMm = Number((-v / (r * r)).toFixed(3));
+  const pulseRateSpeedSlopeHzPerMmPerS = Number((ppr / circumferenceMm).toFixed(3));
   return {
     // Counts per inch = counts/revolution divided by inches/revolution.
     // The prior ppr*10/r shortcut overstated resolution by ~2.47x.
     dpi: Math.round((ppr * 25.4) / circumferenceMm),
     omegaRadPerS: Number((v / r).toFixed(1)),
+    omegaSpeedSlopeRadPerSPerMmPerS,
+    omegaRadiusSlopeRadPerSPerMm,
+    pulseRateSpeedSlopeHzPerMmPerS,
     slewPxPerS: Number((v * 3.8).toFixed(0)),
     wheelDiameterMm: diameterMm,
     wheelCircumferenceMm: Number(circumferenceMm.toFixed(2)),
@@ -2465,8 +2508,14 @@ export function engelbartPointerSvg(
 export function stepWozniakApple(params: { crystalFreq?: number; ramCapacityKb?: number }) {
   const f = params.crystalFreq ?? 14.318;
   const cpuMhz = Number((f / 14).toFixed(3));
+  const cpuClockSlopeMhzPerMhz = Number((1 / 14).toFixed(4));
+  const colorSubcarrierSlopeMhzPerMhz = 0.25;
+  const dramWindowSlopeNsPerMhz = Number((-7000 / (f * f)).toFixed(2));
   return {
     cpuClockMhz: cpuMhz,
+    cpuClockSlopeMhzPerMhz,
+    colorSubcarrierSlopeMhzPerMhz,
+    dramWindowSlopeNsPerMhz,
     colorSubcarrierMhz: Number((f / 4).toFixed(3)),
     dramWindowNs: Number(((1000 / cpuMhz) * 0.5).toFixed(1)),
     ramCapacityKb: params.ramCapacityKb ?? 48,
@@ -2879,6 +2928,9 @@ export function coltSchematicTrigger(
   return { x, y: isLocked ? cockY : restY, w, h: isLocked ? cockH : restH };
 }
 
+/** Shared sulfur range includes the raw-gum and high-sulfur teaching comparisons. */
+export const GOODYEAR_SULFUR_RANGE = { min: 0, max: 30, step: 0.5 } as const;
+
 export function stepGoodyearRubber(
   vulcanizationTempC?: number,
   sulfurPct?: number,
@@ -2889,7 +2941,7 @@ export function stepGoodyearRubber(
   const temp = vulcanizationTempC ?? 145;
   const sulfur = sulfurPct ?? 8;
   const duration = durationMin ?? 30;
-  const lambda = Math.max(1.01, stretchLambda ?? 1.8);
+  const lambda = Math.max(1, stretchLambda ?? 1.8);
   const specimen = specimenTempC ?? 35;
   const isOptimalTemp = temp >= 135 && temp <= 165;
   const crossLinkDensity = (sulfur / 8.0) * (duration / 30) * (isOptimalTemp ? 1.0 : 0.4);
@@ -2899,6 +2951,7 @@ export function stepGoodyearRubber(
   const cure = vulcanKinetics(temp, sulfur);
   const isGlassy = specimen < glassTransitionTempC;
   const isVulcanized = isOptimalTemp && crossLinkDensity >= 0.3;
+  const stressMpaUnrounded = tensileStrengthMpa * (lambda - 1 / lambda ** 2);
   return {
     crossLinkDensity: Number(crossLinkDensity.toFixed(3)),
     tensileStrengthPsi,
@@ -2911,7 +2964,10 @@ export function stepGoodyearRubber(
     isGlassy,
     isRawGumMelted: sulfur < 2 && specimen > 35,
     isRawGumBrittle: sulfur < 2 && specimen < 0,
-    trueStressMpa: Number((tensileStrengthMpa * (lambda - 1 / lambda ** 2)).toFixed(2)),
+    trueStressMpa: Number(stressMpaUnrounded.toFixed(2)),
+    stressMpaUnrounded,
+    // Local slope of this declared stress model with the cure settings held fixed.
+    stressSlopeMpaPerStretch: tensileStrengthMpa * (1 + 2 / lambda ** 3),
     entropicReductionJ: Number((0.5 * 1.38e-23 * 1e26 * (lambda ** 2 + 2 / lambda - 3)).toFixed(1)),
     glassyModulusMpa: 2400,
     stressScale: Number(
@@ -3016,9 +3072,13 @@ export function stepEinsteinRefrigerator(params: {
   const press = params.totalPressure ?? 15.0;
   const nh3 = params.ammoniaRatio ?? 0.65;
   const claim1LiftPathPresent = Number(params.claim1LiftPathPresent ?? 1) >= 0.5;
-  const evapTempC = -25 + (press - 10) * 1.4 - (nh3 - 0.65) * 18;
-  const scenarioCop = Number((0.32 * (1 - Math.abs(evapTempC) / 120)).toFixed(2));
+  const evapTempCUnrounded = -25 + (press - 10) * 1.4 - (nh3 - 0.65) * 18;
+  const evapTempC = Number(evapTempCUnrounded.toFixed(1));
+  const scenarioCopUnrounded = 0.32 * (1 - Math.abs(evapTempCUnrounded) / 120);
+  const scenarioCop = Number(scenarioCopUnrounded.toFixed(2));
   const cop = claim1LiftPathPresent ? scenarioCop : 0;
+  const copUnrounded = claim1LiftPathPresent ? Math.max(0, scenarioCopUnrounded) : 0;
+  const coolingWattsUnrounded = qIn * copUnrounded;
   const coolingWatts = claim1LiftPathPresent ? Math.round(qIn * cop) : 0;
   return {
     operating: claim1LiftPathPresent,
@@ -3026,10 +3086,14 @@ export function stepEinsteinRefrigerator(params: {
     refusalReason: claim1LiftPathPresent
       ? null
       : "Claim 1 heated liquid-lift conduit is withheld; the source cycle is open and no cooling state is inferred.",
-    evapTempC: Number(evapTempC.toFixed(1)),
-    evapTempF: Math.round((evapTempC * 9) / 5 + 32),
+    evapTempC,
+    evapTempCUnrounded,
+    evapTempF: Math.round((evapTempCUnrounded * 9) / 5 + 32),
     coolingWatts,
+    coolingWattsUnrounded,
     cop,
+    copUnrounded,
+    copSlopeWattsPerWatt: cop,
     pressureAtm: press,
     partialPressureButaneAtm: Number((press * (1 - nh3)).toFixed(2)),
     fluidDisplaySpeed: claim1LiftPathPresent ? Number((coolingWatts / 45 + 0.8).toFixed(3)) : 0,

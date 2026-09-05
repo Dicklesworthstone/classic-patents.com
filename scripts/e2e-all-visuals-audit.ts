@@ -2,15 +2,20 @@
  * e2e-all-visuals-audit.ts
  *
  * Automated Playwright browser verification for every registered patent visualization in the museum.
- * It tests the actual Interactive 3D Simulator face before checking the WebGL canvas, then tests
- * the paired 2D Schematic face, console/page errors, and responsive layout stability. Rendering
- * health is necessary but does not establish historical or physical fidelity.
+ * It tests the actual visual face before checking either a WebGL canvas or an
+ * explicit source-bounded visual-model boundary, then tests the paired schematic
+ * face, console/page errors, and responsive layout stability. Rendering health
+ * is necessary but does not establish historical or physical fidelity.
  */
 
-import { chromium } from "playwright";
+import { type Browser, chromium } from "playwright";
 import { allPatents } from "../src/data/patents";
 
 const BASE_URL = process.env.E2E_BASE_URL || "http://127.0.0.1:3088";
+// Cold WebGL shader compilation can exceed six seconds on a fresh browser
+// context. This is a liveness check, not a frame-time budget; the dedicated
+// Three.js audit owns performance measurements.
+const VISUAL_MOUNT_TIMEOUT_MS = 15_000;
 
 interface PatentTestResult {
   id: string;
@@ -21,6 +26,7 @@ interface PatentTestResult {
   consoleErrors: string[];
   pageErrors: string[];
   canvasFound: boolean;
+  visualBoundaryFound: boolean;
   hasOverflow: boolean;
 }
 
@@ -32,149 +38,188 @@ async function runVisualsAudit() {
   console.log(`  Target: ${BASE_URL}`);
   console.log("=======================================================================\n");
 
-  const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({
-    viewport: { width: 1280, height: 800 },
-    deviceScaleFactor: 1,
-  });
+  const externalTmp = process.env.TMPDIR?.startsWith("/Volumes/") ? process.env.TMPDIR : undefined;
+  if (externalTmp) {
+    delete process.env.TMPDIR;
+  }
+
+  let browser: Browser;
+  try {
+    browser = await chromium.launch({ headless: true });
+  } catch (err) {
+    if (externalTmp) process.env.TMPDIR = externalTmp;
+    throw err;
+  }
 
   const results: PatentTestResult[] = [];
   let failCount = 0;
 
-  for (let i = 0; i < allPatents.length; i++) {
-    const patent = allPatents[i];
-    const url = `${BASE_URL}/patents/${patent.id}`;
-    const consoleErrors: string[] = [];
-    const pageErrors: string[] = [];
+  try {
+    for (let i = 0; i < allPatents.length; i++) {
+      const patent = allPatents[i];
+      const url = `${BASE_URL}/patents/${patent.id}`;
+      const consoleErrors: string[] = [];
+      const pageErrors: string[] = [];
+      // A visual page owns WebGL resources. Closing only the page leaves its
+      // command buffers in the shared context long enough to kill a catalogue-
+      // wide headless sweep on some GPU drivers. A fresh context per record
+      // makes every result independent and releases that state deterministically.
+      const context = await browser.newContext({
+        viewport: { width: 1280, height: 800 },
+        deviceScaleFactor: 1,
+      });
+      const page = await context.newPage();
 
-    const page = await context.newPage();
-
-    page.on("response", (res) => {
-      if (res.status() >= 400) {
-        console.log(`\n       [HTTP ${res.status()}] ${res.url()}`);
-      }
-    });
-
-    const onPageError = (err: Error) => {
-      pageErrors.push(err.message);
-    };
-
-    const onConsole = (msg: any) => {
-      if (msg.type() === "error") {
-        const text = msg.text();
-        if (!text.includes("favicon")) {
-          consoleErrors.push(text);
+      page.on("response", (res) => {
+        if (res.status() >= 400) {
+          console.log(`\n       [HTTP ${res.status()}] ${res.url()}`);
         }
-      }
-    };
+      });
 
-    page.on("pageerror", onPageError);
-    page.on("console", onConsole);
+      const onPageError = (err: Error) => {
+        pageErrors.push(err.message);
+      };
 
-    process.stdout.write(
-      `[${i + 1}/${allPatents.length}] Testing ${patent.patentNumber} (${patent.id}) ... `,
-    );
+      const onConsole = (msg: any) => {
+        if (msg.type() === "error") {
+          const text = msg.text();
+          if (!text.includes("favicon")) {
+            consoleErrors.push(text);
+          }
+        }
+      };
 
-    try {
-      const response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 15000 });
-      if (response?.status() !== 200) {
-        throw new Error(`HTTP Status ${response?.status()}`);
-      }
+      page.on("pageerror", onPageError);
+      page.on("console", onConsole);
 
-      const interactiveView = page.getByRole("button", { name: "Interactive 3D Simulator" });
-      if ((await interactiveView.count()) !== 1) {
-        throw new Error("The Interactive 3D Simulator view control is unavailable.");
-      }
-      await interactiveView.click();
+      process.stdout.write(
+        `[${i + 1}/${allPatents.length}] Testing ${patent.patentNumber} (${patent.id}) ... `,
+      );
 
-      // 1. Check 3D WebGL Canvas Render after entering the interactive face.
-      let canvasFound = false;
       try {
-        await page.waitForSelector("canvas", { timeout: 6000 });
-        canvasFound = true;
-      } catch {
-        canvasFound = false;
-      }
+        const response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 15000 });
+        if (response?.status() !== 200) {
+          throw new Error(`HTTP Status ${response?.status()}`);
+        }
 
-      let threeDStatus: "PASS" | "FAIL" = "PASS";
-      if (!canvasFound || pageErrors.length > 0) {
-        threeDStatus = "FAIL";
-      }
+        const visualView = page.locator('button[title$="(Shortcut: 3)"]');
+        if ((await visualView.count()) !== 1) {
+          throw new Error("The visual-face control is unavailable.");
+        }
+        await visualView.click();
 
-      // 2. Test 2D Schematic Switcher
-      let twoDStatus: "PASS" | "FAIL" = "PASS";
-      const twoDButton = page.getByRole("button", { name: "2D Schematic" });
-      if ((await twoDButton.count()) !== 1) {
-        twoDStatus = "FAIL";
-      } else {
-        await twoDButton.click();
-        await page.waitForTimeout(300);
+        // 1. Check the 3D face after entering it. A patent with no source basis
+        // for an apparatus must show its explicit boundary instead of a plausible
+        // but invented WebGL model.
+        let canvasFound = false;
+        let visualBoundaryFound = false;
+        try {
+          await page
+            .locator(
+              'canvas, [data-testid="three-d-source-boundary"], section[aria-labelledby="source-visual-unavailable-title"]',
+            )
+            .first()
+            .waitFor({ state: "visible", timeout: VISUAL_MOUNT_TIMEOUT_MS });
+          canvasFound = (await page.locator("canvas:visible").count()) > 0;
+          visualBoundaryFound =
+            (await page.getByTestId("three-d-source-boundary").count()) > 0 ||
+            (await page
+              .locator('section[aria-labelledby="source-visual-unavailable-title"]')
+              .count()) > 0;
+        } catch {
+          canvasFound = false;
+          visualBoundaryFound = false;
+        }
 
-        // Verify the actual vector schematic is present after the mode change.
-        if ((await page.locator("svg").count()) === 0) {
+        let threeDStatus: "PASS" | "FAIL" = "PASS";
+        if ((!canvasFound && !visualBoundaryFound) || pageErrors.length > 0) {
+          threeDStatus = "FAIL";
+        }
+
+        // 2. Test the source-drawing / schematic face. Its visitor-facing
+        // label deliberately changed from "2D Schematic" to "Schematic & Pins";
+        // the face id is the stable contract used by the navigation component.
+        let twoDStatus: "PASS" | "FAIL" = "PASS";
+        const twoDButton = page.locator('button[data-patent-face="schematic-sheet"]');
+        if ((await twoDButton.count()) !== 1) {
           twoDStatus = "FAIL";
+        } else {
+          await twoDButton.click();
+          await page.waitForTimeout(300);
+
+          // Only a visible vector is evidence for this face. Other faces can
+          // remain mounted offscreen, so a document-wide SVG count is not
+          // meaningful here.
+          if ((await page.locator("svg:visible").count()) === 0) {
+            twoDStatus = "FAIL";
+          }
         }
-      }
 
-      // Check horizontal overflow
-      const hasOverflow = await page.evaluate(() => {
-        return document.documentElement.scrollWidth > window.innerWidth;
-      });
+        // Check horizontal overflow
+        const hasOverflow = await page.evaluate(() => {
+          return document.documentElement.scrollWidth > window.innerWidth;
+        });
 
-      const isPassed =
-        threeDStatus === "PASS" &&
-        twoDStatus === "PASS" &&
-        pageErrors.length === 0 &&
-        consoleErrors.length === 0 &&
-        !hasOverflow;
+        const isPassed =
+          threeDStatus === "PASS" &&
+          twoDStatus === "PASS" &&
+          pageErrors.length === 0 &&
+          consoleErrors.length === 0 &&
+          !hasOverflow;
 
-      if (isPassed) {
-        console.log("✓ OK (3D: PASS, 2D: PASS, Errors: 0)");
-      } else {
+        if (isPassed) {
+          console.log("✓ OK (3D: PASS, 2D: PASS, Errors: 0)");
+        } else {
+          failCount++;
+          console.log(
+            `❌ FAILED (3D: ${threeDStatus}, 2D: ${twoDStatus}, PageErrors: ${pageErrors.length}, ConsoleErrors: ${consoleErrors.length})`,
+          );
+          if (pageErrors.length > 0) {
+            console.log(`   [PageErrors]:`, pageErrors);
+          }
+          if (consoleErrors.length > 0) {
+            console.log(`   [ConsoleErrors]:`, consoleErrors);
+          }
+        }
+
+        results.push({
+          id: patent.id,
+          patentNumber: patent.patentNumber,
+          title: patent.shortTitle,
+          threeDStatus,
+          twoDStatus,
+          consoleErrors: [...consoleErrors],
+          pageErrors: [...pageErrors],
+          canvasFound,
+          visualBoundaryFound,
+          hasOverflow,
+        });
+      } catch (err: any) {
         failCount++;
-        console.log(
-          `❌ FAILED (3D: ${threeDStatus}, 2D: ${twoDStatus}, PageErrors: ${pageErrors.length}, ConsoleErrors: ${consoleErrors.length})`,
-        );
-        if (pageErrors.length > 0) {
-          console.log(`   [PageErrors]:`, pageErrors);
-        }
-        if (consoleErrors.length > 0) {
-          console.log(`   [ConsoleErrors]:`, consoleErrors);
-        }
+        console.log(`❌ EXCEPTION: ${err.message}`);
+        results.push({
+          id: patent.id,
+          patentNumber: patent.patentNumber,
+          title: patent.shortTitle,
+          threeDStatus: "FAIL",
+          twoDStatus: "FAIL",
+          consoleErrors: [...consoleErrors],
+          pageErrors: [err.message],
+          canvasFound: false,
+          visualBoundaryFound: false,
+          hasOverflow: false,
+        });
+      } finally {
+        await page.close().catch(() => undefined);
+        await context.close().catch(() => undefined);
       }
-
-      results.push({
-        id: patent.id,
-        patentNumber: patent.patentNumber,
-        title: patent.shortTitle,
-        threeDStatus,
-        twoDStatus,
-        consoleErrors: [...consoleErrors],
-        pageErrors: [...pageErrors],
-        canvasFound,
-        hasOverflow,
-      });
-    } catch (err: any) {
-      failCount++;
-      console.log(`❌ EXCEPTION: ${err.message}`);
-      results.push({
-        id: patent.id,
-        patentNumber: patent.patentNumber,
-        title: patent.shortTitle,
-        threeDStatus: "FAIL",
-        twoDStatus: "FAIL",
-        consoleErrors: [...consoleErrors],
-        pageErrors: [err.message],
-        canvasFound: false,
-        hasOverflow: false,
-      });
-    } finally {
-      await page.close();
+    }
+  } finally {
+    await browser.close().catch(() => undefined);
+    if (externalTmp) {
+      process.env.TMPDIR = externalTmp;
     }
   }
-
-  await context.close();
-  await browser.close();
 
   console.log("\n=======================================================================");
   console.log(

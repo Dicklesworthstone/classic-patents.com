@@ -1,4 +1,5 @@
 import {
+  GOODYEAR_SULFUR_RANGE,
   stepBaekelandBakelite,
   stepBellPhotophone,
   stepCarlsonElectrophotography,
@@ -3439,9 +3440,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "sulfurPct",
         label: "Sulfur Content Fraction",
-        min: 2,
-        max: 14,
-        step: 0.5,
+        ...GOODYEAR_SULFUR_RANGE,
         defaultValue: 8.0,
         unit: "%",
       },

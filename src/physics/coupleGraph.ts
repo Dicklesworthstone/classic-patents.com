@@ -15,7 +15,7 @@ import {
 import { fermiKeff } from "./fermiKinetics";
 import { stepHoweSewingMachine } from "./machineKernels";
 import { stepTeslaMotorFig9, teslaMotorPhaseHz } from "./teslaKernel";
-import { stepWattCondenser } from "./wattCondenserKernel";
+import { readWattCondenserControls, stepWattCondenser } from "./wattCondenserKernel";
 import { readWrightControls, stepWrightFlyerSi, WRIGHT_COUPLING } from "./wrightKernel";
 
 export type CoupleSource = "wasm" | "ts-fallback";
@@ -164,16 +164,23 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId === "gb-913-watt-separate-condenser") {
-    const watt = stepWattCondenser({
-      hasSeparateCondenser: (params.hasSeparateCondenser ?? 1) >= 0.5,
-      condenserTempC: params.condenserTempC ?? 35,
+    const controls = readWattCondenserControls(params);
+    const current = stepWattCondenser(controls);
+    const jacketedWatt = stepWattCondenser({
+      ...controls,
+      hasSeparateCondenser: true,
+      hasSteamJacket: true,
     });
     return [
       {
         from: "separate condenser",
-        to: "Newcomen fuel multiple",
-        gain: Number(watt.newcomenFuelMultiplier.toFixed(3)),
-        unit: "× coal",
+        to: "fuel per net kWh vs jacketed Watt scenario",
+        gain: Number(
+          (
+            current.specificFuelConsumptionKgPerKwh / jacketedWatt.specificFuelConsumptionKgPerKwh
+          ).toFixed(3),
+        ),
+        unit: "× fuel/kWh",
         crate: "fs-couple",
         source: "ts-fallback",
       },

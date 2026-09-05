@@ -191,126 +191,137 @@ export async function runLiveSourceReaderSweep(
   const results: SourceReaderRouteResult[] = [];
   const startTime = Date.now();
 
-  const browser: Browser = await chromium.launch({
-    headless: true,
-  });
+  const externalTmp = process.env.TMPDIR?.startsWith("/Volumes/") ? process.env.TMPDIR : undefined;
+  if (externalTmp) {
+    delete process.env.TMPDIR;
+  }
 
   try {
-    const context = await browser.newContext({
-      viewport,
-      userAgent: "ClassicPatentsSourceReaderSweep/1.0",
-      deviceScaleFactor: 1,
+    const browser: Browser = await chromium.launch({
+      headless: true,
     });
 
-    for (const id of patentIds) {
-      const route = `/patents/${id}?view=original-spec`;
-      const fullUrl = `${baseUrl.replace(/\/$/, "")}${route}`;
-      const routeStart = Date.now();
-
-      const consoleErrors: string[] = [];
-      const pageErrors: string[] = [];
-
-      const page: Page = await context.newPage();
-
-      page.on("console", (msg) => {
-        if (msg.type() === "error") {
-          const text = msg.text();
-          const classification = classifyPatentE2EDiagnostic(text);
-          if (!classification.allowed) {
-            consoleErrors.push(text);
-          }
-        }
+    try {
+      const context = await browser.newContext({
+        viewport,
+        userAgent: "ClassicPatentsSourceReaderSweep/1.0",
+        deviceScaleFactor: 1,
       });
 
-      page.on("pageerror", (err) => {
-        const message = err.message;
-        const classification = classifyPatentE2EDiagnostic(message);
-        if (!classification.allowed) {
-          pageErrors.push(message);
-        }
-      });
+      for (const id of patentIds) {
+        const route = `/patents/${id}?view=original-spec`;
+        const fullUrl = `${baseUrl.replace(/\/$/, "")}${route}`;
+        const routeStart = Date.now();
 
-      let status: "pass" | "fail" = "pass";
-      let deliveryMode: "edition" | "transcript" | "facsimile" | "unknown" = "unknown";
-      let failureReason: string | undefined;
+        const consoleErrors: string[] = [];
+        const pageErrors: string[] = [];
 
-      try {
-        const response = await page.goto(fullUrl, {
-          waitUntil: "domcontentloaded",
-          timeout: timeoutMs,
-        });
+        const page: Page = await context.newPage();
 
-        if (!response?.ok()) {
-          status = "fail";
-          failureReason = `HTTP ${response?.status() ?? "no response"}`;
-        } else {
-          // Wait for dual-projection-viewer container to hydrate
-          const viewer = page.locator('[data-testid="dual-projection-viewer"]');
-          await viewer.waitFor({ state: "visible", timeout: timeoutMs });
-
-          const deliveryAttr = await viewer.getAttribute("data-source-delivery");
-          if (
-            deliveryAttr === "edition" ||
-            deliveryAttr === "transcript" ||
-            deliveryAttr === "facsimile"
-          ) {
-            deliveryMode = deliveryAttr;
-          } else {
-            status = "fail";
-            failureReason = `Invalid or missing data-source-delivery attribute: '${deliveryAttr}'`;
-          }
-
-          // Prohibit historic withheld banner, audit holds, or truncated excerpt
-          const content = await page.content();
-          for (const forbidden of FORBIDDEN_AUDIT_HOLD_STRINGS) {
-            if (content.includes(forbidden)) {
-              status = "fail";
-              failureReason = `Found prohibited audit hold string in DOM: '${forbidden}'`;
-              break;
+        page.on("console", (msg) => {
+          if (msg.type() === "error") {
+            const text = msg.text();
+            const classification = classifyPatentE2EDiagnostic(text);
+            if (!classification.allowed) {
+              consoleErrors.push(text);
             }
           }
-
-          if (consoleErrors.length > 0) {
-            status = "fail";
-            failureReason = `Uncaught console error(s): ${consoleErrors.join("; ")}`;
-          }
-          if (pageErrors.length > 0) {
-            status = "fail";
-            failureReason = `Uncaught page error(s): ${pageErrors.join("; ")}`;
-          }
-        }
-      } catch (err: any) {
-        status = "fail";
-        failureReason = err.message || String(err);
-      } finally {
-        await page.close();
-      }
-
-      const durationMs = Date.now() - routeStart;
-      const result: SourceReaderRouteResult = {
-        route,
-        patentId: id,
-        status,
-        deliveryMode,
-        durationMs,
-        error: failureReason,
-        consoleErrors,
-        pageErrors,
-      };
-
-      results.push(result);
-
-      if (outputLogPath) {
-        const logEntry = JSON.stringify({
-          schema: "classic-patents.source-reader-sweep.v1",
-          timestamp: new Date().toISOString(),
-          ...result,
         });
-        fs.appendFileSync(outputLogPath, `${logEntry}\n`);
+
+        page.on("pageerror", (err) => {
+          const message = err.message;
+          const classification = classifyPatentE2EDiagnostic(message);
+          if (!classification.allowed) {
+            pageErrors.push(message);
+          }
+        });
+
+        let status: "pass" | "fail" = "pass";
+        let deliveryMode: "edition" | "transcript" | "facsimile" | "unknown" = "unknown";
+        let failureReason: string | undefined;
+
+        try {
+          const response = await page.goto(fullUrl, {
+            waitUntil: "domcontentloaded",
+            timeout: timeoutMs,
+          });
+
+          if (!response?.ok()) {
+            status = "fail";
+            failureReason = `HTTP ${response?.status() ?? "no response"}`;
+          } else {
+            // Wait for dual-projection-viewer container to hydrate
+            const viewer = page.locator('[data-testid="dual-projection-viewer"]');
+            await viewer.waitFor({ state: "visible", timeout: timeoutMs });
+
+            const deliveryAttr = await viewer.getAttribute("data-source-delivery");
+            if (
+              deliveryAttr === "edition" ||
+              deliveryAttr === "transcript" ||
+              deliveryAttr === "facsimile"
+            ) {
+              deliveryMode = deliveryAttr;
+            } else {
+              status = "fail";
+              failureReason = `Invalid or missing data-source-delivery attribute: '${deliveryAttr}'`;
+            }
+
+            // Prohibit historic withheld banner, audit holds, or truncated excerpt
+            const content = await page.content();
+            for (const forbidden of FORBIDDEN_AUDIT_HOLD_STRINGS) {
+              if (content.includes(forbidden)) {
+                status = "fail";
+                failureReason = `Found prohibited audit hold string in DOM: '${forbidden}'`;
+                break;
+              }
+            }
+
+            if (consoleErrors.length > 0) {
+              status = "fail";
+              failureReason = `Uncaught console error(s): ${consoleErrors.join("; ")}`;
+            }
+            if (pageErrors.length > 0) {
+              status = "fail";
+              failureReason = `Uncaught page error(s): ${pageErrors.join("; ")}`;
+            }
+          }
+        } catch (err: any) {
+          status = "fail";
+          failureReason = err.message || String(err);
+        } finally {
+          await page.close();
+        }
+
+        const durationMs = Date.now() - routeStart;
+        const result: SourceReaderRouteResult = {
+          route,
+          patentId: id,
+          status,
+          deliveryMode,
+          durationMs,
+          error: failureReason,
+          consoleErrors,
+          pageErrors,
+        };
+
+        results.push(result);
+
+        if (outputLogPath) {
+          const logEntry = JSON.stringify({
+            schema: "classic-patents.source-reader-sweep.v1",
+            timestamp: new Date().toISOString(),
+            ...result,
+          });
+          fs.appendFileSync(outputLogPath, `${logEntry}\n`);
+        }
       }
+    } finally {
+      await browser.close();
     }
   } finally {
-    await browser.close();
+    if (externalTmp) {
+      process.env.TMPDIR = externalTmp;
+    }
   }
 
   const passed = results.filter((r) => r.status === "pass").length;

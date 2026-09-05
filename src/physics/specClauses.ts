@@ -67,6 +67,7 @@ import { stepTeslaMotorFig9, teslaMotorPhaseHz } from "./teslaKernel";
 import { readTeslaTransformerControls, stepTeslaTransformerSi } from "./teslaTransformerKernel";
 import { stepTownesMaserTopology } from "./townesMaserKernel";
 import { stepWatsonRemoteCenterComplianceTopology } from "./watsonRemoteCenterComplianceKernel";
+import { readWattCondenserControls, stepWattCondenser } from "./wattCondenserKernel";
 
 export interface SpecClause {
   id: string;
@@ -256,24 +257,26 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === WATT_ID) {
-    const hasCondenser = (params.hasSeparateCondenser ?? 1) >= 0.5;
-    const condTemp = params.condenserTempC ?? 35;
+    const controls = readWattCondenserControls(params);
+    const state = stepWattCondenser(controls);
+    const hasCondenser = controls.hasSeparateCondenser;
+    const cylinderKeptHot = hasCondenser && controls.hasSteamJacket;
     return [
       {
         id: "cylinder-hot",
         phrase: "kept as hot as the steam that enters it",
-        active: hasCondenser,
-        tone: hasCondenser ? "held" : "broken",
-        caption: hasCondenser
-          ? "Principle 1: Concentric steam jacket maintains cylinder walls at boiling temperature (100°C+)."
-          : "Newcomen mode: Cylinder is quenched to 35°C on every single stroke, causing 75% fuel waste.",
+        active: cylinderKeptHot,
+        tone: cylinderKeptHot ? "held" : "broken",
+        caption: `Illustrative model: cylinder wall ${state.cylinderWallTempC.toFixed(1)}°C, entering steam ${state.steamTempC.toFixed(1)}°C. ${cylinderKeptHot ? "The active steam jacket keeps the cylinder at steam temperature." : hasCondenser ? "The disabled jacket introduces the model's 8°C wall-cooling penalty." : "In-cylinder condensation repeatedly cools the working cylinder."}`,
       },
       {
         id: "separate-condenser",
         phrase: "condensed in vessels distinct from the steam vessels or cylinders",
         active: hasCondenser,
-        tone: "live",
-        caption: `Principle 2: Separate vessel condenser active at ${condTemp}°C with cold water injection.`,
+        tone: hasCondenser ? "live" : "broken",
+        caption: hasCondenser
+          ? `Illustrative model: separate condenser at ${controls.condenserTempC}°C and ${state.condenserPressureAbsKpa.toFixed(1)} kPa absolute pressure.`
+          : `Illustrative comparison: condensation occurs inside the working cylinder with ${controls.condenserTempC}°C injection water.`,
       },
       {
         id: "air-pump",
