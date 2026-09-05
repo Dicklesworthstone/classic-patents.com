@@ -36,3 +36,19 @@
 3. **Withdrawn Edition Draft**: `src/data/editions/stackhouseManipulatorEdition.ts` is marked `completeFacsimileReviewed: false` and held at the publication boundary. It must not render as the source face until a clean line-by-line replacement is completed.
 4. **Unverified Figure Crops**: Files remain in `public/patents/figures/us-4068536-stackhouse-manipulator/`, but their crop boundaries and figure mappings require re-verification before publication.
 5. **Public Catalogue Boundary**: The registered record publishes no claims, drawings, or reviewed-ledger receipt. Its excerpt and engineering description are limited to text checked directly against the pinned facsimile. The connected wrist visual uses selected drawing-space geometry and refuses numerical load, speed, power, precision, gear-ratio, Jacobian, or singularity claims because those inputs are not printed in the grant.
+
+## Independent Full-Facsimile Review (2026-09-05)
+
+All eight pinned-PDF pages were rendered at 220 DPI and read directly. The
+review confirms the identity block and 18-claim / four-figure count on page 1;
+the two drawing sheets and their printed figure identities on pages 2–3; the
+specification, embodiment, and claim sequence on pages 4–7; and the page-8
+certificate changing claim 1's `wherein` to `whereby`.
+
+The review also confirms why the existing ledger and edition remain withdrawn:
+their drawing-page prose, precise 45-degree assertions, fabricated figure
+descriptions, numerical and kinematic claims, and claim transcription cannot
+be promoted merely because portions resemble the grant. The source-bound
+catalogue record therefore remains the correct state. Visitors retain the
+complete pinned facsimile while a clean, page-complete transcription and
+figure-crop review are prepared.
