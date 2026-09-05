@@ -13,7 +13,7 @@
 - **Primary Public Record URL**: https://patents.google.com/patent/US2543181A/en
 - **Local PDF Path**: `public/patents/pdfs/us-2543181-land-polaroid.pdf`
 - **Retrieval Date**: 2026-08-19
-- **Current Review State**: The PDF identity and its 32-page count have been checked. Pages 9–12 received a fresh cloud-raster visual literal pass on 2026-08-21, with corresponding ledger paragraphs and continuous-edition blocks reconciled below. Pages 9–24 remain source-grounded WIP ledger bodies and continuous-edition blocks; pages 21–24 have received a cloud-raster claim pass covering claims 1–20. Pages 25–32 now have a bounded cloud-raster claim reconciliation against the primary facsimile, including claims 78–116, the inventor signature, and the references cited. Pages 1–8 remain drawing-sheet literal transcription blockers. The staged ledger and edition are not publication-ready.
+- **Current Review State**: The PDF identity and its 32-page count have been checked. Pages 9–12 received a fresh cloud-raster visual literal pass on 2026-08-21, with corresponding ledger paragraphs and continuous-edition blocks reconciled below. Pages 9–24 remain source-grounded WIP ledger bodies and continuous-edition blocks; pages 21–24 have received a cloud-raster claim pass covering claims 1–20. Pages 25–32 now have a bounded cloud-raster claim reconciliation against the primary facsimile, including claims 78–116, the inventor signature, and the references cited. Pages 1–8 remain drawing-sheet literal transcription blockers. The packet is not ready for strict archival acceptance, but the source reader continues to expose the complete page-marked ledger and pinned facsimile.
 - **Rights Basis**: Historical United States Patent Document (Public Domain)
 - **Source PDF SHA-256**: `4ee20338289f545608f472c50aa6ba8a7134f08fa377f1887e81f1e9bb5d4013`
 - **PDF Page Count**: 32 pages
@@ -38,11 +38,11 @@
 
 ## 3. Editorial and Preservation Boundaries
 
-- **Staged Source Draft**: `src/data/editions/landPolaroidEdition.ts`; it is intentionally unbound from the public record.
-- **Staged Ledger**: `public/patents/transcripts/us-2543181-land-polaroid-reviewed.txt`; this is a held WIP artifact. It has no editorial status banner and contains clean source-grounded bodies for pages 9–24, but remains non-public until the full facsimile and drawing sheets are literally reviewed.
+- **Staged Source Draft**: `src/data/editions/landPolaroidEdition.ts`; it is intentionally unbound from the strict accepted-edition path while evidence work continues.
+- **Staged Ledger**: `public/patents/transcripts/us-2543181-land-polaroid-reviewed.txt`; this is a held WIP artifact. It has no editorial status banner and contains clean source-grounded bodies for pages 9–24. The source reader exposes this complete page-marked ledger and the pinned facsimile while full facsimile and drawing-sheet review continues.
 - **Figure Crops**: `public/patents/figures/us-2543181-land-polaroid/`; existing `v1` crops are preserved research assets but are mis-mapped or include sheet furniture. New reviewed crops must use new versioned names.
 - **Printed Claims**: 116 formal claims
-- **Claim Staging Boundary**: Claim nodes are dynamically provided by `manualLandClaimText(c)`; claims 1–20 are explicit individual nodes in the edition and have been reconciled into the pages 21–24 WIP ledger, while claims 21–116 are now explicit individual nodes with matching page-marked ledger text for pages 25–32. This remains a held WIP artifact: no claim text is bound or publishable until the unresolved source points below are closed.
+- **Claim Staging Boundary**: Claim nodes are dynamically provided by `manualLandClaimText(c)`; claims 1–20 are explicit individual nodes in the edition and have been reconciled into the pages 21–24 WIP ledger, while claims 21–116 are now explicit individual nodes with matching page-marked ledger text for pages 25–32. This remains a held WIP artifact that is unbound from strict archival acceptance; it does not suppress the reader's full ledger or facsimile.
 
 ## 4. Figure-Crop Repair Plan
 
@@ -441,3 +441,23 @@ occurrences. The exact source-sheet map is Figures 1 → PDF page 1 / Sheet 1,
 2–4 → page 2 / Sheet 2, 5–8 → page 3 / Sheet 3, 9–10 → page 4 / Sheet 4,
 11–13 → page 5 / Sheet 5, 14–17 → page 6 / Sheet 6, 18–22 → page 7 / Sheet
 7, and 23–24 → page 8 / Sheet 8.
+
+## 12. Literal-ledger parity repair — 2026-09-05
+
+The primary page-image witness was visually checked again at pages 10, 14–16,
+19, and 20 using the Google Patents image endpoints cross-pinned to the
+32-page PDF and digest recorded above. This narrow pass reconciled the Figure
+2 description; the Figure 9 cell member and Figure 10 filling procedure; the
+Figure 11 camera/cutter wording; the Figure 13 corrugated-roll passage; the
+Figures 14–17 viscous-reagent disclosure; Example 2; and the Figure 23–24
+container language. In particular, the primary prints `Figs. 1, 3 and 4`,
+`fracture sheet 98`, `One further form`, and `the containing means 300`.
+
+The continuous edition and page-marked reviewed ledger now have literal
+coverage for all 239 authored source sections and all 116 printed claims. The
+patent-local test executes that comparison. This is a ledger-parity repair,
+not a claim of complete-facsimile acceptance: figure-crop acceptance and the
+remaining full-packet review stay open, `completeFacsimileReviewed` remains
+`false`, and the strict acceptance state is unchanged. Those open checks must
+never suppress the source reader: it continues to provide the complete ledger
+and the pinned PDF.

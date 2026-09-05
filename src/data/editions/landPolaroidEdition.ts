@@ -737,39 +737,39 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       ),
     ),
     p(
-      text("It will be noted that in each of the film structures described in "),
-      ref("Fig. 1", "#fig-1", "Figure 1 — Four stages of one photographic product"),
+      text("It will be noted that in each of the film structures described in Figs. "),
+      ref("1", "#fig-1", "Figure 1 — Four stages of one photographic product"),
       text(", "),
-      ref("Fig. 3", "#fig-3", "Figure 3 — Another composite-product embodiment"),
-      text(", and "),
-      ref("Fig. 4", "#fig-4", "Figure 4 — Further composite-product embodiment"),
+      ref("3", "#fig-3", "Figure 3 — Another composite-product embodiment"),
+      text(" and "),
+      ref("4", "#fig-4", "Figure 4 — Further composite-product embodiment"),
       text(", as well as in the modified liquid-containing means of "),
       ref("Fig. 9", "#fig-9", "Figure 9 — Modified liquid-containing means"),
       text(
-        ", the liquid is released for saturating the photosensitive layer by fracturing a frangible liquid-retaining membrane. This may be accomplished by forming the membrane of a relatively more brittle material than the other layers of the film so that fracturing can be achieved by subjecting the film to a tension beyond the yield point of the membrane and below the yield point of any other layer.",
+        ", the liquid is released for saturating the photosensitive layer by fracturing a frangible liquid-retaining membrane. This may be accomplished by forming the membrane of a relatively more brittle material than the other layers of the film so that the fracturing of said membrane can be achieved by subjecting the film to a tension which is beyond the yield point of said membrane and below the yield point of any of the other layers of the film.",
       ),
     ),
     p(
       text("A modified form of liquid-containing means 60 is shown in "),
       ref("Fig. 9", "#fig-9", "Figure 9 — Modified liquid-containing means"),
       text(
-        " and comprises a sheet 92, for example, of film base provided with a plurality of chambers or cells 94, each connected by a self-sealing slot 96 to the bottom wall of the base. Slots 96 form temporary seals for the cells and a more permanent seal is provided by a frangible membrane 98 formed of a relatively brittle material and adapted to function in the same manner as membranes 42 and 68 of liquid film-retaining means 38 and 60, respectively. When the side of film 92 containing slots 96 is subjected to sufficient tension to fracture membrane 98, slots 96 are also opened and the liquid contained in cells 94 is released.",
+        " and comprises a sheet 92, for example, of film base provided with a plurality of chambers or cells 94, each of which is connected by a self-sealing slot 96 to the bottom wall of said base. Slots 96 form temporary seals for said cells and a more permanent seal is provided by a frangible membrane 98 formed of a relatively brittle material and adapted to function in the same manner as membranes 42 and 68 of liquid film-retaining means 38 and 60, respectively. When the side of film 92 containing slots 96 is subjected to sufficient tension to fracture sheet 98, slots 96 are also opened and the liquid contained in cells 94 is released.",
       ),
     ),
     p(
       text("The cells 94 of the retaining means of "),
       ref("Fig. 9", "#fig-9", "Figure 9 — Modified liquid-containing means"),
       text(
-        " may be filled with the liquid in several ways. One novel method comprises causing film 92 to travel over roll 100, as shown in ",
+        " may be filled with the liquid in any of several ways and one novel method comprises causing film 92 to travel over a roll 100 (",
       ),
       ref("Fig. 10", "#fig-10", "Figure 10 — Apparatus for filling the Figure 9 member"),
       text(
-        ", with the side containing slots 96 on the outside. The tension is insufficient to open slots 96 in the straight portions 92a. Throughout curved portion 92b the outside surfaces are stretched enough to separate the walls of the slots, and cells 94 remain open while the base travels around the roll. Roll 100 is immersed in bath 102 of the liquid so that curved portion 92b and short lengths of the adjoining straight portions 92a are immersed. The cells are filled during curved travel; straight travel resumes before emergence from bath 102, sealing the cells and trapping the liquid. They are thereafter permanently sealed by applying membrane 98 to film base 92.",
+        ") with the side thereof containing slots 96 on the outside, the tension on said film being insufficient to cause slots 96 to open in the straight portions 92a thereof. Throughout the length of the curved portion 92b of said film, the outside surfaces are stretched a substantial amount so as to fully separate the walls of slots 96, and cells 94 remain open during the travel of the base around the roll until said base is again traveling in a straight line. Roll 100 is immersed in a bath 102 of the liquid so that all of curved portion 92b of base 92 is immersed in said liquid as well as short lengths of straight portions 92a of said film adjoining both ends of the curved portion. Cells 94 are thus filled during the curved travel of film 92, and because the straight travel of the film is resumed before the latter emerges from bath 102, said cells are sealed prior to their emergence from the said bath and trap the liquid therein. The cells are thereafter permanently sealed by applying membrane 98 to film base 92. Various other methods may, of course, be used for filling the cells with the liquid.",
       ),
     ),
     p(
       text(
-        "Novel camera means for use with the films of the present invention, embodying release of the liquid by tension, is shown diagrammatically in ",
+        "Novel camera means for use in connection with the films of the present invention, and embodying means for effecting the release of the liquid in this manner, is shown diagrammatically in ",
       ),
       ref("Fig. 11", "#fig-11", "Figure 11 — Camera means"),
       text(
@@ -780,11 +780,12 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       text(
         "After rolls 116 have metered the exposed frame therethrough, the actuating mechanism renders operative a film-cutting means 119 which cuts the exposed frame from the remainder of the film. The film as it travels from rolls 116 to the point at which it leaves the camera is guided by suitable guideways (not shown) and the travel is generally sufficient to insure development of the exposed area and formation of the positive print. An opening 120 is provided for discharging the cut film frame from the camera and if either of the films of ",
       ),
-      ref("Fig. 1", "#fig-1", "Figure 1 — Four stages of one photographic product"),
-      text(" or "),
-      ref("Fig. 3", "#fig-3", "Figure 3 — Another composite-product embodiment"),
+      text("Figs. "),
+      ref("1", "#fig-1", "Figure 1 — Four stages of one photographic product"),
+      text(" and "),
+      ref("3", "#fig-3", "Figure 3 — Another composite-product embodiment"),
       text(
-        ", the positive print material may then be stripped from the remainder of said film frame to provide the positive picture. It is to be understood that this stripping may be accomplished by suitable means within the camera so that the separated portions of the film issue from the camera. Each exposed frame may thus be developed and a print thereof formed without requiring that the remainder of the film be exposed. It will be apparent that in order to minimize the length of film between exposed frames, cutting means 119 should be located as closely as possible to the point at which the leading edge of each frame is exposed.",
+        " is used, the positive print material may then be stripped from the remainder of said film frame to provide the positive picture. It is to be understood that this stripping may be accomplished by suitable means within the camera so that the separated portions of the film issue from the camera. Each exposed frame may thus be developed and a print thereof formed without requiring that the remainder of the film be exposed. It will be apparent that in order to minimize the length of film between exposed frames, cutting means 119 should be located as closely as possible to the point at which the leading edge of each frame is exposed.",
       ),
     ),
     p(
@@ -814,7 +815,7 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       ),
       ref("Fig. 13", "#fig-13", "Figure 13 — Means for fracturing a membrane"),
       text(
-        " comprise a pair of rolls 122 and 124 between which film F is adapted to travel. Roll 122 is preferably formed of a rigid material, such as metal, and is provided with a plurality of surface corrugations 126. Roll 124 is formed of a yielding material, such as rubber, and has its axis located with respect to roll 122 so that its periphery is substantially compressed by corrugations 126 in order for rotation of said rolls to take place. When film F is metered between the rolls, successive lengths are subjected to differential stretching, insuring at least one fracture of the liquid-retaining membrane for each predetermined unit length. This unit length, the maximum distance separating fractures, may be controlled by controlling the radius of curvature and spacing of corrugations 126 on roll 122.",
+        " and comprise a pair of rolls 122 and 124 between which film F is adapted to travel. Roll 122 is preferably formed of a rigid material, such as metal, and is provided with a plurality of surface corrugations 126. Roll 124 is formed of a yielding material, such as rubber, and has its axis located with respect to roll 122 so that its periphery is substantially compressed by corrugations 126 in order for rotation of said rolls to take place. When film F is metered between the rolls, successive lengths are subjected to differential stretching, insuring at least one fracture of the liquid-retaining membrane for each predetermined unit length. This unit length, the maximum distance separating fractures, may be controlled by controlling the radius of curvature and spacing of corrugations 126 on roll 122.",
       ),
     ),
     p(
@@ -830,16 +831,16 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
         "Figures 14–17 — Viscous liquid-containing film and pod constructions",
       ),
       text(
-        " and comprises novel means for releasably containing a liquid, preferably viscous, adapted when released to permeate a predetermined area of a photosensitive layer to process the same. The liquid may comprise a film-forming high polymer which, upon release, also forms a layer that eventually solidifies; this component may serve as the thickening agent imparting high viscosity. The invention also comprehends a sheetlike product having a base and liquid-reagent containing means without a photosensitive layer, constructed to release the reagent when pressed into face-to-face contact with a photosensitive layer. In the form illustrated in ",
+        " and comprises novel means for releasably containing a liquid which is preferably viscous and which is adapted when released to permeate a predetermined area of a photosensitive layer to process the same. In the form illustrated in ",
       ),
       ref("Fig. 14", "#fig-14", "Figure 14 — Another product form"),
       text(
-        ", the photosensitive layer is an element of the composite product which can be employed to carry out the above described methods of forming transfer prints.",
+        ", a photosensitive layer is an element of the composite product and the product is adapted to carry out any of the foregoing methods whereby a transfer print is obtained.",
       ),
     ),
     p(
       text(
-        "The film formed by the reagent may be the layer in which the transfer print is formed or may cooperate with another layer to provide the print-receiving stratum. The transfer print may instead be formed elsewhere by selecting another composite layer in which the image-forming component is more readily precipitated. The invention also comprehends a sheetlike product comprising a base and liquid-reagent containing means without a photosensitive layer as an element, constructed so that face-to-face pressure against a photosensitive layer releases the reagent to process that layer.",
+        "The liquid in the container may comprise a film-forming material such as a high polymer so that upon release the container contents, in addition to providing the liquid for carrying out the desired processing, also form throughout the area over which they are distributed a layer of film-forming material which eventually solidifies to give a solid film. This film-forming component of the liquid contents of the container may serve as the thickening agent for imparting the desired high viscosity to said contents. The film obtained from the film-forming reagent may serve as the layer in which the transfer print is formed, or may cooperate with another layer to provide the print-receiving stratum. Moreover, although a film-forming reagent is used, the transfer print may be entirely formed elsewhere than in the film formed by the reagent as by selecting for the material of one of the other layers of the composite structure a substance wherein the image-forming component for producing the transfer image is more readily precipitated. The invention also comprehends a product of sheetlike structure which preferably comprises a base and containing means for the liquid reagent and does not include a photosensitive layer as an element thereof, but is so constructed that when pressed into face-to-face contact with the photosensitive layer it releases the liquid reagent to cause the processing of the photosensitive layer.",
       ),
     ),
     p(
@@ -871,7 +872,7 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
     ),
     p(
       text(
-        "Example 2 specifies: water, 100 cubic centimeters; sodium sulfite, 7.0 grams; hydroquinone, 3.3 grams; sodium thiosulfate, 1.4 grams; an aqueous solution of medium-viscosity sodium carboxymethyl cellulose consisting of 20 grams in 100 cubic centimeters of water, 5 grams; and 11.2 cubic centimeters of 10% sodium hydroxide solution.",
+        "Example 2: Water — 100 cubic centimeters; sodium sulfite — 7.0 grams; hydroquinone — 3.3 grams; sodium thiosulfate — 1.4 grams; aqueous solution of medium-viscosity sodium carboxymethyl cellulose consisting of 20 grams of that compound in 100 cubic centimeters of water — 5 grams; sodium hydroxide, 10% solution — 11.2 cubic centimeters.",
       ),
     ),
     p(
@@ -941,7 +942,7 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
     ),
     p(
       text(
-        "Where the reagent contains a thickening agent adapted to form a film, the separate receiving layer 214 may be omitted and the film formed by the reagent used for receiving all of the complex silver ions transported from layer 212. In this modification of the film, it is preferable to use as base 216 a material having a greater affinity for the film-forming material of the reagent than for the photosensitive layer. A suitable base of this character is pure alpha paper where the film-forming material is any one of the starches, sodium alginate or sodium hydroxyethyl cellulose mentioned above. It is also possible to use substantially all of the plastic, paper and other sheet materials mentioned hereinabove for base 216, provided these materials are first subcoated on the side which is to adjoin the photosensitive layer with a film of the film-forming material in the reagent.",
+        "Where the reagent contains a thickening agent adapted to form a film, the separate receiving layer 214 may be omitted and the film formed by the reagent used for receiving all of the complex silver ions transported from layer 212. In this modification of the film, it is preferable to use as base 216 a material having a greater affinity for the film-forming material than for the photosensitive layer. A suitable base of this character is pure alpha paper where the film-forming material is any one of the starches, sodium alginate or sodium hydroxyethyl cellulose mentioned above. It is also possible to use substantially all of the plastic, paper and other sheet materials mentioned hereinabove for base 216, provided these materials are first subcoated on the side which is to adjoin the photosensitive layer with a film of the film-forming material in the reagent.",
       ),
     ),
     p(
@@ -1056,7 +1057,9 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       ),
     ),
     p(
-      text("A further composite film structure is shown in "),
+      text(
+        "One further form of the composite film structure of the present invention is shown in ",
+      ),
       ref("Fig. 23", "#fig-23", "Figure 23 — Another embodiment"),
       text(
         " and comprises a photosensitive layer 310, an image-carrying layer 312 and a container 300. Said layers and said container are connected together to form a unitary structure, the connection providing for a predetermined superpositioning of layer 310 with respect to layer 312 with container 300 in a position to discharge its contents between said layers. The unitary structure thus formed differs from the composite photographic films described above in that the connection between the photosensitive layer and the image-carrying layer is such as will permit of the ready displacement of said photosensitive layer with respect to the image-carrying layer so that the surface of the photosensitive layer normally adjacent the image-carrying layer can be directly exposed without having the light which effects said exposure intercepted by or incident on said image-carrying layer. In the form illustrated, photosensitive layer 310 is pivotally secured as by means of a hinge 314 to image-carrying layer 312 so that it may be pivoted from superposed position to a position at an angle to the plane of said image-carrying layer, in which position it may be photographically exposed. Container 300 may be secured to either the photosensitive layer or the image-carrying layer and as shown is adhesively secured to the photosensitive layer. This mounting locates the longitudinal seal 294 of said container 300 parallel to and adjacent the exposed area of the photosensitive layer when the latter is superposed on layer 312, placing the container in a position to release its contents throughout the area between said photosensitive layer and said image-carrying layer.",
@@ -1068,7 +1071,7 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       ),
     ),
     p(
-      text("A modification of container 300 is shown in "),
+      text("A modification of the containing means 300 is shown in "),
       ref("Fig. 24", "#fig-24", "Figure 24 — Modified container means"),
       text(
         ". It comprises a tube 350 formed of a relatively brittle vapor and liquid-impervious material such, for example, as glass, said tube preferably having its ends hermetically sealed as by fusion. Tube 350 is enclosed in a suitable envelope 352 of a material such as a fabric which is readily permeable to the processing agent carried by said tube but which acts as a filter for retaining the fragments of the tube after the latter has been broken.",

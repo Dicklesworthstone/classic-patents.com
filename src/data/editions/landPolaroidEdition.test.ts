@@ -10,6 +10,7 @@ import {
   archivalEditionForPublication,
   isArchivalEditionExplicitlyWithheld,
 } from "./publicationApproval";
+import { evaluateReviewedLedgerTextEvidence } from "./reviewedLedgerPublicationEvidence";
 
 const reviewedLedger = readFileSync(
   new URL(
@@ -85,6 +86,15 @@ describe("US 2,543,181 Edwin Land Polaroid published manual archival edition", (
       expect(claimText).toBeDefined();
       expect(claimText.length).toBeGreaterThan(10);
     }
+  });
+
+  it("makes every authored source block and claim literally available in the reviewed ledger", () => {
+    const evidence = evaluateReviewedLedgerTextEvidence(landPolaroidPatent, reviewedLedger);
+    expect(evidence.status).toBe("verified");
+    expect(evidence.valid).toBe(true);
+    expect(evidence.coverageFraction).toBe(1);
+    expect(evidence.missingSectionIndexes).toEqual([]);
+    expect(evidence.missingClaimNumbers).toEqual([]);
   });
 
   it("has exactly one ledger header per printed claim and matches the edition text", () => {
@@ -184,16 +194,16 @@ describe("US 2,543,181 Edwin Land Polaroid published manual archival edition", (
       "Fig. 1",
       "Fig. 1",
       "Fig. 3",
-      "Fig. 1",
-      "Fig. 3",
-      "Fig. 4",
+      "1",
+      "3",
+      "4",
       "Fig. 9",
       "Fig. 9",
       "Fig. 9",
       "Fig. 10",
       "Fig. 11",
-      "Fig. 1",
-      "Fig. 3",
+      "1",
+      "3",
       "Fig. 3",
       "Fig. 12",
       "Fig. 11",
@@ -276,7 +286,7 @@ describe("US 2,543,181 Edwin Land Polaroid published manual archival edition", (
       .filter((block) => block.kind === "paragraph")
       .flatMap((block) => block.inlines.map((inline) => inline.text))
       .join("\n");
-    expect(paragraphText).toContain("sodium sulfite, 7.0 grams");
+    expect(paragraphText).toContain("sodium sulfite — 7.0 grams");
     expect(reviewedLedger).toContain("sodium sulfite — 7.0 grams");
   });
 
