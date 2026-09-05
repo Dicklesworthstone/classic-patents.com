@@ -2,6 +2,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { GOODYEAR_CURE_TEMPERATURE_RANGE, GOODYEAR_SULFUR_RANGE } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { FrankenSimEngine } from "@/physics/engine";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -219,6 +220,7 @@ export function GoodyearRubber3D() {
             onToggleClaim={(c, active) => {
               setClaimStates((prev) => ({ ...prev, [c]: active }));
               updateParam("vulcanTemp", active ? 145 : 25);
+              updateParam(claimConstraintStateParamId(c), active ? 1 : 0);
             }}
           />
           <button

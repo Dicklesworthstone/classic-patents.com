@@ -25,6 +25,8 @@ export interface RillieuxEvaporatorInput {
   steamSupplyPressureKPa?: number;
   /** Final effect condenser vacuum in kPa absolute (10 to 30 kPa) */
   condenserPressureKPa?: number;
+  /** Claim 1 multi-effect vacuum vapor reuse gating */
+  claim1Active?: boolean | number;
 }
 
 export interface RillieuxEffectState {
@@ -52,6 +54,16 @@ export interface RillieuxEvaporatorState {
   thermalEfficiencyPct: number;
   /** Percentage fuel saved compared to single-stage open kettle boiling (%) */
   fuelSavingsPct: number;
+  /** Analytical slope of water evaporation rate with respect to raw feed rate (kg/h)/(kg/h) */
+  evapRateSlopePerFeedRate: number;
+  /** Analytical slope of water evaporation rate with respect to initial Brix (kg/h)/°Bx */
+  evapRateSlopePerInitialBrix: number;
+  /** Analytical slope of water evaporation rate with respect to target syrup Brix (kg/h)/°Bx */
+  evapRateSlopePerTargetBrix: number;
+  /** Analytical slope of steam economy with respect to number of effects */
+  steamEconomySlopePerEffect: number;
+  /** Claim 1 multi-effect vacuum recovery state */
+  claim1Active: boolean;
   /** Per-effect state array */
   effects: RillieuxEffectState[];
   /** Tube-bundle boil display ω; leftover 8 rad/s at ~8000 kg/h total evaporation */
@@ -68,7 +80,15 @@ export function stepRillieuxEvaporator(
     numberOfEffects = 3,
     steamSupplyPressureKPa = 160.0, // ~1.6 bar (113°C)
     condenserPressureKPa = 16.0, // ~0.16 bar (55°C)
+    claim1Active,
   } = input;
+
+  const claim1 =
+    claim1Active !== undefined
+      ? typeof claim1Active === "number"
+        ? claim1Active >= 0.5
+        : Boolean(claim1Active)
+      : true;
 
   const N = Math.max(2, Math.min(4, Math.round(numberOfEffects)));
 
@@ -131,18 +151,25 @@ export function stepRillieuxEvaporator(
   // 3. Steam Economy and Primary Steam Consumption
   // Rillieux rule of thumb: 1 lb steam in an N-effect evaporator evaporates ~0.85 * N lbs of water
   const thermalEfficiencyFactor = 0.92 - (N - 2) * 0.03; // Accounting for radiation and venting losses
-  const steamEconomyRatio = N * thermalEfficiencyFactor;
+  const steamEconomyRatio = claim1 ? N * thermalEfficiencyFactor : 0.8;
   const primarySteamConsumptionKgPerH = totalEvaporationKgPerH / steamEconomyRatio;
 
   // Single-stage open boiling requires ~1.25 kg steam per kg water evaporated (Economy ≈ 0.80)
   const singleStageSteamKgPerH = totalEvaporationKgPerH / 0.8;
-  const fuelSavingsPct = Math.min(
-    85.0,
-    ((singleStageSteamKgPerH - primarySteamConsumptionKgPerH) / singleStageSteamKgPerH) * 100,
-  );
+  const fuelSavingsPct = claim1
+    ? Math.min(
+        85.0,
+        ((singleStageSteamKgPerH - primarySteamConsumptionKgPerH) / singleStageSteamKgPerH) * 100,
+      )
+    : 0;
 
-  const thermalEfficiencyPct = (steamEconomyRatio / N) * 100;
+  const thermalEfficiencyPct = claim1 ? (steamEconomyRatio / N) * 100 : 80;
   const boilDisplayOmegaRadPerS = Number(Math.max(0.5, totalEvaporationKgPerH / 1000).toFixed(3));
+
+  const evapRateSlopePerFeedRate = 1.0 - initialBrixDeg / targetBrixDeg;
+  const evapRateSlopePerInitialBrix = -juiceFeedRateKgPerH / targetBrixDeg;
+  const evapRateSlopePerTargetBrix = (juiceFeedRateKgPerH * initialBrixDeg) / targetBrixDeg ** 2;
+  const steamEconomySlopePerEffect = claim1 ? 0.88 : 0;
 
   return {
     juiceFeedRateKgPerH,
@@ -152,6 +179,11 @@ export function stepRillieuxEvaporator(
     steamEconomyRatio,
     thermalEfficiencyPct,
     fuelSavingsPct,
+    evapRateSlopePerFeedRate,
+    evapRateSlopePerInitialBrix,
+    evapRateSlopePerTargetBrix,
+    steamEconomySlopePerEffect,
+    claim1Active: claim1,
     effects,
     boilDisplayOmegaRadPerS,
   };

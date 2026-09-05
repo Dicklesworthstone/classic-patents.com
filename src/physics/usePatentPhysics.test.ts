@@ -1237,4 +1237,166 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       resetPatentPhysicsParams(id);
     }
   });
+
+  test("Goodyear Rubber updates aliases, notifies reactive subscribers, and enforces Claim 1 constraint", () => {
+    const id = "us-3633-goodyear-rubber";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.vulcanTemp));
+
+    try {
+      setPatentPhysicsParam(id, "cureTemp", 160);
+      const params = getPatentPhysicsParams(id);
+      expect(params.vulcanTemp).toBe(160);
+      expect(params.cureTemp).toBe(160);
+      expect(params.vulcanizationTempC).toBe(160);
+      expect(observations).toEqual([160]);
+
+      setPatentPhysicsParam(id, "sulfur", 12);
+      expect(getPatentPhysicsParams(id).sulfurPct).toBe(12);
+      expect(getPatentPhysicsParams(id).sulfur).toBe(12);
+
+      setPatentPhysicsParam(id, "specimenTemp", 45);
+      expect(getPatentPhysicsParams(id).specimenTempC).toBe(45);
+      expect(getPatentPhysicsParams(id).specimenTemp).toBe(45);
+
+      setPatentPhysicsParam(id, "stretch", 2.0);
+      expect(getPatentPhysicsParams(id).appliedTensileStretch).toBe(2.0);
+      expect(getPatentPhysicsParams(id).stretch).toBe(2.0);
+
+      // Claim 1 constraint toggle
+      const claim1Param = claimConstraintStateParamId(1);
+      setPatentPhysicsParam(id, claim1Param, 0);
+      expect(getPatentPhysicsParams(id)[claim1Param]).toBe(0);
+      const effective = getEffectivePatentPhysicsParams(id);
+      expect(effective.claim1Active).toBe(0);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Rillieux Evaporator updates aliases, notifies reactive subscribers, and enforces Claim 1 constraint", () => {
+    const id = "us-3237-rillieux-evaporator";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.juiceFeedRateKgPerH));
+
+    try {
+      setPatentPhysicsParam(id, "feedRate", 15000);
+      const params = getPatentPhysicsParams(id);
+      expect(params.juiceFeedRateKgPerH).toBe(15000);
+      expect(params.juiceFeedRate).toBe(15000);
+      expect(params.feedRate).toBe(15000);
+      expect(observations).toEqual([15000]);
+
+      setPatentPhysicsParam(id, "brixIn", 16.5);
+      expect(getPatentPhysicsParams(id).initialBrixDeg).toBe(16.5);
+      expect(getPatentPhysicsParams(id).initialBrix).toBe(16.5);
+      expect(getPatentPhysicsParams(id).brixIn).toBe(16.5);
+
+      setPatentPhysicsParam(id, "brixOut", 68.0);
+      expect(getPatentPhysicsParams(id).targetBrixDeg).toBe(68.0);
+      expect(getPatentPhysicsParams(id).targetBrix).toBe(68.0);
+      expect(getPatentPhysicsParams(id).brixOut).toBe(68.0);
+
+      setPatentPhysicsParam(id, "effects", 4);
+      expect(getPatentPhysicsParams(id).numberOfEffects).toBe(4);
+      expect(getPatentPhysicsParams(id).effects).toBe(4);
+
+      // Claim 1 constraint toggle
+      const claim1Param = claimConstraintStateParamId(1);
+      setPatentPhysicsParam(id, claim1Param, 0);
+      expect(getPatentPhysicsParams(id)[claim1Param]).toBe(0);
+      const effective = getEffectivePatentPhysicsParams(id);
+      expect(effective.claim1Active).toBe(0);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Bell Telephone updates aliases, notifies reactive subscribers, and enforces Claim 1 constraint", () => {
+    const id = "us-174465-bell-telephone";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.batteryVoltage));
+
+    try {
+      setPatentPhysicsParam(id, "voltage", 9);
+      const params = getPatentPhysicsParams(id);
+      expect(params.batteryVoltage).toBe(9);
+      expect(params.voltage).toBe(9);
+      expect(params.volts).toBe(9);
+      expect(observations).toEqual([9]);
+
+      setPatentPhysicsParam(id, "spl", 82);
+      expect(getPatentPhysicsParams(id).voiceAmplitude).toBe(82);
+      expect(getPatentPhysicsParams(id).voiceLevelDb).toBe(82);
+      expect(getPatentPhysicsParams(id).spl).toBe(82);
+
+      setPatentPhysicsParam(id, "freq", 520);
+      expect(getPatentPhysicsParams(id).acousticFrequencyHz).toBe(520);
+      expect(getPatentPhysicsParams(id).frequency).toBe(520);
+      expect(getPatentPhysicsParams(id).freq).toBe(520);
+
+      setPatentPhysicsParam(id, "gap", 0.45);
+      expect(getPatentPhysicsParams(id).airGap).toBe(0.45);
+      expect(getPatentPhysicsParams(id).diaphragmGapMm).toBe(0.45);
+      expect(getPatentPhysicsParams(id).gap).toBe(0.45);
+
+      setPatentPhysicsParam(id, "sigma", 2.1);
+      expect(getPatentPhysicsParams(id).liquidConductivity).toBe(2.1);
+      expect(getPatentPhysicsParams(id).conductivity).toBe(2.1);
+      expect(getPatentPhysicsParams(id).sigma).toBe(2.1);
+
+      // Claim 1 constraint toggle
+      const claim1Param = claimConstraintStateParamId(1);
+      setPatentPhysicsParam(id, claim1Param, 0);
+      expect(getPatentPhysicsParams(id)[claim1Param]).toBe(0);
+      const effective = getEffectivePatentPhysicsParams(id);
+      expect(effective.claim1Active).toBe(0);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Diesel Engine updates aliases, notifies reactive subscribers, and enforces Claim 1 constraint", () => {
+    const id = "us-542846-diesel-engine";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.engineRpm));
+
+    try {
+      setPatentPhysicsParam(id, "rpm", 220);
+      const params = getPatentPhysicsParams(id);
+      expect(params.engineRpm).toBe(220);
+      expect(params.rpm).toBe(220);
+      expect(observations).toEqual([220]);
+
+      setPatentPhysicsParam(id, "compressionRatio", 19.5);
+      expect(getPatentPhysicsParams(id).compRatio).toBe(19.5);
+      expect(getPatentPhysicsParams(id).compressionRatio).toBe(19.5);
+
+      setPatentPhysicsParam(id, "blastPressure", 72);
+      expect(getPatentPhysicsParams(id).blastAirPressure).toBe(72);
+      expect(getPatentPhysicsParams(id).blastAirPressureBar).toBe(72);
+      expect(getPatentPhysicsParams(id).blastPressure).toBe(72);
+
+      setPatentPhysicsParam(id, "cutoff", 1.8);
+      expect(getPatentPhysicsParams(id).cutoffRatio).toBe(1.8);
+      expect(getPatentPhysicsParams(id).cutoff).toBe(1.8);
+
+      // Claim 1 constraint toggle
+      const claim1Param = claimConstraintStateParamId(1);
+      setPatentPhysicsParam(id, claim1Param, 0);
+      expect(getPatentPhysicsParams(id)[claim1Param]).toBe(0);
+      const effective = getEffectivePatentPhysicsParams(id);
+      expect(effective.claim1Active).toBe(0);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
 });

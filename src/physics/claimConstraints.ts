@@ -2054,9 +2054,39 @@ export function applyClaimConstraintModifications(
       break;
     }
 
+    case "us-174465-bell-telephone": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.claim1Active = 0;
+        modified.modulatedMa = 0.0;
+        activeFailures.push(
+          "Pulse-Clipping Acoustic Intelligibility Loss: Intermittent make-and-break pulses clip continuous undulatory acoustic waveforms into unintelligible clicks.",
+        );
+        refusalWarning =
+          "CLAIM 1 INVERTED: continuous undulatory speech transmission disabled; intermittent circuit breaker destroys vocal intelligibility.";
+      }
+      break;
+    }
+
+    case "us-3237-rillieux-evaporator": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.claim1Active = 0;
+        modified.steamEconomyRatio = 0.8;
+        modified.fuelSavingsPct = 0.0;
+        activeFailures.push(
+          "Open-Kettle Thermal Exhaustion: Single-stage atmospheric boiling vents latent heat to the sky, destroying multi-effect steam economy.",
+        );
+        refusalWarning =
+          "CLAIM 1 INVERTED: multi-effect vacuum vapor recovery omitted; reverting to single-stage atmospheric open-kettle boiling.";
+      }
+      break;
+    }
+
     case "us-3633-goodyear-rubber": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
+        modified.claim1Active = 0;
         modified.crossLinkDensity = 0.0; // Zero covalent sulfur crosslinks
         modified.elasticReturnPct = 12.0; // Viscous plastic creep
         modified.tensileStrengthPsi = 180.0; // Weak raw gum strength
@@ -2065,6 +2095,20 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "POLYMER INSTABILITY: Absence of covalent crosslinks causes unrecoverable plastic creep deformation.";
+      }
+      break;
+    }
+
+    case "us-542846-diesel-engine": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.claim1Active = 0;
+        modified.isAutoIgnition = 0;
+        activeFailures.push(
+          "Pre-Ignition Knock & Low Thermodynamic Carnot Efficiency: Low compression limits thermal efficiency and fails to ignite injected fuel without spark plugs.",
+        );
+        refusalWarning =
+          "CLAIM 1 INVERTED: extreme adiabatic compression omitted; cylinder cannot achieve compression-ignition temperature.";
       }
       break;
     }

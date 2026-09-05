@@ -2244,6 +2244,9 @@ export function stepBellTelephone(params: {
     modulatedMaUnrounded,
     voiceSlopeMaPerDb,
     gapSlopeMaPerMm,
+    currentBaselineSlopeMaPerVolt: 25 * sigma,
+    currentBaselineSlopeMaPerSiemens: 25 * volts,
+    baseResistanceSlopeOhmsPerSiemens: -40 / sigma ** 2,
     sensitivityMvPerPa: Number((18.5 / (gap + 0.1)).toFixed(1)),
     baseResistanceOhms,
     resistanceModulationOhms,
@@ -3153,6 +3156,7 @@ export function stepGoodyearRubber(
     isStickyOrBrittle: !isOptimalTemp || crossLinkDensity < 0.3,
     glassTransitionTempC,
     rateRel: Number(cure.rateRel.toFixed(2)),
+    rateRelUnrounded: cure.rateRel,
     regime: cure.regime,
     isGlassy,
     isRawGumMelted: sulfur < 2 && specimen > 35,
@@ -3165,6 +3169,10 @@ export function stepGoodyearRubber(
     strainEnergyDensityJPerM3,
     // Local slope of this declared stress model with the cure settings held fixed.
     stressSlopeMpaPerStretch: tensileStrengthMpa * (1 + 2 / lambda ** 3),
+    entropicStressSlopeMpaPerDegreeC: Number((stressMpaUnrounded / (specimen + 273.15)).toFixed(6)),
+    vulcanizationRateSlopePerDegreeC: Number(
+      ((cure.rateRel * 6500) / (temp + 273.15) ** 2).toFixed(6),
+    ),
     glassyModulusMpa: 2400,
     stressScale: Number(
       Math.min(2.8, Math.max(0.35, (tensileStrengthPsi / 2800) * (lambda - 0.6))).toFixed(3),

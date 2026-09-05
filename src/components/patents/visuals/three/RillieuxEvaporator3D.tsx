@@ -3,6 +3,8 @@
 import { Camera } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { stepRillieuxEvaporator } from "@/physics/rillieuxEvaporatorKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -298,68 +300,50 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Juice Feed Rate</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {juiceFeedRateKgPerH} kg/h
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Juice feed rate"
-              min="1000"
-              max="10000"
-              step="250"
-              value={juiceFeedRateKgPerH}
-              onChange={(e) =>
-                updateParam("juiceFeedRateKgPerH", Number.parseFloat(e.target.value))
-              }
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
+          <SensitivitySlider
+            id="rillieuxFeedRate"
+            patentId="us-3237-rillieux-evaporator"
+            paramKey="juiceFeedRateKgPerH"
+            label="Juice Feed Rate"
+            value={juiceFeedRateKgPerH}
+            min={2000}
+            max={25000}
+            step={500}
+            unit=" kg/h"
+            thumb="cyan"
+            onChange={(val) => updateParam("juiceFeedRateKgPerH", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Initial Raw Juice Brix
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {initialBrixDeg} °Bx
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Initial raw juice Brix"
-              min="8"
-              max="25"
-              step="1"
-              value={initialBrixDeg}
-              onChange={(e) => updateParam("initialBrixDeg", Number.parseFloat(e.target.value))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
+          <SensitivitySlider
+            id="rillieuxInitialBrix"
+            patentId="us-3237-rillieux-evaporator"
+            paramKey="initialBrixDeg"
+            label="Initial Raw Juice Brix"
+            value={initialBrixDeg}
+            min={10}
+            max={20}
+            step={0.5}
+            unit=" °Bx"
+            thumb="amber"
+            onChange={(val) => updateParam("initialBrixDeg", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Target Concentrate Brix
-              </span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {targetBrixDeg} °Bx
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Target concentrate Brix"
-              min="40"
-              max="75"
-              step="1"
-              value={targetBrixDeg}
-              onChange={(e) => updateParam("targetBrixDeg", Number.parseFloat(e.target.value))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-emerald-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
+          <SensitivitySlider
+            id="rillieuxTargetBrix"
+            patentId="us-3237-rillieux-evaporator"
+            paramKey="targetBrixDeg"
+            label="Target Concentrate Brix"
+            value={targetBrixDeg}
+            min={50}
+            max={75}
+            step={1}
+            unit=" °Bx"
+            thumb="amber"
+            onChange={(val) => updateParam("targetBrixDeg", val)}
+            allParams={params}
+          />
         </div>
 
         <p className="mt-3 text-[11px] leading-relaxed text-ink-500 dark:text-ink-400">
@@ -371,9 +355,10 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
         <ClaimConstraintToggle
           patentId="us-3237-rillieux-evaporator"
           claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
+          onToggleClaim={(claimNo, active) => {
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0);
+          }}
           className="mt-2"
         />
 

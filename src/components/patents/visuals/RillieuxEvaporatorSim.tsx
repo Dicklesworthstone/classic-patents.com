@@ -2,9 +2,12 @@
 
 import { Gauge, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useId, useMemo } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepRillieuxEvaporator } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 interface RillieuxEvaporatorSimProps {
@@ -510,88 +513,77 @@ export function RillieuxEvaporatorSim({
           </p>
 
           {/* Juice Feed Rate Slider */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <label htmlFor={feedId} className="text-neutral-300">
-                Raw Cane Juice Feed Rate
-              </label>
-              <span className="text-cyan-400 font-bold">
-                {juiceFeedRateKgPerH.toLocaleString()} kg/h
-              </span>
-            </div>
-            <input
-              id={feedId}
-              type="range"
-              min="2000"
-              max="25000"
-              step="500"
-              value={juiceFeedRateKgPerH}
-              onChange={(e) => updateParam("juiceFeedRateKgPerH", parseInt(e.target.value, 10))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-neutral-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-neutral-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white"
-            />
-          </div>
+          <SensitivitySlider
+            id={feedId}
+            patentId="us-3237-rillieux-evaporator"
+            paramKey="juiceFeedRateKgPerH"
+            label="Raw Cane Juice Feed Rate"
+            value={juiceFeedRateKgPerH}
+            min={2000}
+            max={25000}
+            step={500}
+            unit=" kg/h"
+            thumb="cyan"
+            onChange={(val) => updateParam("juiceFeedRateKgPerH", val)}
+            allParams={params}
+          />
 
           {/* Initial Brix Slider */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <label htmlFor={brixId} className="text-neutral-300">
-                Initial Clarified Juice Density
-              </label>
-              <span className="text-amber-400 font-bold">{initialBrixDeg.toFixed(1)} °Bx</span>
-            </div>
-            <input
-              id={brixId}
-              type="range"
-              min="10"
-              max="20"
-              step="0.5"
-              value={initialBrixDeg}
-              onChange={(e) => updateParam("initialBrixDeg", parseFloat(e.target.value))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-neutral-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-neutral-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white"
-            />
-          </div>
+          <SensitivitySlider
+            id={brixId}
+            patentId="us-3237-rillieux-evaporator"
+            paramKey="initialBrixDeg"
+            label="Initial Clarified Juice Density"
+            value={initialBrixDeg}
+            min={10}
+            max={20}
+            step={0.5}
+            unit=" °Bx"
+            thumb="amber"
+            onChange={(val) => updateParam("initialBrixDeg", val)}
+            allParams={params}
+          />
 
           {/* Target Syrup Brix Slider */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <label htmlFor={targetId} className="text-neutral-300">
-                Target Crystallization Syrup Density
-              </label>
-              <span className="text-yellow-400 font-bold">{targetBrixDeg.toFixed(1)} °Bx</span>
-            </div>
-            <input
-              id={targetId}
-              type="range"
-              min="50"
-              max="75"
-              step="1"
-              value={targetBrixDeg}
-              onChange={(e) => updateParam("targetBrixDeg", parseInt(e.target.value, 10))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-neutral-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-yellow-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-neutral-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-yellow-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white"
-            />
-          </div>
+          <SensitivitySlider
+            id={targetId}
+            patentId="us-3237-rillieux-evaporator"
+            paramKey="targetBrixDeg"
+            label="Target Crystallization Syrup Density"
+            value={targetBrixDeg}
+            min={50}
+            max={75}
+            step={1}
+            unit=" °Bx"
+            thumb="amber"
+            onChange={(val) => updateParam("targetBrixDeg", val)}
+            allParams={params}
+          />
 
           {/* Number of Effects */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <label htmlFor={effectsId} className="text-neutral-300">
-                Evaporator Effects in Series
-              </label>
-              <span className="text-emerald-400 font-bold">
-                {numberOfEffects} Effects (Cascade)
-              </span>
-            </div>
-            <input
-              id={effectsId}
-              type="range"
-              min="2"
-              max="4"
-              step="1"
-              value={numberOfEffects}
-              onChange={(e) => updateParam("numberOfEffects", parseInt(e.target.value, 10))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-neutral-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-neutral-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-emerald-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white"
-            />
-          </div>
+          <SensitivitySlider
+            id={effectsId}
+            patentId="us-3237-rillieux-evaporator"
+            paramKey="numberOfEffects"
+            label="Evaporator Effects in Series"
+            value={numberOfEffects}
+            min={2}
+            max={4}
+            step={1}
+            unit=" effects"
+            thumb="cyan"
+            onChange={(val) => updateParam("numberOfEffects", val)}
+            allParams={params}
+          />
+
+          <ClaimConstraintToggle
+            patentId="us-3237-rillieux-evaporator"
+            claimStates={{ 1: Boolean(params.claim1Active ?? 1) }}
+            onToggleClaim={(claimNo, active) => {
+              updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0);
+            }}
+            className="mt-1"
+          />
         </div>
 
         {/* Right: Live SI Telemetry HUD */}

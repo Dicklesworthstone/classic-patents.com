@@ -28,6 +28,7 @@ import {
   stepNobelDynamite,
   stepOttoEngine,
   stepParsonsTurbine,
+  stepRillieuxEvaporator,
   stepTeslaTeleautomaton,
   stepThomsonWelding,
   stepWozniakApple,
@@ -134,6 +135,95 @@ describe("Thomson and Goodyear sensitivities use the displayed model", () => {
     expect(
       computeParameterSensitivity(id, "stretch", { vulcanTemp: 145, sulfurPct: 8, stretch: 2.1 }),
     ).toEqual(high);
+  });
+
+  test("Goodyear rubber derives Arrhenius cure rate, entropic elasticity, and Claim 1 gating", () => {
+    const id = "us-3633-goodyear-rubber";
+    // Vulcanization temperature sensitivity (Arrhenius rate)
+    const sensCure = computeParameterSensitivity(id, "vulcanTemp", {
+      vulcanTemp: 145,
+      sulfurPct: 8,
+      specimenTempC: 35,
+      appliedTensileStretch: 1.8,
+    });
+    expect(sensCure).toBeDefined();
+    expect(sensCure?.metricName).toBe("Thermal Vulcanization Reaction Rate");
+    expect(sensCure?.derivativeSymbol).toBe("∂k_cure / ∂T_cure");
+    expect(sensCure?.derivativeUnit).toBe("ratio / °C");
+    expect(sensCure?.derivativeValue).toBeGreaterThan(0);
+
+    // Analytical match against finite difference
+    const eps = 1e-4;
+    const rateHi = stepGoodyearRubber(145 + eps, 8, 30, 1.8, 35).rateRelUnrounded;
+    const rateLo = stepGoodyearRubber(145 - eps, 8, 30, 1.8, 35).rateRelUnrounded;
+    expect(sensCure?.derivativeValue).toBeCloseTo((rateHi - rateLo) / (2 * eps), 3);
+
+    // Specimen temperature sensitivity (Entropic restoring stress: ∂P/∂T = P / T_K)
+    const sensSpecimen = computeParameterSensitivity(id, "specimenTempC", {
+      vulcanTemp: 145,
+      sulfurPct: 8,
+      specimenTempC: 35,
+      appliedTensileStretch: 1.8,
+    });
+    expect(sensSpecimen).toBeDefined();
+    expect(sensSpecimen?.metricName).toBe("Entropic Restoring Stress");
+    expect(sensSpecimen?.derivativeSymbol).toBe("∂P_nom / ∂T_specimen");
+    expect(sensSpecimen?.derivativeUnit).toBe("MPa / °C");
+    expect(sensSpecimen?.derivativeValue).toBeGreaterThan(0);
+
+    const rubberAt35 = stepGoodyearRubber(145, 8, 30, 1.8, 35);
+    expect(sensSpecimen?.derivativeValue).toBeCloseTo(
+      rubberAt35.stressMpaUnrounded / (35 + 273.15),
+      4,
+    );
+
+    // Aliases
+    expect(
+      computeParameterSensitivity(id, "cureTemp", {
+        cureTemp: 145,
+        sulfurPct: 8,
+        specimenTempC: 35,
+        stretch: 1.8,
+      }),
+    ).toEqual(sensCure);
+    expect(
+      computeParameterSensitivity(id, "specimenTemp", {
+        vulcanTemp: 145,
+        sulfurPct: 8,
+        specimenTemp: 35,
+        appliedTensileStretch: 1.8,
+      }),
+    ).toEqual(sensSpecimen);
+
+    // Claim 1 gating
+    const gatedCure = computeParameterSensitivity(id, "vulcanTemp", {
+      vulcanTemp: 145,
+      claim1Active: 0,
+    });
+    expect(gatedCure?.derivativeValue).toBe(0);
+    expect(gatedCure?.interpretation).toContain("Claim 1");
+
+    const gatedSpecimen = computeParameterSensitivity(id, "specimenTempC", {
+      specimenTempC: 35,
+      claim1Active: 0,
+    });
+    expect(gatedSpecimen?.derivativeValue).toBe(0);
+
+    const gatedStretch = computeParameterSensitivity(id, "appliedTensileStretch", {
+      appliedTensileStretch: 1.8,
+      claim1Active: false,
+    });
+    expect(gatedStretch?.derivativeValue).toBe(0);
+
+    const gatedSulfur = computeParameterSensitivity(id, "sulfurPct", {
+      sulfurPct: 8,
+      claim1Active: false,
+    });
+    expect(gatedSulfur?.derivativeValue).toBe(0);
+
+    // Discrete Claim 1 toggle
+    const claimToggle = computeParameterSensitivity(id, "claim1Active", {});
+    expect(claimToggle?.derivativeValue).toBe(1);
   });
 
   test("out-of-range and non-finite controls do not produce plausible-looking slopes", () => {
@@ -3229,6 +3319,84 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
   });
 
+  test("Rillieux Multi-Effect Evaporator derives initial and target Brix sensitivities and Claim 1 gating", () => {
+    const id = "us-3237-rillieux-evaporator";
+
+    // Initial Brix sensitivity (negative mass balance derivative: -m_feed / B_out)
+    const sensInitialBrix = computeParameterSensitivity(id, "initialBrixDeg", {
+      juiceFeedRateKgPerH: 10000,
+      initialBrixDeg: 14,
+      targetBrixDeg: 65,
+    });
+    expect(sensInitialBrix).toBeDefined();
+    expect(sensInitialBrix?.metricName).toBe("Water Evaporation vs Initial Brix");
+    expect(sensInitialBrix?.derivativeSymbol).toBe("∂m_evap / ∂B_in");
+    expect(sensInitialBrix?.derivativeUnit).toBe("(kg/h) / °Bx");
+    expect(sensInitialBrix?.derivativeValue).toBeCloseTo(-10000 / 65, 4);
+
+    // Target Brix sensitivity (positive mass balance derivative: m_feed · B_in / B_out²)
+    const sensTargetBrix = computeParameterSensitivity(id, "targetBrixDeg", {
+      juiceFeedRateKgPerH: 10000,
+      initialBrixDeg: 14,
+      targetBrixDeg: 65,
+    });
+    expect(sensTargetBrix).toBeDefined();
+    expect(sensTargetBrix?.metricName).toBe("Water Evaporation vs Target Syrup Brix");
+    expect(sensTargetBrix?.derivativeSymbol).toBe("∂m_evap / ∂B_out");
+    expect(sensTargetBrix?.derivativeUnit).toBe("(kg/h) / °Bx");
+    expect(sensTargetBrix?.derivativeValue).toBeCloseTo((10000 * 14) / (65 * 65), 4);
+
+    // Numerical finite difference comparison
+    const eps = 1e-4;
+    const rillEvap = (bin: number, bout: number) =>
+      stepRillieuxEvaporator({
+        juiceFeedRateKgPerH: 10000,
+        initialBrixDeg: bin,
+        targetBrixDeg: bout,
+      }).totalEvaporationKgPerH;
+    const numDiffBin = (rillEvap(14 + eps, 65) - rillEvap(14 - eps, 65)) / (2 * eps);
+    const numDiffBout = (rillEvap(14, 65 + eps) - rillEvap(14, 65 - eps)) / (2 * eps);
+    expect(sensInitialBrix?.derivativeValue).toBeCloseTo(numDiffBin, 1);
+    expect(sensTargetBrix?.derivativeValue).toBeCloseTo(numDiffBout, 1);
+
+    // Aliases
+    expect(
+      computeParameterSensitivity(id, "brixIn", { feedRate: 10000, brixIn: 14, brixOut: 65 }),
+    ).toEqual(sensInitialBrix);
+    expect(
+      computeParameterSensitivity(id, "brixOut", { feedRate: 10000, brixIn: 14, brixOut: 65 }),
+    ).toEqual(sensTargetBrix);
+
+    // Claim 1 gating
+    const gatedFeed = computeParameterSensitivity(id, "juiceFeedRateKgPerH", {
+      juiceFeedRateKgPerH: 10000,
+      claim1Active: 0,
+    });
+    expect(gatedFeed?.derivativeValue).toBe(0);
+
+    const gatedEffects = computeParameterSensitivity(id, "numberOfEffects", {
+      numberOfEffects: 3,
+      claim1Active: false,
+    });
+    expect(gatedEffects?.derivativeValue).toBe(0);
+
+    const gatedBrixIn = computeParameterSensitivity(id, "initialBrixDeg", {
+      initialBrixDeg: 14,
+      claim1Active: 0,
+    });
+    expect(gatedBrixIn?.derivativeValue).toBe(0);
+
+    const gatedBrixOut = computeParameterSensitivity(id, "targetBrixDeg", {
+      targetBrixDeg: 65,
+      claim1Active: 0,
+    });
+    expect(gatedBrixOut?.derivativeValue).toBe(0);
+
+    // Discrete Claim 1 toggle
+    const claimToggle = computeParameterSensitivity(id, "claim1Active", {});
+    expect(claimToggle?.derivativeValue).toBe(1);
+  });
+
   test("Lincoln Buoyancy Chambers derives draft reduction and displacement loading sensitivities", () => {
     const id = "us-6469-lincoln-buoy";
     const h = 1e-4;
@@ -3876,8 +4044,75 @@ describe("Sensitivities follow the current admitted operating point", () => {
         ).not.toBeNull();
       }
     }
-    expect(computeParameterSensitivity(id, "blastAirPressure", {})).toBeNull();
-    expect(computeParameterSensitivity(id, "engineRpm", {})).toBeNull();
+    // blastAirPressure and engineRpm are now fully admitted continuous sensitivities
+    expect(computeParameterSensitivity(id, "blastAirPressure", {})).not.toBeNull();
+    expect(computeParameterSensitivity(id, "engineRpm", {})).not.toBeNull();
+    expect(computeParameterSensitivity(id, "nonExistentControl", {})).toBeNull();
+  });
+
+  test("Diesel derives blast air pressure, engine RPM sensitivities, and Claim 1 gating", () => {
+    const id = "us-542846-diesel-engine";
+
+    // Blast air pressure sensitivity (1.0 bar/bar)
+    const sensBlast = computeParameterSensitivity(id, "blastAirPressure", {
+      compRatio: 18,
+      blastAirPressure: 65,
+      cutoffRatio: 1.6,
+      engineRpm: 150,
+    });
+    expect(sensBlast).toBeDefined();
+    expect(sensBlast?.metricName).toBe("Blast Injection Pressure Margin");
+    expect(sensBlast?.derivativeSymbol).toBe("∂ΔP_inj / ∂P_blast");
+    expect(sensBlast?.derivativeUnit).toBe("bar / bar");
+    expect(sensBlast?.derivativeValue).toBe(1.0);
+
+    // Engine RPM angular velocity sensitivity (π/30 rad·s⁻¹/rpm)
+    const sensRpm = computeParameterSensitivity(id, "engineRpm", {
+      compRatio: 18,
+      blastAirPressure: 65,
+      cutoffRatio: 1.6,
+      engineRpm: 150,
+    });
+    expect(sensRpm).toBeDefined();
+    expect(sensRpm?.metricName).toBe("Crankshaft Angular Velocity");
+    expect(sensRpm?.derivativeSymbol).toBe("∂ω / ∂RPM");
+    expect(sensRpm?.derivativeUnit).toBe("rad·s⁻¹ / rpm");
+    expect(sensRpm?.derivativeValue).toBeCloseTo(Math.PI / 30, 5);
+
+    // Aliases
+    expect(computeParameterSensitivity(id, "blastPressure", { blastPressure: 65 })).toEqual(
+      sensBlast,
+    );
+    expect(computeParameterSensitivity(id, "rpm", { rpm: 150 })).toEqual(sensRpm);
+
+    // Claim 1 gating
+    const gatedCr = computeParameterSensitivity(id, "compRatio", {
+      compRatio: 18,
+      claim1Active: 0,
+    });
+    expect(gatedCr?.derivativeValue).toBe(0);
+
+    const gatedCutoff = computeParameterSensitivity(id, "cutoffRatio", {
+      cutoffRatio: 1.6,
+      claim1Active: false,
+    });
+    expect(gatedCutoff?.derivativeValue).toBe(0);
+
+    const gatedBlast = computeParameterSensitivity(id, "blastAirPressure", {
+      blastAirPressure: 65,
+      claim1Active: 0,
+    });
+    expect(gatedBlast?.derivativeValue).toBe(0);
+
+    const gatedRpm = computeParameterSensitivity(id, "engineRpm", {
+      engineRpm: 150,
+      claim1Active: 0,
+    });
+    expect(gatedRpm?.derivativeValue).toBe(0);
+
+    // Discrete Claim 1 toggle
+    const claimToggle = computeParameterSensitivity(id, "claim1Active", {});
+    expect(claimToggle?.derivativeValue).toBe(1);
   });
 
   test("Otto four-stroke slopes follow unrounded air-standard efficiency and brake horsepower", () => {
@@ -4949,6 +5184,71 @@ describe("Sensitivities follow the current admitted operating point", () => {
         computeParameterSensitivity(id, "liquidConductivity", { liquidConductivity: invalid }),
       ).toBeNull();
     }
+  });
+
+  test("Bell telephone derives battery voltage, liquid conductivity sensitivities, and Claim 1 gating", () => {
+    const id = "us-174465-bell-telephone";
+
+    // Battery voltage sensitivity (25 · σ mA/V)
+    const sensVolt = computeParameterSensitivity(id, "batteryVoltage", {
+      batteryVoltage: 6,
+      liquidConductivity: 1.2,
+    });
+    expect(sensVolt).toBeDefined();
+    expect(sensVolt?.metricName).toBe("Baseline Loop Current");
+    expect(sensVolt?.derivativeSymbol).toBe("∂I_base / ∂V");
+    expect(sensVolt?.derivativeUnit).toBe("mA / V");
+    expect(sensVolt?.derivativeValue).toBeCloseTo(25 * 1.2, 4);
+
+    // Liquid conductivity sensitivity (25 · V mA/(S/m))
+    const sensCond = computeParameterSensitivity(id, "liquidConductivity", {
+      batteryVoltage: 6,
+      liquidConductivity: 1.2,
+    });
+    expect(sensCond).toBeDefined();
+    expect(sensCond?.metricName).toBe("Baseline Loop Current vs Conductivity");
+    expect(sensCond?.derivativeSymbol).toBe("∂I_base / ∂σ");
+    expect(sensCond?.derivativeUnit).toBe("mA / (S/m)");
+    expect(sensCond?.derivativeValue).toBeCloseTo(25 * 6, 4);
+
+    // Aliases
+    expect(computeParameterSensitivity(id, "volts", { volts: 6, sigma: 1.2 })).toEqual(sensVolt);
+    expect(computeParameterSensitivity(id, "sigma", { volts: 6, sigma: 1.2 })).toEqual(sensCond);
+
+    // Claim 1 gating
+    const gatedSpl = computeParameterSensitivity(id, "voiceAmplitude", {
+      voiceAmplitude: 75,
+      claim1Active: 0,
+    });
+    expect(gatedSpl?.derivativeValue).toBe(0);
+
+    const gatedFreq = computeParameterSensitivity(id, "acousticFrequencyHz", {
+      acousticFrequencyHz: 440,
+      claim1Active: false,
+    });
+    expect(gatedFreq?.derivativeValue).toBe(0);
+
+    const gatedGap = computeParameterSensitivity(id, "airGap", {
+      airGap: 0.35,
+      claim1Active: 0,
+    });
+    expect(gatedGap?.derivativeValue).toBe(0);
+
+    const gatedVolt = computeParameterSensitivity(id, "batteryVoltage", {
+      batteryVoltage: 6,
+      claim1Active: 0,
+    });
+    expect(gatedVolt?.derivativeValue).toBe(0);
+
+    const gatedCond = computeParameterSensitivity(id, "liquidConductivity", {
+      liquidConductivity: 1.2,
+      claim1Active: 0,
+    });
+    expect(gatedCond?.derivativeValue).toBe(0);
+
+    // Discrete Claim 1 toggle
+    const claimToggle = computeParameterSensitivity(id, "claim1Active", {});
+    expect(claimToggle?.derivativeValue).toBe(1);
   });
 
   test("Edison phonograph derives mandrel RPM linear speed and voice volume displacement sensitivities", () => {

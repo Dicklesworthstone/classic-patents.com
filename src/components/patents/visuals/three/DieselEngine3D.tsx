@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "l
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { wrapCycleRad } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { stepDieselEngine as kernelStepDieselEngine } from "@/physics/dieselEngineKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ThermodynamicsState } from "@/physics/types";
@@ -502,9 +503,10 @@ export function DieselEngine3D() {
         <ClaimConstraintToggle
           patentId="us-542846-diesel-engine"
           claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
+          onToggleClaim={(claimNo, active) => {
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0);
+          }}
           className="mt-2"
         />
 

@@ -4,6 +4,7 @@ import { Camera } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepBellTelephone } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import type { ElectromagneticsState, MachineState } from "@/physics/types";
 import {
   globalTransportBus,
@@ -371,9 +372,10 @@ export const BellTelephone3D = memo(() => {
         <ClaimConstraintToggle
           patentId="us-174465-bell-telephone"
           claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
+          onToggleClaim={(claimNo, active) => {
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0);
+          }}
           className="mt-2"
         />
 

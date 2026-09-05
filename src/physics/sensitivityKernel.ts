@@ -472,9 +472,15 @@ export function computeParameterSensitivity(
     }
 
     case "us-3633-goodyear-rubber": {
-      const vulcanTemp = params.vulcanTemp ?? 145;
-      const sulfurPct = params.sulfurPct ?? 8;
-      const specimenTempC = params.specimenTempC ?? 35;
+      const claim1Active =
+        params.claim1Active === undefined
+          ? true
+          : typeof params.claim1Active === "number"
+            ? params.claim1Active >= 0.5
+            : Boolean(params.claim1Active);
+      const vulcanTemp = params.vulcanTemp ?? params.vulcanizationTempC ?? params.cureTemp ?? 145;
+      const sulfurPct = params.sulfurPct ?? params.sulfur ?? 8;
+      const specimenTempC = params.specimenTempC ?? params.specimenTemp ?? 35;
       const lambda = params.appliedTensileStretch ?? params.stretch ?? 1.8;
 
       if (
@@ -497,6 +503,16 @@ export function computeParameterSensitivity(
       const rubber = stepGoodyearRubber(vulcanTemp, sulfurPct, 30, lambda, specimenTempC);
 
       if (controlKey === "appliedTensileStretch" || controlKey === "stretch") {
+        if (!claim1Active) {
+          return {
+            metricName: "Nominal Stress (Model)",
+            derivativeSymbol: "∂P_nom / ∂λ",
+            derivativeValue: 0,
+            derivativeUnit: "MPa / λ",
+            interpretation:
+              "Claim 1 vulcanization compounding (sulfur and heat) is inactive; unvulcanized gum rubber exhibits plastic flow without cross-linked entropic elasticity.",
+          };
+        }
         return {
           metricName: "Nominal Stress (Model)",
           derivativeSymbol: "∂P_nom / ∂λ",
@@ -507,6 +523,16 @@ export function computeParameterSensitivity(
         };
       }
       if (controlKey === "sulfurPct" || controlKey === "sulfur") {
+        if (!claim1Active) {
+          return {
+            metricName: "Relative Cross-Link Density",
+            derivativeSymbol: "∂X_link / ∂%_sulfur",
+            derivativeValue: 0,
+            derivativeUnit: "ratio / %",
+            interpretation:
+              "Claim 1 thermal vulcanization process is inactive; sulfur cannot form polysulfide cross-links without thermal activation.",
+          };
+        }
         return {
           metricName: "Relative Cross-Link Density",
           derivativeSymbol: "∂X_link / ∂%_sulfur",
@@ -514,6 +540,60 @@ export function computeParameterSensitivity(
           derivativeUnit: "ratio / %",
           interpretation:
             "Disulfide bridge density scaling with sulfur compounding fraction under 30-minute thermal cure kinetics.",
+        };
+      }
+      if (
+        controlKey === "vulcanTemp" ||
+        controlKey === "vulcanizationTempC" ||
+        controlKey === "cureTemp"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Thermal Vulcanization Reaction Rate",
+            derivativeSymbol: "∂k_cure / ∂T_cure",
+            derivativeValue: 0,
+            derivativeUnit: "ratio / °C",
+            interpretation:
+              "Claim 1 thermal vulcanization compounding is inactive; curing kinetic rate is nullified.",
+          };
+        }
+        return {
+          metricName: "Thermal Vulcanization Reaction Rate",
+          derivativeSymbol: "∂k_cure / ∂T_cure",
+          derivativeValue: Number(rubber.vulcanizationRateSlopePerDegreeC.toPrecision(6)),
+          derivativeUnit: "ratio / °C",
+          interpretation:
+            "First derivative of Arrhenius curing reaction rate with respect to vulcanization temperature (activation energy ~6500 K).",
+        };
+      }
+      if (controlKey === "specimenTempC" || controlKey === "specimenTemp") {
+        if (!claim1Active) {
+          return {
+            metricName: "Entropic Restoring Stress",
+            derivativeSymbol: "∂P_nom / ∂T_specimen",
+            derivativeValue: 0,
+            derivativeUnit: "MPa / °C",
+            interpretation:
+              "Claim 1 cross-linked elastomer structure is inactive; entropic elasticity scaling with absolute temperature is disabled.",
+          };
+        }
+        return {
+          metricName: "Entropic Restoring Stress",
+          derivativeSymbol: "∂P_nom / ∂T_specimen",
+          derivativeValue: Number(rubber.entropicStressSlopeMpaPerDegreeC.toPrecision(6)),
+          derivativeUnit: "MPa / °C",
+          interpretation:
+            "Direct derivative of entropic restoring stress with absolute temperature ∂P/∂T = P / T_K according to the kinetic theory of rubber elasticity.",
+        };
+      }
+      if (controlKey === "claim1Active" || controlKey === "claim1") {
+        return {
+          metricName: "Claim 1 Vulcanization Compounding State",
+          derivativeSymbol: "∂X_cured / ∂u_claim",
+          derivativeValue: 1,
+          derivativeUnit: "cured state / claim fraction",
+          interpretation:
+            "Discrete activation of Claim 1 thermal sulfur-compounding vulcanization process transforming plastic gum into an elastic vulcanizate.",
         };
       }
       break;
@@ -3003,11 +3083,17 @@ export function computeParameterSensitivity(
     }
 
     case "us-174465-bell-telephone": {
-      const db = params.voiceAmplitude ?? 75;
-      const freq = params.acousticFrequencyHz ?? 440;
-      const gap = params.airGap ?? 0.35;
-      const volts = params.batteryVoltage ?? 6;
-      const cond = params.liquidConductivity ?? 1.2;
+      const claim1Active =
+        params.claim1Active === undefined
+          ? true
+          : typeof params.claim1Active === "number"
+            ? params.claim1Active >= 0.5
+            : Boolean(params.claim1Active);
+      const db = params.voiceAmplitude ?? params.voiceLevelDb ?? params.spl ?? 75;
+      const freq = params.acousticFrequencyHz ?? params.frequency ?? params.freq ?? 440;
+      const gap = params.airGap ?? params.diaphragmGapMm ?? params.gap ?? 0.35;
+      const volts = params.batteryVoltage ?? params.voltage ?? params.volts ?? 6;
+      const cond = params.liquidConductivity ?? params.conductivity ?? params.sigma ?? 1.2;
 
       if (
         !Number.isFinite(db) ||
@@ -3037,7 +3123,21 @@ export function computeParameterSensitivity(
         liquidConductivity: cond,
       });
 
-      if (controlKey === "voiceAmplitude") {
+      if (
+        controlKey === "voiceAmplitude" ||
+        controlKey === "voiceLevelDb" ||
+        controlKey === "spl"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Modulated Signal Current",
+            derivativeSymbol: "∂I_mod / ∂SPL",
+            derivativeValue: 0,
+            derivativeUnit: "mA / dB",
+            interpretation:
+              "Claim 1 continuous electrical undulation is inactive; breaking the variable-resistance circuit prevents acoustic-to-electrical transduction.",
+          };
+        }
         return {
           metricName: "Modulated Signal Current",
           derivativeSymbol: "∂I_mod / ∂SPL",
@@ -3047,7 +3147,20 @@ export function computeParameterSensitivity(
             "Local slope of modulated signal current with respect to voice sound pressure level under the shared variable-resistance transmitter model at the current diaphragm air gap. At 40 or 95 dB this is the admitted one-sided slope.",
         };
       }
-      if (controlKey === "acousticFrequencyHz") {
+      if (
+        controlKey === "acousticFrequencyHz" ||
+        controlKey === "frequency" ||
+        controlKey === "freq"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Acoustic Angular Frequency",
+            derivativeSymbol: "∂ω / ∂f_acoustic",
+            derivativeValue: 0,
+            derivativeUnit: "rad·s⁻¹ / Hz",
+            interpretation: "Claim 1 undulatory acoustic transmission is inactive.",
+          };
+        }
         return {
           metricName: "Acoustic Angular Frequency",
           derivativeSymbol: "∂ω / ∂f_acoustic",
@@ -3057,7 +3170,17 @@ export function computeParameterSensitivity(
             "Exact derivative 2π relating cyclic acoustic frequency to angular frequency for the continuous undulatory sound wave.",
         };
       }
-      if (controlKey === "airGap") {
+      if (controlKey === "airGap" || controlKey === "diaphragmGapMm" || controlKey === "gap") {
+        if (!claim1Active) {
+          return {
+            metricName: "Modulated Signal Current",
+            derivativeSymbol: "∂I_mod / ∂gap",
+            derivativeValue: 0,
+            derivativeUnit: "mA / mm",
+            interpretation:
+              "Claim 1 variable-resistance liquid electrode arrangement is inactive; electrode immersion has no effect on signal modulation.",
+          };
+        }
         return {
           metricName: "Modulated Signal Current",
           derivativeSymbol: "∂I_mod / ∂gap",
@@ -3065,6 +3188,59 @@ export function computeParameterSensitivity(
           derivativeUnit: "mA / mm",
           interpretation:
             "Inverse-gap gradient of modulated transduction current across the liquid-electrode gap.",
+        };
+      }
+      if (controlKey === "batteryVoltage" || controlKey === "voltage" || controlKey === "volts") {
+        if (!claim1Active) {
+          return {
+            metricName: "Baseline Loop Current",
+            derivativeSymbol: "∂I_base / ∂V",
+            derivativeValue: 0,
+            derivativeUnit: "mA / V",
+            interpretation:
+              "Claim 1 closed electrical transmission circuit is inactive; no galvanic current flows across open line.",
+          };
+        }
+        return {
+          metricName: "Baseline Loop Current",
+          derivativeSymbol: "∂I_base / ∂V",
+          derivativeValue: Number(bell.currentBaselineSlopeMaPerVolt.toPrecision(6)),
+          derivativeUnit: "mA / V",
+          interpretation:
+            "Ohmic sensitivity of baseline galvanic transmitter current to battery electromotive force (25 · σ mA/V with nominal 40 Ω/S cell geometry).",
+        };
+      }
+      if (
+        controlKey === "liquidConductivity" ||
+        controlKey === "conductivity" ||
+        controlKey === "sigma"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Baseline Loop Current vs Conductivity",
+            derivativeSymbol: "∂I_base / ∂σ",
+            derivativeValue: 0,
+            derivativeUnit: "mA / (S/m)",
+            interpretation: "Claim 1 variable-resistance electrolytic cell is inactive.",
+          };
+        }
+        return {
+          metricName: "Baseline Loop Current vs Conductivity",
+          derivativeSymbol: "∂I_base / ∂σ",
+          derivativeValue: Number(bell.currentBaselineSlopeMaPerSiemens.toPrecision(6)),
+          derivativeUnit: "mA / (S/m)",
+          interpretation:
+            "Transconductance sensitivity of baseline galvanic loop current with respect to liquid electrolyte specific conductivity (25 · V mA/(S/m)).",
+        };
+      }
+      if (controlKey === "claim1Active" || controlKey === "claim1") {
+        return {
+          metricName: "Claim 1 Continuous Electrical Undulation State",
+          derivativeSymbol: "∂I_undulatory / ∂u_claim",
+          derivativeValue: 1,
+          derivativeUnit: "undulation state / claim fraction",
+          interpretation:
+            "Discrete activation of Claim 1 continuous undulatory electric current transmission representing vocal sounds, contrasting with intermittent make-and-break telegraphic circuits.",
         };
       }
       break;
@@ -3474,10 +3650,16 @@ export function computeParameterSensitivity(
     }
 
     case "us-3237-rillieux-evaporator": {
+      const claim1Active =
+        params.claim1Active === undefined
+          ? true
+          : typeof params.claim1Active === "number"
+            ? params.claim1Active >= 0.5
+            : Boolean(params.claim1Active);
       const feedRate =
         params.juiceFeedRateKgPerH ?? params.juiceFeedRate ?? params.feedRate ?? 10000;
-      const initialBrix = params.initialBrixDeg ?? params.initialBrix ?? 14.0;
-      const targetBrix = params.targetBrixDeg ?? params.targetBrix ?? 65.0;
+      const initialBrix = params.initialBrixDeg ?? params.initialBrix ?? params.brixIn ?? 14.0;
+      const targetBrix = params.targetBrixDeg ?? params.targetBrix ?? params.brixOut ?? 65.0;
       const nEffects = params.numberOfEffects ?? params.effects ?? 3;
 
       if (
@@ -3498,6 +3680,16 @@ export function computeParameterSensitivity(
       }
 
       if (controlKey === "numberOfEffects" || controlKey === "effects") {
+        if (!claim1Active) {
+          return {
+            metricName: "Steam Enthalpy Economy",
+            derivativeSymbol: "∂Economy / ∂N_effects",
+            derivativeValue: 0,
+            derivativeUnit: "(kg evaporated/kg steam) / effect",
+            interpretation:
+              "Claim 1 multiple-effect vapor reuse is inactive; single-vessel atmospheric boiling provides no secondary vapor reuse across successive effects.",
+          };
+        }
         return {
           metricName: "Steam Enthalpy Economy",
           derivativeSymbol: "∂Economy / ∂N_effects",
@@ -3512,6 +3704,16 @@ export function computeParameterSensitivity(
         controlKey === "juiceFeedRate" ||
         controlKey === "feedRate"
       ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Water Evaporation Mass Flow Rate",
+            derivativeSymbol: "∂m_evap / ∂m_feed",
+            derivativeValue: 0,
+            derivativeUnit: "(kg/h) / (kg/h)",
+            interpretation:
+              "Claim 1 closed multiple-effect boiling apparatus is inactive; evaporation train is offline.",
+          };
+        }
         const dEvap_dFeed = Number((1.0 - initialBrix / targetBrix).toFixed(4));
         return {
           metricName: "Water Evaporation Mass Flow Rate",
@@ -3520,6 +3722,64 @@ export function computeParameterSensitivity(
           derivativeUnit: "(kg/h) / (kg/h)",
           interpretation:
             "Linear mass conservation: dissolved sugar solids pass to syrup while water fraction is boiled off across stages.",
+        };
+      }
+      if (
+        controlKey === "initialBrixDeg" ||
+        controlKey === "initialBrix" ||
+        controlKey === "brixIn"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Water Evaporation vs Initial Brix",
+            derivativeSymbol: "∂m_evap / ∂B_in",
+            derivativeValue: 0,
+            derivativeUnit: "(kg/h) / °Bx",
+            interpretation: "Claim 1 multiple-effect evaporation train is inactive.",
+          };
+        }
+        return {
+          metricName: "Water Evaporation vs Initial Brix",
+          derivativeSymbol: "∂m_evap / ∂B_in",
+          derivativeValue: Number((-feedRate / targetBrix).toFixed(4)),
+          derivativeUnit: "(kg/h) / °Bx",
+          interpretation:
+            "Mass balance derivative of water evaporation rate with respect to inlet juice sugar content (-m_feed / B_out).",
+        };
+      }
+      if (
+        controlKey === "targetBrixDeg" ||
+        controlKey === "targetBrix" ||
+        controlKey === "brixOut"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Water Evaporation vs Target Syrup Brix",
+            derivativeSymbol: "∂m_evap / ∂B_out",
+            derivativeValue: 0,
+            derivativeUnit: "(kg/h) / °Bx",
+            interpretation: "Claim 1 multiple-effect evaporation train is inactive.",
+          };
+        }
+        return {
+          metricName: "Water Evaporation vs Target Syrup Brix",
+          derivativeSymbol: "∂m_evap / ∂B_out",
+          derivativeValue: Number(
+            ((feedRate * initialBrix) / (targetBrix * targetBrix)).toFixed(4),
+          ),
+          derivativeUnit: "(kg/h) / °Bx",
+          interpretation:
+            "Mass balance derivative of water evaporation rate with respect to target concentrated syrup Brix (m_feed · B_in / B_out²).",
+        };
+      }
+      if (controlKey === "claim1Active" || controlKey === "claim1") {
+        return {
+          metricName: "Claim 1 Multiple-Effect Vacuum Train State",
+          derivativeSymbol: "∂State / ∂u_claim",
+          derivativeValue: 1,
+          derivativeUnit: "train state / claim fraction",
+          interpretation:
+            "Discrete activation of Claim 1 enclosed multiple-effect evaporation utilizing exhaust and generated vapor across successive vacuum stages.",
         };
       }
       break;
@@ -5066,6 +5326,12 @@ export function computeParameterSensitivity(
     }
 
     case "us-542846-diesel-engine": {
+      const claim1Active =
+        params.claim1Active === undefined
+          ? true
+          : typeof params.claim1Active === "number"
+            ? params.claim1Active >= 0.5
+            : Boolean(params.claim1Active);
       const cr = params.compRatio ?? params.compressionRatio ?? 18;
       const blast =
         params.blastAirPressure ?? params.blastAirPressureBar ?? params.blastPressure ?? 65;
@@ -5096,6 +5362,16 @@ export function computeParameterSensitivity(
         engineRpm: rpm,
       });
       if (controlKey === "compRatio" || controlKey === "compressionRatio") {
+        if (!claim1Active) {
+          return {
+            metricName: "Compression Temperature (Model)",
+            derivativeSymbol: "∂T_comp / ∂CR",
+            derivativeValue: 0,
+            derivativeUnit: "°C / ratio",
+            interpretation:
+              "Claim 1 pure air pre-compression to self-ignition threshold is inactive; compression ignition requires adequate cylinder compression ratio.",
+          };
+        }
         return {
           metricName: "Compression Temperature (Model)",
           derivativeSymbol: "∂T_comp / ∂CR",
@@ -5106,6 +5382,16 @@ export function computeParameterSensitivity(
         };
       }
       if (controlKey === "cutoffRatio" || controlKey === "cutoff") {
+        if (!claim1Active) {
+          return {
+            metricName: "Brake Efficiency (Model)",
+            derivativeSymbol: "∂η_brake / ∂r_c",
+            derivativeValue: 0,
+            derivativeUnit: "percentage points / ratio",
+            interpretation:
+              "Claim 1 gradual combustion during expansion is inactive; cycle cannot produce indicated work without fuel injection.",
+          };
+        }
         return {
           metricName: "Brake Efficiency (Model)",
           derivativeSymbol: "∂η_brake / ∂r_c",
@@ -5113,6 +5399,59 @@ export function computeParameterSensitivity(
           derivativeUnit: "percentage points / ratio",
           interpretation:
             "Derivative of the shared teaching model at the current compression and cutoff ratios, before display rounding. It includes the same illustrative 0.68 brake-efficiency factor as the readout; γ = 1.4 and the other inputs are held fixed. Public endpoints use the admitted one-sided slope, not historic performance measurements.",
+        };
+      }
+      if (
+        controlKey === "blastAirPressure" ||
+        controlKey === "blastAirPressureBar" ||
+        controlKey === "blastPressure"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Blast Injection Pressure Margin",
+            derivativeSymbol: "∂ΔP_inj / ∂P_blast",
+            derivativeValue: 0,
+            derivativeUnit: "bar / bar",
+            interpretation: "Claim 1 blast air injection into high-pressure cylinder is inactive.",
+          };
+        }
+        return {
+          metricName: "Blast Injection Pressure Margin",
+          derivativeSymbol: "∂ΔP_inj / ∂P_blast",
+          derivativeValue: 1.0,
+          derivativeUnit: "bar / bar",
+          interpretation:
+            "Direct linear margin of blast injection pressure over peak cylinder compression pressure (P_blast - P_comp) governing fuel atomization into the combustion chamber.",
+        };
+      }
+      if (controlKey === "engineRpm" || controlKey === "rpm") {
+        if (!claim1Active) {
+          return {
+            metricName: "Crankshaft Angular Velocity",
+            derivativeSymbol: "∂ω / ∂RPM",
+            derivativeValue: 0,
+            derivativeUnit: "rad·s⁻¹ / rpm",
+            interpretation:
+              "Claim 1 diesel combustion cycle is inactive; engine crankshaft is stationary.",
+          };
+        }
+        return {
+          metricName: "Crankshaft Angular Velocity",
+          derivativeSymbol: "∂ω / ∂RPM",
+          derivativeValue: Number((Math.PI / 30).toPrecision(6)),
+          derivativeUnit: "rad·s⁻¹ / rpm",
+          interpretation:
+            "Exact derivative 2π/60 relating cyclic engine crankshaft revolution rate to rotational angular velocity.",
+        };
+      }
+      if (controlKey === "claim1Active" || controlKey === "claim1") {
+        return {
+          metricName: "Claim 1 Compression-Ignition Cycle State",
+          derivativeSymbol: "∂Cycle / ∂u_claim",
+          derivativeValue: 1,
+          derivativeUnit: "cycle state / claim fraction",
+          interpretation:
+            "Discrete activation of Claim 1 method of compressing pure air beyond fuel ignition temperature and injecting fuel directly into heated air during initial expansion.",
         };
       }
       break;
