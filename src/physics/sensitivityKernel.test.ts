@@ -1835,10 +1835,52 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeUnit).toBe("step / psi");
       expect(sens?.derivativeValue).toBe(2.0);
 
-      const aliasSens = computeParameterSensitivity(id, "signalPulsePressurePsi", {
-        signalPulsePressurePsi: signal,
+      for (const key of ["signalPulsePressurePsi", "signalPulse", "signalPressure"]) {
+        const aliasSens = computeParameterSensitivity(id, key, {
+          [key]: signal,
+        });
+        expect(aliasSens?.derivativeValue).toBe(sens?.derivativeValue);
+      }
+    }
+
+    // Selecting Cock d¹ Role Reversal
+    const cockSens = computeParameterSensitivity(id, "selectingCockPosition", {
+      trainPipePressure: 60,
+      reservoirPipePressure: 90,
+      selectingCockPosition: 0,
+    });
+    expect(cockSens).toBeDefined();
+    expect(cockSens?.metricName).toBe("Pneumatic Line Role Assignment");
+    expect(cockSens?.derivativeSymbol).toBe("ΔF_clamp / ΔCock");
+    expect(cockSens?.derivativeUnit).toBe("kN / pos");
+    expect(cockSens?.derivativeValue).toBeGreaterThan(0);
+    for (const key of ["selectingCock", "cockPosition", "cockD1"]) {
+      const aliasSens = computeParameterSensitivity(id, key, {
+        trainPipePressure: 60,
+        reservoirPipePressure: 90,
+        [key]: 0,
       });
-      expect(aliasSens?.derivativeValue).toBe(sens?.derivativeValue);
+      expect(aliasSens?.derivativeValue).toBe(cockSens?.derivativeValue);
+    }
+
+    // Accident Trip Cock e
+    const tripSens = computeParameterSensitivity(id, "accidentTrip", {
+      trainPipePressure: 0,
+      reservoirPipePressure: 90,
+      accidentTrip: 0,
+    });
+    expect(tripSens).toBeDefined();
+    expect(tripSens?.metricName).toBe("Automatic Emergency Clamping Force");
+    expect(tripSens?.derivativeSymbol).toBe("ΔF_clamp / ΔTrip");
+    expect(tripSens?.derivativeUnit).toBe("kN / mode");
+    expect(tripSens?.derivativeValue).toBeGreaterThan(0);
+    for (const key of ["trip", "tripCock", "cockE"]) {
+      const aliasSens = computeParameterSensitivity(id, key, {
+        trainPipePressure: 0,
+        reservoirPipePressure: 90,
+        [key]: 0,
+      });
+      expect(aliasSens?.derivativeValue).toBe(tripSens?.derivativeValue);
     }
 
     // Claim 1 refusal gating
@@ -1872,6 +1914,20 @@ describe("Sensitivities follow the current admitted operating point", () => {
     for (const invalid of [-0.1, 2.6, Number.NaN]) {
       expect(
         computeParameterSensitivity(id, "signalPulsePressure", { signalPulsePressure: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-1, 2, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "selectingCockPosition", {
+          selectingCockPosition: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [-1, 3, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "accidentTrip", {
+          accidentTrip: invalid,
+        }),
       ).toBeNull();
     }
   });
@@ -2025,6 +2081,11 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeSymbol).toBe("∂Width / ∂WedgeLift");
       expect(sens?.derivativeUnit).toBe("mm / mm");
       expect(sens?.derivativeValue).toBe(4.2);
+
+      for (const key of ["spacebandWedgeMm", "wedge", "wedgeMm"]) {
+        const aliasSens = computeParameterSensitivity(id, key, { [key]: wedge });
+        expect(aliasSens?.derivativeValue).toBe(sens?.derivativeValue);
+      }
     }
 
     for (const rate of [30, 60, 90]) {
@@ -2034,6 +2095,11 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeSymbol).toBe("∂f_dist / ∂Rate");
       expect(sens?.derivativeUnit).toBe("Hz / (char/min)");
       expect(sens?.derivativeValue).toBeCloseTo(1 / 60, 4);
+
+      for (const key of ["matrixRatePerMin", "typesettingSpeed", "matrixSpeed"]) {
+        const aliasSens = computeParameterSensitivity(id, key, { [key]: rate });
+        expect(aliasSens?.derivativeValue).toBe(sens?.derivativeValue);
+      }
     }
 
     for (const temp of [230, 260, 290]) {
@@ -2043,6 +2109,25 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeSymbol).toBe("∂t_solid / ∂T_pot");
       expect(sens?.derivativeUnit).toBe("ms / °C");
       expect(sens?.derivativeValue).toBeCloseTo(450 / 260, 4);
+
+      for (const key of ["potTempC", "metalTemp", "temperatureC"]) {
+        const aliasSens = computeParameterSensitivity(id, key, { [key]: temp });
+        expect(aliasSens?.derivativeValue).toBe(sens?.derivativeValue);
+      }
+    }
+
+    for (const picas of [10, 13, 20]) {
+      const sens = computeParameterSensitivity(id, "lineLengthPicas", { lineLengthPicas: picas });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Column Measure Linotype Slug Length");
+      expect(sens?.derivativeSymbol).toBe("∂Width / ∂Pica");
+      expect(sens?.derivativeUnit).toBe("mm / pica");
+      expect(sens?.derivativeValue).toBe(4.2333);
+
+      for (const key of ["columnMeasurePicas", "lineLength", "measurePicas"]) {
+        const aliasSens = computeParameterSensitivity(id, key, { [key]: picas });
+        expect(aliasSens?.derivativeValue).toBe(sens?.derivativeValue);
+      }
     }
 
     // Invalid parameters
@@ -2056,6 +2141,11 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
     for (const invalid of [219, 301, Number.NaN]) {
       expect(computeParameterSensitivity(id, "potTemp", { potTemp: invalid })).toBeNull();
+    }
+    for (const invalid of [7.9, 26.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "lineLengthPicas", { lineLengthPicas: invalid }),
+      ).toBeNull();
     }
   });
 
@@ -4542,8 +4632,35 @@ describe("Sensitivities follow the current admitted operating point", () => {
         // Alias identity
         expect(computeParameterSensitivity(id, "cr", params)).toEqual(effSens);
         expect(computeParameterSensitivity(id, "rpm", params)).toEqual(hpSens);
+        expect(computeParameterSensitivity(id, "speedRpm", params)).toEqual(hpSens);
       }
     }
+
+    // Claim 1 Stratified Charge Sensitivity
+    const claimSens = computeParameterSensitivity(id, "claim1ChargeGradingPresent", {});
+    expect(claimSens).toBeDefined();
+    expect(claimSens?.metricName).toBe("Claim 1 Charge Stratification");
+    expect(claimSens?.derivativeSymbol).toBe("Δη / ΔClaim1");
+    expect(claimSens?.derivativeValue).toBe(0);
+    expect(claimSens?.derivativeUnit).toBe("efficiency / state");
+    expect(claimSens?.interpretation).toContain("Claim 1");
+    for (const key of ["chargeGrading", "claim1", "claim1Active"]) {
+      const aliasClaim = computeParameterSensitivity(id, key, {});
+      expect(aliasClaim?.derivativeValue).toBe(claimSens?.derivativeValue);
+    }
+
+    // Claim 1 gating: withholding charge grading zeros efficiency and power sensitivities
+    const gatedCr = computeParameterSensitivity(id, "compressionRatio", {
+      claim1Active: false,
+    });
+    expect(gatedCr?.derivativeValue).toBe(0);
+    expect(gatedCr?.interpretation).toContain("Claim 1");
+
+    const gatedRpm = computeParameterSensitivity(id, "engineRpm", {
+      claim1ChargeGradingPresent: false,
+    });
+    expect(gatedRpm?.derivativeValue).toBe(0);
+    expect(gatedRpm?.interpretation).toContain("Claim 1");
 
     // Default params match nominal 4.5 / 180
     expect(computeParameterSensitivity(id, "compressionRatio", {})).toEqual(
@@ -5714,6 +5831,11 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensIrr?.derivativeValue).toBe(4.5);
     expect(sensIrr?.derivativeUnit).toBe("µA / W");
 
+    for (const key of ["solarIrradiance", "irradiance", "beamPowerWatts", "beamPower"]) {
+      const aliasSens = computeParameterSensitivity(id, key, { [key]: 950 });
+      expect(aliasSens?.derivativeValue).toBe(sensIrr?.derivativeValue);
+    }
+
     const sensSpl = computeParameterSensitivity(id, "voiceSplDb", {
       voiceSplDb: 75,
     });
@@ -5722,6 +5844,64 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(sensSpl?.derivativeSymbol).toBe("∂θ_beam / ∂SPL");
     expect(sensSpl?.derivativeValue).toBe(0.08);
     expect(sensSpl?.derivativeUnit).toBe("mrad / dB");
+
+    for (const key of ["splDb", "spl", "voiceVolume", "voiceLevelDb", "soundLevelDb"]) {
+      const aliasSens = computeParameterSensitivity(id, key, { [key]: 75 });
+      expect(aliasSens?.derivativeValue).toBe(sensSpl?.derivativeValue);
+    }
+
+    // Transmission distance geometric divergence
+    const sensDist = computeParameterSensitivity(id, "transmissionDistanceM", {
+      transmissionDistanceM: 213,
+    });
+    expect(sensDist).toBeDefined();
+    expect(sensDist?.metricName).toBe("Optical Beam Geometric Divergence Spread");
+    expect(sensDist?.derivativeSymbol).toBe("∂D_spot / ∂d");
+    expect(sensDist?.derivativeValue).toBe(0.08);
+    expect(sensDist?.derivativeUnit).toBe("mm / m");
+
+    for (const key of ["distanceM", "distance", "rangeM", "transmissionDistance"]) {
+      const aliasSens = computeParameterSensitivity(id, key, { [key]: 213 });
+      expect(aliasSens?.derivativeValue).toBe(sensDist?.derivativeValue);
+    }
+
+    // Collector diameter aperture area scaling
+    const sensDia = computeParameterSensitivity(id, "collectorDiameterM", {
+      collectorDiameterM: 0.5,
+    });
+    expect(sensDia).toBeDefined();
+    expect(sensDia?.metricName).toBe("Parabolic Collector Aperture Area Rate");
+    expect(sensDia?.derivativeSymbol).toBe("∂A_col / ∂D_col");
+    expect(sensDia?.derivativeValue).toBeCloseTo((Math.PI / 2) * 0.5, 3);
+    expect(sensDia?.derivativeUnit).toBe("m² / m");
+
+    for (const key of [
+      "collectorDiameter",
+      "apertureDiameterM",
+      "apertureDiameter",
+      "collectorDiam",
+    ]) {
+      const aliasSens = computeParameterSensitivity(id, key, { [key]: 0.5 });
+      expect(aliasSens?.derivativeValue).toBe(sensDia?.derivativeValue);
+    }
+
+    // Claim 1 Beam Modulation State & gating
+    const sensClaim = computeParameterSensitivity(id, "claim1Active", {});
+    expect(sensClaim).toBeDefined();
+    expect(sensClaim?.metricName).toBe("Claim 1 Beam Modulation State");
+    expect(sensClaim?.derivativeSymbol).toBe("ΔState / ΔClaim1");
+    expect(sensClaim?.derivativeValue).toBe(0);
+    expect(sensClaim?.derivativeUnit).toBe("state");
+
+    const aliasClaim = computeParameterSensitivity(id, "claim1", {});
+    expect(aliasClaim?.derivativeValue).toBe(sensClaim?.derivativeValue);
+
+    const gatedSpl = computeParameterSensitivity(id, "voiceSplDb", {
+      voiceSplDb: 75,
+      claim1Active: false,
+    });
+    expect(gatedSpl?.derivativeValue).toBe(0);
+    expect(gatedSpl?.interpretation).toContain("Voice acoustic beam modulation is withheld");
 
     // Bounds checking
     for (const invalid of [4, 1001, Number.NaN]) {

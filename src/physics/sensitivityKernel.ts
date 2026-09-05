@@ -774,7 +774,15 @@ export function computeParameterSensitivity(
 
     case "us-194047-otto-engine": {
       const cr = params.compressionRatio ?? params.cr ?? 4.5;
-      const rpm = params.engineRpm ?? params.rpm ?? 180;
+      const rpm = params.engineRpm ?? params.rpm ?? params.speedRpm ?? 180;
+      const claim1 =
+        params.claim1ChargeGradingPresent !== undefined
+          ? Boolean(params.claim1ChargeGradingPresent)
+          : params.claim1Active !== undefined
+            ? Boolean(params.claim1Active)
+            : params.chargeGrading !== undefined
+              ? Boolean(params.chargeGrading)
+              : true;
 
       if (
         !Number.isFinite(cr) ||
@@ -788,24 +796,43 @@ export function computeParameterSensitivity(
       }
 
       const otto = stepOttoEngine({ engineRpm: rpm, compressionRatio: cr });
+      if (
+        controlKey === "claim1ChargeGradingPresent" ||
+        controlKey === "chargeGrading" ||
+        controlKey === "claim1" ||
+        controlKey === "claim1Active"
+      ) {
+        return {
+          metricName: "Claim 1 Charge Stratification",
+          derivativeSymbol: "Δη / ΔClaim1",
+          derivativeValue: 0,
+          derivativeUnit: "efficiency / state",
+          interpretation:
+            "Claim 1 spatial charge grading condition: US 194,047 claims a stratified charge with air/incombustible gas buffering the combustible charge. The grant provides no numerical measurements for an ungraded replacement charge; no counterfactual efficiency jump is fabricated.",
+        };
+      }
       if (controlKey === "compressionRatio" || controlKey === "cr") {
         return {
           metricName: "Thermal Efficiency (Air-Standard)",
           derivativeSymbol: "∂η / ∂r",
-          derivativeValue: Number(otto.thermalEfficiencySlopePctPerRatio.toPrecision(6)),
+          derivativeValue: claim1
+            ? Number(otto.thermalEfficiencySlopePctPerRatio.toPrecision(6))
+            : 0,
           derivativeUnit: "% / ratio",
-          interpretation:
-            "Modern air-standard Otto-cycle sensitivity for the declared analysis ratio before display rounding, holding γ = 1.4 fixed. At public endpoints this is the admitted one-sided slope. It is an illustrative lens, not a measured efficiency or a numerical limitation printed by US 194,047.",
+          interpretation: claim1
+            ? "Modern air-standard Otto-cycle sensitivity for the declared analysis ratio before display rounding, holding γ = 1.4 fixed. At public endpoints this is the admitted one-sided slope. It is an illustrative lens, not a measured efficiency or a numerical limitation printed by US 194,047."
+            : "Claim 1 charge grading is withheld; no source-backed efficiency consequence is inferred for an ungraded replacement charge.",
         };
       }
-      if (controlKey === "engineRpm" || controlKey === "rpm") {
+      if (controlKey === "engineRpm" || controlKey === "rpm" || controlKey === "speedRpm") {
         return {
           metricName: "Brake Horsepower (Model)",
           derivativeSymbol: "∂P_brake / ∂N",
-          derivativeValue: Number(otto.brakeHorsepowerSlopeHpPerRpm.toPrecision(6)),
+          derivativeValue: claim1 ? Number(otto.brakeHorsepowerSlopeHpPerRpm.toPrecision(6)) : 0,
           derivativeUnit: "hp / rpm",
-          interpretation:
-            "Linear speed scaling of brake horsepower in this illustrative model at the declared compression ratio, before display rounding.",
+          interpretation: claim1
+            ? "Linear speed scaling of brake horsepower in this illustrative model at the declared compression ratio, before display rounding."
+            : "Claim 1 charge grading is withheld; no source-backed power scaling is inferred without the claimed charge distribution.",
         };
       }
       break;
@@ -1035,7 +1062,22 @@ export function computeParameterSensitivity(
         params.reservoirPipePressurePsi ??
         params.reservoirPressure ??
         90;
-      const signal = params.signalPulsePressure ?? params.signalPulsePressurePsi ?? 0;
+      const signal =
+        params.signalPulsePressure ??
+        params.signalPulsePressurePsi ??
+        params.signalPulse ??
+        params.signalPressure ??
+        0;
+      const cockPos = Number(
+        params.selectingCockPosition ??
+          params.selectingCock ??
+          params.cockPosition ??
+          params.cockD1 ??
+          0,
+      );
+      const tripPos = Number(
+        params.accidentTrip ?? params.trip ?? params.tripCock ?? params.cockE ?? 0,
+      );
       const claim1Active = params.claim1Active !== undefined ? Boolean(params.claim1Active) : true;
 
       if (
@@ -1047,19 +1089,23 @@ export function computeParameterSensitivity(
         res > 100 ||
         !Number.isFinite(signal) ||
         signal < 0 ||
-        signal > 2.5
+        signal > 2.5 ||
+        !Number.isFinite(cockPos) ||
+        cockPos < 0 ||
+        cockPos > 1 ||
+        !Number.isFinite(tripPos) ||
+        tripPos < 0 ||
+        tripPos > 2
       ) {
         return null;
       }
 
       const selectingCockState =
-        (params.selectingCockPosition ?? 0) === 1 || params.selectingCockState === "reversed"
-          ? "reversed"
-          : "normal";
+        cockPos === 1 || params.selectingCockState === "reversed" ? "reversed" : "normal";
       const tripModes = ["running", "tripped_derailment", "tripped_parting"] as const;
       const tripCockState =
-        typeof params.accidentTrip === "number"
-          ? (tripModes[params.accidentTrip] ?? "running")
+        typeof tripPos === "number"
+          ? (tripModes[tripPos] ?? "running")
           : (params.tripCockState ?? "running");
 
       const wh = FrankenSimEngine.stepWestinghouseAirBrake({
@@ -1120,7 +1166,12 @@ export function computeParameterSensitivity(
             "Auxiliary reservoir (40 L) stored pneumatic energy available for emergency equalized brake application.",
         };
       }
-      if (controlKey === "signalPulsePressure" || controlKey === "signalPulsePressurePsi") {
+      if (
+        controlKey === "signalPulsePressure" ||
+        controlKey === "signalPulsePressurePsi" ||
+        controlKey === "signalPulse" ||
+        controlKey === "signalPressure"
+      ) {
         return {
           metricName: "Signalling Index Graduation Rate",
           derivativeSymbol: "∂Index / ∂P_signal",
@@ -1128,6 +1179,44 @@ export function computeParameterSensitivity(
           derivativeUnit: "step / psi",
           interpretation:
             "Pneumatic signalling line pressure pulses advancing the cab dial index indicator (0.5 psi per index step).",
+        };
+      }
+      if (
+        controlKey === "selectingCockPosition" ||
+        controlKey === "selectingCock" ||
+        controlKey === "cockPosition" ||
+        controlKey === "cockD1"
+      ) {
+        const pNorm = Math.min(80, pipe);
+        const pRev = Math.min(80, res);
+        const forceNormKn = (pNorm * 78.5 * 5 * 4.44822) / 1000;
+        const forceRevKn = (pRev * 78.5 * 5 * 4.44822) / 1000;
+        const deltaForce = Math.abs(forceRevKn - forceNormKn);
+        return {
+          metricName: "Pneumatic Line Role Assignment",
+          derivativeSymbol: "ΔF_clamp / ΔCock",
+          derivativeValue: Number(deltaForce.toFixed(1)),
+          derivativeUnit: "kN / pos",
+          interpretation:
+            "Discrete change in shoe clamping force when selecting cock d¹ reverses operating (Pipe B) and auxiliary reservoir (Pipe B¹) lines.",
+        };
+      }
+      if (
+        controlKey === "accidentTrip" ||
+        controlKey === "trip" ||
+        controlKey === "tripCock" ||
+        controlKey === "cockE"
+      ) {
+        const boyleEqualizationPsi = Number(((res * 40) / (40 + 15)).toFixed(1));
+        const boyleForceKn = (boyleEqualizationPsi * 78.5 * 5 * 4.44822) / 1000;
+        const deltaTripForce = Math.abs(boyleForceKn - wh.shoeClampingForceKn);
+        return {
+          metricName: "Automatic Emergency Clamping Force",
+          derivativeSymbol: "ΔF_clamp / ΔTrip",
+          derivativeValue: Number(deltaTripForce.toFixed(1)),
+          derivativeUnit: "kN / mode",
+          interpretation:
+            "Emergency brake shoe clamping force applied automatically when cock e trips upon car derailment or train parting, equalizing receiver D (40 L) into cylinder C (15 L) via Boyle's law.",
         };
       }
       break;
@@ -1945,10 +2034,41 @@ export function computeParameterSensitivity(
     }
 
     case "us-235199-bell-photophone": {
-      const dist = params.transmissionDistanceM ?? 213;
-      const spl = params.voiceSplDb ?? 75;
-      const irr = params.solarIrradianceWPerM2 ?? params.beamPowerWatts ?? 950;
-      const dia = params.collectorDiameterM ?? 0.5;
+      const dist =
+        params.transmissionDistanceM ??
+        params.distanceM ??
+        params.distance ??
+        params.rangeM ??
+        params.transmissionDistance ??
+        213;
+      const spl =
+        params.voiceSplDb ??
+        params.splDb ??
+        params.spl ??
+        params.voiceVolume ??
+        params.voiceLevelDb ??
+        params.soundLevelDb ??
+        75;
+      const irr =
+        params.solarIrradianceWPerM2 ??
+        params.beamPowerWatts ??
+        params.beamPower ??
+        params.solarIrradiance ??
+        params.irradiance ??
+        950;
+      const dia =
+        params.collectorDiameterM ??
+        params.collectorDiameter ??
+        params.apertureDiameterM ??
+        params.apertureDiameter ??
+        params.collectorDiam ??
+        0.5;
+      const claim1Active =
+        params.claim1Active !== undefined
+          ? Boolean(params.claim1Active)
+          : params.claim1 !== undefined
+            ? Boolean(params.claim1)
+            : true;
 
       if (
         !Number.isFinite(dist) ||
@@ -1970,7 +2090,9 @@ export function computeParameterSensitivity(
       if (
         controlKey === "solarIrradianceWPerM2" ||
         controlKey === "beamPowerWatts" ||
-        controlKey === "beamPower"
+        controlKey === "beamPower" ||
+        controlKey === "solarIrradiance" ||
+        controlKey === "irradiance"
       ) {
         return {
           metricName: "Selenium Photocell Responsivity",
@@ -1981,14 +2103,65 @@ export function computeParameterSensitivity(
             "Photo-conductive modulation current generated across parabolic selenium receiver.",
         };
       }
-      if (controlKey === "voiceSplDb") {
+      if (
+        controlKey === "voiceSplDb" ||
+        controlKey === "splDb" ||
+        controlKey === "spl" ||
+        controlKey === "voiceVolume" ||
+        controlKey === "voiceLevelDb" ||
+        controlKey === "soundLevelDb"
+      ) {
         return {
           metricName: "Diaphragm Optical Beam Divergence Modulation",
           derivativeSymbol: "∂θ_beam / ∂SPL",
-          derivativeValue: 0.08,
+          derivativeValue: claim1Active ? 0.08 : 0,
           derivativeUnit: "mrad / dB",
+          interpretation: claim1Active
+            ? "Acoustic mirror flexure altering specular light beam angular divergence and focus."
+            : "Voice acoustic beam modulation is withheld; specular reflection remains static.",
+        };
+      }
+      if (
+        controlKey === "transmissionDistanceM" ||
+        controlKey === "distanceM" ||
+        controlKey === "distance" ||
+        controlKey === "rangeM" ||
+        controlKey === "transmissionDistance"
+      ) {
+        return {
+          metricName: "Optical Beam Geometric Divergence Spread",
+          derivativeSymbol: "∂D_spot / ∂d",
+          derivativeValue: 0.08,
+          derivativeUnit: "mm / m",
           interpretation:
-            "Acoustic mirror flexure altering specular light beam angular divergence and focus.",
+            "Linear expansion rate of the projected light spot diameter across transmission distance under angular beam divergence.",
+        };
+      }
+      if (
+        controlKey === "collectorDiameterM" ||
+        controlKey === "collectorDiameter" ||
+        controlKey === "apertureDiameterM" ||
+        controlKey === "apertureDiameter" ||
+        controlKey === "collectorDiam"
+      ) {
+        const dArea = Number(((Math.PI / 2) * dia).toFixed(3));
+        return {
+          metricName: "Parabolic Collector Aperture Area Rate",
+          derivativeSymbol: "∂A_col / ∂D_col",
+          derivativeValue: dArea,
+          derivativeUnit: "m² / m",
+          interpretation:
+            "Rate of aperture capture area expansion with parabolic collector diameter: ∂(π D² / 4) / ∂D = π D / 2.",
+        };
+      }
+      if (controlKey === "claim1Active" || controlKey === "claim1") {
+        return {
+          metricName: "Claim 1 Beam Modulation State",
+          derivativeSymbol: "ΔState / ΔClaim1",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation:
+            "Claim 1 protects the method of producing sound by varying the intensity of a ray and directing it upon a sensitive substance. No quantitative loss or gain is fabricated when the state is toggled.",
         };
       }
       break;
@@ -5711,9 +5884,22 @@ export function computeParameterSensitivity(
     }
 
     case "us-313224-mergenthaler-linotype": {
-      const rate = params.matrixRate ?? params.matrixRatePerMin ?? 60;
-      const wedge = params.spacebandWedge ?? params.spacebandWedgeMm ?? 6.5;
-      const temp = params.potTemp ?? params.potTempC ?? 260;
+      const rate =
+        params.matrixRate ??
+        params.matrixRatePerMin ??
+        params.typesettingSpeed ??
+        params.matrixSpeed ??
+        60;
+      const wedge =
+        params.spacebandWedge ?? params.spacebandWedgeMm ?? params.wedge ?? params.wedgeMm ?? 6.5;
+      const temp =
+        params.potTemp ?? params.potTempC ?? params.metalTemp ?? params.temperatureC ?? 260;
+      const picas =
+        params.lineLengthPicas ??
+        params.columnMeasurePicas ??
+        params.lineLength ??
+        params.measurePicas ??
+        13;
 
       if (
         !Number.isFinite(rate) ||
@@ -5724,12 +5910,20 @@ export function computeParameterSensitivity(
         wedge > 12.0 ||
         !Number.isFinite(temp) ||
         temp < 220 ||
-        temp > 300
+        temp > 300 ||
+        !Number.isFinite(picas) ||
+        picas < 8 ||
+        picas > 26
       ) {
         return null;
       }
 
-      if (controlKey === "spacebandWedge" || controlKey === "spacebandWedgeMm") {
+      if (
+        controlKey === "spacebandWedge" ||
+        controlKey === "spacebandWedgeMm" ||
+        controlKey === "wedge" ||
+        controlKey === "wedgeMm"
+      ) {
         return {
           metricName: "Line Justification Expansion",
           derivativeSymbol: "∂Width / ∂WedgeLift",
@@ -5739,7 +5933,12 @@ export function computeParameterSensitivity(
             "Double-wedge spaceband sliding elevation justifying assembled character line against casting jaws.",
         };
       }
-      if (controlKey === "matrixRate" || controlKey === "matrixRatePerMin") {
+      if (
+        controlKey === "matrixRate" ||
+        controlKey === "matrixRatePerMin" ||
+        controlKey === "typesettingSpeed" ||
+        controlKey === "matrixSpeed"
+      ) {
         return {
           metricName: "Matrix Distributor Escapement Frequency",
           derivativeSymbol: "∂f_dist / ∂Rate",
@@ -5749,7 +5948,12 @@ export function computeParameterSensitivity(
             "Distributor lift frequency scaling linearly with assembled matrix input rate.",
         };
       }
-      if (controlKey === "potTemp" || controlKey === "potTempC") {
+      if (
+        controlKey === "potTemp" ||
+        controlKey === "potTempC" ||
+        controlKey === "metalTemp" ||
+        controlKey === "temperatureC"
+      ) {
         return {
           metricName: "Lead-Tin-Antimony Solidification Duration",
           derivativeSymbol: "∂t_solid / ∂T_pot",
@@ -5757,6 +5961,21 @@ export function computeParameterSensitivity(
           derivativeUnit: "ms / °C",
           interpretation:
             "Thermal casting quench duration scaling with lead pot melt temperature above eutectic point.",
+        };
+      }
+      if (
+        controlKey === "lineLengthPicas" ||
+        controlKey === "columnMeasurePicas" ||
+        controlKey === "lineLength" ||
+        controlKey === "measurePicas"
+      ) {
+        return {
+          metricName: "Column Measure Linotype Slug Length",
+          derivativeSymbol: "∂Width / ∂Pica",
+          derivativeValue: 4.2333,
+          derivativeUnit: "mm / pica",
+          interpretation:
+            "Typographic measure scaling column line width: 1 pica = 12 points = 4.2333 mm.",
         };
       }
       break;

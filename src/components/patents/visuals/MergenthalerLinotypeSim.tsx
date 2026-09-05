@@ -2,6 +2,7 @@
 
 import { Play, Printer, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import {
   mergenthalerMatrixSvgX,
   mergenthalerSpaceband,
@@ -289,38 +290,32 @@ export function MergenthalerLinotypeSim() {
 
       {/* Sliders */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Linotype Metal Pot Temperature</span>
-            <span className="font-mono">{potTempC}°C</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Linotype metal pot temperature in degrees Celsius"
-            min="220"
-            max="300"
-            step="2"
-            value={potTempC}
-            onChange={(e) => updateParam("potTemp", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Column Line Measure (Picas)</span>
-            <span className="font-mono">{lineLengthPicas} Picas</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Column line measure in picas"
-            min="8"
-            max="26"
-            step="1"
-            value={lineLengthPicas}
-            onChange={(e) => updateParam("lineLengthPicas", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="linotype-pot-temp-2d"
+          patentId="us-313224-mergenthaler-linotype"
+          paramKey="potTemp"
+          label="Linotype Metal Pot Temperature"
+          value={potTempC}
+          min={220}
+          max={300}
+          step={2}
+          unit="°C"
+          onChange={(val) => updateParam("potTemp", val)}
+          allParams={params}
+        />
+        <SensitivitySlider
+          id="linotype-line-length-2d"
+          patentId="us-313224-mergenthaler-linotype"
+          paramKey="lineLengthPicas"
+          label="Column Line Measure"
+          value={lineLengthPicas}
+          min={8}
+          max={26}
+          step={1}
+          unit="picas"
+          onChange={(val) => updateParam("lineLengthPicas", val)}
+          allParams={params}
+        />
       </div>
     </div>
   );

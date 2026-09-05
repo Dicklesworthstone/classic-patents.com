@@ -121,6 +121,14 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       setPatentPhysicsParam(id, "rpm", 240);
       expect(getPatentPhysicsParams(id).engineRpm).toBe(240);
       expect(getPatentPhysicsParams(id).rpm).toBe(240);
+
+      setPatentPhysicsParam(id, "speedRpm", 200);
+      expect(getPatentPhysicsParams(id).engineRpm).toBe(200);
+      expect(getPatentPhysicsParams(id).speedRpm).toBe(200);
+
+      setPatentPhysicsParam(id, "chargeGrading", 0);
+      expect(getPatentPhysicsParams(id).claim1ChargeGradingPresent).toBe(0);
+      expect(getPatentPhysicsParams(id).chargeGrading).toBe(0);
     } finally {
       unsubscribe();
       resetPatentPhysicsParams(id);
@@ -761,6 +769,18 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       setPatentPhysicsParam(id, "signalPulsePressurePsi", 1.5);
       expect(getPatentPhysicsParams(id).signalPulsePressure).toBe(1.5);
       expect(getPatentPhysicsParams(id).signalPulsePressurePsi).toBe(1.5);
+
+      setPatentPhysicsParam(id, "signalPulse", 1.0);
+      expect(getPatentPhysicsParams(id).signalPulsePressure).toBe(1.0);
+      expect(getPatentPhysicsParams(id).signalPulse).toBe(1.0);
+
+      setPatentPhysicsParam(id, "cockPosition", 1);
+      expect(getPatentPhysicsParams(id).selectingCockPosition).toBe(1);
+      expect(getPatentPhysicsParams(id).cockPosition).toBe(1);
+
+      setPatentPhysicsParam(id, "trip", 2);
+      expect(getPatentPhysicsParams(id).accidentTrip).toBe(2);
+      expect(getPatentPhysicsParams(id).trip).toBe(2);
     } finally {
       unsubscribe();
       resetPatentPhysicsParams(id);
@@ -1650,6 +1670,80 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
       expect(metrics.find((m) => m.label === "Pearl Ash Yield")?.value).toContain("kg");
       expect(metrics.find((m) => m.label === "Carbon Combustion")?.value).toContain("%");
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Bell Photophone aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-235199-bell-photophone";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) =>
+      observations.push(p.transmissionDistanceM),
+    );
+
+    try {
+      setPatentPhysicsParam(id, "distance", 300);
+      const params = getPatentPhysicsParams(id);
+      expect(params.transmissionDistanceM).toBe(300);
+      expect(params.distance).toBe(300);
+      expect(params.distanceM).toBe(300);
+      expect(observations).toEqual([300]);
+
+      setPatentPhysicsParam(id, "spl", 80);
+      expect(getPatentPhysicsParams(id).voiceSplDb).toBe(80);
+      expect(getPatentPhysicsParams(id).spl).toBe(80);
+
+      setPatentPhysicsParam(id, "irradiance", 1000);
+      expect(getPatentPhysicsParams(id).solarIrradianceWPerM2).toBe(1000);
+      expect(getPatentPhysicsParams(id).irradiance).toBe(1000);
+
+      setPatentPhysicsParam(id, "collectorDiameter", 0.75);
+      expect(getPatentPhysicsParams(id).collectorDiameterM).toBe(0.75);
+      expect(getPatentPhysicsParams(id).collectorDiameter).toBe(0.75);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Source Causal Chain")?.value).toBeDefined();
+      expect(metrics.find((m) => m.label === "Quantitative Link Budget")?.value).toBe(
+        "WITHHELD — SOURCE INPUTS ABSENT",
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Mergenthaler Linotype aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-313224-mergenthaler-linotype";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.matrixRate));
+
+    try {
+      setPatentPhysicsParam(id, "typesettingSpeed", 75);
+      const params = getPatentPhysicsParams(id);
+      expect(params.matrixRate).toBe(75);
+      expect(params.typesettingSpeed).toBe(75);
+      expect(params.matrixRatePerMin).toBe(75);
+      expect(observations).toEqual([75]);
+
+      setPatentPhysicsParam(id, "wedge", 8.0);
+      expect(getPatentPhysicsParams(id).spacebandWedge).toBe(8.0);
+      expect(getPatentPhysicsParams(id).wedge).toBe(8.0);
+
+      setPatentPhysicsParam(id, "potTempC", 270);
+      expect(getPatentPhysicsParams(id).potTemp).toBe(270);
+      expect(getPatentPhysicsParams(id).potTempC).toBe(270);
+
+      setPatentPhysicsParam(id, "columnMeasurePicas", 16);
+      expect(getPatentPhysicsParams(id).lineLengthPicas).toBe(16);
+      expect(getPatentPhysicsParams(id).columnMeasurePicas).toBe(16);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Justified Line Width")?.value).toContain("mm");
+      expect(metrics.find((m) => m.label === "Lines per Hour")?.value).toBeDefined();
     } finally {
       unsubscribe();
       resetPatentPhysicsParams(id);
