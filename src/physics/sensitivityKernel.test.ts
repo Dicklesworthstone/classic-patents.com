@@ -605,13 +605,64 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
     expect(gated?.derivativeValue).toBe(0);
     expect(gated?.interpretation).toContain("Claim 1 withheld");
 
+    // Table I operating sample sensitivity
+    const sensSample1 = computeParameterSensitivity(id, "operatingSample", {
+      operatingSample: 1,
+      pointSpacingMils: 2,
+    });
+    expect(sensSample1).toBeDefined();
+    expect(sensSample1?.metricName).toBe("Reported Table I Voltage Gain");
+    expect(sensSample1?.derivativeSymbol).toBe("ΔA_v / ΔSample");
+    expect(sensSample1?.derivativeUnit).toBe("× / sample");
+    expect(sensSample1?.derivativeValue).toBe(-12);
+
+    const sensSample2 = computeParameterSensitivity(id, "operatingSample", {
+      operatingSample: 2,
+      pointSpacingMils: 2,
+    });
+    expect(sensSample2?.derivativeValue).toBe(-14);
+
+    for (const alias of ["sample", "sampleNumber", "tableSample", "sampleIndex"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { [alias]: 1, pointSpacingMils: 2 })
+          ?.derivativeValue,
+      ).toBe(-12);
+    }
+
+    const sensSampleGated = computeParameterSensitivity(id, "operatingSample", {
+      operatingSample: 1,
+      claim1Active: false,
+    });
+    expect(sensSampleGated?.derivativeValue).toBe(0);
+    expect(sensSampleGated?.interpretation).toContain("Claim 1 withheld");
+
+    // Claim 1 collector contact path state
+    const sensClaim1On = computeParameterSensitivity(id, "claim1Active", {
+      claim1Active: 1,
+      pointSpacingMils: 2,
+    });
+    expect(sensClaim1On).toBeDefined();
+    expect(sensClaim1On?.metricName).toBe("Claim 1 Point-Contact Collector Path");
+    expect(sensClaim1On?.derivativeSymbol).toBe("ΔState / ΔContact");
+    expect(sensClaim1On?.derivativeUnit).toBe("state");
+    expect(sensClaim1On?.derivativeValue).toBe(0);
+    expect(sensClaim1On?.interpretation).toContain("Claim 1 compliant");
+
+    const sensClaim1Off = computeParameterSensitivity(id, "claim1Active", {
+      claim1Active: 0,
+      pointSpacingMils: 2,
+    });
+    expect(sensClaim1Off?.interpretation).toContain("Claim 1 collector path severed");
+
+    for (const alias of ["claim1", "collectorActive", "collectorPresent", "claim1Collector"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { [alias]: 1, pointSpacingMils: 2 })
+          ?.derivativeValue,
+      ).toBe(0);
+    }
+
     // Unadmitted controls remain refused
-    for (const refusedControl of [
-      "operatingSample",
-      "emitterCurrent",
-      "collectorVoltage",
-      "carrierLifetime",
-    ]) {
+    for (const refusedControl of ["emitterCurrent", "collectorVoltage", "carrierLifetime"]) {
       expect(computeParameterSensitivity(id, refusedControl, {})).toBeNull();
     }
 
@@ -620,6 +671,14 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
       expect(
         computeParameterSensitivity(id, "pointSpacingMils", { pointSpacingMils: invalid }),
       ).toBeNull();
+    }
+    for (const invalid of [0, 4, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "operatingSample", { operatingSample: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "claim1Active", { claim1Active: invalid })).toBeNull();
     }
   });
 
@@ -2740,6 +2799,44 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(
       computeParameterSensitivity(id, "exposureFraction", { claim1Active: 0 })?.derivativeValue,
     ).toBe(0);
+    expect(
+      computeParameterSensitivity(id, "reagentViscosityCp", { claim1Active: 0 })?.derivativeValue,
+    ).toBe(0);
+    expect(
+      computeParameterSensitivity(id, "rollerGapUm", { claim1Active: 0 })?.derivativeValue,
+    ).toBe(0);
+    expect(computeParameterSensitivity(id, "alkaliPh", { claim1Active: 0 })?.derivativeValue).toBe(
+      0,
+    );
+
+    // Claim 1 attached product path sensitivity
+    const sensClaim1On = computeParameterSensitivity(id, "claim1Active", { claim1Active: 1 });
+    expect(sensClaim1On).toBeDefined();
+    expect(sensClaim1On?.metricName).toBe("Claim 1 Attached Product Path");
+    expect(sensClaim1On?.derivativeSymbol).toBe("ΔState / ΔClaim1");
+    expect(sensClaim1On?.derivativeUnit).toBe("state");
+    expect(sensClaim1On?.derivativeValue).toBe(0);
+    expect(sensClaim1On?.interpretation).toContain("Claim 1 compliant");
+
+    const sensClaim1Off = computeParameterSensitivity(id, "claim1Active", { claim1Active: 0 });
+    expect(sensClaim1Off?.interpretation).toContain("Claim 1 attached product path severed");
+
+    for (const alias of ["claim1", "claim1Pod", "podPresent", "reagentPod"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(0);
+    }
+
+    // Aliases
+    expect(
+      computeParameterSensitivity(id, "devTimeSec", { devTimeSec: 30 })?.derivativeValue,
+    ).toBeDefined();
+    expect(
+      computeParameterSensitivity(id, "exposure", { exposure: 0.5 })?.derivativeValue,
+    ).toBeDefined();
+    expect(
+      computeParameterSensitivity(id, "viscosity", { viscosity: 25000 })?.derivativeValue,
+    ).toBeDefined();
+    expect(computeParameterSensitivity(id, "gap", { gap: 25 })?.derivativeValue).toBeDefined();
+    expect(computeParameterSensitivity(id, "ph", { ph: 12.6 })?.derivativeValue).toBeDefined();
 
     // Invalid parameters
     for (const invalid of [-1, 61, Number.NaN]) {
@@ -2762,6 +2859,9 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
     for (const invalid of [10.4, 13.9, Number.NaN]) {
       expect(computeParameterSensitivity(id, "alkaliPh", { alkaliPh: invalid })).toBeNull();
+    }
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "claim1Active", { claim1Active: invalid })).toBeNull();
     }
   });
 
@@ -2794,6 +2894,41 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeUnit).toBe("rows / cm⁻²");
       expect(sens?.derivativeValue).toBe(0.04);
     }
+
+    // Applied clamp direction angle sensitivity
+    for (const angle of [20, 90, 150]) {
+      const sens = computeParameterSensitivity(id, "peelAngleDeg", { peelAngleDeg: angle });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Applied Clamp Direction Angle");
+      expect(sens?.derivativeSymbol).toBe("∂θ_clamp / ∂θ_input");
+      expect(sens?.derivativeUnit).toBe("deg / deg");
+      expect(sens?.derivativeValue).toBe(1.0);
+    }
+    for (const alias of ["peelAngle", "angle", "clampAngle", "angleDeg"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 45 })?.derivativeValue).toBe(1.0);
+    }
+
+    // Peel front advance sensitivity
+    for (const prog of [0.1, 0.5, 0.9]) {
+      const sens = computeParameterSensitivity(id, "peelProgress", { peelProgress: prog });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Peel Front Advance");
+      expect(sens?.derivativeSymbol).toBe("∂x_peel / ∂u_peel");
+      expect(sens?.derivativeUnit).toBe("normalized / normalized");
+      expect(sens?.derivativeValue).toBe(1.0);
+    }
+    for (const alias of ["progress", "peelFront", "advance", "peelAdvance"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 0.5 })?.derivativeValue).toBe(1.0);
+    }
+
+    // Aliases for geometry
+    expect(
+      computeParameterSensitivity(id, "diameter", { diameter: 0.2 })?.derivativeValue,
+    ).toBeDefined();
+    expect(
+      computeParameterSensitivity(id, "length", { length: 2.0 })?.derivativeValue,
+    ).toBeDefined();
+    expect(computeParameterSensitivity(id, "density", { density: 60 })?.derivativeValue).toBe(0.04);
 
     // Invalid parameters
     for (const invalid of [0.09, 0.36, Number.NaN]) {
@@ -3511,12 +3646,64 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(decoupledSens?.derivativeValue).toBe(0);
     expect(decoupledSens?.interpretation).toContain("zero neutron multiplication sensitivity");
 
+    for (const alias of [
+      "controlRodWithdrawalPct",
+      "rodPosition",
+      "rod",
+      "controlRod",
+      "withdrawal",
+    ]) {
+      expect(
+        computeParameterSensitivity(id, alias, {
+          [alias]: 83.5,
+          moderatorPurity: 99.5,
+          claim1Active: 1,
+        })?.derivativeValue,
+      ).toBeCloseTo(0.0003, 4);
+    }
+
+    // Moderator graphite purity sensitivity
+    for (const purity of [96, 98, 99.5]) {
+      const sensMod = computeParameterSensitivity(id, "moderatorPurity", {
+        rodWithdrawal: 83.5,
+        moderatorPurity: purity,
+        claim1Active: 1,
+      });
+      expect(sensMod).toBeDefined();
+      expect(sensMod?.metricName).toBe("Moderator Graphite Purity Margin");
+      expect(sensMod?.derivativeSymbol).toBe("∂k_eff / ∂p_graphite");
+      expect(sensMod?.derivativeUnit).toBe("k / %");
+      expect(sensMod?.derivativeValue).toBe(0);
+      expect(sensMod?.interpretation).toContain("purity to minimize parasitic neutron capture");
+    }
+
+    for (const alias of ["purity", "graphitePurity", "moderatorPurityPct"]) {
+      expect(
+        computeParameterSensitivity(id, alias, {
+          rodWithdrawal: 83.5,
+          [alias]: 99.5,
+          claim1Active: 1,
+        })?.derivativeValue,
+      ).toBe(0);
+    }
+
+    const sensModDecoupled = computeParameterSensitivity(id, "moderatorPurity", {
+      rodWithdrawal: 83.5,
+      moderatorPurity: 99.5,
+      claim1Active: 0,
+    });
+    expect(sensModDecoupled?.interpretation).toContain("graphite moderator produces zero");
+
     // Claim 1 visibility control
     for (const claim of [0, 1]) {
       const sensClaim = computeParameterSensitivity(id, "claim1Active", { claim1Active: claim });
       expect(sensClaim).toBeDefined();
       expect(sensClaim?.metricName).toBe("Claim 1 Lattice Geometry Visibility");
       expect(sensClaim?.derivativeValue).toBe(1);
+    }
+
+    for (const alias of ["claim1", "lattice"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(1);
     }
 
     // Invalid parameters

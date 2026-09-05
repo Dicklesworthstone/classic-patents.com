@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import {
   type MestralVelcroControls,
@@ -530,98 +531,77 @@ export function MestralVelcroSim({
 
       {/* Interactive Parameter Control Sliders */}
       <div className="p-5 bg-stone-950 border-t border-stone-800 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-        {/* Filament Diameter */}
-        <div className="flex flex-col space-y-1.5">
-          <div className="flex justify-between text-stone-300 font-medium">
-            <span>Illustrative Filament d</span>
-            <span className="font-mono text-amber-400">
-              {controls.filamentDiameterMm.toFixed(2)} mm
-            </span>
-          </div>
-          <input
-            type="range"
-            aria-label="Illustrative filament diameter in millimeters"
-            min="0.10"
-            max="0.35"
-            step="0.01"
-            value={controls.filamentDiameterMm}
-            onChange={(e) => updateControl("filamentDiameterMm", parseFloat(e.target.value))}
-            className="accent-amber-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
-          />
-        </div>
+        <SensitivitySlider
+          id="velcroFilamentDiameter"
+          patentId="us-2717437-mestral-velcro"
+          paramKey="filamentDiameterMm"
+          label="Illustrative Filament d"
+          value={controls.filamentDiameterMm}
+          min={0.1}
+          max={0.35}
+          step={0.01}
+          unit=" mm"
+          onChange={(val: number) => updateControl("filamentDiameterMm", val)}
+          allParams={effectiveParams}
+        />
 
-        {/* Hook Height */}
-        <div className="flex flex-col space-y-1.5">
-          <div className="flex justify-between text-stone-300 font-medium">
-            <span>Illustrative Hook Height</span>
-            <span className="font-mono text-amber-400">{controls.hookLengthMm.toFixed(1)} mm</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Illustrative hook height in millimeters"
-            min="1"
-            max="3"
-            step="0.1"
-            value={controls.hookLengthMm}
-            onChange={(e) => updateControl("hookLengthMm", parseFloat(e.target.value))}
-            className="accent-amber-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
-          />
-        </div>
+        <SensitivitySlider
+          id="velcroHookLength"
+          patentId="us-2717437-mestral-velcro"
+          paramKey="hookLengthMm"
+          label="Illustrative Hook Height"
+          value={controls.hookLengthMm}
+          min={1.0}
+          max={3.0}
+          step={0.1}
+          unit=" mm"
+          onChange={(val: number) => updateControl("hookLengthMm", val)}
+          allParams={effectiveParams}
+        />
 
-        {/* Peeling Angle */}
-        <div className="flex flex-col space-y-1.5">
-          <div className="flex justify-between text-stone-300 font-medium">
-            <span>Applied Clamp Direction</span>
-            <span className="font-mono text-blue-400">{controls.peelAngleDeg}°</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Applied clamp direction in degrees"
-            min="20"
-            max="160"
-            step="5"
-            value={controls.peelAngleDeg}
-            onChange={(e) => updateControl("peelAngleDeg", parseInt(e.target.value, 10))}
-            className="accent-blue-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
-          />
-        </div>
+        <SensitivitySlider
+          id="velcroPeelAngle"
+          patentId="us-2717437-mestral-velcro"
+          paramKey="peelAngleDeg"
+          label="Applied Clamp Direction"
+          value={controls.peelAngleDeg}
+          min={20}
+          max={160}
+          step={5}
+          unit="°"
+          onChange={(val: number) => updateControl("peelAngleDeg", val)}
+          allParams={effectiveParams}
+        />
 
-        {/* Hook Density */}
-        <div className="flex flex-col space-y-1.5">
-          <div className="flex justify-between text-stone-300 font-medium">
-            <span>Illustrative Pile Population</span>
-            <span className="font-mono text-emerald-400">{tel.visiblePileRows} rows</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Illustrative rendered pile population"
-            min="20"
-            max="120"
-            step="4"
-            value={controls.hookDensityPerCm2}
-            onChange={(e) => updateControl("hookDensityPerCm2", parseInt(e.target.value, 10))}
-            className="accent-emerald-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
-          />
-        </div>
+        <SensitivitySlider
+          id="velcroHookDensity"
+          patentId="us-2717437-mestral-velcro"
+          paramKey="hookDensityPerCm2"
+          label="Illustrative Pile Population"
+          value={controls.hookDensityPerCm2}
+          min={20}
+          max={120}
+          step={4}
+          unit=" cm⁻²"
+          onChange={(val: number) => updateControl("hookDensityPerCm2", val)}
+          allParams={effectiveParams}
+        />
 
         {/* Interactive Peel Progress in Peel View */}
         {viewMode === "peel" && (
-          <div className="flex flex-col space-y-1.5 md:col-span-2 lg:col-span-4 pt-2 border-t border-stone-800/60">
-            <div className="flex justify-between text-stone-300 font-medium">
-              <span>Interactive Peeling Separation Front</span>
-              <span className="font-mono text-cyan-400">
-                {(tel.peelProgress * 100).toFixed(0)}% Separated
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Peeling separation-front progress"
-              min="0.05"
-              max="0.95"
-              step="0.01"
+          <div className="md:col-span-2 lg:col-span-4 pt-2 border-t border-stone-800/60">
+            <SensitivitySlider
+              id="velcroPeelProgress"
+              patentId="us-2717437-mestral-velcro"
+              paramKey="peelProgress"
+              label="Interactive Peeling Separation Front"
               value={controls.peelProgress}
-              onChange={(e) => updateControl("peelProgress", parseFloat(e.target.value))}
-              className="accent-cyan-500 bg-stone-800 h-2 rounded-lg cursor-pointer"
+              min={0.05}
+              max={0.95}
+              step={0.01}
+              unit=""
+              onChange={(val: number) => updateControl("peelProgress", val)}
+              allParams={effectiveParams}
             />
           </div>
         )}

@@ -2053,4 +2053,143 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       resetPatentPhysicsParams(id);
     }
   });
+
+  test("Land Polaroid Instant Film aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-2543181-land-polaroid";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.developmentTimeSec));
+
+    try {
+      setPatentPhysicsParam(id, "devTime", 45);
+      const params = getPatentPhysicsParams(id);
+      expect(params.developmentTimeSec).toBe(45);
+      expect(params.devTimeSec).toBe(45);
+      expect(params.devTime).toBe(45);
+      expect(params.time).toBe(45);
+      expect(observations).toEqual([45]);
+      expect(getLastParamChange(id)?.id).toBe("developmentTimeSec");
+
+      setPatentPhysicsParam(id, "exposure", 0.8);
+      expect(getPatentPhysicsParams(id).exposureFraction).toBe(0.8);
+      expect(getPatentPhysicsParams(id).exposure).toBe(0.8);
+      expect(getPatentPhysicsParams(id).exposureLevel).toBe(0.8);
+
+      setPatentPhysicsParam(id, "viscosity", 40000);
+      expect(getPatentPhysicsParams(id).reagentViscosityCp).toBe(40000);
+      expect(getPatentPhysicsParams(id).viscosity).toBe(40000);
+      expect(getPatentPhysicsParams(id).gelViscosity).toBe(40000);
+
+      setPatentPhysicsParam(id, "gap", 40);
+      expect(getPatentPhysicsParams(id).rollerGapUm).toBe(40);
+      expect(getPatentPhysicsParams(id).gap).toBe(40);
+      expect(getPatentPhysicsParams(id).spreadGap).toBe(40);
+
+      setPatentPhysicsParam(id, "ph", 13.2);
+      expect(getPatentPhysicsParams(id).alkaliPh).toBe(13.2);
+      expect(getPatentPhysicsParams(id).ph).toBe(13.2);
+      expect(getPatentPhysicsParams(id).developerPh).toBe(13.2);
+
+      setPatentPhysicsParam(id, "claim1Pod", 0);
+      expect(getPatentPhysicsParams(id).claim1Active).toBe(0);
+      expect(getPatentPhysicsParams(id).claim1Pod).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Positive Print Density")?.value).not.toBe(
+        initial.find((m) => m.label === "Positive Print Density")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Fermi Reactor aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-2708656-fermi-reactor";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.rodWithdrawal));
+
+    try {
+      setPatentPhysicsParam(id, "rod", 50);
+      const params = getPatentPhysicsParams(id);
+      expect(params.rodWithdrawal).toBe(50);
+      expect(params.controlRodWithdrawalPct).toBe(50);
+      expect(params.rod).toBe(50);
+      expect(params.controlRod).toBe(50);
+      expect(observations).toEqual([50]);
+      expect(getLastParamChange(id)?.id).toBe("rodWithdrawal");
+
+      setPatentPhysicsParam(id, "purity", 98);
+      expect(getPatentPhysicsParams(id).moderatorPurity).toBe(98);
+      expect(getPatentPhysicsParams(id).moderatorPurityPct).toBe(98);
+      expect(getPatentPhysicsParams(id).purity).toBe(98);
+      expect(getPatentPhysicsParams(id).graphitePurity).toBe(98);
+
+      setPatentPhysicsParam(id, "lattice", 0);
+      expect(getPatentPhysicsParams(id).claim1Active).toBe(0);
+      expect(getPatentPhysicsParams(id).lattice).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Claim 1 lattice")?.value).toBe("removed");
+      expect(metrics.find((m) => m.label === "Claim 1 lattice")?.value).not.toBe(
+        initial.find((m) => m.label === "Claim 1 lattice")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Mestral Velcro aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-2717437-mestral-velcro";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.filamentDiameterMm));
+
+    try {
+      setPatentPhysicsParam(id, "diameter", 0.3);
+      const params = getPatentPhysicsParams(id);
+      expect(params.filamentDiameterMm).toBe(0.3);
+      expect(params.filamentDiameter).toBe(0.3);
+      expect(params.diameter).toBe(0.3);
+      expect(params.diameterMm).toBe(0.3);
+      expect(observations).toEqual([0.3]);
+      expect(getLastParamChange(id)?.id).toBe("filamentDiameterMm");
+
+      setPatentPhysicsParam(id, "length", 2.5);
+      expect(getPatentPhysicsParams(id).hookLengthMm).toBe(2.5);
+      expect(getPatentPhysicsParams(id).hookLength).toBe(2.5);
+      expect(getPatentPhysicsParams(id).length).toBe(2.5);
+      expect(getPatentPhysicsParams(id).hookHeight).toBe(2.5);
+
+      setPatentPhysicsParam(id, "density", 100);
+      expect(getPatentPhysicsParams(id).hookDensityPerCm2).toBe(100);
+      expect(getPatentPhysicsParams(id).density).toBe(100);
+      expect(getPatentPhysicsParams(id).pileDensity).toBe(100);
+      expect(getPatentPhysicsParams(id).hookDensity).toBe(100);
+
+      setPatentPhysicsParam(id, "peelAngle", 120);
+      expect(getPatentPhysicsParams(id).peelAngleDeg).toBe(120);
+      expect(getPatentPhysicsParams(id).peelAngle).toBe(120);
+      expect(getPatentPhysicsParams(id).angle).toBe(120);
+      expect(getPatentPhysicsParams(id).clampAngle).toBe(120);
+
+      setPatentPhysicsParam(id, "progress", 0.7);
+      expect(getPatentPhysicsParams(id).peelProgress).toBe(0.7);
+      expect(getPatentPhysicsParams(id).progress).toBe(0.7);
+      expect(getPatentPhysicsParams(id).peelFront).toBe(0.7);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Rendered Pile Rows")?.value).not.toBe(
+        initial.find((m) => m.label === "Rendered Pile Rows")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
 });

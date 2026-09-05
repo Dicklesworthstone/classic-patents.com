@@ -11,6 +11,7 @@ import {
   createThreeStudioScene,
   type StudioContext,
 } from "@/components/patents/visuals/three/ThreeStudioScene";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
 import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import {
@@ -200,97 +201,75 @@ export default function MestralVelcro3D({
 
       {/* Control Slider Dashboard */}
       <div className="p-5 bg-stone-950 border-t border-stone-800 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 text-xs">
-        {/* Filament Diameter */}
-        <div className="flex flex-col space-y-1.5">
-          <div className="flex justify-between text-stone-300 font-medium">
-            <span>Illustrative Filament Diameter</span>
-            <span className="font-mono text-amber-400">
-              {controls.filamentDiameterMm.toFixed(2)} mm
-            </span>
-          </div>
-          <input
-            type="range"
-            aria-label="Illustrative filament diameter"
-            min="0.10"
-            max="0.35"
-            step="0.01"
-            value={controls.filamentDiameterMm}
-            onChange={(e) => updateParam("filamentDiameterMm", parseFloat(e.target.value))}
-            className="accent-amber-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
-          />
-        </div>
+        <SensitivitySlider
+          id="velcro3dFilamentDiameter"
+          patentId={patentId}
+          paramKey="filamentDiameterMm"
+          label="Illustrative Filament Diameter"
+          value={controls.filamentDiameterMm}
+          min={0.1}
+          max={0.35}
+          step={0.01}
+          unit=" mm"
+          onChange={(val: number) => updateParam("filamentDiameterMm", val)}
+          allParams={effectiveParams}
+        />
 
-        {/* Hook Height */}
-        <div className="flex flex-col space-y-1.5">
-          <div className="flex justify-between text-stone-300 font-medium">
-            <span>Illustrative Hook Height</span>
-            <span className="font-mono text-amber-400">{controls.hookLengthMm.toFixed(1)} mm</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Illustrative hook height"
-            min="1"
-            max="3"
-            step="0.1"
-            value={controls.hookLengthMm}
-            onChange={(e) => updateParam("hookLengthMm", parseFloat(e.target.value))}
-            className="accent-amber-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
-          />
-        </div>
+        <SensitivitySlider
+          id="velcro3dHookLength"
+          patentId={patentId}
+          paramKey="hookLengthMm"
+          label="Illustrative Hook Height"
+          value={controls.hookLengthMm}
+          min={1.0}
+          max={3.0}
+          step={0.1}
+          unit=" mm"
+          onChange={(val: number) => updateParam("hookLengthMm", val)}
+          allParams={effectiveParams}
+        />
 
-        {/* Display Population */}
-        <div className="flex flex-col space-y-1.5">
-          <div className="flex justify-between text-stone-300 font-medium">
-            <span>Illustrative Pile Population</span>
-            <span className="font-mono text-emerald-400">{tel.visiblePileRows} rows</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Illustrative pile population"
-            min="20"
-            max="120"
-            step="4"
-            value={controls.hookDensityPerCm2}
-            onChange={(e) => updateParam("hookDensityPerCm2", parseInt(e.target.value, 10))}
-            className="accent-emerald-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
-          />
-        </div>
+        <SensitivitySlider
+          id="velcro3dHookDensity"
+          patentId={patentId}
+          paramKey="hookDensityPerCm2"
+          label="Illustrative Pile Population"
+          value={controls.hookDensityPerCm2}
+          min={20}
+          max={120}
+          step={4}
+          unit=" cm⁻²"
+          onChange={(val: number) => updateParam("hookDensityPerCm2", val)}
+          allParams={effectiveParams}
+        />
 
-        {/* Peeling Angle */}
-        <div className="flex flex-col space-y-1.5">
-          <div className="flex justify-between text-stone-300 font-medium">
-            <span>Applied Clamp Direction</span>
-            <span className="font-mono text-blue-400">{controls.peelAngleDeg}°</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Applied clamp direction"
-            min="20"
-            max="160"
-            step="5"
-            value={controls.peelAngleDeg}
-            onChange={(e) => updateParam("peelAngleDeg", parseInt(e.target.value, 10))}
-            className="accent-blue-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
-          />
-        </div>
+        <SensitivitySlider
+          id="velcro3dPeelAngle"
+          patentId={patentId}
+          paramKey="peelAngleDeg"
+          label="Applied Clamp Direction"
+          value={controls.peelAngleDeg}
+          min={20}
+          max={160}
+          step={5}
+          unit="°"
+          onChange={(val: number) => updateParam("peelAngleDeg", val)}
+          allParams={effectiveParams}
+        />
 
-        {/* Interactive Peel Separation */}
-        <div className="flex flex-col space-y-1.5">
-          <div className="flex justify-between text-stone-300 font-medium">
-            <span>Peeling Advance</span>
-            <span className="font-mono text-cyan-400">{(tel.peelProgress * 100).toFixed(0)}%</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Peeling advance"
-            min="0.05"
-            max="0.95"
-            step="0.01"
-            value={controls.peelProgress}
-            onChange={(e) => updateParam("peelProgress", parseFloat(e.target.value))}
-            className="accent-cyan-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
-          />
-        </div>
+        <SensitivitySlider
+          id="velcro3dPeelProgress"
+          patentId={patentId}
+          paramKey="peelProgress"
+          label="Peeling Advance"
+          value={controls.peelProgress}
+          min={0.05}
+          max={0.95}
+          step={0.01}
+          unit=""
+          onChange={(val: number) => updateParam("peelProgress", val)}
+          allParams={effectiveParams}
+        />
       </div>
 
       <div className="border-t border-amber-900/60 bg-amber-950/25 px-4 py-3 text-xs leading-relaxed text-amber-100">

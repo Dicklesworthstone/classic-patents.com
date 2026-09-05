@@ -541,9 +541,20 @@ export function computeParameterSensitivity(
 
     case "us-2708656-fermi-reactor": {
       const rod =
-        params.rodWithdrawal ?? params.controlRodWithdrawalPct ?? params.rodPosition ?? 83.5;
-      const moderatorPurity = params.moderatorPurity ?? 99.5;
-      const claim1 = params.claim1Active ?? 1;
+        params.rodWithdrawal ??
+        params.controlRodWithdrawalPct ??
+        params.rodPosition ??
+        params.rod ??
+        params.controlRod ??
+        params.withdrawal ??
+        83.5;
+      const moderatorPurity =
+        params.moderatorPurity ??
+        params.purity ??
+        params.graphitePurity ??
+        params.moderatorPurityPct ??
+        99.5;
+      const claim1 = params.claim1Active ?? params.claim1 ?? params.lattice ?? 1;
 
       if (
         !Number.isFinite(rod) ||
@@ -564,7 +575,10 @@ export function computeParameterSensitivity(
       if (
         controlKey === "rodWithdrawal" ||
         controlKey === "controlRodWithdrawalPct" ||
-        controlKey === "rodPosition"
+        controlKey === "rodPosition" ||
+        controlKey === "rod" ||
+        controlKey === "controlRod" ||
+        controlKey === "withdrawal"
       ) {
         if (!isClaim1Active) {
           return {
@@ -592,7 +606,23 @@ export function computeParameterSensitivity(
             "Central difference over the same explicitly normalized absorber lens used by the visual. It is not a source-calibrated cadmium worth curve.",
         };
       }
-      if (controlKey === "claim1Active") {
+      if (
+        controlKey === "moderatorPurity" ||
+        controlKey === "purity" ||
+        controlKey === "graphitePurity" ||
+        controlKey === "moderatorPurityPct"
+      ) {
+        return {
+          metricName: "Moderator Graphite Purity Margin",
+          derivativeSymbol: "∂k_eff / ∂p_graphite",
+          derivativeValue: 0,
+          derivativeUnit: "k / %",
+          interpretation: isClaim1Active
+            ? "The patent requires graphite of exceptional purity to minimize parasitic neutron capture, but supplies no calibrated impurity-to-reactivity curve; the admitted model maintains normalized criticality without fabricating ungrounded absorption data."
+            : "Claim 1 natural-uranium lattice is withheld; graphite moderator produces zero neutron multiplying effect.",
+        };
+      }
+      if (controlKey === "claim1Active" || controlKey === "claim1" || controlKey === "lattice") {
         return {
           metricName: "Claim 1 Lattice Geometry Visibility",
           derivativeSymbol: "∂q_{lattice} / ∂u_{claim}",
@@ -3542,32 +3572,53 @@ export function computeParameterSensitivity(
     }
 
     case "us-2524035-bardeen-transistor": {
-      const spacing =
+      const rawSpacing =
         params.pointSpacingMils ??
         params.pointSpacing ??
         params.spacing ??
         params.spacingMils ??
         params.contactSpacing ??
-        2;
-      const sample =
-        params.operatingSample ?? params.sample ?? params.sampleNumber ?? params.tableSample ?? 1;
-      const claim1Active =
-        params.claim1Active !== undefined
-          ? typeof params.claim1Active === "number"
-            ? params.claim1Active >= 0.5
-            : Boolean(params.claim1Active)
-          : true;
-
+        params.pointSpacingMicrons;
       if (
-        !Number.isFinite(spacing) ||
-        spacing < 1 ||
-        spacing > 10 ||
-        !Number.isFinite(sample) ||
-        sample < 1 ||
-        sample > 3
+        rawSpacing !== undefined &&
+        (!Number.isFinite(rawSpacing) || rawSpacing < 1 || rawSpacing > 10)
       ) {
         return null;
       }
+      const spacing = rawSpacing ?? 2;
+
+      const rawSample =
+        params.operatingSample ??
+        params.sample ??
+        params.sampleNumber ??
+        params.tableSample ??
+        params.sampleIndex;
+      if (
+        rawSample !== undefined &&
+        (!Number.isFinite(rawSample) || rawSample < 1 || rawSample > 3)
+      ) {
+        return null;
+      }
+      const sample = rawSample ?? 1;
+
+      const rawClaim1 =
+        params.claim1Active ??
+        params.claim1 ??
+        params.collectorActive ??
+        params.collectorPresent ??
+        params.claim1Collector;
+      if (
+        rawClaim1 !== undefined &&
+        (!Number.isFinite(Number(rawClaim1)) || Number(rawClaim1) < 0 || Number(rawClaim1) > 1)
+      ) {
+        return null;
+      }
+      const claim1Active =
+        rawClaim1 !== undefined
+          ? typeof rawClaim1 === "number"
+            ? rawClaim1 >= 0.5
+            : Boolean(rawClaim1)
+          : true;
 
       const state = stepBardeenPointContact({
         operatingSample: sample,
@@ -3593,39 +3644,98 @@ export function computeParameterSensitivity(
             : "Claim 1 withheld: collector electrode path removed; transistor action and minority carrier collection across the point contact gap are disabled (0 µm / mil).",
         };
       }
+      if (
+        controlKey === "operatingSample" ||
+        controlKey === "sample" ||
+        controlKey === "sampleNumber" ||
+        controlKey === "tableSample" ||
+        controlKey === "sampleIndex"
+      ) {
+        const stepDelta = sample === 1 ? -12 : -14;
+        return {
+          metricName: "Reported Table I Voltage Gain",
+          derivativeSymbol: "ΔA_v / ΔSample",
+          derivativeValue: claim1Active ? stepDelta : 0,
+          derivativeUnit: "× / sample",
+          interpretation: claim1Active
+            ? `Discrete marginal change in source-reported small-signal voltage gain from Table I sample ${sample} to adjacent sample (${sample === 1 ? "Sample 1: 62× → Sample 2: 50×" : "Sample 2: 50× → Sample 3: 36×"}).`
+            : "Claim 1 withheld: collector electrode path removed; transistor action and minority carrier collection are disabled (0× / sample).",
+        };
+      }
+      if (
+        controlKey === "claim1Active" ||
+        controlKey === "claim1" ||
+        controlKey === "collectorActive" ||
+        controlKey === "collectorPresent" ||
+        controlKey === "claim1Collector"
+      ) {
+        return {
+          metricName: "Claim 1 Point-Contact Collector Path",
+          derivativeSymbol: "ΔState / ΔContact",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation: claim1Active
+            ? "Collector electrode engaged in contact with germanium crystal within preferred 1–10 mil distance of emitter (Claim 1 compliant)."
+            : "Claim 1 collector path severed: collector point disengaged; no minority carrier collection or transistor action.",
+        };
+      }
       break;
     }
 
     case "us-2543181-land-polaroid": {
-      const rawTime = params.developmentTimeSec ?? params.devTimeSec ?? params.time;
+      const rawTime =
+        params.developmentTimeSec ??
+        params.devTimeSec ??
+        params.developmentTime ??
+        params.devTime ??
+        params.time ??
+        params.processingTime;
       if (rawTime !== undefined && (!Number.isFinite(rawTime) || rawTime < 0 || rawTime > 60)) {
         return null;
       }
-      const rawExposure = params.exposureFraction ?? params.exposure;
+      const rawExposure =
+        params.exposureFraction ?? params.exposure ?? params.exposureLevel ?? params.expFraction;
       if (
         rawExposure !== undefined &&
         (!Number.isFinite(rawExposure) || rawExposure < 0 || rawExposure > 1)
       ) {
         return null;
       }
-      const rawVisc = params.reagentViscosityCp ?? params.viscosity;
+      const rawVisc =
+        params.reagentViscosityCp ?? params.viscosity ?? params.viscosityCp ?? params.gelViscosity;
       if (
         rawVisc !== undefined &&
         (!Number.isFinite(rawVisc) || rawVisc < 1000 || rawVisc > 80000)
       ) {
         return null;
       }
-      const rawGap = params.rollerGapUm ?? params.gap;
+      const rawGap = params.rollerGapUm ?? params.gap ?? params.gapUm ?? params.spreadGap;
       if (rawGap !== undefined && (!Number.isFinite(rawGap) || rawGap < 10 || rawGap > 60)) {
         return null;
       }
-      const rawPh = params.alkaliPh ?? params.ph;
+      const rawPh = params.alkaliPh ?? params.ph ?? params.developerPh ?? params.developerAlkaliPh;
       if (rawPh !== undefined && (!Number.isFinite(rawPh) || rawPh < 10.5 || rawPh > 13.8)) {
         return null;
       }
 
+      const rawClaim1 =
+        params.claim1Active ??
+        params.claim1 ??
+        params.claim1Pod ??
+        params.podPresent ??
+        params.reagentPod;
+      if (
+        rawClaim1 !== undefined &&
+        (!Number.isFinite(Number(rawClaim1)) || Number(rawClaim1) < 0 || Number(rawClaim1) > 1)
+      ) {
+        return null;
+      }
       const claim1Active =
-        params.claim1Active !== undefined ? Number(params.claim1Active) >= 0.5 : true;
+        rawClaim1 !== undefined
+          ? typeof rawClaim1 === "number"
+            ? rawClaim1 >= 0.5
+            : Boolean(rawClaim1)
+          : true;
 
       if (
         controlKey === "developmentTimeSec" ||
@@ -3769,6 +3879,24 @@ export function computeParameterSensitivity(
           derivativeUnit: "s⁻¹ / pH",
           interpretation:
             "First derivative of hydroquinone dianion dissociation and redox activation rate with developer alkalinity.",
+        };
+      }
+
+      if (
+        controlKey === "claim1Active" ||
+        controlKey === "claim1" ||
+        controlKey === "claim1Pod" ||
+        controlKey === "podPresent" ||
+        controlKey === "reagentPod"
+      ) {
+        return {
+          metricName: "Claim 1 Attached Product Path",
+          derivativeSymbol: "ΔState / ΔClaim1",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation: claim1Active
+            ? "Photosensitive layer, receiving sheet, and liquid reagent container form a unitary film assembly spread by pressure rollers (Claim 1 compliant)."
+            : "Claim 1 attached product path severed: reagent container detached; no liquid reagent spread or diffusion transfer occurs.",
         };
       }
       break;
@@ -7021,26 +7149,50 @@ export function computeParameterSensitivity(
     }
 
     case "us-2717437-mestral-velcro": {
-      const rawD = params.filamentDiameterMm ?? params.diameter;
+      const rawD =
+        params.filamentDiameterMm ??
+        params.diameter ??
+        params.filamentDiameter ??
+        params.diameterMm;
       if (rawD !== undefined && (!Number.isFinite(rawD) || rawD < 0.1 || rawD > 0.35)) {
         return null;
       }
-      const rawL = params.hookLengthMm ?? params.length;
+      const rawL =
+        params.hookLengthMm ??
+        params.length ??
+        params.hookHeight ??
+        params.hookLength ??
+        params.heightMm;
       if (rawL !== undefined && (!Number.isFinite(rawL) || rawL < 1.0 || rawL > 3.0)) {
         return null;
       }
-      const rawRho = params.hookDensityPerCm2 ?? params.density;
+      const rawRho =
+        params.hookDensityPerCm2 ??
+        params.density ??
+        params.pileDensity ??
+        params.hookDensity ??
+        params.densityPerCm2;
       if (rawRho !== undefined && (!Number.isFinite(rawRho) || rawRho < 20 || rawRho > 120)) {
         return null;
       }
-      const rawAngle = params.peelAngleDeg ?? params.angle;
+      const rawAngle =
+        params.peelAngleDeg ??
+        params.angle ??
+        params.peelAngle ??
+        params.clampAngle ??
+        params.angleDeg;
       if (
         rawAngle !== undefined &&
-        (!Number.isFinite(rawAngle) || rawAngle < 15 || rawAngle > 165)
+        (!Number.isFinite(rawAngle) || rawAngle < 20 || rawAngle > 160)
       ) {
         return null;
       }
-      const rawProg = params.peelProgress ?? params.progress;
+      const rawProg =
+        params.peelProgress ??
+        params.progress ??
+        params.peelFront ??
+        params.advance ??
+        params.peelAdvance;
       if (
         rawProg !== undefined &&
         (!Number.isFinite(rawProg) || rawProg < 0.05 || rawProg > 0.95)
@@ -7049,7 +7201,12 @@ export function computeParameterSensitivity(
       }
 
       const controls = readMestralVelcroControls(params);
-      if (controlKey === "filamentDiameterMm" || controlKey === "diameter") {
+      if (
+        controlKey === "filamentDiameterMm" ||
+        controlKey === "diameter" ||
+        controlKey === "filamentDiameter" ||
+        controlKey === "diameterMm"
+      ) {
         const d0 = controls.filamentDiameterMm;
         const probePlus = stepMestralVelcroSi({ ...controls, filamentDiameterMm: d0 + 0.01 });
         const probeMinus = stepMestralVelcroSi({
@@ -7067,7 +7224,13 @@ export function computeParameterSensitivity(
             "Central difference of the exact circular-section d⁴/L³ geometry index. This is not a force derivative: the grant does not provide a material modulus or contact law.",
         };
       }
-      if (controlKey === "hookLengthMm" || controlKey === "length") {
+      if (
+        controlKey === "hookLengthMm" ||
+        controlKey === "length" ||
+        controlKey === "hookHeight" ||
+        controlKey === "hookLength" ||
+        controlKey === "heightMm"
+      ) {
         const length = controls.hookLengthMm;
         const probePlus = stepMestralVelcroSi({
           ...controls,
@@ -7088,7 +7251,13 @@ export function computeParameterSensitivity(
             "Central difference of the exact L⁻³ geometry factor. This does not claim a physical spring rate without the missing material and boundary data.",
         };
       }
-      if (controlKey === "hookDensityPerCm2" || controlKey === "density") {
+      if (
+        controlKey === "hookDensityPerCm2" ||
+        controlKey === "density" ||
+        controlKey === "pileDensity" ||
+        controlKey === "hookDensity" ||
+        controlKey === "densityPerCm2"
+      ) {
         return {
           metricName: "Visible Pile Row Population",
           derivativeSymbol: "∂Rows / ∂ρ",
@@ -7096,6 +7265,38 @@ export function computeParameterSensitivity(
           derivativeUnit: "rows / cm⁻²",
           interpretation:
             "Quantized museum display row scaling per unit pile density over the illustrative 20-120 cm⁻² range.",
+        };
+      }
+      if (
+        controlKey === "peelAngleDeg" ||
+        controlKey === "peelAngle" ||
+        controlKey === "angle" ||
+        controlKey === "clampAngle" ||
+        controlKey === "angleDeg"
+      ) {
+        return {
+          metricName: "Applied Clamp Direction Angle",
+          derivativeSymbol: "∂θ_clamp / ∂θ_input",
+          derivativeValue: 1.0,
+          derivativeUnit: "deg / deg",
+          interpretation:
+            "Direct one-to-one angular orientation of the external peel clamp boundary vector relative to the horizontal hook foundation tape (15° to 165°).",
+        };
+      }
+      if (
+        controlKey === "peelProgress" ||
+        controlKey === "progress" ||
+        controlKey === "peelFront" ||
+        controlKey === "advance" ||
+        controlKey === "peelAdvance"
+      ) {
+        return {
+          metricName: "Peel Front Advance",
+          derivativeSymbol: "∂x_peel / ∂u_peel",
+          derivativeValue: 1.0,
+          derivativeUnit: "normalized / normalized",
+          interpretation:
+            "Linear progression of the normalized peel separation boundary dividing engaged opposing hooks from released tape along the longitudinal axis.",
         };
       }
       break;

@@ -67,32 +67,78 @@ function clamp(value: number, min: number, max: number): number {
 export function readMestralVelcroControls(params: Record<string, number>): MestralVelcroControls {
   return {
     filamentDiameterMm: clamp(
-      finiteOr(params.filamentDiameterMm, MESTRAL_VELCRO_DEFAULTS.filamentDiameterMm),
+      finiteOr(
+        params.filamentDiameterMm ??
+          params.diameter ??
+          params.filamentDiameter ??
+          params.diameterMm,
+        MESTRAL_VELCRO_DEFAULTS.filamentDiameterMm,
+      ),
       0.1,
       0.35,
     ),
-    hookLengthMm: clamp(finiteOr(params.hookLengthMm, MESTRAL_VELCRO_DEFAULTS.hookLengthMm), 1, 3),
+    hookLengthMm: clamp(
+      finiteOr(
+        params.hookLengthMm ??
+          params.length ??
+          params.hookHeight ??
+          params.hookLength ??
+          params.heightMm,
+        MESTRAL_VELCRO_DEFAULTS.hookLengthMm,
+      ),
+      1,
+      3,
+    ),
     hookDensityPerCm2: clamp(
-      finiteOr(params.hookDensityPerCm2, MESTRAL_VELCRO_DEFAULTS.hookDensityPerCm2),
+      finiteOr(
+        params.hookDensityPerCm2 ??
+          params.density ??
+          params.pileDensity ??
+          params.hookDensity ??
+          params.densityPerCm2,
+        MESTRAL_VELCRO_DEFAULTS.hookDensityPerCm2,
+      ),
       20,
       120,
     ),
     peelAngleDeg: clamp(
-      finiteOr(params.peelAngleDeg, MESTRAL_VELCRO_DEFAULTS.peelAngleDeg),
+      finiteOr(
+        params.peelAngleDeg ??
+          params.angle ??
+          params.peelAngle ??
+          params.clampAngle ??
+          params.angleDeg,
+        MESTRAL_VELCRO_DEFAULTS.peelAngleDeg,
+      ),
       20,
       160,
     ),
     peelProgress: clamp(
-      finiteOr(params.peelProgress, MESTRAL_VELCRO_DEFAULTS.peelProgress),
+      finiteOr(
+        params.peelProgress ??
+          params.progress ??
+          params.peelFront ??
+          params.advance ??
+          params.peelAdvance,
+        MESTRAL_VELCRO_DEFAULTS.peelProgress,
+      ),
       0.05,
       0.95,
     ),
     thermalSettingPresent:
-      finiteOr(params.thermalSettingPresent, MESTRAL_VELCRO_DEFAULTS.thermalSettingPresent) >= 0.5
+      finiteOr(
+        params.thermalSettingPresent ?? params.claim1 ?? params.thermalSetting,
+        MESTRAL_VELCRO_DEFAULTS.thermalSettingPresent,
+      ) >= 0.5
         ? 1
         : 0,
     hookPilePresent:
-      finiteOr(params.hookPilePresent, MESTRAL_VELCRO_DEFAULTS.hookPilePresent) >= 0.5 ? 1 : 0,
+      finiteOr(
+        params.hookPilePresent ?? params.claim3 ?? params.hookPile,
+        MESTRAL_VELCRO_DEFAULTS.hookPilePresent,
+      ) >= 0.5
+        ? 1
+        : 0,
   };
 }
 

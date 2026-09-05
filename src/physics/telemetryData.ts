@@ -10430,8 +10430,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "peelAngleDeg",
         label: "Applied Clamp Direction",
-        min: 15,
-        max: 165,
+        min: 20,
+        max: 160,
         step: 5,
         defaultValue: MESTRAL_VELCRO_DEFAULTS.peelAngleDeg,
         unit: "deg",
