@@ -3,11 +3,14 @@
 import { ArrowRight, ChevronLeft, ChevronRight, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { usePatentCatalog } from "@/components/layout/PatentCatalogProvider";
 import { CoupledDynamicsStrip } from "@/components/patents/CoupledDynamicsStrip";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
-import { allPatents } from "@/data/patents";
+import type { PatentCatalogEntry, PatentTimelineContext } from "@/data/patentCatalog";
 import { coupleEdgesFor } from "@/physics/coupleGraph";
-import type { Patent } from "@/types/patent";
+
+type TimelinePatent = PatentCatalogEntry & { historicalContext: PatentTimelineContext };
+
 import { formatPatentDate } from "@/utils/patentDate";
 
 type EraGroup = "all" | "early" | "gilded" | "modern";
@@ -18,8 +21,6 @@ const ERA_TABS: { id: EraGroup; label: string; range: string }[] = [
   { id: "gilded", label: "Gilded Age & Electrification", range: "1870–1909" },
   { id: "modern", label: "Atomic, Silicon & Computing", range: "1910–2009" },
 ];
-
-const SORTED_PATENTS = [...allPatents].sort((a, b) => a.grantDate.localeCompare(b.grantDate));
 
 function EraFilter({
   selectedEra,
@@ -80,9 +81,9 @@ function TimelineScrubber({
   filteredPatents,
   onSelectIndex,
 }: {
-  readonly selectedPatent: Patent;
+  readonly selectedPatent: TimelinePatent;
   readonly currentFilteredIndex: number;
-  readonly filteredPatents: readonly Patent[];
+  readonly filteredPatents: readonly TimelinePatent[];
   readonly onSelectIndex: (index: number) => void;
 }) {
   const total = filteredPatents.length;
@@ -91,8 +92,8 @@ function TimelineScrubber({
       data-testid="timeline-scrubber"
       className="p-4 rounded-2xl bg-parchment-100/90 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 shadow-xs space-y-3"
     >
-      <div className="flex items-center justify-between text-xs font-mono">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+        <div className="flex min-w-0 max-w-full items-center gap-2">
           <span className="font-bold text-amber-700 dark:text-amber-400 text-sm">
             {selectedPatent.grantDate.split("-")[0]}
           </span>
@@ -138,7 +139,7 @@ function MilestoneCards({
   selectedPatentId,
   onSelectPatent,
 }: {
-  readonly filteredPatents: readonly Patent[];
+  readonly filteredPatents: readonly TimelinePatent[];
   readonly selectedPatentId: string;
   readonly onSelectPatent: (id: string) => void;
 }) {
@@ -195,7 +196,7 @@ function PatentSpotlight({
   onPrevious,
   onNext,
 }: {
-  readonly selectedPatent: Patent;
+  readonly selectedPatent: TimelinePatent;
   readonly currentFilteredIndex: number;
   readonly total: number;
   readonly coupleEdges: ReturnType<typeof coupleEdgesFor>;
@@ -312,25 +313,37 @@ function PatentSpotlight({
   );
 }
 
-export function PatentTimeline() {
+export function PatentTimeline({
+  historicalContexts,
+}: {
+  historicalContexts: Record<string, PatentTimelineContext>;
+}) {
+  const { patents: allPatents } = usePatentCatalog();
+  const sortedPatents = useMemo(
+    () =>
+      allPatents
+        .map((patent) => ({ ...patent, historicalContext: historicalContexts[patent.id] }))
+        .sort((a, b) => a.grantDate.localeCompare(b.grantDate)),
+    [allPatents, historicalContexts],
+  );
   const [selectedPatentId, setSelectedPatentId] = useState<string>(allPatents[0].id);
   const [selectedEra, setSelectedEra] = useState<EraGroup>("all");
 
   const filteredPatents = useMemo(() => {
-    if (selectedEra === "all") return SORTED_PATENTS;
-    return SORTED_PATENTS.filter((p) => {
+    if (selectedEra === "all") return sortedPatents;
+    return sortedPatents.filter((p) => {
       const year = Number.parseInt(p.grantDate.split("-")[0], 10);
       if (selectedEra === "early") return year < 1870;
       if (selectedEra === "gilded") return year >= 1870 && year < 1910;
       if (selectedEra === "modern") return year >= 1910;
       return true;
     });
-  }, [selectedEra]);
+  }, [selectedEra, sortedPatents]);
 
   const selectedPatent =
     filteredPatents.find((p) => p.id === selectedPatentId) ||
-    SORTED_PATENTS.find((p) => p.id === selectedPatentId) ||
-    SORTED_PATENTS[0];
+    sortedPatents.find((p) => p.id === selectedPatentId) ||
+    sortedPatents[0];
   const currentFilteredIndex = filteredPatents.findIndex((p) => p.id === selectedPatent.id);
   const coupleEdges = useMemo(() => coupleEdgesFor(selectedPatent.id, {}), [selectedPatent.id]);
   const selectedPatentHasVisualHold = selectedPatent.id === "us-3671542-kwolek-kevlar";

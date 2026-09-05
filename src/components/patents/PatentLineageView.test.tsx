@@ -1,5 +1,9 @@
 import { describe, expect, mock, test } from "bun:test";
+import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { PatentCatalogProvider } from "@/components/layout/PatentCatalogProvider";
+import { toPatentCatalogEntry } from "@/data/patentCatalog";
+import { allPatents, getFeaturedPatents } from "@/data/patents";
 
 // Mock next/link
 mock.module("next/link", () => ({
@@ -14,7 +18,7 @@ import { PatentLineageView } from "./PatentLineageView";
 
 describe("PatentLineageView component", () => {
   test("renders default lineage view with title, steps, and years", () => {
-    const html = renderToStaticMarkup(<PatentLineageView />);
+    const html = renderWithCatalog(<PatentLineageView />);
 
     expect(html).toContain('data-testid="patent-lineage-view"');
     expect(html).toContain("Technological Lineage &amp; Descent");
@@ -25,9 +29,7 @@ describe("PatentLineageView component", () => {
   });
 
   test("highlights current patent when currentPatentId is provided", () => {
-    const html = renderToStaticMarkup(
-      <PatentLineageView currentPatentId="us-821393-wright-flyer" />,
-    );
+    const html = renderWithCatalog(<PatentLineageView currentPatentId="us-821393-wright-flyer" />);
 
     expect(html).toContain("Atmospheric &amp; Exoatmospheric Flight");
     expect(html).toContain("This Patent");
@@ -38,3 +40,16 @@ describe("PatentLineageView component", () => {
     expect(html).toContain("1943");
   });
 });
+
+function renderWithCatalog(children: ReactNode) {
+  return renderToStaticMarkup(
+    <PatentCatalogProvider
+      catalog={{
+        patents: allPatents.map(toPatentCatalogEntry),
+        featuredIds: getFeaturedPatents().map((patent) => patent.id),
+      }}
+    >
+      {children}
+    </PatentCatalogProvider>,
+  );
+}

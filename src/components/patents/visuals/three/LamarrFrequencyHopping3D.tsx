@@ -39,6 +39,14 @@ export function LamarrFrequencyHopping3D() {
   // Pure consumer of the shared transport tape; no local integration clock.
   const recordState = readLamarrTapeFrame(readLamarrRuntimeControls(effectiveParams));
   const live = useLiveSimParams({ recordState, isCutaway });
+  const lastRowRef = useRef(recordState.transmitterRow);
+
+  useEffect(() => {
+    if (!isAudioMuted && recordState.transmitterRow !== lastRowRef.current) {
+      soundEngine.playLamarrHop(recordState.transmitterRow);
+      lastRowRef.current = recordState.transmitterRow;
+    }
+  }, [isAudioMuted, recordState.transmitterRow]);
 
   const applyCameraPreset = (preset: LamarrCameraPreset) => {
     setActiveCamera(preset);

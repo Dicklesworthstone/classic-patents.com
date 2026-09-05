@@ -4,6 +4,14 @@ import "./globals.css";
 import { AudioCleanupProvider } from "@/components/layout/AudioCleanupProvider";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { PatentCatalogProvider } from "@/components/layout/PatentCatalogProvider";
+import { toPatentCatalogEntry } from "@/data/patentCatalog";
+import { allPatents, getFeaturedPatents } from "@/data/patents";
+
+const catalog = {
+  patents: allPatents.map(toPatentCatalogEntry),
+  featuredIds: getFeaturedPatents().map((patent) => patent.id),
+};
 
 const newsreader = Newsreader({
   subsets: ["latin"],
@@ -133,17 +141,19 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <main
-            id="main-content"
-            tabIndex={-1}
-            className="flex-1 relative z-0 isolate outline-none"
-          >
-            {children}
-          </main>
-          <Footer />
-        </div>
+        <PatentCatalogProvider catalog={catalog}>
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main
+              id="main-content"
+              tabIndex={-1}
+              className="flex-1 relative z-0 isolate outline-none"
+            >
+              {children}
+            </main>
+            <Footer />
+          </div>
+        </PatentCatalogProvider>
       </body>
     </html>
   );

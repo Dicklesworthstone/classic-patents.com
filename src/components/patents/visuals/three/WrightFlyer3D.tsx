@@ -15,6 +15,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { evaluateWrightAirflowVelocityVector } from "@/physics/fieldTextures";
 import { ensureFlyerWasm, flyerAeroSource, flyerKernelSource } from "@/physics/flyerWasm";
 import { createStudioClock, TickScheduler } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -289,18 +290,29 @@ export function WrightFlyer3D() {
         p.isCutaway,
       );
 
-      // Streamline Flow Particle Physics
+      // Streamline Flow Particle Physics driven by admitted biplane airflow velocity field
       const posArr = particlePositions;
-      const flowSpeed = p.streamFlowSpeed * delta;
+      const speedScale = (siNow.airspeedMps / 12.5) * 0.35;
 
       for (let i = 0; i < particleCount; i++) {
         const idx = i * 3;
-        posArr[idx + 2] -= flowSpeed;
+        const px = posArr[idx];
+        const py = posArr[idx + 1];
+        const pz = posArr[idx + 2];
 
-        // Downwash deflection as airflow passes the wings
-        if (posArr[idx + 2] < 1 && posArr[idx + 2] > -4) {
-          posArr[idx + 1] -= p.downwashSpeed * delta;
-        }
+        // Evaluate genuine 3D velocity vector [vx, vy, vz]
+        const [vx, vy, vz] = evaluateWrightAirflowVelocityVector(pz, py, px, {
+          airspeedMps: siNow.airspeedMps,
+          angleOfAttackRad: (5 * Math.PI) / 180,
+          wingWarpDeg: p.wingWarpDeg,
+          elevatorPitchDeg: p.elevatorPitchDeg,
+          rudderYawDeg: p.rudderYawDeg,
+          coupled: p.coupled >= 0.5,
+        });
+
+        posArr[idx] += vz * delta * speedScale;
+        posArr[idx + 1] += vy * delta * speedScale;
+        posArr[idx + 2] -= Math.max(3, vx) * delta * speedScale;
 
         // Reset particle when it travels past the tail
         if (posArr[idx + 2] < -8) {

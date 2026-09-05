@@ -3,8 +3,8 @@
 import { ArrowRight, Compass, GitBranch, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { usePatentCatalog } from "@/components/layout/PatentCatalogProvider";
 import { ALL_PATENT_LINEAGES, getLineageAncestryForPatent } from "@/data/patentLineages";
-import { getPatentById } from "@/data/patents";
 
 interface PatentLineageViewProps {
   currentPatentId?: string;
@@ -12,6 +12,7 @@ interface PatentLineageViewProps {
 }
 
 export function PatentLineageView({ currentPatentId, initialLineageId }: PatentLineageViewProps) {
+  const { patents } = usePatentCatalog();
   // If currentPatentId is provided, default to its primary lineage
   const contextAncestry = useMemo(() => {
     return currentPatentId ? getLineageAncestryForPatent(currentPatentId) : null;
@@ -79,7 +80,7 @@ export function PatentLineageView({ currentPatentId, initialLineageId }: PatentL
         {/* Step Nodes */}
         <div className="space-y-4 relative">
           {activeLineage.steps.map((step, index) => {
-            const patent = getPatentById(step.patentId);
+            const patent = patents.find((candidate) => candidate.id === step.patentId);
             const isCurrent = currentPatentId === step.patentId;
             const isLast = index === activeLineage.steps.length - 1;
 

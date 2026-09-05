@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateCcw, Zap } from "lucide-react";
+import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import {
@@ -13,10 +13,13 @@ import {
 import { ensureTeslaWasm, teslaKernelSource } from "@/physics/teslaWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function TeslaCoilSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-593138-tesla-coil");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const [, setKernelSource] = useState(teslaKernelSource);
   const profileGradientId = `tesla-profile-${useId().replaceAll(":", "")}`;
 
@@ -80,6 +83,22 @@ export function TeslaCoilSim() {
           <div className="px-3.5 py-1.5 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-900 dark:text-purple-300 text-xs sm:text-sm font-mono font-bold border border-purple-300 dark:border-purple-800 shadow-2xs">
             Absolute potential: source-underdetermined
           </div>
+          <button
+            type="button"
+            onClick={() => {
+              const nextMuted = toggleSound();
+              if (!nextMuted) {
+                soundEngine.playTeslaCoilDischarge(120, 1.0);
+              } else {
+                soundEngine.playSwitchClick();
+              }
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
           <button
             type="button"
             onClick={resetParams}

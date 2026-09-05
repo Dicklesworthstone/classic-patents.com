@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight, Link2 } from "lucide-react";
+import Link from "next/link";
 import type { CoupleEdge } from "@/physics/coupleGraph";
 
 interface CoupledDynamicsStripProps {
@@ -21,9 +22,17 @@ export function CoupledDynamicsStrip({ edges }: CoupledDynamicsStripProps) {
           <Link2 className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
           <span>Coupled Transfer Dynamics · fs-couple</span>
         </div>
-        <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-100 dark:bg-cyan-950/60 text-cyan-800 dark:text-cyan-300 border border-cyan-300/60 dark:border-cyan-800/60 font-mono">
-          {edges[0]?.source ?? "ts-fallback"}
-        </span>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/labs"
+            className="text-[9px] underline text-cyan-700 dark:text-cyan-400 hover:text-cyan-900 dark:hover:text-cyan-200 transition-colors"
+          >
+            Open Teaching Lab →
+          </Link>
+          <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-100 dark:bg-cyan-950/60 text-cyan-800 dark:text-cyan-300 border border-cyan-300/60 dark:border-cyan-800/60 font-mono">
+            {edges[0]?.source ?? "ts-fallback"}
+          </span>
+        </div>
       </div>
       <div className="space-y-1.5">
         {edges.map((edge) => (

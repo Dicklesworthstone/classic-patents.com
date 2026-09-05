@@ -63,7 +63,7 @@ export function MarconiRadio3D() {
   const triggerSpark = () => {
     const current = readMarconiRuntimeControls(getPatentPhysicsParams("us-586193-marconi-radio"));
     updateParam("sparkPulseSequence", current.sparkPulseSequence + 1);
-    if (!isAudioMuted) soundEngine.playSparkDischarge(0.12);
+    if (!isAudioMuted) soundEngine.playMarconiSparkTrain(850, 28);
   };
 
   useEffect(() => {

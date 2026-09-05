@@ -1,7 +1,11 @@
 import { describe, expect, mock, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { PatentCatalogProvider } from "@/components/layout/PatentCatalogProvider";
+import { toPatentCatalogEntry, toPatentTimelineContext } from "@/data/patentCatalog";
+import { allPatents, getFeaturedPatents } from "@/data/patents";
 
 // Mock next/link
 mock.module("next/link", () => ({
@@ -21,7 +25,13 @@ const TIMELINE_SOURCE = readFileSync(
 
 describe("PatentTimeline component", () => {
   test("renders era filter tabs, timeline milestones, and initial patent feature card", () => {
-    const html = renderToStaticMarkup(<PatentTimeline />);
+    const html = renderWithCatalog(
+      <PatentTimeline
+        historicalContexts={Object.fromEntries(
+          allPatents.map((patent) => [patent.id, toPatentTimelineContext(patent)]),
+        )}
+      />,
+    );
 
     expect(html).toContain("All Milestones");
     expect(html).toContain("1769");
@@ -34,7 +44,13 @@ describe("PatentTimeline component", () => {
   });
 
   test("renders interactive timeline scrubber slider with accessible range attributes", () => {
-    const html = renderToStaticMarkup(<PatentTimeline />);
+    const html = renderWithCatalog(
+      <PatentTimeline
+        historicalContexts={Object.fromEntries(
+          allPatents.map((patent) => [patent.id, toPatentTimelineContext(patent)]),
+        )}
+      />,
+    );
 
     expect(html).toContain('data-testid="timeline-scrubber"');
     expect(html).toContain('aria-label="Timeline milestone scrubber"');
@@ -49,3 +65,16 @@ describe("PatentTimeline component", () => {
     expect(TIMELINE_SOURCE).toContain("Explore Source-Bound Record");
   });
 });
+
+function renderWithCatalog(children: ReactNode) {
+  return renderToStaticMarkup(
+    <PatentCatalogProvider
+      catalog={{
+        patents: allPatents.map(toPatentCatalogEntry),
+        featuredIds: getFeaturedPatents().map((patent) => patent.id),
+      }}
+    >
+      {children}
+    </PatentCatalogProvider>,
+  );
+}

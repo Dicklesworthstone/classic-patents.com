@@ -8,6 +8,7 @@ import {
   NATURAL_URANIUM_U235_PERCENT,
   stepFermiKinetics,
 } from "@/physics/fermiKinetics";
+import { computeFermiNormalizedDisplayField } from "@/physics/fieldTextures";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
 
@@ -29,6 +30,13 @@ export function FermiReactorSim() {
   const isCritical = claim1Active && kEffective >= 0.998 && kEffective <= 1.002;
   const normalizedWithdrawalPct = 100 * (1 - kinetics.controlRodInsertionFraction);
   const absorberSvgX = 70 + (normalizedWithdrawalPct / 100) * 220;
+
+  // Shared spatial sampled display field matching 3D studio
+  const displayField = computeFermiNormalizedDisplayField(
+    kEffective,
+    kinetics.controlRodInsertionFraction,
+    16,
+  );
 
   const resetToCriticality = () => {
     resetParams();
@@ -116,21 +124,28 @@ export function FermiReactorSim() {
                       stroke="rgba(255,255,255,0.15)"
                       strokeWidth="1"
                     />
-                    {/* End view of Claim 1 natural-uranium rods. */}
-                    {claim1Active && (
-                      <circle
-                        cx={cell.cx}
-                        cy={cell.cy}
-                        r={cell.slugR}
-                        className={
-                          isSupercritical
-                            ? "fill-red-500"
-                            : isCritical
-                              ? "fill-emerald-400"
-                              : "fill-amber-600"
-                        }
-                      />
-                    )}
+                    {/* End view of Claim 1 natural-uranium rods modulated by displayField */}
+                    {claim1Active &&
+                      (() => {
+                        const gx = Math.min(15, Math.floor((c / kinetics.latticeCols) * 16));
+                        const gy = Math.min(15, Math.floor((r / kinetics.latticeRows) * 16));
+                        const fluxLocal = displayField[gy * 16 + gx] ?? 0.5;
+                        return (
+                          <circle
+                            cx={cell.cx}
+                            cy={cell.cy}
+                            r={cell.slugR * (0.85 + fluxLocal * 0.3)}
+                            opacity={0.65 + fluxLocal * 0.35}
+                            className={
+                              isSupercritical
+                                ? "fill-red-500"
+                                : isCritical
+                                  ? "fill-emerald-400"
+                                  : "fill-amber-600"
+                            }
+                          />
+                        );
+                      })()}
                   </g>
                 );
               }),

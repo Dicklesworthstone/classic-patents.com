@@ -1,7 +1,11 @@
 import { describe, expect, mock, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { PatentCatalogProvider } from "@/components/layout/PatentCatalogProvider";
+import { toPatentCatalogEntry } from "@/data/patentCatalog";
+import { allPatents, getFeaturedPatents } from "@/data/patents";
 
 // Mock next/navigation
 mock.module("next/navigation", () => ({
@@ -13,7 +17,6 @@ mock.module("next/navigation", () => ({
   },
 }));
 
-import { allPatents } from "@/data/patents";
 import { PatentSearchPalette } from "./PatentSearchPalette";
 
 const PALETTE_SOURCE = readFileSync(
@@ -23,14 +26,14 @@ const PALETTE_SOURCE = readFileSync(
 
 describe("PatentSearchPalette component", () => {
   test("renders palette markup cleanly before the client opens the dialog", () => {
-    const html = renderToStaticMarkup(<PatentSearchPalette onClose={() => {}} />);
+    const html = renderWithCatalog(<PatentSearchPalette onClose={() => {}} />);
     expect(html).toContain("Patent Search Palette");
     expect(html).toContain(`Search all ${allPatents.length} inventions`);
     expect(html).toContain("Wright");
   });
 
   test("renders search dialog with default curated patents", () => {
-    const html = renderToStaticMarkup(<PatentSearchPalette onClose={() => {}} />);
+    const html = renderWithCatalog(<PatentSearchPalette onClose={() => {}} />);
     expect(html).toContain("dialog");
     expect(html).toContain(`Search all ${allPatents.length} inventions`);
     expect(html).toContain("ESC");
@@ -41,3 +44,16 @@ describe("PatentSearchPalette component", () => {
     expect(PALETTE_SOURCE).toContain("Open Source-Bound Record");
   });
 });
+
+function renderWithCatalog(children: ReactNode) {
+  return renderToStaticMarkup(
+    <PatentCatalogProvider
+      catalog={{
+        patents: allPatents.map(toPatentCatalogEntry),
+        featuredIds: getFeaturedPatents().map((patent) => patent.id),
+      }}
+    >
+      {children}
+    </PatentCatalogProvider>,
+  );
+}

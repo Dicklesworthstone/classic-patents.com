@@ -4,6 +4,7 @@ import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
+import { computeCcdPotentialWellField } from "@/physics/fieldTextures";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { SimulationHeader } from "./SimulationHeader";
@@ -173,15 +174,21 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
         ctx.fillText(`${v.toFixed(0)}V`, gx + gateW / 2 - 8, gateStartY - 4);
       }
 
-      // 4. Depletion Potential Wells & Surface Potential Profile (psi_s)
+      // 4. Depletion Potential Wells & Surface Potential Profile (psi_s) driven by computeCcdPotentialWellField
+      const ccdField = computeCcdPotentialWellField(
+        clockPhase,
+        [0.8, 0.4, 0.9, 0.5],
+        numStages,
+        totalGates,
+        16,
+      );
       ctx.beginPath();
       ctx.moveTo(devX + 40, subY);
 
       for (let i = 0; i < totalGates; i++) {
         const gx = devX + 40 + i * gateW;
-        const phaseIdx = i % 3;
-        const v = gateVoltages[phaseIdx];
-        const wellDepth = (v / gateVoltage) * 45 + 10;
+        const wellSample = ccdField[i] ?? 0.5;
+        const wellDepth = wellSample * 45 + 10;
 
         ctx.lineTo(gx + 2, subY + wellDepth);
         ctx.lineTo(gx + gateW - 2, subY + wellDepth);

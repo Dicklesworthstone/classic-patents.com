@@ -60,7 +60,7 @@ export function MorseTelegraphSim() {
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
-      soundEngine.stopContinuousTone();
+      soundEngine.stopAll();
     };
   }, []);
 
@@ -75,12 +75,16 @@ export function MorseTelegraphSim() {
   const handleKeyDown = () => {
     setIsKeyDepressed(true);
     if (!isAudioMuted) {
-      soundEngine.playContinuousTone(700, "sine", 0.1);
+      soundEngine.playMorseSounder("strike", currentMa);
+      soundEngine.playContinuousTone(700, "sine", 0.08);
     }
   };
 
   const handleKeyUp = () => {
     setIsKeyDepressed(false);
+    if (!isAudioMuted) {
+      soundEngine.playMorseSounder("release", currentMa);
+    }
     soundEngine.stopContinuousTone();
   };
 
@@ -96,17 +100,25 @@ export function MorseTelegraphSim() {
       const sym = chars[i];
       if (sym === "·") {
         if (!isAudioMuted) {
-          soundEngine.playContinuousTone(700, "sine", 0.1);
+          soundEngine.playMorseSounder("strike", currentMa);
+          soundEngine.playContinuousTone(700, "sine", 0.08);
         }
         await new Promise((r) => setTimeout(r, morse.ditMs));
+        if (!isAudioMuted) {
+          soundEngine.playMorseSounder("release", currentMa);
+        }
         soundEngine.stopContinuousTone();
         if (!isMountedRef.current) break;
         await new Promise((r) => setTimeout(r, morse.intraGapMs));
       } else if (sym === "-") {
         if (!isAudioMuted) {
-          soundEngine.playContinuousTone(700, "sine", 0.1);
+          soundEngine.playMorseSounder("strike", currentMa);
+          soundEngine.playContinuousTone(700, "sine", 0.08);
         }
         await new Promise((r) => setTimeout(r, morse.dahMs));
+        if (!isAudioMuted) {
+          soundEngine.playMorseSounder("release", currentMa);
+        }
         soundEngine.stopContinuousTone();
         if (!isMountedRef.current) break;
         await new Promise((r) => setTimeout(r, morse.intraGapMs));

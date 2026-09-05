@@ -1,10 +1,14 @@
 import { describe, expect, test } from "bun:test";
+import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { PatentCatalogProvider } from "@/components/layout/PatentCatalogProvider";
+import { toPatentCatalogEntry } from "@/data/patentCatalog";
+import { allPatents, getFeaturedPatents } from "@/data/patents";
 import { EraFilterBar } from "./EraFilterBar";
 
 describe("EraFilterBar component", () => {
   test("renders search bar, result counter, and all category filter pills with counts", () => {
-    const html = renderToStaticMarkup(
+    const html = renderWithCatalog(
       <EraFilterBar
         selectedCategory="all"
         onSelectCategory={() => {}}
@@ -26,7 +30,7 @@ describe("EraFilterBar component", () => {
   });
 
   test("highlights active category pill when selected", () => {
-    const html = renderToStaticMarkup(
+    const html = renderWithCatalog(
       <EraFilterBar
         selectedCategory="aviation"
         onSelectCategory={() => {}}
@@ -40,3 +44,16 @@ describe("EraFilterBar component", () => {
     expect(html).toContain("Clear search query");
   });
 });
+
+function renderWithCatalog(children: ReactNode) {
+  return renderToStaticMarkup(
+    <PatentCatalogProvider
+      catalog={{
+        patents: allPatents.map(toPatentCatalogEntry),
+        featuredIds: getFeaturedPatents().map((patent) => patent.id),
+      }}
+    >
+      {children}
+    </PatentCatalogProvider>,
+  );
+}

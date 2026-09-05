@@ -233,7 +233,7 @@ export function AudioNarrationPlayer({ patent }: AudioNarrationPlayerProps) {
         </div>
 
         {/* Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Speed Selector */}
           <div className="flex items-center rounded-lg bg-parchment-200/80 dark:bg-ink-800 p-0.5 text-xs font-mono">
             {[1.0, 1.25, 1.5].map((s) => (

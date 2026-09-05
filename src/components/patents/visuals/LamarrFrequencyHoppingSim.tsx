@@ -36,6 +36,7 @@ export function LamarrFrequencyHoppingSim() {
     });
     if (!next.receiverEffective) return;
     setRudderStep((step) => step + next.commandDelta);
+    soundEngine.playLamarrHop(txRow);
     soundEngine.playSwitchClick();
   };
 

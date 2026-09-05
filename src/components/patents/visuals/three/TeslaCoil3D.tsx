@@ -1,7 +1,17 @@
 "use client";
 
 // Pure consumer of the shared transport tape: standing-wave spatial profile is parameter-prescribed.
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Sparkles, Zap } from "lucide-react";
+import {
+  Camera,
+  Eye,
+  EyeOff,
+  Layers,
+  RotateCcw,
+  Sparkles,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import {
@@ -11,11 +21,13 @@ import {
 import { ensureTeslaWasm, teslaKernelSource } from "@/physics/teslaWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { buildTeslaCoilModel } from "./tesla593138TransformerModel";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "high_terminal" | "primary_spiral" | "earth_bond" | "top";
 
@@ -45,6 +57,7 @@ export function TeslaCoil3D() {
   }, []);
 
   const { params, updateParam } = usePatentPhysics("us-593138-tesla-coil");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const transformerControls = readTeslaTransformerControls({
@@ -224,6 +237,26 @@ export function TeslaCoil3D() {
             }
           >
             <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </button>
+          <button
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            type="button"
+            onClick={() => {
+              const nextMuted = toggleSound();
+              if (!nextMuted) {
+                soundEngine.playTeslaCoilDischarge(120, 1.0);
+              } else {
+                soundEngine.playSwitchClick();
+              }
+            }}
+            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
           </button>
           <button
             aria-label="Reset camera view"

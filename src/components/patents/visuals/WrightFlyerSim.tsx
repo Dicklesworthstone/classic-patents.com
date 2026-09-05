@@ -2,6 +2,7 @@
 
 import { RotateCcw, Volume2, VolumeX, Wind } from "lucide-react";
 import { useState } from "react";
+import { evaluateWrightAirflowVelocityVector } from "@/physics/fieldTextures";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
   coupledRudderDeg,
@@ -31,6 +32,29 @@ export function WrightFlyerSim() {
   const netYawMoment = si.netYawNm;
   const isCoordinatedTurn = si.coordinated;
   const isAdverseYawCrash = si.adverseYawDominant;
+
+  // Physical airflow streamline vectors across the span for the 2D face
+  const airflowSampleSpanOffsets = [-150, -90, -30, 30, 90, 150];
+  const streamlines = airflowSampleSpanOffsets.map((spanX) => {
+    const zMeters = (spanX / 190) * (12.29 / 2);
+    const [, vyLead] = evaluateWrightAirflowVelocityVector(-0.5, 0, zMeters, {
+      airspeedMps: si.airspeedMps,
+      wingWarpDeg: controls.wingWarpDeg,
+      elevatorPitchDeg: controls.elevatorDeg,
+      rudderYawDeg: controls.rudderDeg,
+      coupled: isCoupled,
+    });
+    const [, vyDownwash] = evaluateWrightAirflowVelocityVector(2.0, 0, zMeters, {
+      airspeedMps: si.airspeedMps,
+      wingWarpDeg: controls.wingWarpDeg,
+      elevatorPitchDeg: controls.elevatorDeg,
+      rudderYawDeg: controls.rudderDeg,
+      coupled: isCoupled,
+    });
+    const dyLead = -vyLead * 4.0;
+    const dyDown = -vyDownwash * 6.0;
+    return { spanX, dyLead, dyDown };
+  });
 
   // Step presets for guided pedagogical walkthrough
   const applyPedagogyStep = (step: number) => {
@@ -250,6 +274,20 @@ export function WrightFlyerSim() {
             transform={`translate(250, 120) rotate(${si.airframeRollDeg}) translate(0, ${si.canardSvgY})`}
             className="transition-transform duration-150 ease-out"
           >
+            {/* Streamline Airflow Vectors driven by evaluateWrightAirflowVelocityVector */}
+            <g opacity="0.5">
+              {streamlines.map((s) => (
+                <path
+                  key={s.spanX}
+                  d={`M ${s.spanX - 18} ${-38 + s.dyLead} Q ${s.spanX} -32 ${s.spanX + 18} ${-26 + s.dyDown} M ${s.spanX - 18} ${4 + s.dyLead} Q ${s.spanX} 10 ${s.spanX + 18} ${16 + s.dyDown}`}
+                  fill="none"
+                  stroke="#38bdf8"
+                  strokeWidth="1.5"
+                  strokeDasharray="4 2"
+                />
+              ))}
+            </g>
+
             {/* Forward Elevator / Canard */}
             <rect
               x="-35"

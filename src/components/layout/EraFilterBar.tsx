@@ -2,7 +2,7 @@
 
 import { Search, X } from "lucide-react";
 import { useMemo } from "react";
-import { allPatents } from "@/data/patents";
+import { usePatentCatalog } from "./PatentCatalogProvider";
 
 interface EraFilterBarProps {
   selectedCategory: string;
@@ -30,6 +30,7 @@ export function EraFilterBar({
   onSearchChange,
   resultCount,
 }: EraFilterBarProps) {
+  const { patents: allPatents } = usePatentCatalog();
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = { all: allPatents.length };
     for (const p of allPatents) {
@@ -37,7 +38,7 @@ export function EraFilterBar({
       counts[catKey] = (counts[catKey] || 0) + 1;
     }
     return counts;
-  }, []);
+  }, [allPatents]);
 
   return (
     <div className="space-y-4 bg-parchment-100/90 dark:bg-ink-900/80 p-5 sm:p-6 rounded-2xl border border-parchment-300 dark:border-ink-800 shadow-sm">

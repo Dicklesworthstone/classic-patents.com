@@ -13,6 +13,7 @@ import {
   stepEdisonRadiativeBalance,
   subscribeEdisonKernelSource,
 } from "@/physics/edisonWasm";
+import { computeEdisonFilamentThermalField } from "@/physics/fieldTextures";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { useWasmKernelSource } from "@/physics/useWasmKernelSource";
 import { soundEngine } from "@/utils/soundEngine";
@@ -60,6 +61,15 @@ export function EdisonBulbSim() {
   const isBurnedOut = !isVacuumIntact && voltage > 30;
   const priorArtOverload = resistanceMode === "reported-prior-art";
   const tempKelvin = isBurnedOut || priorArtOverload ? 300 : radiative.filament_temperature_k;
+
+  // Shared spatial sampled thermal & radiation field matching 3D studio
+  const thermalField = computeEdisonFilamentThermalField(
+    tempKelvin,
+    voltage,
+    isVacuumIntact ? 1e-4 : 760,
+    32,
+  );
+  const thermalHaloPeak = thermalField.reduce((max, val) => Math.max(max, val), 0);
 
   const getFilamentColor = () => {
     if (isBurnedOut || priorArtOverload) return "#475569";
@@ -154,8 +164,13 @@ export function EdisonBulbSim() {
                     isBurnedOut || priorArtOverload
                       ? 0
                       : resistanceMode === "source-high-resistance"
-                        ? Math.min(1, bulb.glowStopInner * (1 + Math.abs(bulb.filamentHeatSample)))
-                        : bulb.lowResistanceGlowStopInner
+                        ? Math.min(
+                            1,
+                            bulb.glowStopInner *
+                              (1 + Math.abs(bulb.filamentHeatSample)) *
+                              Math.max(0.2, thermalHaloPeak),
+                          )
+                        : bulb.lowResistanceGlowStopInner * Math.max(0.2, thermalHaloPeak)
                   }
                 />
                 <stop
@@ -165,8 +180,8 @@ export function EdisonBulbSim() {
                     isBurnedOut || priorArtOverload
                       ? 0
                       : resistanceMode === "source-high-resistance"
-                        ? bulb.glowStopOuter
-                        : bulb.lowResistanceGlowStopOuter
+                        ? bulb.glowStopOuter * Math.min(1, thermalHaloPeak)
+                        : bulb.lowResistanceGlowStopOuter * Math.min(1, thermalHaloPeak)
                   }
                 />
                 <stop offset="100%" stopColor="#0f172a" stopOpacity="0" />

@@ -4,14 +4,15 @@ import { ArrowRight, BookOpen, Compass, Search, Sparkles, User, X } from "lucide
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { allPatents, searchPatents } from "@/data/patents";
-import type { Patent } from "@/types/patent";
+import { searchPatentCatalog } from "@/data/patentCatalog";
+import { usePatentCatalog } from "./PatentCatalogProvider";
 
 interface PatentSearchPaletteProps {
   onClose: () => void;
 }
 
 export function PatentSearchPalette({ onClose }: PatentSearchPaletteProps) {
+  const { patents: allPatents } = usePatentCatalog();
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const router = useRouter();
@@ -46,8 +47,8 @@ export function PatentSearchPalette({ onClose }: PatentSearchPaletteProps) {
     if (!query.trim()) {
       return allPatents.slice(0, 8);
     }
-    return searchPatents(query).slice(0, 12);
-  }, [query]);
+    return searchPatentCatalog(allPatents, query).slice(0, 12);
+  }, [allPatents, query]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     // Escape closes from anywhere inside the dialog.
@@ -149,7 +150,7 @@ export function PatentSearchPalette({ onClose }: PatentSearchPaletteProps) {
             <span className="text-[10px]">Use ↑↓ to navigate · Enter to open</span>
           </div>
           {results.length > 0 ? (
-            results.map((patent: Patent, idx: number) => {
+            results.map((patent, idx) => {
               const isSelected = idx === selectedIndex;
               const year = patent.grantDate.split("-")[0];
               const hasVisualHold = patent.id === "us-3671542-kwolek-kevlar";

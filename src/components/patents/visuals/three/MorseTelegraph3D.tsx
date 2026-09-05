@@ -130,7 +130,7 @@ export function MorseTelegraph3D() {
 
       if (p.keyIsDown !== wasKeyDown) {
         if (!p.isAudioMuted) {
-          soundEngine.playMorseClick();
+          soundEngine.playMorseSounder(p.keyIsDown ? "strike" : "release", p.loopCurrentMa);
         }
         wasKeyDown = p.keyIsDown;
       }

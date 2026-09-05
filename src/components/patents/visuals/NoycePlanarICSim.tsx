@@ -3,6 +3,7 @@
 import { Cpu, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
 import { stepNoyceIC } from "@/physics/catalogKernels";
+import { computeNoyceDepletionField } from "@/physics/fieldTextures";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -46,6 +47,10 @@ export function NoycePlanarICSim() {
     clockFrequencyMhz: params.clockFrequencyMhz ?? 10,
   });
   const [activeLayerStep, setActiveLayerStep] = useState<number>(4);
+
+  // Shared spatial sampled depletion field matching 3D studio
+  const depletionField = computeNoyceDepletionField(reverseBias, 32);
+  const depletionPx = Math.round(6 + (depletionField[16 * 32 + 16] ?? 0.5) * 12);
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
@@ -152,6 +157,43 @@ export function NoycePlanarICSim() {
             {/* Diffused N-wells (Active Transistor Collector/Emitters) */}
             {activeLayerStep >= 3 && (
               <g>
+                {/* Space-Charge Depletion Halos driven by computeNoyceDepletionField */}
+                <g className="depletion-field" opacity="0.6">
+                  <rect
+                    x={70 - depletionPx / 2}
+                    y={110}
+                    width={70 + depletionPx}
+                    height={35 + depletionPx / 2}
+                    rx="6"
+                    fill="rgba(168, 85, 247, 0.15)"
+                    stroke="#c084fc"
+                    strokeWidth="1.5"
+                    strokeDasharray="4 3"
+                  />
+                  <rect
+                    x={180 - depletionPx / 2}
+                    y={110}
+                    width={70 + depletionPx}
+                    height={35 + depletionPx / 2}
+                    rx="6"
+                    fill="rgba(168, 85, 247, 0.15)"
+                    stroke="#c084fc"
+                    strokeWidth="1.5"
+                    strokeDasharray="4 3"
+                  />
+                  <rect
+                    x={290 - depletionPx / 2}
+                    y={110}
+                    width={50 + depletionPx}
+                    height={35 + depletionPx / 2}
+                    rx="6"
+                    fill="rgba(168, 85, 247, 0.15)"
+                    stroke="#c084fc"
+                    strokeWidth="1.5"
+                    strokeDasharray="4 3"
+                  />
+                </g>
+
                 <rect
                   x="70"
                   y="110"

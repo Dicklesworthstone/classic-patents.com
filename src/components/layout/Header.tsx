@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: "/patents/us-381968-tesla-motor", label: "Tesla AC Motor" },
   { href: "/patents/us-2981877-noyce-ic", label: "Noyce Silicon IC" },
   { href: "/timeline", label: "Timeline" },
+  { href: "/labs", label: "Teaching Labs" },
   { href: "/about", label: "Mission" },
 ] as const;
 

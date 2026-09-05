@@ -3,6 +3,7 @@
 import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { computeTeslaRotatingBField } from "@/physics/fieldTextures";
 import {
   stepTeslaMotorFig9,
   TESLA_FIELD_DISPLAY_SLOWDOWN,
@@ -104,6 +105,20 @@ export function TeslaMotorSim() {
   const coilCount = field.coilCount;
   const bVectorX = field.bxSvg;
   const bVectorY = field.bySvg;
+
+  // Shared spatial sampled magnetic field (16x16 grid) matching 3D studio
+  const sampledBField = computeTeslaRotatingBField(rad, 16);
+  const fluxNodes = Array.from({ length: 12 }, (_, k) => {
+    const th = (k * 2 * Math.PI) / 12;
+    const u = 0.5 + 0.38 * Math.cos(th);
+    const v = 0.5 + 0.38 * Math.sin(th);
+    const gx = Math.max(0, Math.min(15, Math.floor(u * 16)));
+    const gy = Math.max(0, Math.min(15, Math.floor(v * 16)));
+    const bVal = sampledBField[gy * 16 + gx] ?? 0.5;
+    const cx = apparatus.statorCenterX + 70 * Math.cos(th);
+    const cy = apparatus.statorCenterY + 70 * Math.sin(th);
+    return { cx, cy, bVal };
+  });
 
   return (
     <div
@@ -225,6 +240,20 @@ export function TeslaMotorSim() {
               strokeWidth="1.5"
               strokeDasharray="6 4"
             />
+
+            {/* Sampled Magnetic Flux Nodes driven by computeTeslaRotatingBField */}
+            <g className="tesla-flux-field">
+              {fluxNodes.map((n, idx) => (
+                <circle
+                  key={idx}
+                  cx={n.cx}
+                  cy={n.cy}
+                  r={2.5 + n.bVal * 3.5}
+                  fill="#38bdf8"
+                  opacity={0.25 + n.bVal * 0.65}
+                />
+              ))}
+            </g>
 
             {/* Fig. 9 stator poles: four coils at 90° */}
             {Array.from({ length: coilCount }, (_, i) => {

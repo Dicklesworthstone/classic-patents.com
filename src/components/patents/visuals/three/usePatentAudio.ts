@@ -15,7 +15,7 @@ export function usePatentAudio() {
     soundEngine.setMuted(true);
     setIsAudioMuted(true);
     return () => {
-      soundEngine.stopContinuousTone();
+      soundEngine.stopAll();
     };
   }, []);
 

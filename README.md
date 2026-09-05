@@ -91,7 +91,7 @@ The live, searchable catalogue at [classic-patents.com](https://classic-patents.
 │  • 3D Tesla Fig. 9 Generator-Coupled Progressive Pole Shift           │
 │  • 3D Fermi Nuclear Reactor Criticality Cascade & Cadmium Rod Damping  │
 │  • 3D Wozniak Apple II Interleaved Memory Bus & NTSC Color Burst       │
-│  • On-Demand Code Splitting (Home: 1.64 MB First-Load JS)               │
+│  • On-Demand Code Splitting (Home: 192 kB First-Load JS)                │
 ├────────────────────────────────────────────────────────────────────────┤
 │                   TYPED PHYSICS & TELEMETRY OWNER BUS                  │
 │  • 103/103 typed-host default owners with explicit live equations      │
@@ -102,11 +102,25 @@ The live, searchable catalogue at [classic-patents.com](https://classic-patents.
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
-The September 4, 2026 production build reported **1.64 MB of first-load
-JavaScript for the home page**, 2.03 MB for patent detail pages, and 1.70 MB
-for the timeline. These are Next.js build-reported route sizes; browser
-transfer sizes and load times were not measured by this check. See the
-[reality check](./docs/REALITY_CHECK_2026-09-04.md) for the build evidence.
+A matched pair of local production builds on September 5, 2026 measured these
+Next.js first-load JavaScript sizes after replacing full-registry browser imports
+with a compact server-derived catalogue:
+
+| Route | Before | After |
+| --- | ---: | ---: |
+| Home | 1.64 MB | 192 kB |
+| Patent detail | 2.12 MB | 671 kB |
+| Timeline | 1.70 MB | 256 kB |
+
+All 103 records remain searchable. The shared catalogue contains the card,
+search, and navigation fields; the timeline receives its three historical
+paragraphs separately, and complete editions remain on the patent detail routes.
+These build figures are not total page-transfer sizes: HTML, styles, fonts, and
+Next.js link prefetch add traffic. Local Chromium page-and-search measurements
+also showed lower combined JavaScript and text-response sizes, including
+prefetched routes; they are not real-device or public-site performance results.
+The earlier [reality check](./docs/REALITY_CHECK_2026-09-04.md) retains the
+September 4 baseline.
 
 ---
 

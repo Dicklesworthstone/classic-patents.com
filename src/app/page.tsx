@@ -4,27 +4,26 @@ import { ArrowRight, Box, Compass, Layers, Scroll, Sparkles } from "lucide-react
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { EraFilterBar } from "@/components/layout/EraFilterBar";
+import { usePatentCatalog } from "@/components/layout/PatentCatalogProvider";
 import { PatentCard } from "@/components/patents/PatentCard";
-import {
-  allPatents,
-  getFeaturedPatents,
-  getPatentsByCategory,
-  searchPatents,
-} from "@/data/patents";
-import type { Patent } from "@/types/patent";
+import { filterPatentCategory, searchPatentCatalog } from "@/data/patentCatalog";
 
 export default function HomePage() {
+  const { patents: allPatents, featuredIds } = usePatentCatalog();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const featuredPatents = useMemo(() => getFeaturedPatents(), []);
+  const featuredPatents = useMemo(
+    () => featuredIds.flatMap((id) => allPatents.find((patent) => patent.id === id) ?? []),
+    [allPatents, featuredIds],
+  );
 
   const filteredPatents = useMemo(() => {
-    const catalog = getPatentsByCategory(selectedCategory);
+    const catalog = filterPatentCategory(allPatents, selectedCategory);
     if (!searchQuery.trim()) return catalog;
-    const searched = new Set(searchPatents(searchQuery).map((p: Patent) => p.id));
+    const searched = new Set(searchPatentCatalog(allPatents, searchQuery).map((p) => p.id));
     return catalog.filter((p) => searched.has(p.id));
-  }, [searchQuery, selectedCategory]);
+  }, [allPatents, searchQuery, selectedCategory]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-16">
@@ -131,7 +130,7 @@ export default function HomePage() {
         {/* Grid of All Patents */}
         {filteredPatents.length > 0 ? (
           <div className="catalog-grid-cv grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-            {filteredPatents.map((patent: Patent) => (
+            {filteredPatents.map((patent) => (
               <PatentCard key={patent.id} patent={patent} />
             ))}
           </div>

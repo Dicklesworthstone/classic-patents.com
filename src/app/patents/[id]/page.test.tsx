@@ -1,5 +1,9 @@
 import { describe, expect, mock, test } from "bun:test";
+import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { PatentCatalogProvider } from "@/components/layout/PatentCatalogProvider";
+import { toPatentCatalogEntry } from "@/data/patentCatalog";
+import { allPatents, getFeaturedPatents } from "@/data/patents";
 
 // Mock next/navigation
 mock.module("next/navigation", () => ({
@@ -39,7 +43,7 @@ describe("PatentDetailPage component", () => {
     const PageJsx = await PatentDetailPage({
       params: Promise.resolve({ id: "us-3671542-kwolek-kevlar" }),
     });
-    const html = renderToStaticMarkup(PageJsx);
+    const html = renderWithCatalog(PageJsx);
     expect(html).toContain("Visual Model in Preparation");
     expect(html).toContain("Complete patent text remains available");
     expect(html).not.toContain("Interactive Real-Time Physical Simulation");
@@ -50,7 +54,7 @@ describe("PatentDetailPage component", () => {
     const PageJsx = await PatentDetailPage({
       params: Promise.resolve({ id: "us-821393-wright-flyer" }),
     });
-    const html = renderToStaticMarkup(PageJsx);
+    const html = renderWithCatalog(PageJsx);
 
     expect(html).toContain("US 821,393");
     expect(html).toContain("Wright Flyer");
@@ -65,7 +69,7 @@ describe("PatentDetailPage component", () => {
     const PageJsx = await PatentDetailPage({
       params: Promise.resolve({ id: "us-2708656-fermi-reactor" }),
     });
-    const html = renderToStaticMarkup(PageJsx);
+    const html = renderWithCatalog(PageJsx);
 
     expect(html).toContain('data-source-delivery="transcript"');
   });
@@ -74,7 +78,7 @@ describe("PatentDetailPage component", () => {
     const PageJsx = await PatentDetailPage({
       params: Promise.resolve({ id: "us-533367-tesla-coil" }),
     });
-    const html = renderToStaticMarkup(PageJsx);
+    const html = renderWithCatalog(PageJsx);
     expect(html).toContain("This patent record has moved to its verified catalog identity.");
     expect(html).toContain("/patents/us-593138-tesla-coil");
   });
@@ -83,8 +87,21 @@ describe("PatentDetailPage component", () => {
     const PageJsx = await PatentDetailPage({
       params: Promise.resolve({ id: "us-727650-fessenden-wireless" }),
     });
-    const html = renderToStaticMarkup(PageJsx);
+    const html = renderWithCatalog(PageJsx);
     expect(html).toContain("This patent record has moved to its verified catalog identity.");
     expect(html).toContain("/patents/us-706737-fessenden-wireless");
   });
 });
+
+function renderWithCatalog(children: ReactNode) {
+  return renderToStaticMarkup(
+    <PatentCatalogProvider
+      catalog={{
+        patents: allPatents.map(toPatentCatalogEntry),
+        featuredIds: getFeaturedPatents().map((patent) => patent.id),
+      }}
+    >
+      {children}
+    </PatentCatalogProvider>,
+  );
+}

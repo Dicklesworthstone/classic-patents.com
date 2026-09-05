@@ -57,7 +57,7 @@ export function BellTelephoneSim() {
       soundEngine.stopContinuousTone();
     }
     return () => {
-      soundEngine.stopContinuousTone();
+      soundEngine.stopAll();
     };
   }, [isPlayingAudio, signalType, acousticFrequency, bell.toneGainSine, bell.toneGainSquare]);
 

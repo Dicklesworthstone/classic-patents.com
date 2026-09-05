@@ -1,6 +1,12 @@
 import { History } from "lucide-react";
 import type { Metadata } from "next";
 import { PatentTimeline } from "@/components/timeline/PatentTimeline";
+import { toPatentTimelineContext } from "@/data/patentCatalog";
+import { allPatents } from "@/data/patents";
+
+const historicalContexts = Object.fromEntries(
+  allPatents.map((patent) => [patent.id, toPatentTimelineContext(patent)]),
+);
 
 export const metadata: Metadata = {
   title: "Historical Inventions Timeline (1769–2009) — Classic Patents",
@@ -25,7 +31,7 @@ export default function TimelinePage() {
         </p>
       </div>
 
-      <PatentTimeline />
+      <PatentTimeline historicalContexts={historicalContexts} />
     </div>
   );
 }
