@@ -197,9 +197,16 @@ describe("reviewed-ledger publication evidence", () => {
     expect(transcript).toContain("What is claimed is:");
   });
 
-  test("uses the pinned facsimile instead of a known reconstructed legacy transcript", () => {
-    expect(stackhouseManipulatorPatent.originalTextAsset).toBeUndefined();
-    expect(reviewedLedgerTextForViewer(stackhouseManipulatorPatent)).toBeUndefined();
+  test("uses Stackhouse's clean replacement ledger on the source reader", () => {
+    expect(stackhouseManipulatorPatent.originalTextAsset?.url).toBe(
+      "/patents/transcripts/us-4068536-stackhouse-manipulator-reviewed-v2.txt",
+    );
+    expect(reviewedLedgerTextForViewer(stackhouseManipulatorPatent)).toStartWith(
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 8 ---",
+    );
+    expect(reviewedLedgerTextForViewer(stackhouseManipulatorPatent)).toContain(
+      "A remotely operable manipulator orients an end-effector",
+    );
   });
 
   test("keeps every catalogue record readable through its selected edition, local transcript, or pinned PDF", () => {

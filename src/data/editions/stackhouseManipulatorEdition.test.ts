@@ -24,7 +24,14 @@ describe("US 4,068,536 source boundary", () => {
     const computedDigest = hasher.digest("hex");
 
     expect(computedDigest).toBe("dcd6652f996f2583bb6bd39f341bac2474b08472adb931972e94137aea1b7846");
-    expect(stackhouseManipulatorPatent.originalTextAsset).toBeUndefined();
+    expect(stackhouseManipulatorPatent.originalTextAsset).toMatchObject({
+      url: "/patents/transcripts/us-4068536-stackhouse-manipulator-reviewed-v2.txt",
+      pageCount: 8,
+      kind: "reviewed-transcription",
+      reviewedBy: "Classic Patents editorial agent (GPT-5)",
+      reviewedAt: "2026-09-05",
+      sourcePdfSha256: "dcd6652f996f2583bb6bd39f341bac2474b08472adb931972e94137aea1b7846",
+    });
     expect(stackhouseManipulatorArchivalEdition.sourcePdfSha256).toBe(
       "dcd6652f996f2583bb6bd39f341bac2474b08472adb931972e94137aea1b7846",
     );
