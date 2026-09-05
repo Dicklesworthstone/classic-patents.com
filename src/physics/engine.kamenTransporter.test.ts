@@ -57,9 +57,12 @@ describe("Kamen transporter public source-bound engine boundary", () => {
     expect(publicMethod).not.toMatch(/torque|speed|mass|pid|N·m|m\/s/i);
   });
 
-  test("refuses continuous sensitivity for both topology and retired scenario controls", () => {
+  test("refuses continuous sensitivity for retired scenario controls while admitting discrete topology state", () => {
+    const topo = computeParameterSensitivity(KAMEN_ID, "topologyState", {});
+    expect(topo?.derivativeSymbol).toBe("ΔState / Δtopology");
+    expect(topo?.derivativeUnit).toBe("state / state");
+
     for (const control of [
-      "topologyState",
       "riderPitchLeanDeg",
       "pitchLean",
       "velocityCommandMs",

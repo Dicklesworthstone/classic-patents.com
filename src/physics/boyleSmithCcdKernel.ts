@@ -62,18 +62,44 @@ function finiteOr(value: number | undefined, fallback: number): number {
 }
 
 export function readBoyleSmithCcdSourceControls(
-  raw?: Partial<BoyleSmithCcdSourceControls> | Readonly<Record<string, number>>,
+  raw?: Partial<BoyleSmithCcdSourceControls> | Readonly<Record<string, number | boolean>>,
 ): BoyleSmithCcdSourceControls {
+  const rawDict = raw as Record<string, number | boolean | undefined> | undefined;
+  const runningVal = rawDict?.running ?? rawDict?.run ?? rawDict?.clockRunning ?? rawDict?.active;
+  const clockHz =
+    rawDict?.clockStepRateHz ??
+    rawDict?.clockSpeedFactor ??
+    rawDict?.clockRate ??
+    rawDict?.stepRate ??
+    rawDict?.clockHz ??
+    rawDict?.clockSpeed ??
+    rawDict?.frequency;
+  const pulseRatio =
+    rawDict?.pulseWidthToStepRatio ??
+    rawDict?.pulseWidthRatio ??
+    rawDict?.pulseWidth ??
+    rawDict?.ratio ??
+    rawDict?.overlapRatio ??
+    rawDict?.overlap;
+  const pulseDepth =
+    rawDict?.pulseDepthNormalized ??
+    rawDict?.pulseDepth ??
+    rawDict?.wellDepth ??
+    rawDict?.depth ??
+    rawDict?.depthNormalized;
+  const claim1 =
+    rawDict?.claim1SingleConductivityPresent ?? rawDict?.claim1 ?? rawDict?.singleConductivity;
+
   return {
     running:
-      raw?.running === undefined
+      runningVal === undefined
         ? DEFAULT_BOYLE_SMITH_CCD_SOURCE_CONTROLS.running
-        : Boolean(raw.running),
+        : Boolean(runningVal),
     clockStepRateHz: Math.max(
       0.2,
       Math.min(
         2.5,
-        finiteOr(raw?.clockStepRateHz, DEFAULT_BOYLE_SMITH_CCD_SOURCE_CONTROLS.clockStepRateHz),
+        finiteOr(clockHz as number, DEFAULT_BOYLE_SMITH_CCD_SOURCE_CONTROLS.clockStepRateHz),
       ),
     ),
     pulseWidthToStepRatio: Math.max(
@@ -81,7 +107,7 @@ export function readBoyleSmithCcdSourceControls(
       Math.min(
         0.8,
         finiteOr(
-          raw?.pulseWidthToStepRatio,
+          pulseRatio as number,
           DEFAULT_BOYLE_SMITH_CCD_SOURCE_CONTROLS.pulseWidthToStepRatio,
         ),
       ),
@@ -91,15 +117,15 @@ export function readBoyleSmithCcdSourceControls(
       Math.min(
         1,
         finiteOr(
-          raw?.pulseDepthNormalized,
+          pulseDepth as number,
           DEFAULT_BOYLE_SMITH_CCD_SOURCE_CONTROLS.pulseDepthNormalized,
         ),
       ),
     ),
     claim1SingleConductivityPresent:
-      raw?.claim1SingleConductivityPresent === undefined
+      claim1 === undefined
         ? DEFAULT_BOYLE_SMITH_CCD_SOURCE_CONTROLS.claim1SingleConductivityPresent
-        : Boolean(raw.claim1SingleConductivityPresent),
+        : Boolean(claim1),
   };
 }
 

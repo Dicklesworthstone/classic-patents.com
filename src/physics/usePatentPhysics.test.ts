@@ -3244,4 +3244,224 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       resetPatentPhysicsParams(id);
     }
   });
+
+  test("Marconi Radio updates aliases, notifies reactive subscribers, and recalculates apparatus telemetry", () => {
+    const id = "us-586193-marconi-radio";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.sparkVoltage));
+
+    try {
+      setPatentPhysicsParam(id, "voltage", 35);
+      const params = getPatentPhysicsParams(id);
+      expect(params.sparkVoltage).toBe(35);
+      expect(params.voltage).toBe(35);
+      expect(params.sparkVoltageKv).toBe(35);
+      expect(params.inductionCoilKv).toBe(35);
+      expect(observations).toEqual([35]);
+      expect(getLastParamChange(id)?.id).toBe("sparkVoltage");
+
+      setPatentPhysicsParam(id, "height", 100);
+      expect(getPatentPhysicsParams(id).aerialHeight).toBe(100);
+      expect(getPatentPhysicsParams(id).height).toBe(100);
+      expect(getPatentPhysicsParams(id).mastHeightM).toBe(100);
+      expect(getPatentPhysicsParams(id).aerialHeightMeters).toBe(100);
+
+      setPatentPhysicsParam(id, "gap", 15);
+      expect(getPatentPhysicsParams(id).sparkGapMm).toBe(15);
+      expect(getPatentPhysicsParams(id).gap).toBe(15);
+      expect(getPatentPhysicsParams(id).gapMm).toBe(15);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      const apparatusMetric = metrics.find((m) => m.label === "Illustrative Apparatus Inputs");
+      expect(apparatusMetric?.value).toBe("35 kV · 100 m · 15 mm");
+      expect(apparatusMetric?.value).not.toBe(
+        initial.find((m) => m.label === "Illustrative Apparatus Inputs")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Lemelson Machine Vision updates aliases, notifies reactive subscribers, and enforces Claim 1 admission", () => {
+    const id = "us-3081379-lemelson-machine-vision";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.scanPathEnabled));
+
+    try {
+      setPatentPhysicsParam(id, "scan", 0);
+      const params = getPatentPhysicsParams(id);
+      expect(params.scanPathEnabled).toBe(0);
+      expect(params.scan).toBe(0);
+      expect(params.scanPath).toBe(0);
+      expect(observations).toEqual([0]);
+      expect(getLastParamChange(id)?.id).toBe("scanPathEnabled");
+
+      setPatentPhysicsParam(id, "gate", 0);
+      expect(getPatentPhysicsParams(id).synchronizedGateEnabled).toBe(0);
+      expect(getPatentPhysicsParams(id).gate).toBe(0);
+
+      setPatentPhysicsParam(id, "circuit", 0);
+      expect(getPatentPhysicsParams(id).analyzingCircuitEnabled).toBe(0);
+      expect(getPatentPhysicsParams(id).circuit).toBe(0);
+
+      setPatentPhysicsParam(id, "pictureSignal", 0);
+      expect(getPatentPhysicsParams(id).inspectionSignalPresent).toBe(0);
+      expect(getPatentPhysicsParams(id).pictureSignal).toBe(0);
+
+      setPatentPhysicsParam(id, "referenceMatch", 0);
+      expect(getPatentPhysicsParams(id).referenceSignalMatches).toBe(0);
+      expect(getPatentPhysicsParams(id).referenceMatch).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Scan path")?.value).toBe("WITHHELD");
+      expect(metrics.find((m) => m.label === "Synchronized gate")?.value).toBe("WITHHELD");
+      expect(metrics.find((m) => m.label === "Analyzing circuit")?.value).toBe("WITHHELD");
+      expect(metrics.find((m) => m.label === "Inspection signal")?.value).toBe("WITHHELD");
+      expect(metrics.find((m) => m.label === "Control output")?.value).toBe("HELD");
+      expect(metrics.find((m) => m.label === "Scan path")?.value).not.toBe(
+        initial.find((m) => m.label === "Scan path")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Boyle–Smith CCD updates aliases, notifies reactive subscribers, and enforces Figure 3 pulse overlap", () => {
+    const id = "us-3858232-boyle-smith-ccd";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) =>
+      observations.push(p.pulseWidthToStepRatio),
+    );
+
+    try {
+      setPatentPhysicsParam(id, "pulseWidthRatio", 0.3);
+      const params = getPatentPhysicsParams(id);
+      expect(params.pulseWidthToStepRatio).toBe(0.3);
+      expect(params.pulseWidthRatio).toBe(0.3);
+      expect(params.ratio).toBe(0.3);
+      expect(observations).toEqual([0.3]);
+      expect(getLastParamChange(id)?.id).toBe("pulseWidthToStepRatio");
+
+      setPatentPhysicsParam(id, "clockSpeedFactor", 2.0);
+      expect(getPatentPhysicsParams(id).clockStepRateHz).toBe(2.0);
+      expect(getPatentPhysicsParams(id).clockSpeedFactor).toBe(2.0);
+      expect(getPatentPhysicsParams(id).clockHz).toBe(2.0);
+
+      setPatentPhysicsParam(id, "wellDepth", 0.5);
+      expect(getPatentPhysicsParams(id).pulseDepthNormalized).toBe(0.5);
+      expect(getPatentPhysicsParams(id).wellDepth).toBe(0.5);
+      expect(getPatentPhysicsParams(id).pulseDepth).toBe(0.5);
+
+      setPatentPhysicsParam(id, "run", 0);
+      expect(getPatentPhysicsParams(id).running).toBe(0);
+      expect(getPatentPhysicsParams(id).run).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      const overlapMetric = metrics.find((m) => m.label === "Pulse-Overlap Relation");
+      expect(overlapMetric?.value).toContain("REFUSED");
+      expect(overlapMetric?.value).not.toBe(
+        initial.find((m) => m.label === "Pulse-Overlap Relation")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Kamen Transporter updates aliases, notifies reactive subscribers, and switches balance topologies", () => {
+    const id = "us-5701965-kamen-transporter";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.topologyState));
+
+    try {
+      setPatentPhysicsParam(id, "state", 4);
+      const params = getPatentPhysicsParams(id);
+      expect(params.topologyState).toBe(4);
+      expect(params.state).toBe(4);
+      expect(params.mode).toBe(4);
+      expect(observations).toEqual([4]);
+      expect(getLastParamChange(id)?.id).toBe("topologyState");
+
+      let metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Claim-reading state")?.value).toBe(
+        "CLIMB: BALANCE AND NEXT-PAIR PLACEMENT",
+      );
+      expect(metrics.find((m) => m.label === "Claim-reading state")?.value).not.toBe(
+        initial.find((m) => m.label === "Claim-reading state")?.value,
+      );
+
+      setPatentPhysicsParam(id, "balanceEnabled", 0);
+      expect(getPatentPhysicsParams(id).claim1BalanceEnabled).toBe(0);
+      expect(getPatentPhysicsParams(id).balanceTopologyEnabled).toBe(0);
+      expect(getPatentPhysicsParams(id).balanceEnabled).toBe(0);
+
+      metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Balance-loop relation")?.value).toBe("WITHHELD");
+
+      // When cluster topology is disabled, stair climb falls back to ground support
+      setPatentPhysicsParam(id, "clusterEnabled", 0);
+      expect(getPatentPhysicsParams(id).claim16ClusterEnabled).toBe(0);
+      expect(getPatentPhysicsParams(id).clusterTopologyEnabled).toBe(0);
+      expect(getPatentPhysicsParams(id).clusterEnabled).toBe(0);
+
+      metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Claim-reading state")?.value).toBe(
+        "GROUND-SUPPORT CLUSTER",
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("DaVinci Robotic Interface updates aliases, notifies reactive subscribers, and toggles interface tokens", () => {
+    const id = "us-6331181-davinci";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) =>
+      observations.push(p.compatibilitySignalPresent),
+    );
+
+    try {
+      setPatentPhysicsParam(id, "compatibility", 0);
+      const params = getPatentPhysicsParams(id);
+      expect(params.compatibilitySignalPresent).toBe(0);
+      expect(params.compatibility).toBe(0);
+      expect(params.compatible).toBe(0);
+      expect(observations).toEqual([0]);
+      expect(getLastParamChange(id)?.id).toBe("compatibilitySignalPresent");
+
+      setPatentPhysicsParam(id, "calibration", 0);
+      expect(getPatentPhysicsParams(id).calibrationRecordAvailable).toBe(0);
+      expect(getPatentPhysicsParams(id).calibration).toBe(0);
+      expect(getPatentPhysicsParams(id).calRecord).toBe(0);
+
+      setPatentPhysicsParam(id, "engagement", 0);
+      expect(getPatentPhysicsParams(id).engagementSignalPresent).toBe(0);
+      expect(getPatentPhysicsParams(id).engagement).toBe(0);
+      expect(getPatentPhysicsParams(id).engaged).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Compatibility identifier")?.value).toBe("absent");
+      expect(metrics.find((m) => m.label === "Calibration record")?.value).toBe("missing");
+      expect(metrics.find((m) => m.label === "Engagement")?.value).toBe("unconfirmed");
+      expect(metrics.find((m) => m.label === "Compatibility identifier")?.value).not.toBe(
+        initial.find((m) => m.label === "Compatibility identifier")?.value,
+      );
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
 });

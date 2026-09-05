@@ -701,11 +701,111 @@ export function computeParameterSensitivity(
       break;
     }
     case "us-3858232-boyle-smith-ccd": {
-      // The issued grant discloses a three-conductor sequence and the
-      // Figure 3 overlap inequality, but not the geometry, doping,
-      // capacitance, mobility, operating voltage, or clock frequency needed
-      // for a physical derivative. A discontinuous topology/timing admission
-      // boundary is not misrepresented as an SI sensitivity.
+      const rawHz =
+        params.clockStepRateHz ??
+        params.clockSpeedFactor ??
+        params.clockRate ??
+        params.stepRate ??
+        params.clockHz ??
+        params.clockSpeed ??
+        params.frequency;
+      const rawRatio =
+        params.pulseWidthToStepRatio ??
+        params.pulseWidthRatio ??
+        params.pulseWidth ??
+        params.ratio ??
+        params.overlapRatio ??
+        params.overlap;
+      const rawDepth =
+        params.pulseDepthNormalized ??
+        params.pulseDepth ??
+        params.wellDepth ??
+        params.depth ??
+        params.depthNormalized;
+      const rawRun = params.running ?? params.run ?? params.clockRunning ?? params.active;
+
+      if (
+        (rawHz !== undefined && (!Number.isFinite(rawHz) || rawHz < 0.2 || rawHz > 2.5)) ||
+        (rawRatio !== undefined &&
+          (!Number.isFinite(rawRatio) || rawRatio < 0.2 || rawRatio > 0.8)) ||
+        (rawDepth !== undefined &&
+          (!Number.isFinite(rawDepth) || rawDepth < 0.25 || rawDepth > 1.0)) ||
+        (rawRun !== undefined &&
+          (!Number.isFinite(Number(rawRun)) || Number(rawRun) < 0 || Number(rawRun) > 1))
+      ) {
+        return null;
+      }
+
+      if (
+        controlKey === "pulseWidthToStepRatio" ||
+        controlKey === "pulseWidthRatio" ||
+        controlKey === "pulseWidth" ||
+        controlKey === "ratio" ||
+        controlKey === "overlapRatio" ||
+        controlKey === "overlap"
+      ) {
+        return {
+          metricName: "Pulse Overlap Ratio",
+          derivativeSymbol: "∂(t_p/Δt) / ∂(t_p/Δt)",
+          derivativeValue: 1.0,
+          derivativeUnit: "ratio / ratio",
+          interpretation:
+            "Exact sensitivity of the sequential pulse-width-to-step ratio governing Figure 3 potential-well overlap condition (must exceed 1/3 for charge transfer).",
+        };
+      }
+
+      if (
+        controlKey === "clockStepRateHz" ||
+        controlKey === "clockSpeedFactor" ||
+        controlKey === "clockRate" ||
+        controlKey === "stepRate" ||
+        controlKey === "clockHz" ||
+        controlKey === "clockSpeed" ||
+        controlKey === "frequency"
+      ) {
+        return {
+          metricName: "Phase Coordinate Velocity",
+          derivativeSymbol: "∂(dSteps/dt) / ∂f_{clock}",
+          derivativeValue: 1.0,
+          derivativeUnit: "steps/s / Hz",
+          interpretation:
+            "Rate of change of clock coordinate progression rate with respect to visible phase-step frequency.",
+        };
+      }
+
+      if (
+        controlKey === "pulseDepthNormalized" ||
+        controlKey === "pulseDepth" ||
+        controlKey === "wellDepth" ||
+        controlKey === "depth" ||
+        controlKey === "depthNormalized"
+      ) {
+        return {
+          metricName: "Peak Potential-Well Depth",
+          derivativeSymbol: "∂Φ_{peak} / ∂d_{norm}",
+          derivativeValue: 0.88,
+          derivativeUnit: "normalized depth / depth",
+          interpretation:
+            "Derivative of the maximum potential-well depth with respect to normalized pulse amplitude (0.88 peak slope over the 0.12 baseline).",
+        };
+      }
+
+      if (
+        controlKey === "running" ||
+        controlKey === "run" ||
+        controlKey === "clockRunning" ||
+        controlKey === "active"
+      ) {
+        return {
+          metricName: "Clock Sequence Run State",
+          derivativeSymbol: "ΔRun / Δrun",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete sensitivity: clock stepping run state (1.0 when running, 0.0 when paused).",
+        };
+      }
+
       break;
     }
 
@@ -2810,8 +2910,82 @@ export function computeParameterSensitivity(
     }
 
     case "us-586193-marconi-radio": {
-      // Source-bounded fixed-step causal tape; quantitative RF link budget withheld.
-      return null;
+      const rawAerial =
+        params.aerialHeight ??
+        params.aerialHeightMeters ??
+        params.mastHeightM ??
+        params.mastHeight ??
+        params.height ??
+        params.aerial;
+      const rawGap = params.sparkGapMm ?? params.gapMm ?? params.sparkGap ?? params.gap;
+      const rawKv =
+        params.sparkVoltage ??
+        params.sparkVoltageKv ??
+        params.inductionCoilKv ??
+        params.voltage ??
+        params.potentialKv;
+
+      if (
+        (rawAerial !== undefined &&
+          (!Number.isFinite(rawAerial) || rawAerial < 10 || rawAerial > 120)) ||
+        (rawGap !== undefined && (!Number.isFinite(rawGap) || rawGap < 2 || rawGap > 25)) ||
+        (rawKv !== undefined && (!Number.isFinite(rawKv) || rawKv < 5 || rawKv > 50))
+      ) {
+        return null;
+      }
+
+      if (
+        controlKey === "aerialHeight" ||
+        controlKey === "aerialHeightMeters" ||
+        controlKey === "mastHeightM" ||
+        controlKey === "mastHeight" ||
+        controlKey === "height" ||
+        controlKey === "aerial"
+      ) {
+        return {
+          metricName: "Mast Studio Scale",
+          derivativeSymbol: "∂S_{mast} / ∂h",
+          derivativeValue: Number((1 / 88).toFixed(6)),
+          derivativeUnit: "scale / m",
+          interpretation:
+            "Linear scale factor of the vertical aerial mast in the studio projection relative to the 88-meter baseline model.",
+        };
+      }
+
+      if (
+        controlKey === "sparkGapMm" ||
+        controlKey === "gapMm" ||
+        controlKey === "sparkGap" ||
+        controlKey === "gap"
+      ) {
+        return {
+          metricName: "Spark Gap Studio Half-Span",
+          derivativeSymbol: "∂s_{gap} / ∂d",
+          derivativeValue: Number((0.18 / 23).toFixed(6)),
+          derivativeUnit: "span / mm",
+          interpretation:
+            "Rate of change of the transmitter spark-ball visual separation half-span with respect to spark gap distance.",
+        };
+      }
+
+      if (
+        controlKey === "sparkVoltage" ||
+        controlKey === "sparkVoltageKv" ||
+        controlKey === "inductionCoilKv" ||
+        controlKey === "voltage" ||
+        controlKey === "potentialKv"
+      ) {
+        return {
+          metricName: "Induction Coil Display Potential",
+          derivativeSymbol: "∂V_{coil} / ∂V_{spark}",
+          derivativeValue: 1.0,
+          derivativeUnit: "kV / kV",
+          interpretation:
+            "Direct linear response of the induction coil secondary potential display to the apparatus voltage setting.",
+        };
+      }
+
+      break;
     }
 
     case "us-247804-delaval-separator": {
@@ -8418,6 +8592,137 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-3081379-lemelson-machine-vision": {
+      const rawScan =
+        params.scanPathEnabled ??
+        params.scanPath ??
+        params.scan ??
+        params.scanEnabled ??
+        params.beamScan;
+      const rawGate =
+        params.synchronizedGateEnabled ??
+        params.synchronizedGate ??
+        params.gate ??
+        params.gateEnabled ??
+        params.syncGate;
+      const rawCircuit =
+        params.analyzingCircuitEnabled ??
+        params.analyzingCircuit ??
+        params.circuit ??
+        params.analysis ??
+        params.analyzerEnabled;
+      const rawInspection =
+        params.inspectionSignalPresent ??
+        params.inspectionSignal ??
+        params.pictureSignal ??
+        params.signalPresent;
+      const rawReference =
+        params.referenceSignalMatches ??
+        params.referenceSignal ??
+        params.referenceMatch ??
+        params.referenceMatches ??
+        params.reference;
+
+      if (
+        (rawScan !== undefined && (!Number.isFinite(rawScan) || rawScan < 0 || rawScan > 1)) ||
+        (rawGate !== undefined && (!Number.isFinite(rawGate) || rawGate < 0 || rawGate > 1)) ||
+        (rawCircuit !== undefined &&
+          (!Number.isFinite(rawCircuit) || rawCircuit < 0 || rawCircuit > 1)) ||
+        (rawInspection !== undefined &&
+          (!Number.isFinite(rawInspection) || rawInspection < 0 || rawInspection > 1)) ||
+        (rawReference !== undefined &&
+          (!Number.isFinite(rawReference) || rawReference < 0 || rawReference > 1))
+      ) {
+        return null;
+      }
+
+      if (
+        controlKey === "scanPathEnabled" ||
+        controlKey === "scanPath" ||
+        controlKey === "scan" ||
+        controlKey === "scanEnabled" ||
+        controlKey === "beamScan"
+      ) {
+        return {
+          metricName: "Claim 1 Scan-Path State",
+          derivativeSymbol: "ΔScan / ΔscanPath",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete sensitivity: Claim 1 electron-beam scan path availability state (1.0 when active, 0.0 when withheld).",
+        };
+      }
+
+      if (
+        controlKey === "synchronizedGateEnabled" ||
+        controlKey === "synchronizedGate" ||
+        controlKey === "gate" ||
+        controlKey === "gateEnabled" ||
+        controlKey === "syncGate"
+      ) {
+        return {
+          metricName: "Claim 1 Synchronized Gate State",
+          derivativeSymbol: "ΔGate / ΔsyncGate",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete sensitivity: Claim 1 synchronized gating signal path state (1.0 when active, 0.0 when withheld).",
+        };
+      }
+
+      if (
+        controlKey === "analyzingCircuitEnabled" ||
+        controlKey === "analyzingCircuit" ||
+        controlKey === "circuit" ||
+        controlKey === "analysis" ||
+        controlKey === "analyzerEnabled"
+      ) {
+        return {
+          metricName: "Claim 1 Analyzing Circuit State",
+          derivativeSymbol: "ΔCircuit / Δanalyzer",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete sensitivity: Claim 1 video analyzing and comparator circuit state.",
+        };
+      }
+
+      if (
+        controlKey === "inspectionSignalPresent" ||
+        controlKey === "inspectionSignal" ||
+        controlKey === "pictureSignal" ||
+        controlKey === "signalPresent"
+      ) {
+        return {
+          metricName: "Inspection Picture Signal Presence",
+          derivativeSymbol: "ΔSignal / Δinspection",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete sensitivity: picture signal presence at the scanning aperture during object inspection.",
+        };
+      }
+
+      if (
+        controlKey === "referenceSignalMatches" ||
+        controlKey === "referenceSignal" ||
+        controlKey === "referenceMatch" ||
+        controlKey === "referenceMatches" ||
+        controlKey === "reference"
+      ) {
+        return {
+          metricName: "Reference Comparison Match State",
+          derivativeSymbol: "ΔMatch / Δreference",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete sensitivity: comparison of inspected signal with preset standard (1.0 for match, 0.0 for difference).",
+        };
+      }
+
+      break;
+    }
+
     case "us-3119501-lemelson-automatic-warehousing": {
       const rawRail =
         params.railAddressFraction ??
@@ -9528,10 +9833,90 @@ export function computeParameterSensitivity(
     }
 
     case "us-5701965-kamen-transporter": {
-      // US 5,701,965 is presented here as a discrete claim-reading state
-      // machine. It has no continuous public control whose derivative can be
-      // calculated without replacing the source boundary with a scenario.
-      return null;
+      const rawState = params.topologyState ?? params.state ?? params.topology ?? params.mode;
+      const rawBalance =
+        params.claim1BalanceEnabled ??
+        params.balanceTopologyEnabled ??
+        params.balanceEnabled ??
+        params.balanceLoop;
+      const rawCluster =
+        params.claim16ClusterEnabled ??
+        params.clusterTopologyEnabled ??
+        params.clusterEnabled ??
+        params.cluster;
+
+      if (
+        rawState !== undefined &&
+        typeof rawState === "number" &&
+        (!Number.isFinite(rawState) || rawState < 0 || rawState > 5)
+      ) {
+        return null;
+      }
+      if (
+        rawBalance !== undefined &&
+        typeof rawBalance === "number" &&
+        (!Number.isFinite(rawBalance) || rawBalance < 0 || rawBalance > 1)
+      ) {
+        return null;
+      }
+      if (
+        rawCluster !== undefined &&
+        typeof rawCluster === "number" &&
+        (!Number.isFinite(rawCluster) || rawCluster < 0 || rawCluster > 1)
+      ) {
+        return null;
+      }
+
+      if (
+        controlKey === "topologyState" ||
+        controlKey === "state" ||
+        controlKey === "topology" ||
+        controlKey === "mode" ||
+        controlKey === "operatingMode"
+      ) {
+        return {
+          metricName: "Claim Topology State Index",
+          derivativeSymbol: "ΔState / Δtopology",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete sensitivity of the source-ordered operational state machine across ground-support, balance, stair-start, weight-transfer, climb, and transition topologies.",
+        };
+      }
+
+      if (
+        controlKey === "claim1BalanceEnabled" ||
+        controlKey === "balanceTopologyEnabled" ||
+        controlKey === "balanceEnabled" ||
+        controlKey === "balanceLoop"
+      ) {
+        return {
+          metricName: "Claim 1 Balance Loop State",
+          derivativeSymbol: "ΔBalance / Δloop",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete sensitivity: Claim 1 motorized fore-aft dynamic balance control loop admission state.",
+        };
+      }
+
+      if (
+        controlKey === "claim16ClusterEnabled" ||
+        controlKey === "clusterTopologyEnabled" ||
+        controlKey === "clusterEnabled" ||
+        controlKey === "cluster"
+      ) {
+        return {
+          metricName: "Claim 16 Cluster Topology State",
+          derivativeSymbol: "ΔCluster / Δcluster",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete sensitivity: Claims 16–21 independently driven cluster-wheel pairing configuration state.",
+        };
+      }
+
+      break;
     }
 
     case "us-4976582-clavel-delta-robot": {
@@ -10461,6 +10846,94 @@ export function computeParameterSensitivity(
             "Identity slope for the source-described reciprocal transverse stage. US 4,765,668 prints no connector stroke, cylinder dimensions, pressure, load, or speed, so this remains a normalized topology sensitivity rather than SI travel or actuator performance.",
         };
       }
+      break;
+    }
+
+    case "us-6331181-davinci": {
+      const rawCompat =
+        params.compatibilitySignalPresent ??
+        params.compatibility ??
+        params.compatible ??
+        params.compatibilitySignal ??
+        params.tremorFilterEnabled;
+      const rawCalib =
+        params.calibrationRecordAvailable ??
+        params.calibration ??
+        params.calibrationRecord ??
+        params.calRecord ??
+        params.calibrationAvailable;
+      const rawEngage =
+        params.engagementSignalPresent ??
+        params.engagement ??
+        params.engagementSignal ??
+        params.engaged ??
+        params.engagementPresent;
+
+      if (
+        (rawCompat !== undefined &&
+          typeof rawCompat === "number" &&
+          (!Number.isFinite(rawCompat) || rawCompat < 0 || rawCompat > 1)) ||
+        (rawCalib !== undefined &&
+          typeof rawCalib === "number" &&
+          (!Number.isFinite(rawCalib) || rawCalib < 0 || rawCalib > 1)) ||
+        (rawEngage !== undefined &&
+          typeof rawEngage === "number" &&
+          (!Number.isFinite(rawEngage) || rawEngage < 0 || rawEngage > 1))
+      ) {
+        return null;
+      }
+
+      if (
+        controlKey === "compatibilitySignalPresent" ||
+        controlKey === "compatibility" ||
+        controlKey === "compatible" ||
+        controlKey === "compatibilitySignal" ||
+        controlKey === "tremorFilterEnabled"
+      ) {
+        return {
+          metricName: "Tool Interface Compatibility",
+          derivativeSymbol: "ΔReady / Δcompat",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete sensitivity: tool memory compatibility token presence required for processor configuration admission.",
+        };
+      }
+
+      if (
+        controlKey === "calibrationRecordAvailable" ||
+        controlKey === "calibration" ||
+        controlKey === "calibrationRecord" ||
+        controlKey === "calRecord" ||
+        controlKey === "calibrationAvailable"
+      ) {
+        return {
+          metricName: "Calibration Record Availability",
+          derivativeSymbol: "ΔReady / Δcalib",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete sensitivity: measured offset calibration record availability for robotic manipulator kinematic alignment.",
+        };
+      }
+
+      if (
+        controlKey === "engagementSignalPresent" ||
+        controlKey === "engagement" ||
+        controlKey === "engagementSignal" ||
+        controlKey === "engaged" ||
+        controlKey === "engagementPresent"
+      ) {
+        return {
+          metricName: "Physical Engagement Confirmation",
+          derivativeSymbol: "ΔReady / Δengage",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / state",
+          interpretation:
+            "Discrete sensitivity: electrical/mechanical engagement latch signal confirming tool sterile mount lock.",
+        };
+      }
+
       break;
     }
 

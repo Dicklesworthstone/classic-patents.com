@@ -38,19 +38,38 @@ function asBoolean(value: number | boolean | undefined, fallback: boolean): bool
 }
 
 export function readDaVinciInterfaceControls(
-  params: DaVinciInterfaceParams,
+  params: DaVinciInterfaceParams & Record<string, unknown>,
 ): DaVinciInterfaceControls {
+  const compat =
+    params.compatibilitySignalPresent ??
+    params.compatibility ??
+    params.compatible ??
+    params.compatibilitySignal ??
+    params.tremorFilterEnabled;
+  const calib =
+    params.calibrationRecordAvailable ??
+    params.calibration ??
+    params.calibrationRecord ??
+    params.calRecord ??
+    params.calibrationAvailable;
+  const engage =
+    params.engagementSignalPresent ??
+    params.engagement ??
+    params.engagementSignal ??
+    params.engaged ??
+    params.engagementPresent;
+
   return {
     compatibilitySignalPresent: asBoolean(
-      params.compatibilitySignalPresent ?? params.tremorFilterEnabled,
+      compat as number | boolean | undefined,
       DA_VINCI_INTERFACE_DEFAULT_CONTROLS.compatibilitySignalPresent,
     ),
     calibrationRecordAvailable: asBoolean(
-      params.calibrationRecordAvailable,
+      calib as number | boolean | undefined,
       DA_VINCI_INTERFACE_DEFAULT_CONTROLS.calibrationRecordAvailable,
     ),
     engagementSignalPresent: asBoolean(
-      params.engagementSignalPresent,
+      engage as number | boolean | undefined,
       DA_VINCI_INTERFACE_DEFAULT_CONTROLS.engagementSignalPresent,
     ),
   };

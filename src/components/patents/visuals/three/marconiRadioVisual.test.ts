@@ -207,7 +207,10 @@ describe("US 586,193 Guglielmo Marconi Wireless Radio Telegraphy visual & electr
       computeParameterSensitivity("us-586193-marconi-radio", "antennaHeightM", params),
     ).toBeNull();
     expect(
-      computeParameterSensitivity("us-586193-marconi-radio", "sparkVoltageKv", params),
+      computeParameterSensitivity("us-586193-marconi-radio", "frequencyHz", params),
+    ).toBeNull();
+    expect(
+      computeParameterSensitivity("us-586193-marconi-radio", "rfPowerWatts", params),
     ).toBeNull();
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-586193-marconi-radio"]).toContain(
       "no inductance, capacitance",

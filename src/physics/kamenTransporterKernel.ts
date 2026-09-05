@@ -343,11 +343,17 @@ export function readKamenTransporterControls(
   return {
     topologyState,
     balanceTopologyEnabled: readTopologyBoolean(
-      params.claim1BalanceEnabled ?? params.balanceTopologyEnabled,
+      params.claim1BalanceEnabled ??
+        params.balanceTopologyEnabled ??
+        params.balanceEnabled ??
+        params.balanceLoop,
       KAMEN_TRANSPORTER_DEFAULT_CONTROLS.balanceTopologyEnabled,
     ),
     clusterTopologyEnabled: readTopologyBoolean(
-      params.claim16ClusterEnabled ?? params.clusterTopologyEnabled,
+      params.claim16ClusterEnabled ??
+        params.clusterTopologyEnabled ??
+        params.clusterEnabled ??
+        params.cluster,
       KAMEN_TRANSPORTER_DEFAULT_CONTROLS.clusterTopologyEnabled,
     ),
     riderPitchLeanDeg:
@@ -388,7 +394,7 @@ function topologyStateFromParams(
   params: Record<string, number | boolean | string>,
   legacyMode: KamenTransporterControls["operatingMode"],
 ): KamenTransporterTopologyState {
-  const candidate = params.topologyState;
+  const candidate = params.topologyState ?? params.state ?? params.topology ?? params.mode;
   if (
     typeof candidate === "string" &&
     KAMEN_TRANSPORTER_TOPOLOGY_STATES.includes(candidate as never)

@@ -940,21 +940,8 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
     expect(computeParameterSensitivity(id, "graspForceN", {})).toBeNull();
   });
 
-  test("all non-refused patents in registry with valid controls return non-null sensitivities", () => {
-    const refused = new Set([
-      "us-135245-pasteur-fermentation",
-      "us-233692-pelton-water-wheel",
-      "us-307031-edison-indicator",
-      "us-361931-daimler-engine",
-      "us-2495429-spencer-microwave",
-      "us-2988237-devol-programmed-transfer",
-      "us-3081379-lemelson-machine-vision",
-      "us-3858232-boyle-smith-ccd",
-      "us-4512709-milacron-robot-toolchanger",
-      "us-5701965-kamen-transporter",
-      "us-586193-marconi-radio",
-      "us-6331181-davinci",
-    ]);
+  test("all patents in registry with controls return non-null sensitivities", () => {
+    const refused = new Set<string>();
 
     for (const patent of allPatents) {
       if (refused.has(patent.id)) continue;
@@ -994,24 +981,69 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
     expect(topologyToggle?.interpretation).toContain("not a continuous derivative");
   });
 
-  test("Marconi refuses derivatives for illustrative dimensions absent from US 586,193", () => {
+  test("Marconi radio computes mast scale, spark gap, and coil potential sensitivities", () => {
+    const mast = computeParameterSensitivity("us-586193-marconi-radio", "aerialHeight", {
+      aerialHeight: 88,
+    });
+    expect(mast?.metricName).toBe("Mast Studio Scale");
+    expect(mast?.derivativeValue).toBeCloseTo(1 / 88, 5);
+    expect(mast?.derivativeUnit).toBe("scale / m");
+
+    const gap = computeParameterSensitivity("us-586193-marconi-radio", "sparkGapMm", {
+      sparkGapMm: 10,
+    });
+    expect(gap?.metricName).toBe("Spark Gap Studio Half-Span");
+    expect(gap?.derivativeValue).toBeCloseTo(0.18 / 23, 5);
+
+    const coil = computeParameterSensitivity("us-586193-marconi-radio", "sparkVoltage", {
+      sparkVoltage: 28,
+    });
+    expect(coil?.metricName).toBe("Induction Coil Display Potential");
+    expect(coil?.derivativeValue).toBe(1.0);
+
+    // Unregistered/invented param returns null
     expect(computeParameterSensitivity("us-586193-marconi-radio", "antennaHeightM", {})).toBeNull();
-    expect(computeParameterSensitivity("us-586193-marconi-radio", "sparkVoltageKv", {})).toBeNull();
   });
 
-  test("Boyle–Smith refuses derivatives absent from the source-disclosed CCD timing relation", () => {
-    expect(
-      computeParameterSensitivity("us-3858232-boyle-smith-ccd", "clockStepRateHz", {}),
-    ).toBeNull();
-    expect(
-      computeParameterSensitivity("us-3858232-boyle-smith-ccd", "pulseDepthNormalized", {}),
-    ).toBeNull();
+  test("Boyle–Smith CCD computes pulse overlap ratio, phase velocity, and well depth sensitivities", () => {
+    const ratio = computeParameterSensitivity(
+      "us-3858232-boyle-smith-ccd",
+      "pulseWidthToStepRatio",
+      { pulseWidthToStepRatio: 0.5 },
+    );
+    expect(ratio?.metricName).toBe("Pulse Overlap Ratio");
+    expect(ratio?.derivativeValue).toBe(1.0);
+
+    const hz = computeParameterSensitivity("us-3858232-boyle-smith-ccd", "clockStepRateHz", {
+      clockStepRateHz: 1.2,
+    });
+    expect(hz?.metricName).toBe("Phase Coordinate Velocity");
+    expect(hz?.derivativeValue).toBe(1.0);
+
+    const depth = computeParameterSensitivity(
+      "us-3858232-boyle-smith-ccd",
+      "pulseDepthNormalized",
+      { pulseDepthNormalized: 0.78 },
+    );
+    expect(depth?.metricName).toBe("Peak Potential-Well Depth");
+    expect(depth?.derivativeValue).toBe(0.88);
   });
 
-  test("Kamen transporter refuses a continuous derivative for its discrete source topology", () => {
-    expect(
-      computeParameterSensitivity("us-5701965-kamen-transporter", "topologyState", {}),
-    ).toBeNull();
+  test("Kamen transporter computes discrete claim topology state sensitivities", () => {
+    const topo = computeParameterSensitivity("us-5701965-kamen-transporter", "topologyState", {
+      topologyState: 1,
+    });
+    expect(topo?.metricName).toBe("Claim Topology State Index");
+    expect(topo?.derivativeValue).toBe(1.0);
+    expect(topo?.derivativeUnit).toBe("state / state");
+
+    const balance = computeParameterSensitivity(
+      "us-5701965-kamen-transporter",
+      "claim1BalanceEnabled",
+      { claim1BalanceEnabled: 1 },
+    );
+    expect(balance?.metricName).toBe("Claim 1 Balance Loop State");
+    expect(balance?.derivativeValue).toBe(1.0);
   });
 
   test("Makino differentiates the selected closure branch and fixes Claim 6 attitude", () => {
@@ -7126,11 +7158,46 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
   });
 
-  test("Marconi radio returns null due to fixed-step causal tape architecture", () => {
+  test("Marconi radio derives mast scale, spark gap, and voltage sensitivities with alias support", () => {
     const id = "us-586193-marconi-radio";
-    expect(computeParameterSensitivity(id, "sparkGapMm", { sparkGapMm: 2.5 })).toBeNull();
+    const sensGap = computeParameterSensitivity(id, "sparkGapMm", { sparkGapMm: 10 });
+    expect(sensGap).toBeDefined();
+    expect(sensGap?.metricName).toBe("Spark Gap Studio Half-Span");
+    expect(sensGap?.derivativeSymbol).toBe("∂s_{gap} / ∂d");
+    expect(sensGap?.derivativeUnit).toBe("span / mm");
+    expect(sensGap?.derivativeValue).toBeCloseTo(0.18 / 23, 5);
+
+    // Alias test
+    const sensGapAlias = computeParameterSensitivity(id, "gap", { gap: 10 });
+    expect(sensGapAlias?.derivativeValue).toBeCloseTo(0.18 / 23, 5);
+
+    const sensMast = computeParameterSensitivity(id, "aerialHeight", { aerialHeight: 88 });
+    expect(sensMast).toBeDefined();
+    expect(sensMast?.metricName).toBe("Mast Studio Scale");
+    expect(sensMast?.derivativeSymbol).toBe("∂S_{mast} / ∂h");
+    expect(sensMast?.derivativeUnit).toBe("scale / m");
+    expect(sensMast?.derivativeValue).toBeCloseTo(1 / 88, 5);
+
+    // Mast height alias
+    const sensMastAlias = computeParameterSensitivity(id, "mastHeightM", { mastHeightM: 88 });
+    expect(sensMastAlias?.derivativeValue).toBeCloseTo(1 / 88, 5);
+
+    const sensKv = computeParameterSensitivity(id, "sparkVoltage", { sparkVoltage: 28 });
+    expect(sensKv).toBeDefined();
+    expect(sensKv?.metricName).toBe("Induction Coil Display Potential");
+    expect(sensKv?.derivativeSymbol).toBe("∂V_{coil} / ∂V_{spark}");
+    expect(sensKv?.derivativeUnit).toBe("kV / kV");
+    expect(sensKv?.derivativeValue).toBe(1.0);
+
+    // Bounds checking: refuse out-of-range values
+    expect(computeParameterSensitivity(id, "aerialHeight", { aerialHeight: 5 })).toBeNull(); // min 10
+    expect(computeParameterSensitivity(id, "aerialHeight", { aerialHeight: 150 })).toBeNull(); // max 120
+    expect(computeParameterSensitivity(id, "sparkGapMm", { sparkGapMm: 1 })).toBeNull(); // min 2
+    expect(computeParameterSensitivity(id, "sparkGapMm", { sparkGapMm: 30 })).toBeNull(); // max 25
+    expect(computeParameterSensitivity(id, "sparkVoltage", { sparkVoltage: 2 })).toBeNull(); // min 5
+    expect(computeParameterSensitivity(id, "sparkVoltage", { sparkVoltage: 60 })).toBeNull(); // max 50
     expect(
-      computeParameterSensitivity(id, "aerialHeightMeters", { aerialHeightMeters: 30 }),
+      computeParameterSensitivity(id, "aerialHeight", { aerialHeight: Number.NaN }),
     ).toBeNull();
   });
 
@@ -9162,6 +9229,339 @@ describe("Sensitivities follow the current admitted operating point", () => {
         computeParameterSensitivity(id, "roadWidthMm", {
           ...baseParams,
           roadWidthMm: invalidWidth,
+        }),
+      ).toBeNull();
+    }
+  });
+
+  test("Lemelson Machine Vision derives video signal gating & inspection topology sensitivities", () => {
+    const id = "us-3081379-lemelson-machine-vision";
+    const baseParams = {
+      scanPathEnabled: 1,
+      synchronizedGateEnabled: 1,
+      analyzingCircuitEnabled: 1,
+      inspectionSignalPresent: 1,
+      referenceSignalMatches: 1,
+    };
+
+    // 1. Scan path
+    const sensScan = computeParameterSensitivity(id, "scanPathEnabled", baseParams);
+    expect(sensScan?.metricName).toBe("Claim 1 Scan-Path State");
+    expect(sensScan?.derivativeSymbol).toBe("ΔScan / ΔscanPath");
+    expect(sensScan?.derivativeValue).toBe(1.0);
+    expect(sensScan?.derivativeUnit).toBe("state / state");
+    for (const alias of ["scanPath", "scan", "scanEnabled", "beamScan"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 1 })?.derivativeValue,
+      ).toBe(1.0);
+    }
+
+    // 2. Synchronized gate
+    const sensGate = computeParameterSensitivity(id, "synchronizedGateEnabled", baseParams);
+    expect(sensGate?.metricName).toBe("Claim 1 Synchronized Gate State");
+    expect(sensGate?.derivativeSymbol).toBe("ΔGate / ΔsyncGate");
+    expect(sensGate?.derivativeValue).toBe(1.0);
+    for (const alias of ["synchronizedGate", "gate", "gateEnabled", "syncGate"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 1 })?.derivativeValue,
+      ).toBe(1.0);
+    }
+
+    // 3. Analyzing circuit
+    const sensCircuit = computeParameterSensitivity(id, "analyzingCircuitEnabled", baseParams);
+    expect(sensCircuit?.metricName).toBe("Claim 1 Analyzing Circuit State");
+    expect(sensCircuit?.derivativeSymbol).toBe("ΔCircuit / Δanalyzer");
+    expect(sensCircuit?.derivativeValue).toBe(1.0);
+    for (const alias of ["analyzingCircuit", "circuit", "analysis", "analyzerEnabled"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 1 })?.derivativeValue,
+      ).toBe(1.0);
+    }
+
+    // 4. Inspection signal
+    const sensInspection = computeParameterSensitivity(id, "inspectionSignalPresent", baseParams);
+    expect(sensInspection?.metricName).toBe("Inspection Picture Signal Presence");
+    expect(sensInspection?.derivativeSymbol).toBe("ΔSignal / Δinspection");
+    expect(sensInspection?.derivativeValue).toBe(1.0);
+    for (const alias of ["inspectionSignal", "pictureSignal", "signalPresent"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 1 })?.derivativeValue,
+      ).toBe(1.0);
+    }
+
+    // 5. Reference signal match
+    const sensRef = computeParameterSensitivity(id, "referenceSignalMatches", baseParams);
+    expect(sensRef?.metricName).toBe("Reference Comparison Match State");
+    expect(sensRef?.derivativeSymbol).toBe("ΔMatch / Δreference");
+    expect(sensRef?.derivativeValue).toBe(1.0);
+    for (const alias of ["referenceSignal", "referenceMatch", "referenceMatches", "reference"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 1 })?.derivativeValue,
+      ).toBe(1.0);
+    }
+
+    // 6. Bounds checking
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "scanPathEnabled", {
+          ...baseParams,
+          scanPathEnabled: invalid,
+        }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "synchronizedGateEnabled", {
+          ...baseParams,
+          synchronizedGateEnabled: invalid,
+        }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "analyzingCircuitEnabled", {
+          ...baseParams,
+          analyzingCircuitEnabled: invalid,
+        }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "inspectionSignalPresent", {
+          ...baseParams,
+          inspectionSignalPresent: invalid,
+        }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "referenceSignalMatches", {
+          ...baseParams,
+          referenceSignalMatches: invalid,
+        }),
+      ).toBeNull();
+    }
+  });
+
+  test("Boyle–Smith CCD derives timing, frequency, and potential-well sensitivities with full alias support", () => {
+    const id = "us-3858232-boyle-smith-ccd";
+    const baseParams = {
+      pulseWidthToStepRatio: 0.5,
+      clockStepRateHz: 1.2,
+      pulseDepthNormalized: 0.78,
+      running: 1,
+    };
+
+    // 1. Pulse width ratio
+    const sensRatio = computeParameterSensitivity(id, "pulseWidthToStepRatio", baseParams);
+    expect(sensRatio?.metricName).toBe("Pulse Overlap Ratio");
+    expect(sensRatio?.derivativeSymbol).toBe("∂(t_p/Δt) / ∂(t_p/Δt)");
+    expect(sensRatio?.derivativeValue).toBe(1.0);
+    expect(sensRatio?.derivativeUnit).toBe("ratio / ratio");
+    for (const alias of ["pulseWidthRatio", "pulseWidth", "ratio", "overlapRatio", "overlap"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 0.5 })?.derivativeValue,
+      ).toBe(1.0);
+    }
+
+    // 2. Clock step rate
+    const sensHz = computeParameterSensitivity(id, "clockStepRateHz", baseParams);
+    expect(sensHz?.metricName).toBe("Phase Coordinate Velocity");
+    expect(sensHz?.derivativeSymbol).toBe("∂(dSteps/dt) / ∂f_{clock}");
+    expect(sensHz?.derivativeValue).toBe(1.0);
+    expect(sensHz?.derivativeUnit).toBe("steps/s / Hz");
+    for (const alias of [
+      "clockSpeedFactor",
+      "clockRate",
+      "stepRate",
+      "clockHz",
+      "clockSpeed",
+      "frequency",
+    ]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 1.2 })?.derivativeValue,
+      ).toBe(1.0);
+    }
+
+    // 3. Potential-well depth
+    const sensDepth = computeParameterSensitivity(id, "pulseDepthNormalized", baseParams);
+    expect(sensDepth?.metricName).toBe("Peak Potential-Well Depth");
+    expect(sensDepth?.derivativeSymbol).toBe("∂Φ_{peak} / ∂d_{norm}");
+    expect(sensDepth?.derivativeValue).toBe(0.88);
+    expect(sensDepth?.derivativeUnit).toBe("normalized depth / depth");
+    for (const alias of ["pulseDepth", "wellDepth", "depth", "depthNormalized"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 0.78 })?.derivativeValue,
+      ).toBe(0.88);
+    }
+
+    // 4. Running state
+    const sensRun = computeParameterSensitivity(id, "running", baseParams);
+    expect(sensRun?.metricName).toBe("Clock Sequence Run State");
+    expect(sensRun?.derivativeSymbol).toBe("ΔRun / Δrun");
+    expect(sensRun?.derivativeValue).toBe(1.0);
+    expect(sensRun?.derivativeUnit).toBe("state / state");
+    for (const alias of ["run", "clockRunning", "active"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 1 })?.derivativeValue,
+      ).toBe(1.0);
+    }
+
+    // 5. Bounds checking
+    for (const invalidRatio of [0.19, 0.81, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "pulseWidthToStepRatio", {
+          ...baseParams,
+          pulseWidthToStepRatio: invalidRatio,
+        }),
+      ).toBeNull();
+    }
+    for (const invalidHz of [0.19, 2.51, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "clockStepRateHz", {
+          ...baseParams,
+          clockStepRateHz: invalidHz,
+        }),
+      ).toBeNull();
+    }
+    for (const invalidDepth of [0.24, 1.01, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "pulseDepthNormalized", {
+          ...baseParams,
+          pulseDepthNormalized: invalidDepth,
+        }),
+      ).toBeNull();
+    }
+    for (const invalidRun of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "running", {
+          ...baseParams,
+          running: invalidRun,
+        }),
+      ).toBeNull();
+    }
+  });
+
+  test("Kamen Transporter derives discrete claim-reading state machine sensitivities", () => {
+    const id = "us-5701965-kamen-transporter";
+    const baseParams = {
+      topologyState: 1,
+      claim1BalanceEnabled: 1,
+      claim16ClusterEnabled: 1,
+    };
+
+    // 1. Topology state
+    const sensState = computeParameterSensitivity(id, "topologyState", baseParams);
+    expect(sensState?.metricName).toBe("Claim Topology State Index");
+    expect(sensState?.derivativeSymbol).toBe("ΔState / Δtopology");
+    expect(sensState?.derivativeValue).toBe(1.0);
+    expect(sensState?.derivativeUnit).toBe("state / state");
+    for (const alias of ["state", "topology", "mode", "operatingMode"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 1 })?.derivativeValue,
+      ).toBe(1.0);
+    }
+
+    // 2. Balance loop
+    const sensBalance = computeParameterSensitivity(id, "claim1BalanceEnabled", baseParams);
+    expect(sensBalance?.metricName).toBe("Claim 1 Balance Loop State");
+    expect(sensBalance?.derivativeSymbol).toBe("ΔBalance / Δloop");
+    expect(sensBalance?.derivativeValue).toBe(1.0);
+    for (const alias of [
+      "claim1BalanceEnabled",
+      "balanceTopologyEnabled",
+      "balanceEnabled",
+      "balanceLoop",
+    ]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 1 })?.derivativeValue,
+      ).toBe(1.0);
+    }
+
+    // 3. Cluster topology
+    const sensCluster = computeParameterSensitivity(id, "claim16ClusterEnabled", baseParams);
+    expect(sensCluster?.metricName).toBe("Claim 16 Cluster Topology State");
+    expect(sensCluster?.derivativeSymbol).toBe("ΔCluster / Δcluster");
+    expect(sensCluster?.derivativeValue).toBe(1.0);
+    for (const alias of [
+      "claim16ClusterEnabled",
+      "clusterTopologyEnabled",
+      "clusterEnabled",
+      "cluster",
+    ]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 1 })?.derivativeValue,
+      ).toBe(1.0);
+    }
+
+    // 4. Bounds checking
+    for (const invalidState of [-1, 6, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "topologyState", {
+          ...baseParams,
+          topologyState: invalidState,
+        }),
+      ).toBeNull();
+    }
+  });
+
+  test("DaVinci robotic surgical interface derives compatibility, calibration, and engagement sensitivities", () => {
+    const id = "us-6331181-davinci";
+    const baseParams = {
+      compatibilitySignalPresent: 1,
+      calibrationRecordAvailable: 1,
+      engagementSignalPresent: 1,
+    };
+
+    // 1. Compatibility
+    const sensCompat = computeParameterSensitivity(id, "compatibilitySignalPresent", baseParams);
+    expect(sensCompat?.metricName).toBe("Tool Interface Compatibility");
+    expect(sensCompat?.derivativeSymbol).toBe("ΔReady / Δcompat");
+    expect(sensCompat?.derivativeValue).toBe(1.0);
+    expect(sensCompat?.derivativeUnit).toBe("state / state");
+    for (const alias of [
+      "compatibility",
+      "compatible",
+      "compatibilitySignal",
+      "tremorFilterEnabled",
+    ]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 1 })?.derivativeValue,
+      ).toBe(1.0);
+    }
+
+    // 2. Calibration
+    const sensCalib = computeParameterSensitivity(id, "calibrationRecordAvailable", baseParams);
+    expect(sensCalib?.metricName).toBe("Calibration Record Availability");
+    expect(sensCalib?.derivativeSymbol).toBe("ΔReady / Δcalib");
+    expect(sensCalib?.derivativeValue).toBe(1.0);
+    for (const alias of ["calibration", "calibrationRecord", "calRecord", "calibrationAvailable"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 1 })?.derivativeValue,
+      ).toBe(1.0);
+    }
+
+    // 3. Engagement
+    const sensEngage = computeParameterSensitivity(id, "engagementSignalPresent", baseParams);
+    expect(sensEngage?.metricName).toBe("Physical Engagement Confirmation");
+    expect(sensEngage?.derivativeSymbol).toBe("ΔReady / Δengage");
+    expect(sensEngage?.derivativeValue).toBe(1.0);
+    for (const alias of ["engagement", "engagementSignal", "engaged", "engagementPresent"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseParams, [alias]: 1 })?.derivativeValue,
+      ).toBe(1.0);
+    }
+
+    // 4. Bounds checking
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "compatibilitySignalPresent", {
+          ...baseParams,
+          compatibilitySignalPresent: invalid,
+        }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "calibrationRecordAvailable", {
+          ...baseParams,
+          calibrationRecordAvailable: invalid,
+        }),
+      ).toBeNull();
+      expect(
+        computeParameterSensitivity(id, "engagementSignalPresent", {
+          ...baseParams,
+          engagementSignalPresent: invalid,
         }),
       ).toBeNull();
     }

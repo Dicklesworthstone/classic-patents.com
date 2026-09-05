@@ -46,10 +46,24 @@ function finiteClamp(value: number | undefined, fallback: number, min: number, m
 export function readMarconiRuntimeControls(
   raw?: Partial<Record<string, number>>,
 ): MarconiRuntimeControls {
+  const aerial =
+    raw?.aerialHeight ??
+    raw?.aerialHeightMeters ??
+    raw?.mastHeightM ??
+    raw?.mastHeight ??
+    raw?.height ??
+    raw?.aerial;
+  const gap = raw?.sparkGapMm ?? raw?.gapMm ?? raw?.sparkGap ?? raw?.gap;
+  const kv =
+    raw?.sparkVoltage ??
+    raw?.sparkVoltageKv ??
+    raw?.inductionCoilKv ??
+    raw?.voltage ??
+    raw?.potentialKv;
   return {
-    aerialHeightMeters: finiteClamp(raw?.aerialHeight, 88, 10, 120),
-    sparkGapMm: finiteClamp(raw?.sparkGapMm, 10, 2, 25),
-    inductionCoilKv: finiteClamp(raw?.sparkVoltage, 28, 5, 50),
+    aerialHeightMeters: finiteClamp(aerial, 88, 10, 120),
+    sparkGapMm: finiteClamp(gap, 10, 2, 25),
+    inductionCoilKv: finiteClamp(kv, 28, 5, 50),
     sparkPulseSequence: Math.max(0, Math.round(finiteClamp(raw?.sparkPulseSequence, 0, 0, 1e9))),
   };
 }

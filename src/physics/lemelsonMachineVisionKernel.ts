@@ -103,25 +103,56 @@ export function stepLemelsonMachineVisionTopology(
 export function readLemelsonMachineVisionControls(
   raw: RawLemelsonMachineVisionControls = {},
 ): LemelsonMachineVisionControls {
+  const rawDict = raw as Record<string, number | undefined>;
+  const scan =
+    rawDict.scanPathEnabled ??
+    rawDict.scanPath ??
+    rawDict.scan ??
+    rawDict.scanEnabled ??
+    rawDict.beamScan;
+  const gate =
+    rawDict.synchronizedGateEnabled ??
+    rawDict.synchronizedGate ??
+    rawDict.gate ??
+    rawDict.gateEnabled ??
+    rawDict.syncGate;
+  const circuit =
+    rawDict.analyzingCircuitEnabled ??
+    rawDict.analyzingCircuit ??
+    rawDict.circuit ??
+    rawDict.analysis ??
+    rawDict.analyzerEnabled;
+  const inspection =
+    rawDict.inspectionSignalPresent ??
+    rawDict.inspectionSignal ??
+    rawDict.pictureSignal ??
+    rawDict.signalPresent;
+  const reference =
+    rawDict.referenceSignalMatches ??
+    rawDict.referenceSignal ??
+    rawDict.referenceMatch ??
+    rawDict.referenceMatches ??
+    rawDict.reference;
+
   return {
     scanPathEnabled: normalizedSignal(
-      raw.scanPathEnabled,
+      scan,
       LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS.scanPathEnabled,
     ),
     synchronizedGateEnabled: normalizedSignal(
-      raw.synchronizedGateEnabled,
+      gate,
       LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS.synchronizedGateEnabled,
     ),
     analyzingCircuitEnabled: normalizedSignal(
-      raw.analyzingCircuitEnabled,
+      circuit,
       LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS.analyzingCircuitEnabled,
     ),
     inspectionSignalPresent: normalizedSignal(
-      raw.inspectionSignalPresent,
+      inspection,
       LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS.inspectionSignalPresent,
     ),
     referenceSignalMatches: normalizedSignal(
-      raw.referenceSignalMatches,
+      reference,
       LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS.referenceSignalMatches,
     ),
   };
