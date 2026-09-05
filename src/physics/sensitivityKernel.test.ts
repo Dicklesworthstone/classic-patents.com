@@ -5,6 +5,7 @@ import {
   stepEinsteinRefrigerator,
   stepGoodyearRubber,
   stepThomsonWelding,
+  stepZeppelinAirship,
 } from "./catalogKernels";
 
 describe("Thomson and Goodyear sensitivities use the displayed model", () => {
@@ -716,6 +717,87 @@ describe("Sensitivities follow the current admitted operating point", () => {
       computeParameterSensitivity("us-6302230-kamen-segway", "riderPitchDeg", {
         claim1BalanceEnabled: 0,
       }),
+    ).toBeNull();
+  });
+
+  test("Zeppelin airship derives buoyant lift and pitch trim from admitted model", () => {
+    const id = "us-621195-zeppelin-airship";
+    for (const alt of [0, 300, 1000, 2000]) {
+      for (const inflation of [75, 85, 95, 100]) {
+        const params = { flightAlt: alt, gasInflation: inflation };
+        const sens = computeParameterSensitivity(id, "gasInflation", params);
+        expect(sens).toBeDefined();
+        expect(sens?.metricName).toBe("Gross Aerostatic Buoyant Lift");
+        expect(sens?.derivativeSymbol).toBe("∂L_buoy / ∂%_inflation");
+        expect(sens?.derivativeUnit).toBe("N / %");
+        const zep = stepZeppelinAirship(params);
+        expect(sens?.derivativeValue).toBeCloseTo(zep.buoyantSlopeNPerPct, 1);
+      }
+    }
+
+    // Trim weight sensitivity
+    const trimSens = computeParameterSensitivity(id, "trimWeight", { trimWeight: 5 });
+    expect(trimSens).toBeDefined();
+    expect(trimSens?.metricName).toBe("Longitudinal Pitch Trim");
+    expect(trimSens?.derivativeSymbol).toBe("∂θ_pitch / ∂x_trim");
+    expect(trimSens?.derivativeUnit).toBe("deg / m");
+    expect(trimSens?.derivativeValue).toBeCloseTo((300 * 9.81) / 15000, 4);
+
+    // Invalid parameters
+    for (const invalid of [74, 101, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "gasInflation", { gasInflation: invalid })).toBeNull();
+    }
+    expect(computeParameterSensitivity(id, "gasInflation", { flightAlt: -1 })).toBeNull();
+    expect(computeParameterSensitivity(id, "trimWeight", { trimWeight: 20 })).toBeNull();
+  });
+
+  test("Sikorsky helicopter derives thrust and yaw sensitivity from scenario state", () => {
+    const id = "us-2318259-sikorsky-helicopter";
+    // Baseline collective pitch sensitivity
+    const collSens = computeParameterSensitivity(id, "collectivePitchDeg", {});
+    expect(collSens).toBeDefined();
+    expect(collSens?.metricName).toBe("Main Rotor Thrust");
+    expect(collSens?.derivativeSymbol).toBe("∂T_main / ∂θ_coll");
+    expect(collSens?.derivativeUnit).toBe("N / deg");
+    expect(collSens?.derivativeValue).toBeGreaterThan(500);
+
+    // Tail rotor anti-torque sensitivity when enabled vs disabled
+    const pedalEnabled = computeParameterSensitivity(id, "tailRotorPedalPercent", {
+      auxiliaryRotorEnabled: 1,
+    });
+    expect(pedalEnabled).toBeDefined();
+    expect(pedalEnabled?.derivativeValue).toBe(-21.6);
+    expect(pedalEnabled?.derivativeUnit).toBe("N·m / %");
+
+    const pedalDisabled = computeParameterSensitivity(id, "tailRotorPedalPercent", {
+      auxiliaryRotorEnabled: 0,
+    });
+    expect(pedalDisabled).toBeDefined();
+    expect(pedalDisabled?.derivativeValue).toBe(0);
+    expect(pedalDisabled?.interpretation).toContain("disabled");
+
+    // Engine throttle sensitivity when running vs autorotating
+    const throttleRunning = computeParameterSensitivity(id, "engineThrottlePercent", {
+      engineRunning: 1,
+    });
+    expect(throttleRunning).toBeDefined();
+    expect(throttleRunning?.derivativeValue).toBe(0.8);
+
+    const throttleOff = computeParameterSensitivity(id, "engineThrottlePercent", {
+      engineRunning: 0,
+    });
+    expect(throttleOff).toBeDefined();
+    expect(throttleOff?.derivativeValue).toBe(0);
+    expect(throttleOff?.interpretation).toContain("autorotation");
+
+    // Invalid parameters
+    for (const invalid of [1.9, 16.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "collectivePitchDeg", { collectivePitchDeg: invalid }),
+      ).toBeNull();
+    }
+    expect(
+      computeParameterSensitivity(id, "tailRotorPedalPercent", { tailRotorPedalPercent: 105 }),
     ).toBeNull();
   });
 });

@@ -16,6 +16,7 @@ import {
   stepGoodyearRubber,
   stepLandPolaroidInstantFilm,
   stepThomsonWelding,
+  stepZeppelinAirship,
 } from "./catalogKernels";
 import {
   readClavelDeltaRobotControls,
@@ -48,6 +49,11 @@ import { readNoycePlanarLeadControls } from "./noycePlanarLeadKernel";
 import { OTIS_DECLARED_MAX_DISPLAY_TRAVEL_PER_S } from "./otisKernel";
 import { ROBOT_END_EFFECTOR_TYPICAL_JAW_OPENING_M } from "./robotEndEffectorKernel";
 import { readSalisburyRobotHandControls } from "./salisburyRobotHandKernel";
+import {
+  INITIAL_SIKORSKY_STATE,
+  readSikorskyControls,
+  stepSikorskyHelicopterSi,
+} from "./sikorskyHelicopterKernel";
 import { stepStackhouseSourceTopology } from "./stackhouseSourceKernel";
 import { stepWatsonRemoteCenterComplianceTopology } from "./watsonRemoteCenterComplianceKernel";
 import {
@@ -1418,14 +1424,52 @@ export function computeParameterSensitivity(
     }
 
     case "us-621195-zeppelin-airship": {
-      if (controlKey === "gasInflation") {
+      const inflation = params.gasInflation ?? params.gasInflationPct ?? 95;
+      const alt = params.flightAlt ?? params.altitudeM ?? 300;
+      const speed = params.flightSpeedKnots ?? 28;
+      const trimM = params.trimWeight ?? params.trimWeightPosM ?? 5;
+
+      if (
+        !Number.isFinite(inflation) ||
+        inflation < 75 ||
+        inflation > 100 ||
+        !Number.isFinite(alt) ||
+        alt < 0 ||
+        alt > 2000 ||
+        !Number.isFinite(speed) ||
+        speed < 10 ||
+        speed > 45 ||
+        !Number.isFinite(trimM) ||
+        trimM < -15 ||
+        trimM > 15
+      ) {
+        return null;
+      }
+
+      const zep = stepZeppelinAirship({
+        gasInflation: inflation,
+        flightAlt: alt,
+        flightSpeedKnots: speed,
+        trimWeight: trimM,
+      });
+
+      if (controlKey === "gasInflation" || controlKey === "gasInflationPct") {
         return {
           metricName: "Gross Aerostatic Buoyant Lift",
           derivativeSymbol: "∂L_buoy / ∂%_inflation",
-          derivativeValue: 1280.0,
+          derivativeValue: Number(zep.buoyantSlopeNPerPct.toPrecision(6)),
           derivativeUnit: "N / %",
+          interpretation: `Archimedes aerostatic displacement: local air-hydrogen density differential at altitude ${alt} m over 11,300 m³ nominal envelope. Endpoints use the admitted one-sided slope.`,
+        };
+      }
+      if (controlKey === "trimWeight" || controlKey === "trimWeightPosM") {
+        return {
+          metricName: "Longitudinal Pitch Trim",
+          derivativeSymbol: "∂θ_pitch / ∂x_trim",
+          derivativeValue: Number(zep.pitchTrimSlopeDegPerM.toPrecision(6)),
+          derivativeUnit: "deg / m",
           interpretation:
-            "Archimedes displacement: air-hydrogen density differential over 11,300 m³ volume.",
+            "Longitudinal trim angle variation per meter of keel running weight translation.",
         };
       }
       break;
@@ -1490,34 +1534,80 @@ export function computeParameterSensitivity(
     }
 
     case "us-2318259-sikorsky-helicopter": {
+      const coll = params.collectivePitchDeg ?? 6.8;
+      const pitchStick = params.cyclicPitchForwardDeg ?? 0;
+      const rollStick = params.cyclicRollRightDeg ?? 0;
+      const pedal = params.tailRotorPedalPercent ?? 0;
+      const throttle = params.engineThrottlePercent ?? 85;
+
+      if (
+        !Number.isFinite(coll) ||
+        coll < 2 ||
+        coll > 16 ||
+        !Number.isFinite(pitchStick) ||
+        pitchStick < -10 ||
+        pitchStick > 10 ||
+        !Number.isFinite(rollStick) ||
+        rollStick < -10 ||
+        rollStick > 10 ||
+        !Number.isFinite(pedal) ||
+        pedal < -100 ||
+        pedal > 100 ||
+        !Number.isFinite(throttle) ||
+        throttle < 0 ||
+        throttle > 100
+      ) {
+        return null;
+      }
+
+      const controls = readSikorskyControls(params);
+
       if (controlKey === "collectivePitchDeg") {
+        const eps = 1e-3;
+        const lo = Math.max(2, coll - eps);
+        const hi = Math.min(16, coll + eps);
+        const loThrust = stepSikorskyHelicopterSi(
+          INITIAL_SIKORSKY_STATE,
+          { ...controls, collectivePitchDeg: lo },
+          1 / 60,
+        ).metrics.mainRotorThrustNewtons;
+        const hiThrust = stepSikorskyHelicopterSi(
+          INITIAL_SIKORSKY_STATE,
+          { ...controls, collectivePitchDeg: hi },
+          1 / 60,
+        ).metrics.mainRotorThrustNewtons;
+        const slope = (hiThrust - loThrust) / (hi - lo);
         return {
           metricName: "Main Rotor Thrust",
           derivativeSymbol: "∂T_main / ∂θ_coll",
-          derivativeValue: 520.0,
+          derivativeValue: Number(slope.toFixed(1)),
           derivativeUnit: "N / deg",
           interpretation:
-            "Increasing blade collective pitch increases blade angle of attack and total aerodynamic vertical lift force.",
+            "Momentum and blade-element aerodynamic lift slope at current rotor speed and ground-effect proximity. Endpoints use the admitted one-sided slope.",
         };
       }
       if (controlKey === "tailRotorPedalPercent") {
+        const dYaw = controls.auxiliaryRotorEnabled ? -21.6 : 0;
         return {
           metricName: "Anti-Torque Yaw Moment",
           derivativeSymbol: "∂M_yaw / ∂pedal",
-          derivativeValue: -21.6,
+          derivativeValue: dYaw,
           derivativeUnit: "N·m / %",
-          interpretation:
-            "Deflecting tail rotor rudder pedals alters auxiliary propeller pitch, modulating lateral anti-torque thrust moment.",
+          interpretation: controls.auxiliaryRotorEnabled
+            ? "Deflecting tail rotor rudder pedals alters auxiliary propeller pitch, modulating lateral anti-torque thrust moment."
+            : "Auxiliary tail rotor is disabled; yaw anti-torque pedal modulation is 0 N·m / %.",
         };
       }
       if (controlKey === "engineThrottlePercent") {
+        const dRpm = controls.engineRunning ? 0.8 : 0;
         return {
           metricName: "Rotor Rotational Speed",
           derivativeSymbol: "∂Ω / ∂throttle",
-          derivativeValue: 0.8,
+          derivativeValue: dRpm,
           derivativeUnit: "RPM / %",
-          interpretation:
-            "Increasing engine throttle delivers additional mechanical shaft power to sustain higher equilibrium rotor RPM under aerodynamic drag.",
+          interpretation: controls.engineRunning
+            ? "Correlated target rotor RPM sensitivity with engine throttle under mechanical governor law."
+            : "Engine is shut down (autorotation); engine throttle sensitivity is 0 RPM / %.",
         };
       }
       break;

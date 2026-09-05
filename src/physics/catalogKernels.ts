@@ -1637,9 +1637,13 @@ export function stepZeppelinAirship(params: {
   const grossBuoyancyKn = Number(((totalVolumeM3 * 9.81 * (rhoAir - rhoH2)) / 1000).toFixed(1));
   const netLiftKn = Number((grossBuoyancyKn - 98.0).toFixed(1));
   const propellerRpm = Math.round((speedKmh / 1.60934 / 17.5) * 1000);
+  const buoyantSlopeNPerPct = 113 * 9.81 * (rhoAir - rhoH2);
+  const pitchTrimSlopeDegPerM = (300 * 9.81) / 15000;
   return {
     grossBuoyancyKn,
     netLiftKn,
+    buoyantSlopeNPerPct,
+    pitchTrimSlopeDegPerM,
     pitchTrimDeg: Number(((trimM * 300 * 9.81) / 15000).toFixed(1)),
     parasiteDragKn: Number(((0.5 * rhoAir * (speedKmh / 3.6) ** 2 * 85 * 0.025) / 1000).toFixed(2)),
     ambientAirDensityKgM3: Number(rhoAir.toFixed(3)),
