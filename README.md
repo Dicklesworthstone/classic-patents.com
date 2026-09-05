@@ -91,7 +91,7 @@ The live, searchable catalogue at [classic-patents.com](https://classic-patents.
 │  • 3D Tesla Fig. 9 Generator-Coupled Progressive Pole Shift           │
 │  • 3D Fermi Nuclear Reactor Criticality Cascade & Cadmium Rod Damping  │
 │  • 3D Wozniak Apple II Interleaved Memory Bus & NTSC Color Burst       │
-│  • Dynamic On-Demand Code Splitting (198 kB Initial JS Payload)        │
+│  • On-Demand Code Splitting (Home: 1.64 MB First-Load JS)               │
 ├────────────────────────────────────────────────────────────────────────┤
 │                   TYPED PHYSICS & TELEMETRY OWNER BUS                  │
 │  • 103/103 typed-host default owners with explicit live equations      │
@@ -101,6 +101,12 @@ The live, searchable catalogue at [classic-patents.com](https://classic-patents.
 │  • Typed WASM refusal where exposed; host validation everywhere else   │
 └────────────────────────────────────────────────────────────────────────┘
 ```
+
+The September 4, 2026 production build reported **1.64 MB of first-load
+JavaScript for the home page**, 2.03 MB for patent detail pages, and 1.70 MB
+for the timeline. These are Next.js build-reported route sizes; browser
+transfer sizes and load times were not measured by this check. See the
+[reality check](./docs/REALITY_CHECK_2026-09-04.md) for the build evidence.
 
 ---
 
