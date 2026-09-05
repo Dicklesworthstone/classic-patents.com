@@ -67,7 +67,7 @@ describe("Publication Approval State Machine", () => {
     });
   });
 
-  it("fail-closes and isolates quarantined patents (GB 931 Arkwright, GB 1306 Watt, US 4,068,536 Stackhouse)", () => {
+  it("keeps reconstruction quarantines distinct from a source-bounded recovery", () => {
     const arkwright = allPatents.find((p) => p.id === "gb-931-arkwright-water-frame");
     if (!arkwright) throw new Error("Arkwright patent not found");
     expect(isArchivalEditionExplicitlyWithheld("gb-931-arkwright-water-frame")).toBe(true);
@@ -88,11 +88,11 @@ describe("Publication Approval State Machine", () => {
 
     const stackhouse = allPatents.find((p) => p.id === "us-4068536-stackhouse-manipulator");
     if (!stackhouse) throw new Error("Stackhouse patent not found");
-    expect(isArchivalEditionExplicitlyWithheld("us-4068536-stackhouse-manipulator")).toBe(true);
+    expect(isArchivalEditionExplicitlyWithheld("us-4068536-stackhouse-manipulator")).toBe(false);
     const stackhouseDecision = evaluateArchivalPublicationState(stackhouse);
-    expect(stackhouseDecision.status).toBe("withheld-reconstruction-quarantine");
+    expect(stackhouseDecision.status).toBe("source-bounded");
     expect(stackhouseDecision.isPublished).toBe(false);
-    expect(stackhouseDecision.reasonCode).toBe("FABRICATION_OR_RECONSTRUCTION_QUARANTINE");
+    expect(stackhouseDecision.reasonCode).toBe("AUDIT_FULL_SPECIFICATION_PENDING");
     expect(archivalEditionForPublication(stackhouse)).toBeUndefined();
   });
 

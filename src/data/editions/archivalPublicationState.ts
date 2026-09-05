@@ -320,10 +320,10 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "facsimile-only",
   ),
   "us-4068536-stackhouse-manipulator": auditHold(
-    "FABRICATION_OR_RECONSTRUCTION_QUARANTINE",
-    "classic-patentscom-qm2",
-    "The withdrawn draft remains quarantined pending primary-facsimile verification.",
-    "rejected",
+    "AUDIT_FULL_SPECIFICATION_PENDING",
+    "classic-patentscom-8vu.23",
+    "The pinned eight-page primary facsimile and complete drawing sheets are verified; a clean, page-complete ledger and continuous edition remain to be authored.",
+    "source-bounded",
   ),
 };
 

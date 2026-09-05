@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { stackhouseManipulatorPatent } from "@/data/patents/stackhouse-manipulator-source-bounded";
 import {
   archivalEditionForPublication,
+  evaluateArchivalPublicationState,
   isArchivalEditionExplicitlyWithheld,
 } from "./publicationApproval";
 import { stackhouseManipulatorArchivalEdition } from "./stackhouseManipulatorEdition";
@@ -23,8 +24,11 @@ describe("US 4,068,536 source boundary", () => {
       "dcd6652f996f2583bb6bd39f341bac2474b08472adb931972e94137aea1b7846",
     );
     expect(stackhouseManipulatorArchivalEdition.completeFacsimileReviewed).toBe(false);
-    expect(isArchivalEditionExplicitlyWithheld(stackhouseManipulatorPatent.id)).toBe(true);
+    expect(isArchivalEditionExplicitlyWithheld(stackhouseManipulatorPatent.id)).toBe(false);
     expect(archivalEditionForPublication(stackhouseManipulatorPatent)).toBeUndefined();
+    expect(evaluateArchivalPublicationState(stackhouseManipulatorPatent).reasonCode).toBe(
+      "AUDIT_FULL_SPECIFICATION_PENDING",
+    );
   });
 
   test("preserves direct, full-sheet drawing evidence without promoting the withdrawn draft", () => {
