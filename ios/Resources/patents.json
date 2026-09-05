@@ -766,6 +766,16 @@
           "defaultValue": 1,
           "unit": "",
           "provenance": "scenario-reader"
+        },
+        {
+          "id": "hasSteamJacket",
+          "label": "Steam Jacket",
+          "min": 0,
+          "max": 1,
+          "step": 1,
+          "defaultValue": 1,
+          "unit": "",
+          "provenance": "scenario-reader"
         }
       ],
       "pedagogicalInsight": "By condensing steam in an external cold chamber while keeping the main working cylinder continuously hot via a steam jacket, Watt eliminated Newcomen's massive cyclic thermal quench penalty, reducing fuel consumption by over 75%."
@@ -41033,49 +41043,52 @@
     },
     "archivalParallelReadings": {
       "2": [
-        "The opening formal declaration identifies Ottmar Mergenthaler and the invention title for casting printing slugs directly from assembled matrices."
+        "The formal opening identifies Mergenthaler in Baltimore and limits this document to improvements in machines for producing printing-bars; it does not name a later commercial Linotype model."
       ],
       "3": [
-        "The specification defines the machine's purpose: replacing manual letter-by-letter hand typesetting with an automatic keyboard-operated linecaster."
+        "The stated objective is powered, finger-key-controlled letterpress production that avoids both hand composition and a separate machine-made-matrix process."
+      ],
+      "4": [
+        "The promised result is a rapidly made relief printing-bar whose selected characters are already sequenced and justified like a form composed from movable type."
       ],
       "5": [
-        "Vertical matrix bars carry columns of recessed character dies. Depressing keys projects stop pins that catch each bar at the chosen character height."
+        "The machine is deliberately split into a temporary-matrix mechanism and a casting mechanism. Their overlap is central: selection for the next bar can continue while the current bar is cast."
       ],
       "6": [
-        "Figure 1 provides a perspective view of the linotype machine; Figure 2 shows the vertical cross-section through the keyboard and pin frame."
+        "Mergenthaler distinguishes this mechanism from his July 1884 application by specifying intaglio, rather than cameo, characters; the earlier application is not silently treated as this grant's filing date."
+      ],
+      "7": [
+        "Independently adjustable longitudinal bars carry both character positions and blank spacing surfaces. Selecting one position on each bar assembles a punctuated and justified temporary matrix."
       ],
       "8": [
-        "Sliding wedge spacebands between word groups expand when pushed upward from below, justifying the assembled line tightly to the column margins."
+        "The bars reset mechanically, fall by gravity, and are stopped by key-set pins. The movable pin frame first commits the selected stops and later restores them for another line."
       ],
       "9": [
-        "Figure 3 illustrates the justification wedge mechanism and clamping vice; Figure 4 shows matrix-bar profiles and spaceband details."
+        "A through-pin provides a coarse common alignment, then a transverse blade and clamps make the selected bars a precise temporary matrix before casting."
+      ],
+      "10": [
+        "A sectional mold closes against the selected characters. A melting pot, heater, and force pump supply type metal; the source says the bar is released after hardening but supplies no alloy, temperature, or cycle-time value."
       ],
       "11": [
-        "Molten lead-alloy type metal is pumped under pressure against the justified matrix line inside a slotted mold, casting a solid type slug in one stroke."
+        "The alarm returns the indicator after a line completes or the operator corrects an error. Its striker, detent, and reversing lever also reset the adjustment parts for a fresh composition cycle."
       ],
       "12": [
-        "The mold rotates to trim the slug to type-height and eject it into a tray, while matrix bars automatically reset for the next line of composition."
+        "The source's casting section explains the constrained mold: bar-side clamp, sectional mold, melting-pot face, and laterally acting clamps establish the cavity before metal is pumped in."
       ],
       "13": [
-        "This operation is exceedingly simple and fast, allowing continuous composition without waiting for the previous line's cast to cool."
+        "The alignment sequence uses a through-pin, a friction-held stripper plate, and a notched-bar blade. The rest of this block documents release, edge dressing, wiping, and spring-driven pumping after the cast."
       ],
       "14": [
-        "The formal claims define the 70 patentable mechanical combinations, matrix bar shapes, wedge spacebands, keyboard escapements, and casting systems."
+        "A common clutch and cam train distributes motion to the pump, pot, clamps, lift head, stop reset, and bar return, coordinating one operating cycle rather than describing an independent later distributor."
       ],
       "15": [
-        "The alarm mechanism unlocks and returns the line-width indicator, gives a preliminary and final bell signal, and lets the reversing lever restore the stop-pin frame, indicator, and adjusting frame after an error."
+        "The operation block describes selection, spacing correction, alignment, casting, release, and reset as one sequence. It expressly preserves the ability to set a following line while the current bar is cast."
       ],
       "16": [
-        "The casting mechanism aligns and clamps the selected bars against an adjustable sectional mold, then brings a heated melting pot and pump to the mold so molten type metal can form the printing bar."
-      ],
-      "17": [
-        "An aligning pin, friction-held stripper plate, rear notch blade, delivery plate, trimming knife, wiper, and spring-driven pump keep the matrix bars straight, release the cast, dress its base, and force metal into the mold."
+        "The final specification block records variations, including continuous or linked matrix-bar forms, without changing the source's distinction between the temporary matrix and the cast printing-bar."
       ],
       "18": [
-        "A clutch and cam train gives the machine one timed operating cycle, driving the pump, pot tilt, clamps, lifting head, stop-pin reset, and bar return from the common shaft."
-      ],
-      "20": [
-        "The operating sequence selects characters and spaces, justifies the line, lowers and clamps the chosen bars, injects metal, opens the mold, and resets the pins while the next line is keyed; the final paragraphs preserve alternatives and the continuous matrix-bar distinction."
+        "The claim introduction precedes seventy staged claim literals. Their legal text remains source-pinned research material until the complete 35-page edition and figure packet pass independent acceptance."
       ]
     },
     "plainEnglish": {
@@ -42024,6 +42037,20 @@
       "patents/figures/us-313224-mergenthaler-linotype/fig-2-source-crop-v1.png",
       "patents/figures/us-313224-mergenthaler-linotype/fig-3-source-crop-v1.png",
       "patents/figures/us-313224-mergenthaler-linotype/fig-4-source-crop-v1.png",
+      "patents/figures/us-313224-mergenthaler-linotype/sheet-04-source-crop-v1.png",
+      "patents/figures/us-313224-mergenthaler-linotype/sheet-05-source-crop-v1.png",
+      "patents/figures/us-313224-mergenthaler-linotype/sheet-06-source-crop-v1.png",
+      "patents/figures/us-313224-mergenthaler-linotype/sheet-07-source-crop-v1.png",
+      "patents/figures/us-313224-mergenthaler-linotype/sheet-08-source-crop-v1.png",
+      "patents/figures/us-313224-mergenthaler-linotype/sheet-09-source-crop-v1.png",
+      "patents/figures/us-313224-mergenthaler-linotype/sheet-10-source-crop-v1.png",
+      "patents/figures/us-313224-mergenthaler-linotype/sheet-11-source-crop-v1.png",
+      "patents/figures/us-313224-mergenthaler-linotype/sheet-12-source-crop-v1.png",
+      "patents/figures/us-313224-mergenthaler-linotype/sheet-13-source-crop-v1.png",
+      "patents/figures/us-313224-mergenthaler-linotype/sheet-14-source-crop-v1.png",
+      "patents/figures/us-313224-mergenthaler-linotype/sheet-15-source-crop-v1.png",
+      "patents/figures/us-313224-mergenthaler-linotype/sheet-16-source-crop-v1.png",
+      "patents/figures/us-313224-mergenthaler-linotype/sheet-17-source-crop-v1.png",
       "patents/source-text/us-313224-mergenthaler-linotype.txt",
       "patents/transcripts/us-313224-mergenthaler-linotype-reviewed.txt",
       "patents/transcripts/us-313224-mergenthaler-linotype.txt"
@@ -64946,18 +64973,18 @@
       "url": "/patents/transcripts/us-706737-fessenden-wireless-reviewed.txt",
       "pageCount": 7,
       "kind": "reviewed-transcription",
-      "reviewedBy": "Classic Patents editorial agent (Codex)",
-      "reviewedAt": "2026-08-21",
+      "reviewedBy": "Classic Patents editorial agent (Codex; direct seven-page facsimile review)",
+      "reviewedAt": "2026-09-04",
       "sourcePdfSha256": "2098ec6d967d3ab7999da0fb96357328fa68bb8e7639c1863ac600547aff8887",
       "pageAnchors": [
         {
           "page": 1,
-          "exactSourceText": "FIG. 1. FIG. 2. FIG. 3. FIG. 4. FIG. 5. Reginald A. Fessenden Inventor.",
+          "exactSourceText": "R. A. FESSENDEN. WIRELESS TELEGRAPHY. FIG. 1. FIG. 2. FIG. 3. FIG. 4. FIG. 5.",
           "sourceRelationship": "drawing-sheet"
         },
         {
           "page": 2,
-          "exactSourceText": "UNITED STATES PATENT OFFICE. REGINALD A. FESSENDEN, OF ALLEGHENY, PENNSYLVANIA. WIRELESS TELEGRAPHY. Letters Patent No. 706,737, dated August 12, 1902.",
+          "exactSourceText": "UNITED STATES PATENT OFFICE. REGINALD A. FESSENDEN, OF ALLEGHENY, PENNSYLVANIA. WIRELESS TELEGRAPHY. SPECIFICATION forming part of Letters Patent No. 706,737, dated August 12, 1902.",
           "sourceRelationship": "specification-masthead"
         },
         {
@@ -64967,22 +64994,22 @@
         },
         {
           "page": 4,
-          "exactSourceText": "with a sending-conductor of large capacity uniformly distributed it is possible to get a sine-wave and a low resistance—i. e., conditions necessary and favorable for the production of large resonant voltages from small impressed voltages",
+          "exactSourceText": "Fifth, it is also essential that all iron magnetically influenced by currents in the conductor should be so proportioned and distributed as not to affect the shape of the curve of voltage",
           "sourceRelationship": "specification-body"
         },
         {
           "page": 5,
-          "exactSourceText": "A portion of the ground connection of the receiving-conductor 10 is formed by a piece of fine wire 12, held in tension between the poles of a magnet 13",
+          "exactSourceText": "If the radiating portion be made, as shown in Fig. 5, with varying superficial dimensions—e.g., with a swell or enlargement 17—the electromagnetic waves generated from its different surfaces will have different periodicities",
           "sourceRelationship": "specification-body"
         },
         {
           "page": 6,
-          "exactSourceText": "1. A sending-conductor for electromagnetic waves, having a large capacity distributed with substantial uniformity over its radiating portion, substantially as set forth.",
+          "exactSourceText": "5. In a system for transmission of energy by electromagnetic waves, the combination of a source of alternating voltage and a conductor in series therewith forming a sending-conductor",
           "sourceRelationship": "specification-claims"
         },
         {
           "page": 7,
-          "exactSourceText": "In testimony whereof I have hereunto set my hand. REGINALD A. FESSENDEN. Witnesses: W. B. FEARING, S. C. GRAY.",
+          "exactSourceText": "In testimony whereof I have hereunto set my hand. REGINALD A. FESSENDEN, Witnesses: W. B. FEARING, S. C. GRAY.",
           "sourceRelationship": "claims-and-signatures"
         }
       ]
@@ -64992,7 +65019,7 @@
       "sourcePdfSha256": "2098ec6d967d3ab7999da0fb96357328fa68bb8e7639c1863ac600547aff8887",
       "preparedBy": "Classic Patents editorial agent (Codex)",
       "preparedAt": "2026-08-21",
-      "completeFacsimileReviewed": false,
+      "completeFacsimileReviewed": true,
       "blocks": [
         {
           "kind": "masthead",
@@ -65994,10 +66021,10 @@
       ]
     },
     "archivalPublication": {
-      "status": "withheld-incomplete",
-      "isPublished": false,
-      "reasonCode": "AUDIT_FACSIMILE_REVIEW_PENDING",
-      "explanation": "The source face remains withheld pending source-bound reconstruction."
+      "status": "published",
+      "isPublished": true,
+      "reasonCode": "ACCEPTED",
+      "explanation": "Archival edition, reviewed ledger, source digest, companion readings, and required figure occurrences are accepted for publication."
     },
     "archivalParallelReadings": {
       "1": [
@@ -108831,7 +108858,7 @@
             },
             {
               "kind": "text",
-              "text": " shares its sheet with Figs. 3 and 4 without hiding surrounding source matter. Earlier per-figure crops remain preserved as review lineage."
+              "text": " shares its sheet with the third and fourth figures without hiding surrounding source matter. Earlier per-figure crops remain preserved as review lineage."
             }
           ]
         },
@@ -173289,7 +173316,7 @@
     "originalPdfURL": "https://classic-patents.com/patents/pdfs/us-7479949-multitouch.pdf",
     "googlePatentsURL": "https://patents.google.com/patent/US7479949B2/en",
     "usptoClassification": "G06F 3/0488 (Touch-screen gestures; Multi-touch heuristics)",
-    "originalText": "UNITED STATES PATENT\nJobs et al.\nPatent No.: US 7,479,949 B2\nDate of Patent: Jan. 20, 2009\n\nTOUCH SCREEN DEVICE, METHOD, AND GRAPHICAL USER INTERFACE FOR DETERMINING COMMANDS BY APPLYING HEURISTICS\nInventors: Steven P. Jobs, Scott Forstall, Greg Christie, J. Stephen Lemay, Scott Herz, Marcel Van Os, Bas Ording, Imran Chaudhri\nAssignee: Apple Inc., Cupertino, CA\n\nABSTRACT\nA computer-implemented method for use in conjunction with a portable multifunction device with a touch screen display includes detecting one or more finger contacts with the touch screen display, applying one or more heuristics to determine commands, and adjusting display views such as scaling an object via a multi-finger pinch gesture.\n\nBACKGROUND OF THE INVENTION\nAs portable electronic devices become more compact and capable, user interfaces become increasingly constrained. Traditional physical buttons and single-touch resistive screens are rigid and lack intuitive manipulation for multi-dimensional content such as web pages, photos, and digital maps.\n\nSUMMARY OF THE INVENTION\nThe present invention provides intuitive multi-touch gesture interaction. A mutual capacitive touch sensor matrix detects multiple concurrent touch contact points. A gesture heuristic engine evaluates touch vectors and executes affine transformations, allowing users to pinch fingers together to zoom out, spread fingers apart to zoom in, and rotate multiple contact points to reorient digital documents.\n\nCLAIMS\n1. A computer-implemented method for controlling a touch screen display, comprising: displaying a computer-generated graphical object; detecting two or more concurrent physical contact points on the touch screen display; determining a first distance between the concurrent contact points at a first point in time; determining a second distance between the contact points at a subsequent point in time; and scaling the displayed graphical object by a magnification factor derived from a ratio of the second distance to the first distance.",
+    "originalText": "United States Patent\nJobs et al.\nPatent No.: US 7,479,949 B2\nDate of Patent: *Jan. 20, 2009\n\nTOUCH SCREEN DEVICE, METHOD, AND GRAPHICAL USER INTERFACE FOR DETERMINING COMMANDS BY APPLYING HEURISTICS\nAssignee: Apple Inc., Cupertino, CA (US)\nAppl. No.: 12/101,832\nFiled: Apr. 11, 2008",
     "originalTextAsset": {
       "url": "/patents/transcripts/us-7479949-multitouch-reviewed.txt",
       "pageCount": 364,
@@ -173311,37 +173338,11 @@
             "United States Patent",
             "Jobs et al.",
             "Patent No.: US 7,479,949 B2",
-            "Date of Patent: Jan. 20, 2009",
+            "Date of Patent: *Jan. 20, 2009",
             "TOUCH SCREEN DEVICE, METHOD, AND GRAPHICAL USER INTERFACE FOR DETERMINING COMMANDS BY APPLYING HEURISTICS",
-            "Application filed: Apr. 11, 2008. Appl. No.: 12/101,832"
-          ]
-        },
-        {
-          "kind": "heading",
-          "level": 2,
-          "text": "TECHNICAL FIELD"
-        },
-        {
-          "kind": "paragraph",
-          "inlines": [
-            {
-              "kind": "text",
-              "text": "The disclosed embodiments relate generally to portable electronic devices, and more particularly, to portable devices that determine commands for the device by applying heuristics to touch screen gestures."
-            }
-          ]
-        },
-        {
-          "kind": "heading",
-          "level": 2,
-          "text": "BACKGROUND OF THE INVENTION"
-        },
-        {
-          "kind": "paragraph",
-          "inlines": [
-            {
-              "kind": "text",
-              "text": "As portable electronic devices become more compact, and the number of functions performed by a given device increases, it has become a significant challenge to design a user interface that allows users to easily interact with a multifunction device without confusing complex button arrays."
-            }
+            "Assignee: Apple Inc., Cupertino, CA (US)",
+            "Appl. No.: 12/101,832",
+            "Filed: Apr. 11, 2008"
           ]
         },
         {
@@ -173349,176 +173350,7 @@
           "inlines": [
             {
               "kind": "text",
-              "text": "The present invention provides intuitive multi-touch direct manipulation interfaces where contact gestures are recognized through contextual heuristics, distinguishing scrolling from panning and single-item advancing across disparate software applications."
-            }
-          ]
-        },
-        {
-          "kind": "heading",
-          "level": 2,
-          "text": "BRIEF DESCRIPTION OF THE DRAWINGS"
-        },
-        {
-          "kind": "paragraph",
-          "inlines": [
-            {
-              "kind": "text",
-              "text": "For a better understanding of the aforementioned embodiments of the invention, reference should be made to the Description of Embodiments below, in conjunction with the following drawings in which like reference numerals refer to corresponding parts throughout the figures:\n"
-            },
-            {
-              "kind": "reference",
-              "text": "FIG. 1",
-              "href": "#figure-1",
-              "referenceType": "figure",
-              "label": "Block Diagram of Multi-Touch Device Architecture",
-              "figurePreviews": [
-                {
-                  "src": "/patents/figures/us-7479949-multitouch/fig-1-source-crop-v1.png",
-                  "alt": "Figure 1: Block Diagram of Multi-Touch Device Architecture",
-                  "width": 2048,
-                  "height": 2310
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": " is a block diagram illustrating a portable multifunction device with a touch-sensitive display;\n"
-            },
-            {
-              "kind": "reference",
-              "text": "FIG. 2",
-              "href": "#figure-2",
-              "referenceType": "figure",
-              "label": "Graphical User Interface Application Launcher Grid",
-              "figurePreviews": [
-                {
-                  "src": "/patents/figures/us-7479949-multitouch/fig-2-source-crop-v1.png",
-                  "alt": "Figure 2: Graphical User Interface Application Launcher Grid",
-                  "width": 2048,
-                  "height": 2310
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": " illustrates a portable multifunction device having a touch screen with an application grid; and\n"
-            },
-            {
-              "kind": "reference",
-              "text": "FIG. 3",
-              "href": "#figure-3",
-              "referenceType": "figure",
-              "label": "Touch Gesture Recognition and Angle Heuristic Parsing",
-              "figurePreviews": [
-                {
-                  "src": "/patents/figures/us-7479949-multitouch/fig-3-source-crop-v1.png",
-                  "alt": "Figure 3: Touch Gesture Recognition and Angle Heuristic Parsing",
-                  "width": 2048,
-                  "height": 2310
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": " illustrates touch gesture heuristics and trajectory angles for scrolling and panning commands."
-            }
-          ]
-        },
-        {
-          "kind": "heading",
-          "level": 2,
-          "text": "DETAILED DESCRIPTION OF EMBODIMENTS"
-        },
-        {
-          "kind": "paragraph",
-          "inlines": [
-            {
-              "kind": "text",
-              "text": "Referring to "
-            },
-            {
-              "kind": "reference",
-              "text": "FIG. 1",
-              "href": "#figure-1",
-              "referenceType": "figure",
-              "label": "Device architecture diagram",
-              "figurePreviews": [
-                {
-                  "src": "/patents/figures/us-7479949-multitouch/fig-1-source-crop-v1.png",
-                  "alt": "Figure 1: Device architecture diagram",
-                  "width": 2048,
-                  "height": 2310
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": ", device 100 includes memory 102, memory controller 120, one or more processing units (CPU) 122, peripherals interface 118, RF circuitry 108, audio circuitry 110, speaker 111, microphone 113, and touch screen display 112."
-            }
-          ]
-        },
-        {
-          "kind": "paragraph",
-          "inlines": [
-            {
-              "kind": "text",
-              "text": "Referring to "
-            },
-            {
-              "kind": "reference",
-              "text": "FIG. 2",
-              "href": "#figure-2",
-              "referenceType": "figure",
-              "label": "Touch screen application launcher",
-              "figurePreviews": [
-                {
-                  "src": "/patents/figures/us-7479949-multitouch/fig-2-source-crop-v1.png",
-                  "alt": "Figure 2: Touch screen application launcher",
-                  "width": 2048,
-                  "height": 2310
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": ", the user interface displays a plurality of application icons 200 (such as Phone, Mail, Safari Web Browser, and Photos). User touch contacts on the display trigger haptic, visual, and operational responses."
-            }
-          ]
-        },
-        {
-          "kind": "paragraph",
-          "inlines": [
-            {
-              "kind": "text",
-              "text": "Referring to "
-            },
-            {
-              "kind": "reference",
-              "text": "FIG. 3",
-              "href": "#figure-3",
-              "referenceType": "figure",
-              "label": "Gesture heuristic angles",
-              "figurePreviews": [
-                {
-                  "src": "/patents/figures/us-7479949-multitouch/fig-3-source-crop-v1.png",
-                  "alt": "Figure 3: Gesture heuristic angles",
-                  "width": 2048,
-                  "height": 2310
-                }
-              ]
-            },
-            {
-              "kind": "text",
-              "text": ", when the user places one or more fingers on the display and moves them, heuristic engine 140 measures the initial angle θ of the contact motion relative to the vertical axis. If θ is within a predetermined threshold angle of pure vertical, a 1D vertical scrolling command is issued; if θ is outside the threshold, a 2D translation (panning) command is executed."
-            }
-          ]
-        },
-        {
-          "kind": "paragraph",
-          "inlines": [
-            {
-              "kind": "text",
-              "text": "In a photo browsing application, horizontal swipe gestures trigger a next-item or previous-item heuristic, animating the transition between photos with smooth inertial deceleration and edge rubber-banding."
+              "text": "This patent is subject to a terminal disclaimer."
             }
           ]
         },
@@ -173736,29 +173568,8 @@
       "explanation": "The source packet is being rebuilt as a complete, source-bound archival edition."
     },
     "archivalParallelReadings": {
-      "2": [
-        "To all whom it may concern: Be it known that Steve Jobs, Scott Forstall, Greg Christie, J. Peter Hoddie, Imran Chaudhri, Bas Ording, Francisco Ryan Tolmasky, Kimon Tsinteris, Chris Blumenberg, and Patrick Lee Coffman have invented Touch Screen Device, Method, and Graphical User Interface for Determining Commands by Applying Heuristics."
-      ],
-      "4": [
-        "Fundamental Principle: A multi-touch capacitive touch screen interface applies contextual geometric heuristics to disambiguate user finger gestures (scrolling, panning, zooming, paging) without requiring mechanical stylus inputs."
-      ],
-      "5": [
-        "Gesture Disambiguation Heuristics: By analyzing initial contact vector angles, velocity profiles, and finger counts, the device discriminates between 1D axis-locked scrolling and 2D free panning."
-      ],
-      "7": [
-        "Brief Description of Figures: FIG. 1 is a block diagram of the portable multi-touch device; FIG. 2 illustrates user interface icons and application launcher; FIG. 3 depicts touch gesture heuristics and inertial scrolling responses."
-      ],
-      "9": [
-        "Detailed Description: The device includes capacitive sensor array 100, application processor 102, and graphics acceleration engine 104 executing gestural UI pipelines."
-      ],
-      "10": [
-        "Inertial Rubber-Banding: When scrolling reaches the edge of a document, the viewport stretches elastomeric rubber-band resistance before snapping back upon finger lift."
-      ],
-      "11": [
-        "Multi-Finger Transform: Two-finger pinch, spread, and rotation gestures dynamically scale and orient viewport content in real time with hardware-accelerated transforms."
-      ],
-      "12": [
-        "Universal Touch Paradigm: Providing an intuitive direct-manipulation interface that established the interaction foundation for modern smartphones and tablet computing."
+      "1": [
+        "The directly checked front page records a terminal disclaimer. It is legal-status matter on the grant, not a claim limitation or a description of the touch interface."
       ]
     },
     "plainEnglish": {
