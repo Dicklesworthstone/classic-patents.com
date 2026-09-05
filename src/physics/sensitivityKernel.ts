@@ -222,6 +222,24 @@ export function computeParameterSensitivity(
     }
 
     case "us-135245-pasteur-fermentation": {
+      const co2 = params.co2SweepPct ?? 100;
+      const spray = params.sprayCoveragePct ?? 100;
+      const temp = params.wortTempC ?? 21.25;
+
+      if (
+        !Number.isFinite(co2) ||
+        co2 < 0 ||
+        co2 > 100 ||
+        !Number.isFinite(spray) ||
+        spray < 0 ||
+        spray > 100 ||
+        !Number.isFinite(temp) ||
+        temp < 20 ||
+        temp > 22.5
+      ) {
+        return null;
+      }
+
       if (controlKey === "co2SweepPct" || controlKey === "sprayCoveragePct") {
         return {
           metricName:
@@ -632,8 +650,36 @@ export function computeParameterSensitivity(
     }
 
     case "us-124404-westinghouse-air-brake": {
+      const pipe =
+        params.trainPipePressure ??
+        params.trainPipePressurePsi ??
+        params.brakePipePressure ??
+        params.pipePressure ??
+        0;
+      const res =
+        params.reservoirPipePressure ??
+        params.reservoirPipePressurePsi ??
+        params.reservoirPressure ??
+        90;
+      const signal = params.signalPulsePressure ?? params.signalPulsePressurePsi ?? 0;
+
+      if (
+        !Number.isFinite(pipe) ||
+        pipe < 0 ||
+        pipe > 80 ||
+        !Number.isFinite(res) ||
+        res < 0 ||
+        res > 100 ||
+        !Number.isFinite(signal) ||
+        signal < 0 ||
+        signal > 2.5
+      ) {
+        return null;
+      }
+
       if (
         controlKey === "trainPipePressure" ||
+        controlKey === "trainPipePressurePsi" ||
         controlKey === "brakePipePressure" ||
         controlKey === "pipePressure"
       ) {
@@ -646,7 +692,11 @@ export function computeParameterSensitivity(
             "Fail-safe negative gradient: dropping train pipe pressure vents auxiliary reservoir into brake cylinder.",
         };
       }
-      if (controlKey === "reservoirPipePressure" || controlKey === "reservoirPressure") {
+      if (
+        controlKey === "reservoirPipePressure" ||
+        controlKey === "reservoirPipePressurePsi" ||
+        controlKey === "reservoirPressure"
+      ) {
         return {
           metricName: "Stored Pneumatic Work",
           derivativeSymbol: "∂E / ∂P",
@@ -654,6 +704,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "J / psi",
           interpretation:
             "Auxiliary reservoir pressure energy available for emergency brake application.",
+        };
+      }
+      if (controlKey === "signalPulsePressure" || controlKey === "signalPulsePressurePsi") {
+        return {
+          metricName: "Signalling Index Graduation Rate",
+          derivativeSymbol: "∂Index / ∂P_signal",
+          derivativeValue: 2.0,
+          derivativeUnit: "step / psi",
+          interpretation:
+            "Pneumatic signalling line pressure pulses advancing the cab dial index indicator.",
         };
       }
       break;
@@ -683,24 +743,43 @@ export function computeParameterSensitivity(
     }
 
     case "us-808897-carrier-air-conditioner": {
+      const cfm = params.airflowCfm ?? params.airFlowCfm ?? 15000;
+      const spray = params.sprayRatePct ?? 60;
+      const faces = params.separatorFaces ?? 6;
+
+      if (
+        !Number.isFinite(cfm) ||
+        cfm < 2000 ||
+        cfm > 30000 ||
+        !Number.isFinite(spray) ||
+        spray < 10 ||
+        spray > 100 ||
+        !Number.isFinite(faces) ||
+        faces < 2 ||
+        faces > 12
+      ) {
+        return null;
+      }
+
       if (controlKey === "airflowCfm" || controlKey === "airFlowCfm") {
+        const dP_dCfm = Number((3.4212e-7 * cfm * faces).toFixed(5));
         return {
           metricName: "Separator Air Velocity & Pressure Loss",
           derivativeSymbol: "∂ΔP / ∂CFM",
-          derivativeValue: 0.008,
+          derivativeValue: dP_dCfm,
           derivativeUnit: "Pa / cfm",
           interpretation:
-            "Dynamic pressure drop across sinuous separator plates scaling quadratically with airflow.",
+            "Dynamic pressure drop across sinuous separator plates scaling quadratically with airflow under the fluid impaction model.",
         };
       }
       if (controlKey === "sprayRatePct") {
         return {
-          metricName: "Wet-Film Coverage",
-          derivativeSymbol: "∂Film / ∂Spray",
-          derivativeValue: 0.85,
+          metricName: "Droplet Elimination Wet Spray Sensitivity",
+          derivativeSymbol: "∂η / ∂Spray",
+          derivativeValue: 0.18,
           derivativeUnit: "% / %",
           interpretation:
-            "Nozzle spray wetting upright plate faces to trap airborne particulate matter.",
+            "Nozzle spray rate sensitivity contributing to fine particle and droplet capture across wet plate surfaces.",
         };
       }
       if (controlKey === "separatorFaces") {
@@ -899,14 +978,39 @@ export function computeParameterSensitivity(
     }
 
     case "us-247804-delaval-separator": {
+      const rpm = params.bowlRpm ?? params.rpm ?? 6500;
+      const flow = params.rawMilkFlowLph ?? params.flow ?? 300;
+
+      if (
+        !Number.isFinite(rpm) ||
+        rpm < 3000 ||
+        rpm > 9000 ||
+        !Number.isFinite(flow) ||
+        flow < 100 ||
+        flow > 600
+      ) {
+        return null;
+      }
+
       if (controlKey === "bowlRpm" || controlKey === "rpm") {
+        const dG_dRpm = Number((2.236068e-4 * rpm).toFixed(3));
         return {
           metricName: "Centrifugal Separation Force",
           derivativeSymbol: "∂G / ∂RPM",
-          derivativeValue: 2.1,
+          derivativeValue: dG_dRpm,
           derivativeUnit: "G / RPM",
           interpretation:
-            "Stokes creaming separation acceleration gradient per bowl rotation speed.",
+            "Stokes creaming centrifugal acceleration gradient scaling with bowl rotation speed under the rotating disc stack model.",
+        };
+      }
+      if (controlKey === "rawMilkFlowLph" || controlKey === "flow") {
+        return {
+          metricName: "Continuous Cream Discharge Yield",
+          derivativeSymbol: "∂Q_cream / ∂Q_milk",
+          derivativeValue: 0.12,
+          derivativeUnit: "(L/h) / (L/h)",
+          interpretation:
+            "Volumetric cream discharge partition fraction from incoming raw whole milk feed across inner annular weir.",
         };
       }
       break;
@@ -951,14 +1055,30 @@ export function computeParameterSensitivity(
     }
 
     case "us-319596-maxim-machine-gun": {
+      const phase = params.cyclePhase ?? params.cyclePhaseDeg ?? 0;
+      const impulse = params.gasImpulsePct ?? params.muzzleGasPressure ?? 50;
+
+      if (
+        !Number.isFinite(phase) ||
+        phase < 0 ||
+        phase > 360 ||
+        !Number.isFinite(impulse) ||
+        impulse < 0 ||
+        impulse > 100
+      ) {
+        return null;
+      }
+
       if (controlKey === "cyclePhase" || controlKey === "cyclePhaseDeg") {
+        const thetaRad = (phase * Math.PI) / 180;
+        const dx_dDeg = Number((((24 * Math.PI) / 180) * Math.sin(thetaRad)).toFixed(4));
         return {
           metricName: "Breech-Block Linear Travel",
           derivativeSymbol: "∂x_breech / ∂θ_crank",
-          derivativeValue: 0.133,
+          derivativeValue: dx_dDeg,
           derivativeUnit: "mm / deg",
           interpretation:
-            "Scotch-yoke cross-head linear translation driven by transverse crankshaft rotation.",
+            "Scotch-yoke crankshaft kinematics driving breech-block translation throughout the recoil/re-cocking cycle.",
         };
       }
       if (controlKey === "gasImpulsePct" || controlKey === "muzzleGasPressure") {
@@ -2159,14 +2279,52 @@ export function computeParameterSensitivity(
     }
 
     case "us-313224-mergenthaler-linotype": {
-      if (controlKey === "spacebandWedge") {
+      const rate = params.matrixRate ?? params.matrixRatePerMin ?? 60;
+      const wedge = params.spacebandWedge ?? params.spacebandWedgeMm ?? 6.5;
+      const temp = params.potTemp ?? params.potTempC ?? 260;
+
+      if (
+        !Number.isFinite(rate) ||
+        rate < 10 ||
+        rate > 120 ||
+        !Number.isFinite(wedge) ||
+        wedge < 2.0 ||
+        wedge > 12.0 ||
+        !Number.isFinite(temp) ||
+        temp < 220 ||
+        temp > 300
+      ) {
+        return null;
+      }
+
+      if (controlKey === "spacebandWedge" || controlKey === "spacebandWedgeMm") {
         return {
           metricName: "Line Justification Expansion",
           derivativeSymbol: "∂Width / ∂WedgeLift",
-          derivativeValue: 0.5,
+          derivativeValue: 4.2,
           derivativeUnit: "mm / mm",
           interpretation:
             "Double-wedge spaceband sliding elevation justifying assembled character line against casting jaws.",
+        };
+      }
+      if (controlKey === "matrixRate" || controlKey === "matrixRatePerMin") {
+        return {
+          metricName: "Matrix Distributor Escapement Frequency",
+          derivativeSymbol: "∂f_dist / ∂Rate",
+          derivativeValue: Number((1 / 60).toFixed(4)),
+          derivativeUnit: "Hz / (char/min)",
+          interpretation:
+            "Distributor lift frequency scaling linearly with assembled matrix input rate.",
+        };
+      }
+      if (controlKey === "potTemp" || controlKey === "potTempC") {
+        return {
+          metricName: "Lead-Tin-Antimony Solidification Duration",
+          derivativeSymbol: "∂t_solid / ∂T_pot",
+          derivativeValue: Number((450 / 260).toFixed(4)),
+          derivativeUnit: "ms / °C",
+          interpretation:
+            "Thermal casting quench duration scaling with lead pot melt temperature above eutectic point.",
         };
       }
       break;
@@ -2245,14 +2403,40 @@ export function computeParameterSensitivity(
     }
 
     case "us-470918-reno-escalator": {
+      const v = params.beltSpeed ?? 1.016;
+      const angle = params.inclineAngle ?? 25;
+
+      if (
+        !Number.isFinite(v) ||
+        v < 0.4 ||
+        v > 1.2 ||
+        !Number.isFinite(angle) ||
+        angle < 20 ||
+        angle > 35
+      ) {
+        return null;
+      }
+
       if (controlKey === "beltSpeed") {
         return {
-          metricName: "Passenger Incline Transport Throughput",
-          derivativeSymbol: "∂Throughput / ∂v_belt",
-          derivativeValue: 75.0,
-          derivativeUnit: "passengers/min / (m/s)",
+          metricName: "Belt Velocity Linear Conversion",
+          derivativeSymbol: "∂v_fpm / ∂v_mps",
+          derivativeValue: Number((60 / 0.3048).toFixed(2)),
+          derivativeUnit: "(ft/min) / (m/s)",
           interpretation:
-            "Endless traveling slatted treadway transporting riders safely across stationary comb landing.",
+            "Linear unit scaling between SI belt velocity and historical US 470,918 stated 200 ft/min specification benchmark.",
+        };
+      }
+      if (controlKey === "inclineAngle") {
+        const thetaRad = (angle * Math.PI) / 180;
+        const dvz_dDeg = Number((v * Math.cos(thetaRad) * (Math.PI / 180)).toFixed(4));
+        return {
+          metricName: "Vertical Ascent Rate",
+          derivativeSymbol: "∂v_z / ∂θ_incline",
+          derivativeValue: dvz_dDeg,
+          derivativeUnit: "(m/s) / deg",
+          interpretation:
+            "Vertical rider elevation velocity sensitivity with incline angle along the inclined slatted treadway.",
         };
       }
       break;
@@ -2273,6 +2457,32 @@ export function computeParameterSensitivity(
     }
 
     case "us-1219881-sundback-zipper": {
+      const pos = params.sliderPositionPct ?? 65;
+      const pull = params.pullForceN ?? 15;
+      const lat = params.lateralTensionN ?? 40;
+      const flex = params.flexAngleDeg ?? 25;
+      const tpi = params.toothDensityTpi ?? 11;
+
+      if (
+        !Number.isFinite(pos) ||
+        pos < 0 ||
+        pos > 100 ||
+        !Number.isFinite(pull) ||
+        pull < 0 ||
+        pull > 50 ||
+        !Number.isFinite(lat) ||
+        lat < 0 ||
+        lat > 200 ||
+        !Number.isFinite(flex) ||
+        flex < 0 ||
+        flex > 180 ||
+        !Number.isFinite(tpi) ||
+        tpi < 8 ||
+        tpi > 14
+      ) {
+        return null;
+      }
+
       if (controlKey === "sliderPositionPct") {
         return {
           metricName: "Engaged Tooth Count",
@@ -2298,7 +2508,7 @@ export function computeParameterSensitivity(
           metricName: "Corded Tape Strain",
           derivativeSymbol: "∂ε / ∂F_lat",
           derivativeUnit: "% / N",
-          derivativeValue: 0.06,
+          derivativeValue: Number((100 / (850 * 2)).toFixed(4)),
           interpretation:
             "Elastic elongation of reinforced cotton cords under transverse tensile load.",
         };
