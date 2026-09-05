@@ -34,6 +34,15 @@
 
 The receipt identifies the pinned seven-page grant only. Editorial discussion of later continuous-wave radio, detectors, or broadcasting is not evidence of what this particular specification and its 21 printed claims say. The local PDF, its page-marked reviewed ledger, and the typed archival edition are separate preservation layers.
 
+## Reader-delivery boundary
+
+The canonical record binds the candidate edition and its complete seven-page
+reviewed ledger. The candidate truthfully declares
+`completeFacsimileReviewed: false`, so the source-reader projection delivers
+the page-marked ledger and pinned facsimile instead of presenting the candidate
+as a strictly accepted archival edition. This strict-audit state must never
+withhold, shorten, or otherwise prevent access to the patent instrument.
+
 ## Cloud-source reconciliation status
 
 The initial candidate ledger and edition were not source-complete. A cloud-authoritative comparison against the public facsimile identified omitted specification matter: the definitions of `sending-conductor`, `receiving-conductor`, and `radiating portion`; the roughly two-million-period prior-art comparison; the armature wire-length, hysteresis, sine-wave, nickel-steel, steam-turbine, and transformer-secondary conditions; the Fig. 2 microphonic contact and relay; the Fig. 5 enlargement and multiple-periodicity discussion; the uniform-capacity sine-wave example; the resonance relation and ninety-thousand-period resistance example; the one-million-period spark comparison; and the closing uniform-conductor capacity observations. Those passages have been restored to the local research ledger and continuous edition as manually authored source prose. They remain subject to independent GPT-5.6 Luna visual comparison against the pinned page images before publication.
@@ -54,7 +63,7 @@ The Fig. 2 main view carries the apparatus and printed label; the narrow lower d
 
 The source-pixel render and crop commands in this lane were permitted only under a fresh `1m<10` load gate and did not invoke OCR, focr, Tesseract, OCRmyPDF, or a local vision loop. Future visual acceptance must independently compare all seven pages and these exact bytes against the pinned PDF before binding the canonical record.
 
-The cloud primary's specification explicitly gives the resonance condition as `CLω²=1`; the edition and reviewed ledger retain that equation rather than replacing it with a modern shorthand. The same cloud comparison resolves the drawing labels as Fig. 3 sectional elevation, Fig. 4 top plan, and Fig. 5 elevation; prior transverse-section/adjusting-means descriptions were corrected. The canonical record remains intentionally unbound from the archival edition until independent acceptance.
+The cloud primary's specification explicitly gives the resonance condition as `CLω²=1`; the edition and reviewed ledger retain that equation rather than replacing it with a modern shorthand. The same cloud comparison resolves the drawing labels as Fig. 3 sectional elevation, Fig. 4 top plan, and Fig. 5 elevation; prior transverse-section/adjusting-means descriptions were corrected. The canonical record binds this candidate for audit evidence, while the reader continues to use the complete ledger until independent acceptance.
 
 ### Authored figure-occurrence inventory
 
@@ -84,7 +93,7 @@ The cloud comparison retains the current versioned source-pixel set and its hone
 
 This handoff covers only the first three physical PDF pages. Page 1 now records the printed patent number/date, inventor title, and the five drawing labels. The continuous edition and reviewed ledger restore the page-2/page-3 source matter for the terms `sending-conductor`, `receiving-conductor`, and `radiating portion`, the coil-2 self-induction adjustment, the capacity-adjustment alternatives including application No. 62,303, and the Fig. 3 cage construction (parallel wires 4, supporting-rings 5, central sockets 6, bamboo or other light non-conducting supporting-rods 7). The Fig. 5 continuous-wall cylinder and wire-8 ground/self-induction description remain explicitly referenced.
 
-The bounded correction removes a misplaced spark-gap summary from the opening-page ledger/edition; the grant's spark-gap comparison begins later in the specification and remains outside this worker's page-1–3 edit boundary. The source-facing `Fig. 3` occurrence is now a semantic reference with the existing candidate crop. No claim blocks, pages 4–7, shared maps, registries, or canonical publication binding were changed. `completeFacsimileReviewed` remains `false`, and `fessendenWirelessPatent.archivalEdition` remains detached pending independent full-facsimile acceptance.
+The bounded correction removes a misplaced spark-gap summary from the opening-page ledger/edition; the grant's spark-gap comparison begins later in the specification and remains outside this worker's page-1–3 edit boundary. The source-facing `Fig. 3` occurrence is now a semantic reference with the existing candidate crop. No claim blocks, pages 4–7, shared maps, registries, or strict acceptance were changed. `completeFacsimileReviewed` remains `false`, so readers continue to receive the complete ledger and pinned facsimile pending independent full-facsimile acceptance.
 
 At the close of the earlier pages-1–3 pass, the unresolved next boundary was PDF page 4 (the transformer continuation and source-frequency/receiver material), followed by pages 5–7 and the 21 printed claims. The bounded pages-4–5 pass below addresses only that next source interval; it does not accept the later claims or publication state.
 
@@ -94,7 +103,7 @@ This bounded pass reconciles the specification printed on PDF pages 4 and 5 agai
 
 Page 5 now preserves the printed Fig. 5 `swell or enlargement 17`, the distributed-capacity sine-wave comparison, the source definitions of `large capacity` and `uniformly distributed`, the localized-capacity/piano-wire analogy, the electromagnetic-wave/grounded-conductor/tuned/resonant definitions, and the following resonance discussion through the uniform-conductor observation. The ledger page boundary was moved so the duplicated candidate page-6 specification is not emitted twice; claim text remains unchanged and later claims remain outside this bounded source-authoring decision.
 
-The current edition remains a withheld WIP (`completeFacsimileReviewed: false`), and the canonical Fessenden record remains unbound. Independent visual acceptance of the full facsimile, all figure pixels, and all claim blocks is still required. At the close of the pages-4–5 pass, the unresolved next boundary was PDF page 6 continuation/claims, then PDF page 7 and final acceptance; the bounded pages-6–7 completion below addresses that source interval without granting publication approval.
+The current edition remains a strict-audit WIP (`completeFacsimileReviewed: false`). Independent visual acceptance of the full facsimile, all figure pixels, and all claim blocks is still required. The reader nevertheless retains the complete ledger and pinned facsimile. At the close of the pages-4–5 pass, the unresolved next boundary was PDF page 6 continuation/claims, then PDF page 7 and final acceptance; the bounded pages-6–7 completion below addresses that source interval without granting publication approval.
 
 ### Bounded Luna source completion: PDF pages 6–7
 
@@ -102,7 +111,7 @@ This final bounded source lane reconciles the claims and attestation pages again
 
 The edition adds occurrence-specific term annotations inside Claims 12, 14, 17, and 18 for the source phrases `constant or independently-varying magnetic field`, `ether-wave`, `self-induction`, and `persistent oscillation`; joining the authored inline text remains byte-for-byte claim text. No printed figure citation occurs on these two claim/signature pages, so no synthetic figure reference was added. The closing signature paragraph has a non-lossy companion reading and the edition retains the exact attestation and witness names.
 
-The artifact remains a withheld WIP (`completeFacsimileReviewed: false`) with `fessendenWirelessPatent.archivalEdition` unbound. Full-facsimile independent acceptance, crop acceptance, and final claims verification remain required before publication.
+The artifact remains a strict-audit WIP (`completeFacsimileReviewed: false`). Full-facsimile independent acceptance, crop acceptance, and final claims verification remain required before publication; readers continue to receive the complete ledger and pinned facsimile throughout that work.
 
 ### Full-source reconciliation correction: 2026-08-21
 
