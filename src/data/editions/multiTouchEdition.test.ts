@@ -12,8 +12,8 @@ import {
   completeArchivalEditionForViewer,
   evaluateArchivalPublicationState,
 } from "./publicationApproval";
-import { reviewedLedgerTextForViewer } from "./reviewedLedgerPublicationEvidence.server";
 import { evaluateReviewedLedgerTextEvidence } from "./reviewedLedgerPublicationEvidence";
+import { reviewedLedgerTextForViewer } from "./reviewedLedgerPublicationEvidence.server";
 
 const PINNED_SHA256 = "9b29747e60aad27302671e1be32fda99680c474d4e3a5ce0ffc93201460bfe1c";
 
@@ -58,9 +58,9 @@ describe("US 7,479,949 Apple Multi-Touch Heuristics Archival Edition Contract", 
       expect(manualMultiTouchClaimText(i)).toBe(
         claim.inlines.map((inline) => inline.text).join(""),
       );
-      expect(multiTouchPatent.claims.find((candidate) => candidate.number === i)?.originalText).toBe(
-        manualMultiTouchClaimText(i),
-      );
+      expect(
+        multiTouchPatent.claims.find((candidate) => candidate.number === i)?.originalText,
+      ).toBe(manualMultiTouchClaimText(i));
     }
   });
 
