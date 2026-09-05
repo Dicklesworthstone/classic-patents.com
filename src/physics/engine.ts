@@ -22,6 +22,7 @@ import {
   goddardSchematicStack,
   type LandPolaroidInput,
   type LandPolaroidState,
+  type MaimanRubyLaserControls,
   stepBaekelandBakelite,
   stepBellTelephone,
   stepCarlsonElectrophotography,
@@ -42,6 +43,7 @@ import {
   stepHewittMercuryLamp,
   stepHyattCelluloid,
   stepLandPolaroidInstantFilm,
+  stepMaimanRubyLaser,
   stepMarconiRadio as stepMarconiRadioCatalog,
   stepMaximMachineGun,
   stepMcCormickReaper,
@@ -138,6 +140,12 @@ import {
 } from "./sundbackZipperKernel";
 import { stepTeslaMotorFig9, teslaBAt, teslaFig4Strobe } from "./teslaKernel";
 import { goddardThermo } from "./thermochem";
+import {
+  readTownesMaserControls,
+  stepTownesMaserTopology,
+  type TownesMaserControls,
+  type TownesMaserTopologyState,
+} from "./townesMaserKernel";
 import type {
   AerodynamicsState,
   NuclearKineticsState,
@@ -1180,9 +1188,13 @@ export const FrankenSimEngine = {
     apertureFNumber?: number;
     subjectDistanceM?: number;
   }) {
-    const t = params.shutterSpeedSec ?? 0.05;
-    const n = params.apertureFNumber ?? 9;
-    const dist = params.subjectDistanceM ?? 3.0;
+    const rawT = params.shutterSpeedSec;
+    const t = typeof rawT === "number" && Number.isFinite(rawT) && rawT > 0 ? rawT : 0.05;
+    const rawN = params.apertureFNumber;
+    const n = typeof rawN === "number" && Number.isFinite(rawN) && rawN > 0 ? rawN : 9;
+    const rawDist = params.subjectDistanceM;
+    const dist =
+      typeof rawDist === "number" && Number.isFinite(rawDist) && rawDist > 0 ? rawDist : 3.0;
     const f = 0.057; // 57mm focal length
     const c = 0.00003; // 30 micron circle of confusion
     const hyperfocalM = Number((f ** 2 / (n * c) + f).toFixed(2));
@@ -1509,6 +1521,18 @@ export const FrankenSimEngine = {
   /** US 6,120,588 E-Ink electrophoretic microcapsule particle mobility. */
   stepEInk(controls: EInkControls, dtSec = 0.016, prevState?: EInkState) {
     return stepEInk(controls, dtSec, prevState);
+  },
+
+  /** US 2,929,922 Townes maser/laser open-resonator topology and dimensional bookkeeping. */
+  stepTownesMaserTopology(
+    params: Partial<TownesMaserControls> | Record<string, number | undefined> = {},
+  ): TownesMaserTopologyState {
+    return stepTownesMaserTopology(readTownesMaserControls(params));
+  },
+
+  /** US 3,353,115 Maiman ruby laser optical pumping, metastable relaxation, and coherent resonator feedback. */
+  stepMaimanRubyLaser(controls: MaimanRubyLaserControls = {}) {
+    return stepMaimanRubyLaser(controls);
   },
 
   createTelemetryEnvelope(

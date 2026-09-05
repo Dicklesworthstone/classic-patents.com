@@ -1213,7 +1213,35 @@ export function computeParameterSensitivity(
 
     case "us-2929922-townes-laser": {
       const cavityLengthCm = Number(params.cavityLengthCm ?? 10);
-      const chamberDiameterCm = Math.max(0.5, Number(params.chamberDiameterCm ?? 1));
+      const chamberDiameterCm = Number(params.chamberDiameterCm ?? 1);
+      const endReflectivityPct = Number(params.endReflectivityPct ?? 97);
+      const pumpExcitationPct = Number(params.pumpExcitationPct ?? 70);
+      const modeApertureOpenPct = Number(params.modeApertureOpenPct ?? 55);
+      const modulationFieldPct = Number(params.modulationFieldPct ?? 35);
+
+      if (
+        !Number.isFinite(cavityLengthCm) ||
+        cavityLengthCm < 3 ||
+        cavityLengthCm > 40 ||
+        !Number.isFinite(chamberDiameterCm) ||
+        chamberDiameterCm < 0.2 ||
+        chamberDiameterCm > 5.0 ||
+        !Number.isFinite(endReflectivityPct) ||
+        endReflectivityPct < 50 ||
+        endReflectivityPct > 100 ||
+        !Number.isFinite(pumpExcitationPct) ||
+        pumpExcitationPct < 0 ||
+        pumpExcitationPct > 100 ||
+        !Number.isFinite(modeApertureOpenPct) ||
+        modeApertureOpenPct < 0 ||
+        modeApertureOpenPct > 100 ||
+        !Number.isFinite(modulationFieldPct) ||
+        modulationFieldPct < 0 ||
+        modulationFieldPct > 100
+      ) {
+        return null;
+      }
+
       if (controlKey === "cavityLengthCm") {
         return {
           metricName: "Chamber Aspect Ratio",
@@ -1235,11 +1263,10 @@ export function computeParameterSensitivity(
         };
       }
       if (controlKey === "endReflectivityPct") {
-        const reflectivityPct = Number(params.endReflectivityPct ?? 97);
         return {
           metricName: "Two-End Round-Trip Reflectivity",
           derivativeSymbol: "∂(R²) / ∂R",
-          derivativeValue: Number(((2 * reflectivityPct) / 100).toFixed(3)),
+          derivativeValue: Number(((2 * endReflectivityPct) / 100).toFixed(3)),
           derivativeUnit: "% round-trip / % end reflectivity",
           interpretation:
             "Exact dimensionless bookkeeping for equal reader-selected end reflectivities; cavity loss and gain remain refused.",
@@ -1250,6 +1277,34 @@ export function computeParameterSensitivity(
 
     case "us-3353115-maiman-ruby-laser":
     case "us-3353115-maiman-laser": {
+      const pumpEnergy = Number(
+        params.pumpEnergyJoules ?? params.pumpPowerWatts ?? params.pumpPower ?? 150,
+      );
+      const flashDuration = Number(params.flashDurationMs ?? 1.0);
+      const rodLength = Number(params.rodLengthCm ?? 5.0);
+      const outputReflectivity = Number(params.outputMirrorReflectivity ?? 0.92);
+      const crystalTemp = Number(params.crystalTemperatureKelvin ?? params.temperatureK ?? 300);
+
+      if (
+        !Number.isFinite(pumpEnergy) ||
+        pumpEnergy < 20 ||
+        pumpEnergy > 1000 ||
+        !Number.isFinite(flashDuration) ||
+        flashDuration < 0.2 ||
+        flashDuration > 10.0 ||
+        !Number.isFinite(rodLength) ||
+        rodLength < 1.0 ||
+        rodLength > 25.0 ||
+        !Number.isFinite(outputReflectivity) ||
+        outputReflectivity < 0.5 ||
+        outputReflectivity > 0.999 ||
+        !Number.isFinite(crystalTemp) ||
+        crystalTemp < 50 ||
+        crystalTemp > 450
+      ) {
+        return null;
+      }
+
       if (
         controlKey === "pumpPowerWatts" ||
         controlKey === "pumpPower" ||
@@ -1262,6 +1317,38 @@ export function computeParameterSensitivity(
           derivativeValue: Number((slopeEfficiency * 1000).toFixed(1)),
           derivativeUnit: "mW / W",
           interpretation: "Stimulated emission quantum yield beyond lasing threshold.",
+        };
+      }
+      if (controlKey === "crystalTemperatureKelvin" || controlKey === "temperatureK") {
+        return {
+          metricName: "R1 Line Emission Wavelength Shift",
+          derivativeSymbol: "∂λ_emission / ∂T",
+          derivativeValue: 0.005,
+          derivativeUnit: "nm / K",
+          interpretation:
+            "Thermal expansion and crystal field lattice perturbation shifting the ruby R1 fluorescence line toward shorter wavelengths at cryogenic temperatures.",
+        };
+      }
+      if (controlKey === "rodLengthCm") {
+        const dMode_dL = Number((-8.523 / (rodLength * rodLength)).toFixed(3));
+        return {
+          metricName: "Resonator Longitudinal Mode Spacing Length Sensitivity",
+          derivativeSymbol: "∂Δν_mode / ∂L",
+          derivativeValue: dMode_dL,
+          derivativeUnit: "GHz / cm",
+          interpretation:
+            "Fabry-Pérot longitudinal cavity mode frequency spacing variation with crystal rod resonator physical length.",
+        };
+      }
+      if (controlKey === "outputMirrorReflectivity") {
+        const dCavityLoss_dR = Number((-1 / (2 * rodLength * outputReflectivity)).toFixed(3));
+        return {
+          metricName: "Resonator Threshold Cavity Loss Coupling Sensitivity",
+          derivativeSymbol: "∂γ_loss / ∂R_2",
+          derivativeValue: dCavityLoss_dR,
+          derivativeUnit: "cm⁻¹ / R",
+          interpretation:
+            "Sensitivity of threshold round-trip mirror coupling loss to output coupler reflectivity.",
         };
       }
       break;
@@ -3173,7 +3260,25 @@ export function computeParameterSensitivity(
     }
 
     case "us-388850-eastman-kodak": {
-      if (controlKey === "shutterSpeed") {
+      const t = params.shutterSpeed ?? params.shutterSpeedSec ?? 0.05;
+      const n = params.apertureStop ?? params.apertureFNumber ?? 9;
+      const dist = params.subjectDist ?? params.subjectDistanceM ?? 3.0;
+
+      if (
+        !Number.isFinite(t) ||
+        t < 0.005 ||
+        t > 0.5 ||
+        !Number.isFinite(n) ||
+        n < 4 ||
+        n > 32 ||
+        !Number.isFinite(dist) ||
+        dist < 0.2 ||
+        dist > 50
+      ) {
+        return null;
+      }
+
+      if (controlKey === "shutterSpeed" || controlKey === "shutterSpeedSec") {
         return {
           metricName: "Emulsion Photochemical Exposure Energy",
           derivativeSymbol: "∂H / ∂t_exp",
@@ -3181,6 +3286,31 @@ export function computeParameterSensitivity(
           derivativeUnit: "mJ / s",
           interpretation:
             "Reciprocity law photochemical latent image energy integrated across focal plane.",
+        };
+      }
+      if (controlKey === "apertureStop" || controlKey === "apertureFNumber") {
+        const dH_dN = Number((-108.3 / (n * n)).toFixed(3));
+        return {
+          metricName: "Hyperfocal Distance Aperture Sensitivity",
+          derivativeSymbol: "∂H / ∂N",
+          derivativeValue: dH_dN,
+          derivativeUnit: "m / (f/#)",
+          interpretation:
+            "Rate of change of hyperfocal distance with relative aperture; stopping down reduces hyperfocal distance, expanding depth of field toward camera.",
+        };
+      }
+      if (controlKey === "subjectDist" || controlKey === "subjectDistanceM") {
+        const f = 0.057;
+        const c = 0.00003;
+        const hyperfocalM = f ** 2 / (n * c) + f;
+        const dNear_dDist = Number(((hyperfocalM / (hyperfocalM + dist)) ** 2).toFixed(3));
+        return {
+          metricName: "Near Depth-of-Field Boundary Subject Sensitivity",
+          derivativeSymbol: "∂D_near / ∂d",
+          derivativeValue: dNear_dDist,
+          derivativeUnit: "m / m",
+          interpretation:
+            "Sensitivity of the near focus boundary to subject distance under fixed-focus hyperfocal geometry.",
         };
       }
       break;

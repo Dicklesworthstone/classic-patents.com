@@ -2936,4 +2936,210 @@ describe("Sensitivities follow the current admitted operating point", () => {
       ).toBeNull();
     }
   });
+
+  test("Eastman Kodak derives photochemical exposure, hyperfocal aperture, and depth-of-field sensitivities", () => {
+    const id = "us-388850-eastman-kodak";
+
+    // Shutter speed sensitivity
+    const sensShutter = computeParameterSensitivity(id, "shutterSpeed", {
+      shutterSpeed: 0.05,
+      apertureStop: 9,
+      subjectDist: 3.0,
+    });
+    expect(sensShutter).toBeDefined();
+    expect(sensShutter?.metricName).toBe("Emulsion Photochemical Exposure Energy");
+    expect(sensShutter?.derivativeSymbol).toBe("∂H / ∂t_exp");
+    expect(sensShutter?.derivativeUnit).toBe("mJ / s");
+    expect(sensShutter?.derivativeValue).toBe(1.0);
+
+    // Aperture stop sensitivity (dH/dN = -108.3 / N^2)
+    const sensAperture = computeParameterSensitivity(id, "apertureStop", {
+      shutterSpeed: 0.05,
+      apertureStop: 9,
+      subjectDist: 3.0,
+    });
+    expect(sensAperture).toBeDefined();
+    expect(sensAperture?.metricName).toBe("Hyperfocal Distance Aperture Sensitivity");
+    expect(sensAperture?.derivativeSymbol).toBe("∂H / ∂N");
+    expect(sensAperture?.derivativeUnit).toBe("m / (f/#)");
+    expect(sensAperture?.derivativeValue).toBeCloseTo(-108.3 / 81, 3);
+
+    // Subject distance sensitivity (dD_near/dd = (H / (H+d))^2)
+    const sensDist = computeParameterSensitivity(id, "subjectDist", {
+      shutterSpeed: 0.05,
+      apertureStop: 9,
+      subjectDist: 3.0,
+    });
+    expect(sensDist).toBeDefined();
+    expect(sensDist?.metricName).toBe("Near Depth-of-Field Boundary Subject Sensitivity");
+    expect(sensDist?.derivativeSymbol).toBe("∂D_near / ∂d");
+    expect(sensDist?.derivativeUnit).toBe("m / m");
+    const h = 0.057 ** 2 / (9 * 0.00003) + 0.057;
+    const expectedDistSens = (h / (h + 3.0)) ** 2;
+    expect(sensDist?.derivativeValue).toBeCloseTo(expectedDistSens, 3);
+
+    // Bounds checking
+    for (const invalid of [0.004, 0.51, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "shutterSpeed", { shutterSpeed: invalid })).toBeNull();
+    }
+    for (const invalid of [3.9, 33, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "apertureStop", { apertureStop: invalid })).toBeNull();
+    }
+    for (const invalid of [0.1, 51, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "subjectDist", { subjectDist: invalid })).toBeNull();
+    }
+  });
+
+  test("Townes Maser/Laser computes exact geometry and reflectivity derivatives and refuses ungrounded optical outputs", () => {
+    const id = "us-2929922-townes-laser";
+
+    // Cavity length sensitivity: ∂(L/D) / ∂L = 1/D
+    const sensL = computeParameterSensitivity(id, "cavityLengthCm", {
+      cavityLengthCm: 10,
+      chamberDiameterCm: 1,
+      endReflectivityPct: 97,
+    });
+    expect(sensL).toBeDefined();
+    expect(sensL?.metricName).toBe("Chamber Aspect Ratio");
+    expect(sensL?.derivativeSymbol).toBe("∂(L/D) / ∂L");
+    expect(sensL?.derivativeUnit).toBe("ratio / cm");
+    expect(sensL?.derivativeValue).toBe(1.0);
+
+    // Chamber diameter sensitivity: ∂(L/D) / ∂D = -L / D^2
+    const sensD = computeParameterSensitivity(id, "chamberDiameterCm", {
+      cavityLengthCm: 10,
+      chamberDiameterCm: 1,
+      endReflectivityPct: 97,
+    });
+    expect(sensD).toBeDefined();
+    expect(sensD?.metricName).toBe("Chamber Aspect Ratio");
+    expect(sensD?.derivativeSymbol).toBe("∂(L/D) / ∂D");
+    expect(sensD?.derivativeUnit).toBe("ratio / cm");
+    expect(sensD?.derivativeValue).toBe(-10.0);
+
+    // End reflectivity sensitivity: ∂(R^2) / ∂R = 2R / 100
+    const sensR = computeParameterSensitivity(id, "endReflectivityPct", {
+      cavityLengthCm: 10,
+      chamberDiameterCm: 1,
+      endReflectivityPct: 97,
+    });
+    expect(sensR).toBeDefined();
+    expect(sensR?.metricName).toBe("Two-End Round-Trip Reflectivity");
+    expect(sensR?.derivativeSymbol).toBe("∂(R²) / ∂R");
+    expect(sensR?.derivativeUnit).toBe("% round-trip / % end reflectivity");
+    expect(sensR?.derivativeValue).toBeCloseTo(1.94, 2);
+
+    // Refused quantitative optical outputs
+    expect(
+      computeParameterSensitivity(id, "pumpExcitationPct", { pumpExcitationPct: 70 }),
+    ).toBeNull();
+    expect(
+      computeParameterSensitivity(id, "modeApertureOpenPct", { modeApertureOpenPct: 50 }),
+    ).toBeNull();
+    expect(
+      computeParameterSensitivity(id, "modulationFieldPct", { modulationFieldPct: 35 }),
+    ).toBeNull();
+
+    // Bounds checking
+    for (const invalid of [2.9, 41, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "cavityLengthCm", { cavityLengthCm: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.1, 5.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "chamberDiameterCm", { chamberDiameterCm: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [49, 101, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "endReflectivityPct", { endReflectivityPct: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Maiman Ruby Laser derives coherent emission slope, R1 wavelength thermal shift, mode spacing, and mirror coupling loss sensitivities", () => {
+    const id = "us-3353115-maiman-ruby-laser";
+
+    // Pump energy / power sensitivity
+    const sensPump = computeParameterSensitivity(id, "pumpEnergyJoules", {
+      pumpEnergyJoules: 150,
+      flashDurationMs: 1.0,
+      rodLengthCm: 5.0,
+      outputMirrorReflectivity: 0.92,
+      crystalTemperatureKelvin: 300,
+    });
+    expect(sensPump).toBeDefined();
+    expect(sensPump?.metricName).toBe("Laser Coherent Emission");
+    expect(sensPump?.derivativeSymbol).toBe("∂P_out / ∂P_pump");
+    expect(sensPump?.derivativeUnit).toBe("mW / W");
+    expect(sensPump?.derivativeValue).toBe(15.0);
+
+    // Crystal temperature wavelength shift sensitivity
+    const sensTemp = computeParameterSensitivity(id, "crystalTemperatureKelvin", {
+      pumpEnergyJoules: 150,
+      crystalTemperatureKelvin: 300,
+    });
+    expect(sensTemp).toBeDefined();
+    expect(sensTemp?.metricName).toBe("R1 Line Emission Wavelength Shift");
+    expect(sensTemp?.derivativeSymbol).toBe("∂λ_emission / ∂T");
+    expect(sensTemp?.derivativeUnit).toBe("nm / K");
+    expect(sensTemp?.derivativeValue).toBe(0.005);
+
+    // Rod length longitudinal mode spacing sensitivity
+    const sensRod = computeParameterSensitivity(id, "rodLengthCm", {
+      rodLengthCm: 5.0,
+    });
+    expect(sensRod).toBeDefined();
+    expect(sensRod?.metricName).toBe("Resonator Longitudinal Mode Spacing Length Sensitivity");
+    expect(sensRod?.derivativeSymbol).toBe("∂Δν_mode / ∂L");
+    expect(sensRod?.derivativeUnit).toBe("GHz / cm");
+    expect(sensRod?.derivativeValue).toBeCloseTo(-8.523 / 25, 3);
+
+    // Output mirror reflectivity cavity loss sensitivity
+    const sensMirror = computeParameterSensitivity(id, "outputMirrorReflectivity", {
+      rodLengthCm: 5.0,
+      outputMirrorReflectivity: 0.92,
+    });
+    expect(sensMirror).toBeDefined();
+    expect(sensMirror?.metricName).toBe("Resonator Threshold Cavity Loss Coupling Sensitivity");
+    expect(sensMirror?.derivativeSymbol).toBe("∂γ_loss / ∂R_2");
+    expect(sensMirror?.derivativeUnit).toBe("cm⁻¹ / R");
+    expect(sensMirror?.derivativeValue).toBeCloseTo(-1 / (2 * 5.0 * 0.92), 3);
+
+    // Alias id test
+    const sensAlias = computeParameterSensitivity("us-3353115-maiman-laser", "pumpPowerWatts", {
+      pumpPowerWatts: 150,
+    });
+    expect(sensAlias?.derivativeValue).toBe(15.0);
+
+    // Bounds checking
+    for (const invalid of [19, 1001, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "pumpEnergyJoules", { pumpEnergyJoules: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.1, 10.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "flashDurationMs", { flashDurationMs: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.9, 25.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "rodLengthCm", { rodLengthCm: invalid })).toBeNull();
+    }
+    for (const invalid of [0.49, 1.0, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "outputMirrorReflectivity", {
+          outputMirrorReflectivity: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [49, 451, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "crystalTemperatureKelvin", {
+          crystalTemperatureKelvin: invalid,
+        }),
+      ).toBeNull();
+    }
+  });
 });
