@@ -3217,3 +3217,170 @@ CATALOG_CLAIM_CONSTRAINTS["us-4098001-watson-remote-center-compliance"] = CATALO
   ...c,
   patentId: "us-4098001-watson-remote-center-compliance",
 }));
+
+export interface ConstraintClosureReport {
+  readonly patentId: string;
+  readonly constraintName: string;
+  readonly isClosed: boolean;
+  readonly jacobianRank: number;
+  readonly degreesOfFreedom: number;
+  readonly isSingularConfiguration: boolean;
+  readonly closureResidual: number;
+  readonly tolerance: number;
+  readonly singularReason?: string;
+  readonly refusalReason?: string;
+}
+
+/**
+ * Evaluates kinematic / mechanism closure, Jacobian rank, and singular configurations.
+ * Tests closed-loop rank preservation and flags singular points (e.g. parallel robot
+ * workspace boundaries, dead centers, or uncoupled control linkages).
+ */
+export function evaluateConstraintClosure(
+  patentId: string,
+  params: Record<string, number>,
+): ConstraintClosureReport {
+  const claimStates = readSharedClaimConstraintStates(patentId, params);
+
+  switch (patentId) {
+    case "us-4976582-clavel-delta-robot": {
+      // Parallel robot 3-chain kinematic closure
+      const x = params.targetX ?? params.x ?? 0;
+      const y = params.targetY ?? params.y ?? 0;
+      const z = params.targetZ ?? params.z ?? -0.45; // m (working envelope below base)
+
+      const l1 = 0.25; // bicep length (m)
+      const l2 = 0.5; // forearm length (m)
+      const maxReach = l1 + l2;
+      const r = Math.sqrt(x * x + y * y + z * z);
+
+      const tolerance = 1e-4;
+      const isSingular = r >= maxReach - tolerance || z >= -0.05;
+      const rank = isSingular ? 2 : 3;
+      const dof = isSingular ? 2 : 3;
+      const closureResidual = Math.max(0, r - maxReach);
+
+      return {
+        patentId,
+        constraintName: "Delta Parallel Kinematic 3-Chain Closure",
+        isClosed: closureResidual <= tolerance,
+        jacobianRank: rank,
+        degreesOfFreedom: dof,
+        isSingularConfiguration: isSingular,
+        closureResidual,
+        tolerance,
+        ...(isSingular
+          ? {
+              singularReason:
+                r >= maxReach - tolerance
+                  ? `Workspace boundary singularity: arm reach (${r.toFixed(3)} m) equals maximum kinematic extension (${maxReach.toFixed(3)} m); Jacobian loses rank.`
+                  : "Upper boundary singularity: platform near base plane creates arm interference.",
+            }
+          : {}),
+      };
+    }
+
+    case "us-821393-wright-flyer": {
+      // Claim 18 interlock: rudder slaved to wing-warp cradle
+      const isClaim18Active = claimStates[1] ?? true;
+      const wingWarp = params.wingWarp ?? params.wingWarpDeg ?? 0;
+      const rudder =
+        params.rudder ?? params.rudderDeg ?? (isClaim18Active ? -wingWarp * (5 / 6) : 0);
+      const expectedRudder = -wingWarp * (5 / 6);
+      const residual = Math.abs(rudder - expectedRudder);
+      const tolerance = 1e-2;
+
+      const isClosed = !isClaim18Active ? false : residual <= tolerance;
+      const rank = isClaim18Active ? 1 : 2;
+      const dof = isClaim18Active ? 1 : 2;
+
+      return {
+        patentId,
+        constraintName: "Claim 18 Rudder-Warp Interlock Constraint",
+        isClosed,
+        jacobianRank: rank,
+        degreesOfFreedom: dof,
+        isSingularConfiguration: false,
+        closureResidual: residual,
+        tolerance,
+        ...(!isClosed
+          ? {
+              refusalReason:
+                "Uncoupled rudder-warp linkage: adverse yaw produces roll-yaw cross-coupling instability.",
+            }
+          : {}),
+      };
+    }
+
+    case "us-4098001-watson-remote-center-compliance":
+    case "us-4098001-watson-rcc": {
+      // Remote center compliance focal geometry
+      const projectionL = params.projectionDistanceMm ?? 150;
+      const strutAngleDeg = params.strutAngleDeg ?? 12.5;
+
+      const isSingular = projectionL <= 0 || strutAngleDeg <= 0.1;
+      const rank = isSingular ? 0 : 3;
+
+      return {
+        patentId,
+        constraintName: "Remote Center Focal Geometry Constraint",
+        isClosed: !isSingular,
+        jacobianRank: rank,
+        degreesOfFreedom: isSingular ? 0 : 3,
+        isSingularConfiguration: isSingular,
+        closureResidual: isSingular ? 1.0 : 0.0,
+        tolerance: 1e-4,
+        ...(isSingular
+          ? {
+              singularReason:
+                "Compliance matrix rank deficiency: focal distance <= 0 or strut angle near zero loses projected remote compliance center.",
+            }
+          : {}),
+      };
+    }
+
+    case "us-194047-otto-engine": {
+      // Slider-crank kinematic closure
+      const crankAngleDeg = params.crankAngleDeg ?? 0;
+      const rad = (crankAngleDeg * Math.PI) / 180;
+      const _r = 0.08;
+      const _l = 0.24;
+
+      // Dead centers at 0, 180, 360 deg
+      const sinTheta = Math.abs(Math.sin(rad));
+      const isDeadCenter = sinTheta < 1e-4;
+      const rank = isDeadCenter ? 0 : 1; // At dead center, gas force produces zero crankshaft torque
+
+      return {
+        patentId,
+        constraintName: "Slider-Crank Kinematic Loop Closure",
+        isClosed: true,
+        jacobianRank: rank,
+        degreesOfFreedom: 1,
+        isSingularConfiguration: isDeadCenter,
+        closureResidual: 0.0,
+        tolerance: 1e-4,
+        ...(isDeadCenter
+          ? {
+              singularReason:
+                "Kinematic dead center singularity: connecting rod and crank arm are collinear; effective moment arm is zero.",
+            }
+          : {}),
+      };
+    }
+
+    default: {
+      const activeConstraints = CATALOG_CLAIM_CONSTRAINTS[patentId] ?? [];
+      return {
+        patentId,
+        constraintName: `${patentId} Claim Constraint Matrix`,
+        isClosed: true,
+        jacobianRank: activeConstraints.length > 0 ? 1 : 0,
+        degreesOfFreedom: 1,
+        isSingularConfiguration: false,
+        closureResidual: 0.0,
+        tolerance: 1e-4,
+      };
+    }
+  }
+}

@@ -113,25 +113,149 @@ export interface SensitivityResult {
   interpretation: string;
 }
 
+export interface ConditionedDerivativeOptions {
+  value: number;
+  minimum: number;
+  maximum: number;
+  probe: (val: number) => number | null;
+  inputScale?: number;
+  outputScale?: number;
+  maxConditionNumber?: number;
+}
+
+export interface ConditionedDerivativeReport {
+  derivative: number | null;
+  conditionNumber: number | null;
+  stepSize: number;
+  isIllConditioned: boolean;
+  refusalReason?: string;
+}
+
+/**
+ * Scale-aware finite-difference differentiation with numerical conditioning tests.
+ * Selects perturbation h proportional to scale * cbrt(machine_eps), checks
+ * curvature consistency between forward and backward steps, and computes the
+ * derivative condition number kappa = |(x / y) * (dy / dx)|.
+ * Refuses evaluation at singular points, step discontinuities, or ill-conditioned zones.
+ */
+export function differentiateConditioned(
+  options: ConditionedDerivativeOptions,
+): ConditionedDerivativeReport {
+  const {
+    value,
+    minimum,
+    maximum,
+    probe,
+    inputScale = 1.0,
+    outputScale = 1.0,
+    maxConditionNumber = 1e7,
+  } = options;
+
+  if (!Number.isFinite(value)) {
+    return {
+      derivative: null,
+      conditionNumber: null,
+      stepSize: 0,
+      isIllConditioned: true,
+      refusalReason: "Input value is non-finite.",
+    };
+  }
+
+  // Optimal finite difference perturbation h ~ eps^(1/3) * max(|x|, scale)
+  const epsCbrt = 6.055454452393343e-6;
+  const characteristicScale = Math.max(Math.abs(value), Math.abs(inputScale), 1.0);
+  const h = epsCbrt * characteristicScale;
+
+  if (value - h < minimum || value + h > maximum) {
+    return {
+      derivative: null,
+      conditionNumber: null,
+      stepSize: h,
+      isIllConditioned: false,
+      refusalReason: "Perturbation interval crosses parameter boundary.",
+    };
+  }
+
+  const center = probe(value);
+  const lower = probe(value - h);
+  const upper = probe(value + h);
+
+  if (center === null || lower === null || upper === null) {
+    return {
+      derivative: null,
+      conditionNumber: null,
+      stepSize: h,
+      isIllConditioned: false,
+      refusalReason: "Probe returned null at perturbation points.",
+    };
+  }
+
+  if (![center, lower, upper].every(Number.isFinite)) {
+    return {
+      derivative: null,
+      conditionNumber: null,
+      stepSize: h,
+      isIllConditioned: true,
+      refusalReason: "Probe produced non-finite output at perturbation points.",
+    };
+  }
+
+  const left = (center - lower) / h;
+  const right = (upper - center) / h;
+
+  // Curvature / discontinuity check
+  const curvatureTol = 1e-3 * Math.max(1e-6, Math.abs(left), Math.abs(right));
+  if (Math.abs(left - right) > curvatureTol) {
+    return {
+      derivative: null,
+      conditionNumber: null,
+      stepSize: h,
+      isIllConditioned: true,
+      refusalReason: `Discontinuity or high curvature detected: |dLeft - dRight| = ${Math.abs(left - right).toPrecision(4)} exceeds tolerance ${curvatureTol.toPrecision(4)}.`,
+    };
+  }
+
+  const deriv = (left + right) / 2;
+
+  // Relative condition number kappa = |(x / y) * (dy / dx)|
+  const effectiveY = Math.max(Math.abs(center), Math.abs(outputScale) * 1e-12, 1e-14);
+  const kappa = Math.abs((value * deriv) / effectiveY);
+
+  if (Number.isFinite(kappa) && kappa > maxConditionNumber) {
+    return {
+      derivative: null,
+      conditionNumber: kappa,
+      stepSize: h,
+      isIllConditioned: true,
+      refusalReason: `Ill-conditioned sensitivity: condition number kappa = ${kappa.toExponential(2)} exceeds threshold ${maxConditionNumber.toExponential(2)}.`,
+    };
+  }
+
+  return {
+    derivative: Number(deriv.toPrecision(6)),
+    conditionNumber: Number.isFinite(kappa) ? Number(kappa.toPrecision(4)) : null,
+    stepSize: h,
+    isIllConditioned: false,
+  };
+}
+
 /** Differentiate an admitted, unrounded kernel output. Refuse at a clamp,
  * discontinuity, or refused probe instead of displaying a fabricated slope. */
-function kernelDerivative(
+export function kernelDerivative(
   value: number,
   minimum: number,
   maximum: number,
   probe: (value: number) => number | null,
+  inputScale: number = 1.0,
 ): number | null {
-  const h = Math.max(1, Math.abs(value)) * 1e-5;
-  if (!Number.isFinite(value) || value - h < minimum || value + h > maximum) return null;
-  const center = probe(value);
-  const lower = probe(value - h);
-  const upper = probe(value + h);
-  if (center === null || lower === null || upper === null) return null;
-  if (![center, lower, upper].every(Number.isFinite)) return null;
-  const left = (center - lower) / h;
-  const right = (upper - center) / h;
-  if (Math.abs(left - right) > 1e-3 * Math.max(1e-6, Math.abs(left), Math.abs(right))) return null;
-  return Number(((left + right) / 2).toPrecision(6));
+  const report = differentiateConditioned({
+    value,
+    minimum,
+    maximum,
+    probe,
+    inputScale,
+  });
+  return report.derivative;
 }
 
 /** Computes a local sensitivity of the specified model and control. */
