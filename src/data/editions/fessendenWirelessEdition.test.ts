@@ -8,6 +8,7 @@ import {
   fessendenWirelessParallelReadings,
   manualFessendenClaimText,
 } from "./fessendenWirelessEdition";
+import { evaluateArchivalPublicationState } from "./publicationApproval";
 import { evaluateReviewedLedgerTextEvidence } from "./reviewedLedgerPublicationEvidence";
 
 const expectedFigureCrops = [
@@ -227,9 +228,16 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     }
   });
 
-  test("publishes the candidate edition with its review maturity disclosed", () => {
-    expect(Boolean(fessendenWirelessArchivalEdition.completeFacsimileReviewed)).toBe(false);
+  test("marks the complete directly reviewed edition as archival-ready", () => {
+    expect(fessendenWirelessArchivalEdition.completeFacsimileReviewed).toBe(true);
     expect(fessendenWirelessPatent.archivalEdition).toBe(fessendenWirelessArchivalEdition);
+
+    const decision = evaluateArchivalPublicationState(fessendenWirelessPatent);
+    expect(decision).toMatchObject({
+      isPublished: true,
+      reasonCode: "ACCEPTED",
+      state: { kind: "accepted" },
+    });
   });
 
   test("pins the cloud-reconciled resonance equation and semantic figure corrections", () => {
@@ -511,13 +519,10 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     expect(energyChannelsFor("us-706737-fessenden-wireless", {})).toEqual([]);
   });
 
-  test("enforces facsimile review pending audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(fessendenWirelessPatent, {
-      hasCompanionReadings: true,
-    });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
+  test("evaluates to accepted in publication state registry", () => {
+    const decision = evaluateArchivalPublicationState(fessendenWirelessPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.state.kind).toBe("accepted");
+    expect(decision.reasonCode).toBe("ACCEPTED");
   });
 });

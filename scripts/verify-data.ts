@@ -125,6 +125,7 @@ const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
   "us-6285999-pagerank",
   "us-6302230-kamen-segway",
   "us-6594844-roomba",
+  "us-706737-fessenden-wireless",
 ]);
 
 const EXPECTED_MANUAL_EDITION_GAPS = allPatents

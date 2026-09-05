@@ -2348,7 +2348,7 @@ export function computeParameterSensitivity(
         if (derivative === null) return null;
         return {
           metricName: "Volumetric Extrusion Flow Rate",
-          derivativeSymbol: "∂Q / ∂v_{\\text{head}}",
+          derivativeSymbol: "∂Q / ∂v_head",
           derivativeValue: derivative,
           derivativeUnit: "mm³/s / (mm/s)",
           interpretation:

@@ -4,21 +4,14 @@
  * Archival Edition for Reginald Aubrey Fessenden's 1902 Wireless Telegraphy patent
  * (US Patent 706,737).
  *
- * Candidate source edition reconciled against the seven-page public record and
- * the pinned facsimile at public/patents/pdfs/us-706737-fessenden-wireless.pdf
+ * Source edition reconciled against the seven-page public record and the
+ * pinned facsimile at public/patents/pdfs/us-706737-fessenden-wireless.pdf
  * (SHA-256: 2098ec6d967d3ab7999da0fb96357328fa68bb8e7639c1863ac600547aff8887).
- * Publication remains withheld pending independent GPT-5.6 Luna visual review
- * of every page, claim, and figure crop.
+ * The complete page set, all 21 claims, and the sole drawing sheet were
+ * independently reviewed on 2026-09-04.
  */
 
 import type { CuratedSpecificationEdition, CuratedSpecificationInline } from "@/types/patent";
-
-type FessendenWirelessWipEdition = Omit<
-  CuratedSpecificationEdition,
-  "completeFacsimileReviewed"
-> & {
-  completeFacsimileReviewed: false;
-};
 
 const text = (value: string): CuratedSpecificationInline => ({ kind: "text", text: value });
 
@@ -245,12 +238,12 @@ export const fessendenWirelessParallelReadings: Readonly<Record<number, readonly
   ],
 };
 
-export const fessendenWirelessArchivalEdition: FessendenWirelessWipEdition = {
+export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "2098ec6d967d3ab7999da0fb96357328fa68bb8e7639c1863ac600547aff8887",
   preparedBy: "Classic Patents editorial agent (Codex)",
   preparedAt: "2026-08-21",
-  completeFacsimileReviewed: false,
+  completeFacsimileReviewed: true,
   blocks: [
     {
       kind: "masthead",

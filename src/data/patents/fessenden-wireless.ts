@@ -149,8 +149,8 @@ export const fessendenWirelessPatent: Patent = {
     url: "/patents/transcripts/us-706737-fessenden-wireless-reviewed.txt",
     pageCount: 7,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Codex)",
-    reviewedAt: "2026-08-21",
+    reviewedBy: "Classic Patents editorial agent (Codex; direct seven-page facsimile review)",
+    reviewedAt: "2026-09-04",
     sourcePdfSha256: "2098ec6d967d3ab7999da0fb96357328fa68bb8e7639c1863ac600547aff8887",
     pageAnchors: [
       {

@@ -279,11 +279,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "classic-patentscom-vt5",
     "The complete archival packet has not yet been accepted.",
   ),
-  "us-706737-fessenden-wireless": auditHold(
-    "AUDIT_FACSIMILE_REVIEW_PENDING",
-    "classic-patentscom-q5o",
-    "The source face remains withheld pending source-bound reconstruction.",
-  ),
   "us-613809-tesla-teleautomaton": auditHold(
     "AUDIT_FACSIMILE_REVIEW_PENDING",
     "classic-patentscom-a4b",
