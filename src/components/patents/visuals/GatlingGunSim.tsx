@@ -2,6 +2,7 @@
 
 import { Pause, Play, Target, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { gatlingBoltSvgX, gatlingMuzzleFlash, stepGatlingGun } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -328,38 +329,33 @@ export function GatlingGunSim() {
 
       {/* Sliders */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Hand Crank Speed</span>
-            <span className="font-mono">{crankRpm} RPM</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Hand crank speed in revolutions per minute"
-            min="20"
-            max="120"
-            step="5"
-            value={crankRpm}
-            onChange={(e) => updateParam("crankRpm", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Barrels in Cluster</span>
-            <span className="font-mono">{barrelCount} Barrels</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Number of barrels in the cluster"
-            min="4"
-            max="10"
-            step="2"
-            value={barrelCount}
-            onChange={(e) => updateParam("barrelCount", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="gatling-crank-speed"
+          patentId="us-36836-gatling-gun"
+          paramKey="crankRpm"
+          label="Hand Crank Speed"
+          value={crankRpm}
+          min={20}
+          max={120}
+          step={5}
+          unit="RPM"
+          onChange={(val) => updateParam("crankRpm", val)}
+          allParams={params}
+        />
+
+        <SensitivitySlider
+          id="gatling-barrel-count"
+          patentId="us-36836-gatling-gun"
+          paramKey="barrelCount"
+          label="Barrels in Cluster"
+          value={barrelCount}
+          min={4}
+          max={10}
+          step={2}
+          unit="barrels"
+          onChange={(val) => updateParam("barrelCount", val)}
+          allParams={params}
+        />
       </div>
     </div>
   );

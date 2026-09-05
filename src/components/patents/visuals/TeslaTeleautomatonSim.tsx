@@ -2,6 +2,7 @@
 
 import { Radio, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -284,41 +285,33 @@ export function TeslaTeleautomatonSim() {
 
       {/* Sliders */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Rudder Servo Deflection</span>
-            <span className="font-mono">
-              {rudderAngleDeg}° (
-              {rudderAngleDeg > 0 ? "Starboard" : rudderAngleDeg < 0 ? "Port" : "Center"})
-            </span>
-          </div>
-          <input
-            type="range"
-            aria-label="Rudder servo deflection in degrees"
-            min="-35"
-            max="35"
-            step="5"
-            value={rudderAngleDeg}
-            onChange={(e) => updateParam("rudderAngle", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Electric Motor Throttle</span>
-            <span className="font-mono">{propellerThrottlePct}%</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Electric motor throttle percentage"
-            min="0"
-            max="100"
-            step="5"
-            value={propellerThrottlePct}
-            onChange={(e) => updateParam("propellerThrottlePct", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="teleautomaton-rudder"
+          patentId="us-613809-tesla-teleautomaton"
+          paramKey="rudderAngle"
+          label="Rudder Servo Deflection"
+          value={rudderAngleDeg}
+          min={-35}
+          max={35}
+          step={5}
+          unit="°"
+          onChange={(val) => updateParam("rudderAngle", val)}
+          allParams={params}
+        />
+
+        <SensitivitySlider
+          id="teleautomaton-throttle"
+          patentId="us-613809-tesla-teleautomaton"
+          paramKey="propellerThrottlePct"
+          label="Electric Motor Throttle"
+          value={propellerThrottlePct}
+          min={0}
+          max={100}
+          step={5}
+          unit="%"
+          onChange={(val) => updateParam("propellerThrottlePct", val)}
+          allParams={params}
+        />
       </div>
     </div>
   );

@@ -20,6 +20,7 @@ import {
   stepEngelbartMouse,
   stepEricssonPropeller,
   stepFessendenWireless,
+  stepGatlingGun,
   stepGoodyearRubber,
   stepGrammeDynamo,
   stepHaberAmmonia,
@@ -30,6 +31,7 @@ import {
   stepMorseTelegraph,
   stepOttoEngine,
   stepParsonsTurbine,
+  stepTeslaTeleautomaton,
   stepThomsonWelding,
   stepWozniakApple,
   stepYaleLock,
@@ -75,6 +77,7 @@ import {
   stepSikorskyHelicopterSi,
 } from "./sikorskyHelicopterKernel";
 import { stepStackhouseSourceTopology } from "./stackhouseSourceKernel";
+import { stepTeslaTransformerSi } from "./teslaTransformerKernel";
 import { stepWatsonRemoteCenterComplianceTopology } from "./watsonRemoteCenterComplianceKernel";
 import {
   readWattCondenserControls,
@@ -1676,7 +1679,13 @@ export function computeParameterSensitivity(
 
     case "us-319596-maxim-machine-gun": {
       const phase = params.cyclePhase ?? params.cyclePhaseDeg ?? 0;
-      const impulse = params.gasImpulsePct ?? params.muzzleGasPressure ?? 50;
+      const impulse = params.gasImpulsePct ?? params.muzzleGasPressure ?? 75;
+      const claim1Active =
+        params.claim1Active === undefined
+          ? true
+          : typeof params.claim1Active === "number"
+            ? params.claim1Active >= 0.5
+            : Boolean(params.claim1Active);
 
       if (
         !Number.isFinite(phase) ||
@@ -1690,8 +1699,18 @@ export function computeParameterSensitivity(
       }
 
       if (controlKey === "cyclePhase" || controlKey === "cyclePhaseDeg") {
+        if (!claim1Active) {
+          return {
+            metricName: "Breech-Block Linear Travel",
+            derivativeSymbol: "∂x_breech / ∂θ_crank",
+            derivativeValue: 0,
+            derivativeUnit: "mm / deg",
+            interpretation:
+              "Claim 1 sliding muzzle sleeve is withheld; uncaptured muzzle gases vent freely without driving the breech mechanism.",
+          };
+        }
         const thetaRad = (phase * Math.PI) / 180;
-        const dx_dDeg = Number((((24 * Math.PI) / 180) * Math.sin(thetaRad)).toFixed(4));
+        const dx_dDeg = ((24 * Math.PI) / 180) * Math.sin(thetaRad);
         return {
           metricName: "Breech-Block Linear Travel",
           derivativeSymbol: "∂x_breech / ∂θ_crank",
@@ -1702,6 +1721,16 @@ export function computeParameterSensitivity(
         };
       }
       if (controlKey === "gasImpulsePct" || controlKey === "muzzleGasPressure") {
+        if (!claim1Active) {
+          return {
+            metricName: "Muzzle Sleeve Forward Impulse",
+            derivativeSymbol: "∂p_sleeve / ∂P_gas",
+            derivativeValue: 0,
+            derivativeUnit: "mm / %",
+            interpretation:
+              "Claim 1 sliding muzzle sleeve is withheld; muzzle expansion pressure cannot impart stroke without the sleeve.",
+          };
+        }
         return {
           metricName: "Muzzle Sleeve Forward Impulse",
           derivativeSymbol: "∂p_sleeve / ∂P_gas",
@@ -1715,8 +1744,20 @@ export function computeParameterSensitivity(
     }
 
     case "us-36836-gatling-gun": {
-      const rpm = params.crankRpm ?? params.rpm ?? 60;
-      const count = params.barrelCount ?? 6;
+      const rpm =
+        params.crankRpm ??
+        params.rpm ??
+        params.speed ??
+        params.crankSpeed ??
+        params.handCrankRpm ??
+        60;
+      const count = params.barrelCount ?? params.barrels ?? params.numBarrels ?? params.count ?? 6;
+      const claim1CoRotating =
+        params.isShaftCoRotating === undefined && params.claim1Active === undefined
+          ? true
+          : params.isShaftCoRotating !== undefined
+            ? Number(params.isShaftCoRotating) >= 0.5
+            : Boolean(params.claim1Active);
 
       if (
         !Number.isFinite(rpm) ||
@@ -1729,58 +1770,177 @@ export function computeParameterSensitivity(
         return null;
       }
 
-      if (controlKey === "crankRpm" || controlKey === "rpm") {
+      const gatling = stepGatlingGun({ crankRpm: rpm, barrelCount: count });
+
+      if (
+        controlKey === "crankRpm" ||
+        controlKey === "rpm" ||
+        controlKey === "speed" ||
+        controlKey === "crankSpeed" ||
+        controlKey === "handCrankRpm"
+      ) {
+        if (!claim1CoRotating) {
+          return {
+            metricName: "Cluster Cyclic Fire Rate",
+            derivativeSymbol: "∂ROF / ∂CrankRPM",
+            derivativeValue: 0,
+            derivativeUnit: "RPM / RPM",
+            interpretation:
+              "Claim 1 rigid shaft co-rotation is withheld; carrier and barrel cluster are decoupled from main shaft N, halting revolving firing.",
+          };
+        }
         return {
           metricName: "Cluster Cyclic Fire Rate",
           derivativeSymbol: "∂ROF / ∂CrankRPM",
-          derivativeValue: count,
+          derivativeValue: gatling.fireRateSlopeRpmPerCrankRpm ?? count,
           derivativeUnit: "RPM / RPM",
-          interpretation:
-            "Mechanical rate multiplication from revolving barrel cluster cam tracks under the kinematic firing model.",
+          interpretation: `Mechanical rate multiplication from ${count} revolving barrels driven simultaneously by main shaft cam tracks.`,
         };
       }
-      if (controlKey === "barrelCount") {
+      if (
+        controlKey === "barrelCount" ||
+        controlKey === "barrels" ||
+        controlKey === "numBarrels" ||
+        controlKey === "count"
+      ) {
+        if (!claim1CoRotating) {
+          return {
+            metricName: "Cluster Barrel Scaling",
+            derivativeSymbol: "∂ROF / ∂N_barrels",
+            derivativeValue: 0,
+            derivativeUnit: "rounds/min / barrel",
+            interpretation:
+              "Claim 1 rigid shaft co-rotation is withheld; adding barrels to an uncoupled shaft produces no cyclic fire rate increase.",
+          };
+        }
         return {
           metricName: "Cluster Barrel Scaling",
           derivativeSymbol: "∂ROF / ∂N_barrels",
-          derivativeValue: rpm,
+          derivativeValue: gatling.fireRateSlopeRpmPerBarrel ?? rpm,
           derivativeUnit: "rounds/min / barrel",
-          interpretation:
-            "Rate of fire increase per added barrel at the selected hand-crank rotation rate.",
+          interpretation: `Rate of fire increase per added revolving barrel at the current hand-crank rate of ${rpm} RPM.`,
         };
       }
       break;
     }
 
     case "us-593138-tesla-coil": {
-      if (controlKey === "disturbanceFrequencyHz") {
+      const fHz =
+        params.disturbanceFrequencyHz ??
+        params.frequency ??
+        params.frequencyHz ??
+        params.freq ??
+        params.freqHz ??
+        925;
+      const lMiles =
+        params.secondaryLengthMiles ??
+        params.secondaryLength ??
+        params.secondaryLengthMi ??
+        params.lengthMiles ??
+        params.wireLength ??
+        params.wireLengthMiles ??
+        50;
+      const claim1Connected =
+        params.claim1CommonNodeConnected === undefined && params.claim1Active === undefined
+          ? true
+          : params.claim1CommonNodeConnected !== undefined
+            ? Number(params.claim1CommonNodeConnected) >= 0.5
+            : Boolean(params.claim1Active);
+
+      if (
+        !Number.isFinite(fHz) ||
+        fHz < 500 ||
+        fHz > 1500 ||
+        !Number.isFinite(lMiles) ||
+        lMiles < 25 ||
+        lMiles > 75
+      ) {
+        return null;
+      }
+
+      const tesla = stepTeslaTransformerSi({
+        disturbanceFrequencyHz: fHz,
+        secondaryLengthMiles: lMiles,
+      });
+
+      if (
+        controlKey === "disturbanceFrequencyHz" ||
+        controlKey === "frequency" ||
+        controlKey === "frequencyHz" ||
+        controlKey === "freq" ||
+        controlKey === "freqHz"
+      ) {
+        if (!claim1Connected) {
+          return {
+            metricName: "Required Quarter-Wave Length",
+            derivativeSymbol: "∂l_{1/4} / ∂f",
+            derivativeValue: 0,
+            derivativeUnit: "mi / Hz",
+            interpretation:
+              "Claim 1 primary/secondary/earth common node is withheld; distributed quarter-wave secondary resonance cannot establish.",
+          };
+        }
         return {
           metricName: "Required Quarter-Wave Length",
           derivativeSymbol: "∂l_{1/4} / ∂f",
-          derivativeValue: -50 / 925,
-          derivativeUnit: "mi / Hz at 925 Hz",
-          interpretation:
-            "From l=v/(4f), increasing frequency shortens the required developed secondary length; this derivative uses Tesla's printed 185,000 mi/s example.",
+          derivativeValue: tesla.quarterWaveSlopeMilesPerHz ?? -46250 / fHz ** 2,
+          derivativeUnit: "mi / Hz",
+          interpretation: `Derived from $l_{1/4} = v / (4 f)$ at $v = 185,000$ mi/s: marginal secondary wire length reduction ($-46250 / f^2$) at $f = ${fHz}$ Hz.`,
         };
       }
-      if (controlKey === "secondaryLengthMiles") {
+      if (
+        controlKey === "secondaryLengthMiles" ||
+        controlKey === "secondaryLength" ||
+        controlKey === "secondaryLengthMi" ||
+        controlKey === "lengthMiles" ||
+        controlKey === "wireLength" ||
+        controlKey === "wireLengthMiles"
+      ) {
+        if (!claim1Connected) {
+          return {
+            metricName: "Electrical Length",
+            derivativeSymbol: "∂(βl) / ∂l",
+            derivativeValue: 0,
+            derivativeUnit: "deg / mi",
+            interpretation:
+              "Claim 1 primary/secondary/earth common node is withheld; distributed electrical length cannot establish.",
+          };
+        }
         return {
           metricName: "Electrical Length",
           derivativeSymbol: "∂(βl) / ∂l",
-          derivativeValue: 90 / 50,
-          derivativeUnit: "deg / mi at 925 Hz",
-          interpretation:
-            "At the printed propagation speed and frequency, each additional mile adds 1.8 degrees of distributed-wave electrical length.",
+          derivativeValue: tesla.electricalLengthSlopeDegPerMile ?? (360 * fHz) / 185000,
+          derivativeUnit: "deg / mi",
+          interpretation: `Distributed-wave electrical phase angle gradient ($(360 f) / v$) at $f = ${fHz}$ Hz and $v = 185,000$ mi/s.`,
         };
       }
       break;
     }
 
     case "us-613809-tesla-teleautomaton": {
-      const pulseCount = params.pulseCount ?? 0;
-      const rfFreq = params.rfFrequency ?? params.transmitterFreqKhz ?? 150;
-      const rudder = params.rudderAngle ?? params.rudderAngleDeg ?? 0;
-      const throttle = params.propellerThrottlePct ?? params.throttlePct ?? 75;
+      const pulseCount = params.pulseCount ?? params.pulses ?? 0;
+      const rfFreq =
+        params.rfFrequency ??
+        params.transmitterFreqKhz ??
+        params.carrierFreqKhz ??
+        params.freq ??
+        params.frequency ??
+        150;
+      const rudder =
+        params.rudderAngle ?? params.rudderAngleDeg ?? params.rudder ?? params.rudderDeg ?? 0;
+      const throttle =
+        params.propellerThrottlePct ??
+        params.throttlePct ??
+        params.throttle ??
+        params.motorThrottle ??
+        params.propellerThrottle ??
+        75;
+      const claim1Active =
+        params.claim1RotaryCommutatorPresent === undefined && params.claim1Active === undefined
+          ? true
+          : params.claim1RotaryCommutatorPresent !== undefined
+            ? Number(params.claim1RotaryCommutatorPresent) >= 0.5
+            : Boolean(params.claim1Active);
 
       if (
         !Number.isFinite(pulseCount) ||
@@ -1799,28 +1959,64 @@ export function computeParameterSensitivity(
         return null;
       }
 
-      if (controlKey === "rudderAngleDeg" || controlKey === "rudderAngle") {
+      const tele = stepTeslaTeleautomaton({
+        rfFrequency: rfFreq,
+        rudderAngle: rudder,
+        propellerThrottlePct: throttle,
+        pulseCount,
+      });
+
+      if (
+        controlKey === "rudderAngle" ||
+        controlKey === "rudderAngleDeg" ||
+        controlKey === "rudder" ||
+        controlKey === "rudderDeg"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Vessel Turning Curvature",
+            derivativeSymbol: "∂κ_turn / ∂θ_rudder",
+            derivativeValue: 0,
+            derivativeUnit: "m⁻¹ / deg",
+            interpretation:
+              "Claim 1 coded pulse commutator is withheld; ambient interference causes uncontrolled wild steering oscillations with 0 deterministic rudder sensitivity.",
+          };
+        }
         return {
-          metricName: "Vessel Turning Rate",
-          derivativeSymbol: "∂ω_turn / ∂θ_rudder",
-          derivativeValue: 0.35,
-          derivativeUnit: "deg/s / deg",
-          interpretation:
-            "Hydrodynamic rudder yaw turning moment from wireless pulse-stepped actuator.",
+          metricName: "Vessel Turning Curvature",
+          derivativeSymbol: "∂κ_turn / ∂θ_rudder",
+          derivativeValue:
+            tele.turningCurvatureSlopePerDeg ??
+            (Math.PI / 180 / 12.5) * Math.cos((Math.abs(rudder) * Math.PI) / 180),
+          derivativeUnit: "m⁻¹ / deg",
+          interpretation: `Hydrodynamic hull turning curvature gradient ($\\partial [\\sin(\\theta)/12.5] / \\partial \\theta$) from wireless servo at deflection $\\theta = ${rudder}°$.`,
         };
       }
       if (
         controlKey === "propellerThrottlePct" ||
         controlKey === "throttlePct" ||
-        controlKey === "throttle"
+        controlKey === "throttle" ||
+        controlKey === "motorThrottle" ||
+        controlKey === "propellerThrottle"
       ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Electric Propulsion Motor Thrust",
+            derivativeSymbol: "∂T_thrust / ∂throttle",
+            derivativeValue: 0,
+            derivativeUnit: "N / %",
+            interpretation:
+              "Claim 1 coded pulse commutator is withheld; spurious RF noise desynchronizes propulsion contact cylinder.",
+          };
+        }
         return {
           metricName: "Electric Propulsion Motor Thrust",
           derivativeSymbol: "∂T_thrust / ∂throttle",
-          derivativeValue: 0.85,
+          derivativeValue: tele.motorThrustSlopeNPerPct ?? (tele.relayEnergized ? 0.85 : 0),
           derivativeUnit: "N / %",
-          interpretation:
-            "Electric motor screw propeller thrust scaling with battery pulse throttle setting.",
+          interpretation: tele.relayEnergized
+            ? `Electric motor screw propeller thrust scaling ($85 \\text{ N} \\times \\text{throttle}/100$) under tuned carrier resonance (${rfFreq} kHz).`
+            : `RF receiver is detuned from 150 kHz resonance ($f = ${rfFreq}$ kHz); coherer remains high-resistance (100 kΩ) and propulsion relay is de-energized (0 N/%).`,
         };
       }
       break;

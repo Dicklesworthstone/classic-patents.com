@@ -264,9 +264,12 @@ export function GatlingGun3D() {
             <ClaimConstraintToggle
               patentId="us-36836-gatling-gun"
               claimStates={claimStates}
-              onToggleClaim={(num, active) =>
-                setClaimStates((prev) => ({ ...prev, [num]: active }))
-              }
+              onToggleClaim={(num, active) => {
+                setClaimStates((prev) => ({ ...prev, [num]: active }));
+                if (num === 1) {
+                  updateParam("claim1Active", active ? 1 : 0);
+                }
+              }}
             />
             <div className="flex flex-nowrap overflow-x-auto scrollbar-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
               <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
@@ -382,34 +385,30 @@ export function GatlingGun3D() {
             allParams={params}
           />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Revolving Barrel Count
-              </span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {barrelCount} barrels
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Revolving barrel count"
-              min="4"
-              max="10"
-              step="2"
-              value={barrelCount}
-              onChange={(e) => updateParam("barrelCount", Number.parseInt(e.target.value, 10))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-purple-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
+          <SensitivitySlider
+            id="gatling-barrel-count"
+            patentId="us-36836-gatling-gun"
+            paramKey="barrelCount"
+            label="Revolving Barrel Count"
+            value={barrelCount}
+            min={4}
+            max={10}
+            step={2}
+            unit="barrels"
+            onChange={(val) => updateParam("barrelCount", val)}
+            allParams={params}
+          />
         </div>
 
         <ClaimConstraintToggle
           patentId="us-36836-gatling-gun"
           claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
+          onToggleClaim={(claimNo, active) => {
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
+            if (claimNo === 1) {
+              updateParam("claim1Active", active ? 1 : 0);
+            }
+          }}
           className="mt-2"
         />
 

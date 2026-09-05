@@ -2,6 +2,7 @@
 
 import { RotateCcw, Zap } from "lucide-react";
 import { useEffect, useId, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import {
   readTeslaTransformerControls,
   stepTeslaTransformerSi,
@@ -273,47 +274,33 @@ export function TeslaCoilSim() {
               Source Example &amp; Distributed-Wave Parameters
             </span>
 
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Disturbance frequency
-                </span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {controls.disturbanceFrequencyHz.toFixed(0)} Hz
-                </span>
-              </div>
-              <input
-                type="range"
-                aria-label="Electrical disturbance frequency"
-                min="500"
-                max="1500"
-                step="25"
-                value={controls.disturbanceFrequencyHz}
-                onChange={(e) => updateParam("disturbanceFrequencyHz", Number(e.target.value))}
-                className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-              />
-            </div>
+            <SensitivitySlider
+              id="tesla-coil-frequency"
+              patentId="us-593138-tesla-coil"
+              paramKey="disturbanceFrequencyHz"
+              label="Disturbance frequency"
+              value={controls.disturbanceFrequencyHz}
+              min={500}
+              max={1500}
+              step={25}
+              unit="Hz"
+              onChange={(val) => updateParam("disturbanceFrequencyHz", val)}
+              allParams={params}
+            />
 
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Developed secondary wire length
-                </span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  {controls.secondaryLengthMiles.toFixed(0)} mi
-                </span>
-              </div>
-              <input
-                type="range"
-                aria-label="Developed secondary wire length"
-                min="25"
-                max="75"
-                step="1"
-                value={controls.secondaryLengthMiles}
-                onChange={(e) => updateParam("secondaryLengthMiles", Number(e.target.value))}
-                className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-emerald-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-              />
-            </div>
+            <SensitivitySlider
+              id="tesla-coil-secondary-length"
+              patentId="us-593138-tesla-coil"
+              paramKey="secondaryLengthMiles"
+              label="Developed secondary wire length"
+              value={controls.secondaryLengthMiles}
+              min={25}
+              max={75}
+              step={1}
+              unit="mi"
+              onChange={(val) => updateParam("secondaryLengthMiles", val)}
+              allParams={params}
+            />
 
             <div className="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-ink-950 dark:text-parchment-100 text-xs sm:text-sm font-sans">
               <span className="font-bold text-purple-900 dark:text-purple-300 block font-mono text-xs uppercase tracking-wider mb-1">

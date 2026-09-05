@@ -1249,14 +1249,30 @@ export function corlissSchematicValve(
 export function stepGatlingGun(params: { crankRpm?: number; barrelCount?: number }) {
   const rpm = params.crankRpm ?? 60;
   const count = params.barrelCount ?? 6;
-  const rof = Math.round(rpm * count);
+  const roundsPerMinUnrounded = rpm * count;
+  const rof = Math.round(roundsPerMinUnrounded);
   const crank = rpmToOmega(rpm);
-  const cycleTimeMs = Math.round(60000 / Math.max(1, rof));
+  const cycleTimeMsUnrounded = 60000 / Math.max(1, roundsPerMinUnrounded);
+  const cycleTimeMs = Math.round(cycleTimeMsUnrounded);
+  const fireRateSlopeRpmPerCrankRpm = count;
+  const fireRateSlopeRpmPerBarrel = rpm;
+  const barrelCoolingIntervalSUnrounded = (60 / Math.max(1, roundsPerMinUnrounded)) * count;
+  const barrelCoolingIntervalSlopeSPerRpm = -60 / rpm ** 2;
+  const cycleTimeSlopeMsPerCrankRpm = -60000 / (count * rpm ** 2);
+  const cycleTimeSlopeMsPerBarrel = -60000 / (rpm * count ** 2);
   return {
     roundsPerMin: rof,
-    barrelCoolingIntervalS: Number(((60 / Math.max(1, rof)) * count).toFixed(2)),
+    roundsPerMinUnrounded,
+    fireRateSlopeRpmPerCrankRpm,
+    fireRateSlopeRpmPerBarrel,
+    barrelCoolingIntervalS: Number(barrelCoolingIntervalSUnrounded.toFixed(2)),
+    barrelCoolingIntervalSUnrounded,
+    barrelCoolingIntervalSlopeSPerRpm,
     muzzleEnergyJoules: 1850,
     cycleTimeMs,
+    cycleTimeMsUnrounded,
+    cycleTimeSlopeMsPerCrankRpm,
+    cycleTimeSlopeMsPerBarrel,
     crankOmegaRadPerS: crank.omegaRadPerS,
     crankOmegaDegPerS: crank.omegaDegPerS,
     barrelSpacingRad: Number(((2 * Math.PI) / count).toFixed(5)),
@@ -4492,12 +4508,20 @@ export function stepTeslaTeleautomaton(
   const isResonant = Math.abs(fKhz - targetFreqKhz) <= 5;
   const cohererOhms = isResonant && !isTapped ? 45 : 100000;
   const relayEnergized = cohererOhms < 1000;
-  const motorThrustN = relayEnergized ? Number((85 * (throttlePct / 100)).toFixed(1)) : 0;
+  const motorThrustNUnrounded = relayEnergized ? 85 * (throttlePct / 100) : 0;
+  const motorThrustN = Number(motorThrustNUnrounded.toFixed(1));
+  const motorThrustSlopeNPerPct = relayEnergized ? 0.85 : 0;
   const turningRadiusM =
     Math.abs(rudderDeg) > 0
       ? Number((12.5 / Math.sin((Math.abs(rudderDeg) * Math.PI) / 180)).toFixed(1))
       : 999;
-  const propellerRpm = relayEnergized ? Number((600 * (throttlePct / 100)).toFixed(1)) : 0;
+  const turningCurvatureMInvUnrounded =
+    Math.abs(rudderDeg) > 0 ? Math.sin((Math.abs(rudderDeg) * Math.PI) / 180) / 12.5 : 0;
+  const turningCurvatureSlopePerDeg =
+    (Math.PI / 180 / 12.5) * Math.cos((Math.abs(rudderDeg) * Math.PI) / 180);
+  const propellerRpmUnrounded = relayEnergized ? 600 * (throttlePct / 100) : 0;
+  const propellerRpm = Number(propellerRpmUnrounded.toFixed(1));
+  const propellerRpmSlopePerPct = relayEnergized ? 6.0 : 0;
   const propellerOmegaRadPerS = rpmToOmega(propellerRpm).omegaRadPerS;
   const steppingDiskIndex = pulseCount % 8;
   const cohererDisplayOmegaRadPerS = relayEnergized ? 1.5 : 0;
@@ -4508,8 +4532,14 @@ export function stepTeslaTeleautomaton(
     cohererOhms,
     relayEnergized,
     motorThrustN,
+    motorThrustNUnrounded,
+    motorThrustSlopeNPerPct,
     turningRadiusM,
+    turningCurvatureMInvUnrounded,
+    turningCurvatureSlopePerDeg,
     propellerRpm,
+    propellerRpmUnrounded,
+    propellerRpmSlopePerPct,
     propellerOmegaRadPerS,
     steppingDiskIndex,
     cohererDisplayOmegaRadPerS,

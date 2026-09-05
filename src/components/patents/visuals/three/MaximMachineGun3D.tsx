@@ -270,6 +270,7 @@ export function MaximMachineGun3D() {
               step={5}
               unit="%"
               onChange={(val) => updateParam("gasImpulsePct", val)}
+              allParams={params}
             />
           </div>
 
@@ -278,9 +279,12 @@ export function MaximMachineGun3D() {
           <ClaimConstraintToggle
             patentId="us-319596-maxim-machine-gun"
             claimStates={claimStates}
-            onToggleClaim={(claimNumber, active) =>
-              setClaimStates((prev) => ({ ...prev, [claimNumber]: active }))
-            }
+            onToggleClaim={(claimNumber, active) => {
+              setClaimStates((prev) => ({ ...prev, [claimNumber]: active }));
+              if (claimNumber === 1) {
+                updateParam("claim1Active", active ? 1 : 0);
+              }
+            }}
           />
         </div>
       )}

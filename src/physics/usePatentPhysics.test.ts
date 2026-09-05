@@ -451,6 +451,100 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
     }
   });
 
+  test("Gatling Gun aliases (rpm, speed, barrels, numBarrels) update canonical controls and notify subscribers", () => {
+    const id = "us-36836-gatling-gun";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) => observations.push(params.crankRpm));
+    try {
+      setPatentPhysicsParam(id, "speed", 90);
+      const params = getPatentPhysicsParams(id);
+      expect(params.crankRpm).toBe(90);
+      expect(params.speed).toBe(90);
+      expect(params.rpm).toBe(90);
+      expect(observations).toEqual([90]);
+      expect(getLastParamChange(id)?.id).toBe("crankRpm");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Rate of Fire")?.value).not.toBe(
+        initial.find((m) => m.label === "Rate of Fire")?.value,
+      );
+
+      setPatentPhysicsParam(id, "barrels", 10);
+      expect(getPatentPhysicsParams(id).barrelCount).toBe(10);
+      expect(getPatentPhysicsParams(id).barrels).toBe(10);
+      expect(getPatentPhysicsParams(id).numBarrels).toBe(10);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Tesla Coil aliases (freq, frequency, secondaryLength, wireLengthMiles) update canonical controls and notify subscribers", () => {
+    const id = "us-593138-tesla-coil";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.disturbanceFrequencyHz),
+    );
+    try {
+      setPatentPhysicsParam(id, "freq", 1200);
+      const params = getPatentPhysicsParams(id);
+      expect(params.disturbanceFrequencyHz).toBe(1200);
+      expect(params.freq).toBe(1200);
+      expect(params.frequency).toBe(1200);
+      expect(observations).toEqual([1200]);
+      expect(getLastParamChange(id)?.id).toBe("disturbanceFrequencyHz");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Quarter-Wave Target")?.value).not.toBe(
+        initial.find((m) => m.label === "Quarter-Wave Target")?.value,
+      );
+
+      setPatentPhysicsParam(id, "secondaryLength", 65);
+      expect(getPatentPhysicsParams(id).secondaryLengthMiles).toBe(65);
+      expect(getPatentPhysicsParams(id).secondaryLength).toBe(65);
+      expect(getPatentPhysicsParams(id).wireLengthMiles).toBe(65);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Tesla Teleautomaton aliases (rudder, rudderDeg, throttle, throttlePct) update canonical controls and notify subscribers", () => {
+    const id = "us-613809-tesla-teleautomaton";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.propellerThrottlePct),
+    );
+    try {
+      setPatentPhysicsParam(id, "throttle", 90);
+      const params = getPatentPhysicsParams(id);
+      expect(params.propellerThrottlePct).toBe(90);
+      expect(params.throttle).toBe(90);
+      expect(params.throttlePct).toBe(90);
+      expect(observations).toEqual([90]);
+      expect(getLastParamChange(id)?.id).toBe("propellerThrottlePct");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Propulsion Motor")?.value).not.toBe(
+        initial.find((m) => m.label === "Propulsion Motor")?.value,
+      );
+
+      setPatentPhysicsParam(id, "rudder", 25);
+      expect(getPatentPhysicsParams(id).rudderAngle).toBe(25);
+      expect(getPatentPhysicsParams(id).rudder).toBe(25);
+      expect(getPatentPhysicsParams(id).rudderDeg).toBe(25);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
   test("shares claim state across subscribers while retaining raw controls and deriving effective topology", () => {
     const goertzId = "us-2846084-goertz-electronic-master-slave-manipulator";
     resetPatentPhysicsParams(goertzId);

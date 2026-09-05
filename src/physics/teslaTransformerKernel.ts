@@ -87,6 +87,9 @@ export interface TeslaTransformerState {
   lengthErrorMiles: number;
   lengthRatio: number;
   remoteTerminalProfileFraction: number;
+  quarterWaveSlopeMilesPerHz?: number;
+  electricalLengthSlopeDegPerMile?: number;
+  electricalLengthSlopeDegPerHz?: number;
   /** The 1897 grant supplies no excitation, impedance, loss, or load datum. */
   absolutePotentialKnown: false;
   /** The grant supplies no air-breakdown or discharge-length datum. */
@@ -153,6 +156,10 @@ export function stepTeslaTransformerSi(controls: TeslaTransformerControls): Tesl
   const result =
     wasm ?? fallbackQuarterWave(frequencyHz, TESLA_SOURCE_PROPAGATION_SPEED_MPS, secondaryLengthM);
 
+  const quarterWaveSlopeMilesPerHz = -46250 / frequencyHz ** 2;
+  const electricalLengthSlopeDegPerMile = (360 * frequencyHz) / 185000;
+  const electricalLengthSlopeDegPerHz = (360 * controls.secondaryLengthMiles) / 185000;
+
   return {
     runtimeSource: wasm ? "wasm" : "ts-fallback",
     frequencyHz,
@@ -171,6 +178,9 @@ export function stepTeslaTransformerSi(controls: TeslaTransformerControls): Tesl
     lengthErrorMiles: result.length_error_m / METERS_PER_MILE,
     lengthRatio: result.length_ratio,
     remoteTerminalProfileFraction: result.remote_terminal_profile_fraction,
+    quarterWaveSlopeMilesPerHz,
+    electricalLengthSlopeDegPerMile,
+    electricalLengthSlopeDegPerHz,
     absolutePotentialKnown: false,
     dischargeLengthKnown: false,
   };

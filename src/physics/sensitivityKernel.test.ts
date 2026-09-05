@@ -10,6 +10,7 @@ import {
   stepEngelbartMouse,
   stepEricssonPropeller,
   stepFessendenWireless,
+  stepGatlingGun,
   stepGoodyearRubber,
   stepGrammeDynamo,
   stepHaberAmmonia,
@@ -18,6 +19,7 @@ import {
   stepMorseTelegraph,
   stepOttoEngine,
   stepParsonsTurbine,
+  stepTeslaTeleautomaton,
   stepThomsonWelding,
   stepWozniakApple,
   stepZeppelinAirship,
@@ -1165,6 +1167,7 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("Gatling Gun derives cyclic rate of fire scaling from barrel cluster and crank", () => {
     const id = "us-36836-gatling-gun";
+    const h = 1e-4;
 
     for (const rpm of [30, 60, 100]) {
       for (const barrels of [4, 6, 8, 10]) {
@@ -1178,6 +1181,18 @@ describe("Sensitivities follow the current admitted operating point", () => {
         expect(sensRpm?.derivativeValue).toBe(barrels);
         expect(sensRpm?.derivativeUnit).toBe("RPM / RPM");
 
+        // Central finite-difference verification
+        const rofFwd = stepGatlingGun({
+          crankRpm: rpm + h,
+          barrelCount: barrels,
+        }).roundsPerMinUnrounded;
+        const rofBwd = stepGatlingGun({
+          crankRpm: rpm - h,
+          barrelCount: barrels,
+        }).roundsPerMinUnrounded;
+        const fdRpm = (rofFwd - rofBwd) / (2 * h);
+        expect(sensRpm?.derivativeValue).toBeCloseTo(fdRpm, 4);
+
         const sensBarrels = computeParameterSensitivity(id, "barrelCount", {
           crankRpm: rpm,
           barrelCount: barrels,
@@ -1187,6 +1202,27 @@ describe("Sensitivities follow the current admitted operating point", () => {
         expect(sensBarrels?.derivativeSymbol).toBe("∂ROF / ∂N_barrels");
         expect(sensBarrels?.derivativeValue).toBe(rpm);
         expect(sensBarrels?.derivativeUnit).toBe("rounds/min / barrel");
+
+        // Alias invariance
+        const sensAliasRpm = computeParameterSensitivity(id, "speed", {
+          speed: rpm,
+          barrels,
+        });
+        expect(sensAliasRpm?.derivativeValue).toBe(sensRpm?.derivativeValue);
+
+        const sensAliasBarrels = computeParameterSensitivity(id, "numBarrels", {
+          crankRpm: rpm,
+          numBarrels: barrels,
+        });
+        expect(sensAliasBarrels?.derivativeValue).toBe(sensBarrels?.derivativeValue);
+
+        // Claim 1 co-rotating shaft refusal
+        const sensClaimRefused = computeParameterSensitivity(id, "crankRpm", {
+          crankRpm: rpm,
+          barrelCount: barrels,
+          claim1Active: false,
+        });
+        expect(sensClaimRefused?.derivativeValue).toBe(0);
       }
     }
 
@@ -1549,6 +1585,7 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("Maxim Machine Gun derives breech-block kinematics and gas impulse sensitivities", () => {
     const id = "us-319596-maxim-machine-gun";
+    const h = 1e-4;
 
     for (const phase of [45, 90, 180, 270]) {
       const sens = computeParameterSensitivity(id, "cyclePhase", { cyclePhase: phase });
@@ -1556,10 +1593,21 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.metricName).toBe("Breech-Block Linear Travel");
       expect(sens?.derivativeSymbol).toBe("∂x_breech / ∂θ_crank");
       expect(sens?.derivativeUnit).toBe("mm / deg");
-      const expected = Number(
-        (((24 * Math.PI) / 180) * Math.sin((phase * Math.PI) / 180)).toFixed(4),
-      );
+      const expected = ((24 * Math.PI) / 180) * Math.sin((phase * Math.PI) / 180);
       expect(sens?.derivativeValue).toBeCloseTo(expected, 4);
+
+      // Central difference verification for breech displacement x(theta) = 48 * sin^2(theta/2) = 24 * (1 - cos(theta))
+      const xFwd = 24 * (1 - Math.cos(((phase + h) * Math.PI) / 180));
+      const xBwd = 24 * (1 - Math.cos(((phase - h) * Math.PI) / 180));
+      const fd = (xFwd - xBwd) / (2 * h);
+      expect(sens?.derivativeValue).toBeCloseTo(fd, 4);
+
+      // Claim 1 refusal
+      const sensRefused = computeParameterSensitivity(id, "cyclePhase", {
+        cyclePhase: phase,
+        claim1Active: false,
+      });
+      expect(sensRefused?.derivativeValue).toBe(0);
     }
 
     for (const impulse of [20, 50, 80]) {
@@ -1569,6 +1617,13 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeSymbol).toBe("∂p_sleeve / ∂P_gas");
       expect(sens?.derivativeUnit).toBe("mm / %");
       expect(sens?.derivativeValue).toBe(0.24);
+
+      // Claim 1 refusal
+      const sensImpulseRefused = computeParameterSensitivity(id, "gasImpulsePct", {
+        gasImpulsePct: impulse,
+        claim1Active: false,
+      });
+      expect(sensImpulseRefused?.derivativeValue).toBe(0);
     }
 
     // Invalid parameters
@@ -3961,24 +4016,85 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("Tesla teleautomaton derives rudder turning rate and propeller thrust sensitivities", () => {
     const id = "us-613809-tesla-teleautomaton";
+    const h = 1e-4;
 
-    const sensRudder = computeParameterSensitivity(id, "rudderAngleDeg", {
-      rudderAngleDeg: 15,
-    });
-    expect(sensRudder).toBeDefined();
-    expect(sensRudder?.metricName).toBe("Vessel Turning Rate");
-    expect(sensRudder?.derivativeSymbol).toBe("∂ω_turn / ∂θ_rudder");
-    expect(sensRudder?.derivativeValue).toBe(0.35);
-    expect(sensRudder?.derivativeUnit).toBe("deg/s / deg");
+    for (const rudder of [10, 15, 25]) {
+      const sensRudder = computeParameterSensitivity(id, "rudderAngle", {
+        rudderAngle: rudder,
+        rfFrequency: 150,
+      });
+      expect(sensRudder).toBeDefined();
+      expect(sensRudder?.metricName).toBe("Vessel Turning Curvature");
+      expect(sensRudder?.derivativeSymbol).toBe("∂κ_turn / ∂θ_rudder");
+      expect(sensRudder?.derivativeUnit).toBe("m⁻¹ / deg");
 
-    const sensThrottle = computeParameterSensitivity(id, "propellerThrottlePct", {
+      // Central difference verification for curvature kappa(theta) = sin(theta * pi / 180) / 12.5
+      const kappaFwd = Math.sin(((rudder + h) * Math.PI) / 180) / 12.5;
+      const kappaBwd = Math.sin(((rudder - h) * Math.PI) / 180) / 12.5;
+      const fdCurv = (kappaFwd - kappaBwd) / (2 * h);
+      expect(sensRudder?.derivativeValue).toBeCloseTo(fdCurv, 4);
+
+      // Alias invariance
+      const sensAliasRudder = computeParameterSensitivity(id, "rudderDeg", {
+        rudderDeg: rudder,
+        rfFrequency: 150,
+      });
+      expect(sensAliasRudder?.derivativeValue).toBe(sensRudder?.derivativeValue);
+
+      // Claim 1 refusal
+      const sensRefused = computeParameterSensitivity(id, "rudderAngle", {
+        rudderAngle: rudder,
+        claim1Active: false,
+      });
+      expect(sensRefused?.derivativeValue).toBe(0);
+    }
+
+    // Propeller thrust under tuned resonance (150 kHz)
+    for (const throttle of [25, 50, 75, 90]) {
+      const sensTuned = computeParameterSensitivity(id, "propellerThrottlePct", {
+        propellerThrottlePct: throttle,
+        rfFrequency: 150,
+      });
+      expect(sensTuned).toBeDefined();
+      expect(sensTuned?.metricName).toBe("Electric Propulsion Motor Thrust");
+      expect(sensTuned?.derivativeSymbol).toBe("∂T_thrust / ∂throttle");
+      expect(sensTuned?.derivativeValue).toBe(0.85);
+      expect(sensTuned?.derivativeUnit).toBe("N / %");
+
+      // Central difference verification
+      const tFwd = stepTeslaTeleautomaton({
+        rfFrequency: 150,
+        propellerThrottlePct: throttle + h,
+      }).motorThrustNUnrounded;
+      const tBwd = stepTeslaTeleautomaton({
+        rfFrequency: 150,
+        propellerThrottlePct: throttle - h,
+      }).motorThrustNUnrounded;
+      const fdThrust = (tFwd - tBwd) / (2 * h);
+      expect(sensTuned?.derivativeValue).toBeCloseTo(fdThrust, 4);
+
+      // Alias invariance
+      const sensAliasThrottle = computeParameterSensitivity(id, "throttle", {
+        throttle,
+        rfFrequency: 150,
+      });
+      expect(sensAliasThrottle?.derivativeValue).toBe(sensTuned?.derivativeValue);
+
+      // Claim 1 refusal
+      const sensThrottleRefused = computeParameterSensitivity(id, "propellerThrottlePct", {
+        propellerThrottlePct: throttle,
+        claim1Active: false,
+      });
+      expect(sensThrottleRefused?.derivativeValue).toBe(0);
+    }
+
+    // Detuned carrier: when frequency is detuned from 150 kHz, coherer is open and thrust derivative is 0
+    const sensDetuned = computeParameterSensitivity(id, "propellerThrottlePct", {
       propellerThrottlePct: 75,
+      rfFrequency: 120,
     });
-    expect(sensThrottle).toBeDefined();
-    expect(sensThrottle?.metricName).toBe("Electric Propulsion Motor Thrust");
-    expect(sensThrottle?.derivativeSymbol).toBe("∂T_thrust / ∂throttle");
-    expect(sensThrottle?.derivativeValue).toBe(0.85);
-    expect(sensThrottle?.derivativeUnit).toBe("N / %");
+    expect(sensDetuned).toBeDefined();
+    expect(sensDetuned?.derivativeValue).toBe(0);
 
     // Bounds checking
     for (const invalid of [-1, 51, Number.NaN]) {
@@ -3993,6 +4109,85 @@ describe("Sensitivities follow the current admitted operating point", () => {
     for (const invalid of [-1, 101, Number.NaN]) {
       expect(
         computeParameterSensitivity(id, "propellerThrottlePct", { propellerThrottlePct: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Tesla coil derives quarter-wave length and electrical length distributed-wave sensitivities", () => {
+    const id = "us-593138-tesla-coil";
+    const h = 1e-4;
+
+    for (const f of [700, 925, 1250]) {
+      for (const l of [35, 50, 65]) {
+        const baseParams = { disturbanceFrequencyHz: f, secondaryLengthMiles: l };
+
+        // 1. Quarter-wave length derivative with respect to frequency
+        const sensFreq = computeParameterSensitivity(id, "disturbanceFrequencyHz", baseParams);
+        expect(sensFreq).toBeDefined();
+        expect(sensFreq?.metricName).toBe("Required Quarter-Wave Length");
+        expect(sensFreq?.derivativeSymbol).toBe("∂l_{1/4} / ∂f");
+        expect(sensFreq?.derivativeUnit).toBe("mi / Hz");
+        expect(sensFreq?.derivativeValue).toBeCloseTo(-46250 / f ** 2, 6);
+
+        // Central finite difference verification: l_1/4 = 185000 / (4 * f) = 46250 / f
+        const lFwd = 46250 / (f + h);
+        const lBwd = 46250 / (f - h);
+        const fdFreq = (lFwd - lBwd) / (2 * h);
+        expect(sensFreq?.derivativeValue).toBeCloseTo(fdFreq, 4);
+
+        // 2. Electrical length derivative with respect to secondary wire length
+        const sensLen = computeParameterSensitivity(id, "secondaryLengthMiles", baseParams);
+        expect(sensLen).toBeDefined();
+        expect(sensLen?.metricName).toBe("Electrical Length");
+        expect(sensLen?.derivativeSymbol).toBe("∂(βl) / ∂l");
+        expect(sensLen?.derivativeUnit).toBe("deg / mi");
+        expect(sensLen?.derivativeValue).toBeCloseTo((360 * f) / 185000, 6);
+
+        // Central finite difference verification: beta*l = (360 * f * l) / 185000
+        const betaFwd = (360 * f * (l + h)) / 185000;
+        const betaBwd = (360 * f * (l - h)) / 185000;
+        const fdLen = (betaFwd - betaBwd) / (2 * h);
+        expect(sensLen?.derivativeValue).toBeCloseTo(fdLen, 4);
+
+        // 3. Alias invariance
+        const sensAliasFreq = computeParameterSensitivity(id, "freq", {
+          freq: f,
+          secondaryLength: l,
+        });
+        expect(sensAliasFreq?.derivativeValue).toBe(sensFreq?.derivativeValue);
+
+        const sensAliasLen = computeParameterSensitivity(id, "wireLengthMiles", {
+          frequency: f,
+          wireLengthMiles: l,
+        });
+        expect(sensAliasLen?.derivativeValue).toBe(sensLen?.derivativeValue);
+
+        // 4. Claim 1 common-node gating
+        const sensFreqRefused = computeParameterSensitivity(id, "disturbanceFrequencyHz", {
+          ...baseParams,
+          claim1CommonNodeConnected: 0,
+        });
+        expect(sensFreqRefused?.derivativeValue).toBe(0);
+
+        const sensLenRefused = computeParameterSensitivity(id, "secondaryLengthMiles", {
+          ...baseParams,
+          claim1Active: false,
+        });
+        expect(sensLenRefused?.derivativeValue).toBe(0);
+      }
+    }
+
+    // Bounds checking
+    for (const invalid of [499, 1501, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "disturbanceFrequencyHz", {
+          disturbanceFrequencyHz: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [24, 76, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "secondaryLengthMiles", { secondaryLengthMiles: invalid }),
       ).toBeNull();
     }
   });
