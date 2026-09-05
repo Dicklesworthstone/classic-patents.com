@@ -101,3 +101,19 @@ to transcribe every diagram label, numeral, signature, or figure region. The
 complete original sheets remain directly readable in the pinned facsimile,
 while literal drawing transcription and crop acceptance remain strict-audit
 work.
+
+### Bounded opening-specification review (2026-09-05)
+
+Pages 18 through 21 were rendered from the pinned PDF at 180 DPI and read
+directly. They confirm the masthead's assignee, the **August 30, 1884**
+application date, the two-part matrix/casting architecture, the earlier July
+1884 application's distinct intaglio/cameo comparison, and the opening
+matrix-bar description. The staged edition's former February 12 filing date,
+serial number, wedge-spaceband account, and later-commercial-machine wording
+were removed from its opening blocks and replaced with that source text.
+
+This is a bounded repair, not a completeness attestation. Pages 1–17 are
+still drawing sheets requiring literal-drawing and crop acceptance, and the
+remaining continuous specification still requires fresh block-level review.
+The visitor continues to receive the page-complete reviewed ledger and pinned
+facsimile while that work proceeds.
