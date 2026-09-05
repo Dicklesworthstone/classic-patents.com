@@ -2,12 +2,14 @@
 
 import { Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import {
+  GOODYEAR_CURE_TEMPERATURE_RANGE,
   GOODYEAR_SULFUR_RANGE,
   goodyearChainPost,
   stepGoodyearRubber,
 } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { PortHamiltonianEnergyStrip } from "./PortHamiltonianEnergyStrip";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function GoodyearRubberSim() {
@@ -28,10 +30,12 @@ export function GoodyearRubberSim() {
   return (
     <div
       data-testid="goodyear-rubber-two"
-      data-goodyear-stress-mpa={rubber.trueStressMpa}
+      data-goodyear-stress-mpa={rubber.nominalStressMpa}
       data-goodyear-stress-runtime="ts-fallback"
+      data-goodyear-stress-measure="nominal"
       className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6"
     >
+      <PortHamiltonianEnergyStrip patentId="us-3633-goodyear-rubber" params={params} />
       {/* Header */}
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
@@ -186,7 +190,7 @@ export function GoodyearRubberSim() {
               </div>
               <div className="flex justify-between">
                 <span>cross-link</span>
-                <span className="font-bold">{rubber.crossLinkDensity} mol/cm³</span>
+                <span className="font-bold">{rubber.relativeCrossLinkDensity} relative</span>
               </div>
               <div className="flex justify-between">
                 <span>Tg</span>
@@ -218,7 +222,7 @@ export function GoodyearRubberSim() {
                 <span>30% (Ebonite)</span>
               </div>
               <div className="flex justify-between text-[10px] font-mono text-amber-700 dark:text-amber-400 pt-1">
-                <span>Crosslinks: {rubber.crossLinkDensity} mol/cm³</span>
+                <span>Crosslinks: {rubber.relativeCrossLinkDensity} relative</span>
                 <span className="capitalize">State: {rubber.regime}</span>
               </div>
             </div>
@@ -235,9 +239,7 @@ export function GoodyearRubberSim() {
               <input
                 type="range"
                 aria-label="Vulcanization Temperature"
-                min="110"
-                max="190"
-                step="2"
+                {...GOODYEAR_CURE_TEMPERATURE_RANGE}
                 value={vulcanTempC}
                 onChange={(e) => updateParam("vulcanTemp", Number(e.target.value))}
                 className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
@@ -284,7 +286,7 @@ export function GoodyearRubberSim() {
                 className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-blue-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
               />
               <p className="text-xs font-mono text-ink-600 dark:text-ink-400">
-                Tensile stress (model): {rubber.trueStressMpa.toFixed(2)} MPa
+                Nominal stress (model): {rubber.nominalStressMpa.toFixed(2)} MPa
               </p>
             </div>
           </div>

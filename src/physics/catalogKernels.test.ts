@@ -15,6 +15,7 @@ describe("Continuous teaching-model outputs", () => {
   test("Goodyear starts at zero stress and reports its unrounded stress law", () => {
     for (const sulfur of [0, 4, 8, 30]) {
       const rest = stepGoodyearRubber(145, sulfur, 30, 1, 35);
+      expect(rest.nominalStressMpa).toBe(0);
       expect(rest.trueStressMpa).toBe(0);
       expect(rest.stressMpaUnrounded).toBe(0);
       const stretched = stepGoodyearRubber(145, sulfur, 30, 2.1, 35);
@@ -22,8 +23,48 @@ describe("Continuous teaching-model outputs", () => {
         stretched.tensileStrengthMpa * (2.1 - 1 / 2.1 ** 2),
         12,
       );
-      expect(stretched.trueStressMpa).toBeCloseTo(stretched.stressMpaUnrounded, 2);
+      expect(stretched.nominalStressMpa).toBeCloseTo(stretched.stressMpaUnrounded, 2);
+      expect(stretched.trueStressMpa).toBeCloseTo(2.1 * stretched.stressMpaUnrounded, 2);
     }
+  });
+
+  test("Goodyear strain energy density integrates the nominal stress with cure held fixed", () => {
+    for (const temperature of [110, 145, 180]) {
+      for (const sulfur of [0, 4, 8, 30]) {
+        const evaluate = (lambda: number) =>
+          stepGoodyearRubber(temperature, sulfur, 30, lambda, 35);
+        expect(evaluate(1).strainEnergyDensityJPerM3).toBe(0);
+        for (const end of [1.05, 1.8, 2.5]) {
+          // Composite Simpson integration of stress (Pa) over dimensionless stretch.
+          const intervals = 128;
+          const h = (end - 1) / intervals;
+          let sum = evaluate(1).stressMpaUnrounded + evaluate(end).stressMpaUnrounded;
+          for (let i = 1; i < intervals; i++)
+            sum += (i % 2 === 0 ? 2 : 4) * evaluate(1 + i * h).stressMpaUnrounded;
+          const integrated = (sum * h * 1e6) / 3;
+          const energy = evaluate(end).strainEnergyDensityJPerM3;
+          expect(Math.abs(energy - integrated)).toBeLessThanOrEqual(Math.max(1e-6, energy * 2e-8));
+          const delta = 1e-5;
+          const derivative =
+            (evaluate(end + delta).strainEnergyDensityJPerM3 -
+              evaluate(end - delta).strainEnergyDensityJPerM3) /
+            (2 * delta);
+          expect(Math.abs(derivative / 1e6 - evaluate(end).stressMpaUnrounded)).toBeLessThan(1e-7);
+        }
+      }
+    }
+  });
+
+  test("Goodyear energy stays nonnegative near zero stretch and changes with the cure coefficient", () => {
+    const nearRest = stepGoodyearRubber(145, 8, 30, 1 + 1e-8);
+    expect(nearRest.strainEnergyDensityJPerM3).toBeGreaterThan(0);
+    expect(nearRest.strainEnergyDensityJPerM3).toBeLessThan(1e-7);
+    const full = stepGoodyearRubber(145, 8, 30, 2);
+    const offWindow = stepGoodyearRubber(180, 8, 30, 2);
+    expect(full.strainEnergyDensityJPerM3).toBeCloseTo(full.tensileStrengthMpa * 1e6, 7);
+    expect(offWindow.strainEnergyDensityJPerM3).toBeLessThan(full.strainEnergyDensityJPerM3 / 2);
+    expect(full.relativeCrossLinkDensity).toBe(1);
+    expect(offWindow.relativeCrossLinkDensity).toBe(0.4);
   });
 });
 

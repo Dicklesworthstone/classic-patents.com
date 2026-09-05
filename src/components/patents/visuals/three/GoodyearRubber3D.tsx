@@ -1,7 +1,7 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
-import { GOODYEAR_SULFUR_RANGE } from "@/physics/catalogKernels";
+import { GOODYEAR_CURE_TEMPERATURE_RANGE, GOODYEAR_SULFUR_RANGE } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -51,10 +51,13 @@ export function GoodyearRubber3D() {
     timeStepDt: 0.016,
     refusal: { isRefused: false },
     continuum: {
-      tensileStressMpa: rubberPhysics.tensileStrengthMpa,
-      tensileStrainPct: rubberPhysics.elasticReturnPct,
-      elasticModulusGpa: 0,
-      crossLinkDensityMolesPerCm3: rubberPhysics.crossLinkDensity,
+      tensileStressMpa: rubberPhysics.nominalStressMpa,
+      tensileStrainPct: rubberPhysics.engineeringStrainPct,
+      elasticModulusGpa: rubberPhysics.initialYoungModulusGpa,
+      crossLinkDensityMolesPerCm3: null,
+      relativeCrossLinkDensity: rubberPhysics.relativeCrossLinkDensity,
+      tensileStressMeasure: "nominal",
+      strainEnergyDensityJPerM3: rubberPhysics.strainEnergyDensityJPerM3,
       stitchFrequencyHz: 0,
       feedVelocityMmPs: 0,
       buoyancyLiftForceKiloNewtons: 0,
@@ -166,17 +169,12 @@ export function GoodyearRubber3D() {
   return (
     <div
       data-testid="goodyear-rubber-three"
-      data-goodyear-stress-mpa={rubberPhysics.trueStressMpa}
+      data-goodyear-stress-mpa={rubberPhysics.nominalStressMpa}
       data-goodyear-stress-runtime="ts-fallback"
+      data-goodyear-stress-measure="nominal"
       className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent"
     >
-      <PortHamiltonianEnergyStrip
-        patentId="us-3633-goodyear-rubber"
-        params={{
-          appliedTensileStretch,
-          vulcanTemp: cureTemperatureCelsius,
-        }}
-      />
+      <PortHamiltonianEnergyStrip patentId="us-3633-goodyear-rubber" params={params} />
       <div className="sr-only">Charles Goodyear Vulcanized Rubber 3D Simulation</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -290,9 +288,9 @@ export function GoodyearRubber3D() {
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Crosslink Density:</span>
+              <span className="text-ink-600 dark:text-ink-400">Relative crosslinks:</span>
               <span className="font-bold text-emerald-800 dark:text-emerald-400">
-                {rubberPhysics.crossLinkDensity.toExponential(2)} mol/cm³
+                {rubberPhysics.relativeCrossLinkDensity.toFixed(3)} relative
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
@@ -316,11 +314,15 @@ export function GoodyearRubber3D() {
               value: String(Math.round(rubberPhysics.tensileStrengthPsi)),
               unit: "psi",
             },
-            { label: "Stress (model)", value: rubberPhysics.trueStressMpa.toFixed(2), unit: "MPa" },
             {
-              label: "Crosslink ρ",
-              value: rubberPhysics.crossLinkDensity.toExponential(2),
-              unit: "mol/cm³",
+              label: "Nominal stress",
+              value: rubberPhysics.nominalStressMpa.toFixed(2),
+              unit: "MPa",
+            },
+            {
+              label: "Relative crosslinks",
+              value: rubberPhysics.relativeCrossLinkDensity.toFixed(3),
+              unit: "relative",
             },
             {
               label: "Elastic Return",
@@ -350,9 +352,7 @@ export function GoodyearRubber3D() {
             paramKey="vulcanTemp"
             label="Vulcanization Temp"
             value={cureTemperatureCelsius}
-            min={110}
-            max={190}
-            step={2}
+            {...GOODYEAR_CURE_TEMPERATURE_RANGE}
             unit="°C"
             onChange={(val) => updateParam("vulcanTemp", val)}
             allParams={params}
@@ -385,7 +385,7 @@ export function GoodyearRubber3D() {
           />
         </div>
         <p className="mt-3 text-xs font-mono text-ink-600 dark:text-ink-400">
-          Tensile stress (model): {rubberPhysics.trueStressMpa.toFixed(2)} MPa
+          Nominal stress (model): {rubberPhysics.nominalStressMpa.toFixed(2)} MPa
         </p>
       </div>
     </div>

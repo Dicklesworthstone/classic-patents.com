@@ -2930,6 +2930,7 @@ export function coltSchematicTrigger(
 
 /** Shared sulfur range includes the raw-gum and high-sulfur teaching comparisons. */
 export const GOODYEAR_SULFUR_RANGE = { min: 0, max: 30, step: 0.5 } as const;
+export const GOODYEAR_CURE_TEMPERATURE_RANGE = { min: 110, max: 190, step: 1 } as const;
 
 export function stepGoodyearRubber(
   vulcanizationTempC?: number,
@@ -2952,7 +2953,18 @@ export function stepGoodyearRubber(
   const isGlassy = specimen < glassTransitionTempC;
   const isVulcanized = isOptimalTemp && crossLinkDensity >= 0.3;
   const stressMpaUnrounded = tensileStrengthMpa * (lambda - 1 / lambda ** 2);
+  // Incompressible uniaxial neo-Hookean teaching law, per reference volume.
+  // P = dW/dλ is nominal stress; Cauchy stress is λP. The coefficient remains
+  // an illustrative cure-dependent scale, not a measured rubber modulus.
+  // A. F. Bower, Applied Mechanics of Solids, §§3.5.3–3.5.6:
+  // https://solidmechanics.org/Text/Chapter3_5/Chapter3_5.php
+  // Factored form avoids cancellation close to the unstretched state.
+  const strainEnergyDensityJPerM3 =
+    (0.5 * tensileStrengthMpa * 1e6 * ((lambda - 1) ** 2 * (lambda + 2))) / lambda;
   return {
+    relativeCrossLinkDensity: Number(crossLinkDensity.toFixed(3)),
+    relativeCrossLinkSlopePerSulfurPct: ((duration / 30) * (isOptimalTemp ? 1 : 0.4)) / 8,
+    /** Legacy name for the dimensionless crosslink factor, never mol/cm³. */
     crossLinkDensity: Number(crossLinkDensity.toFixed(3)),
     tensileStrengthPsi,
     tensileStrengthMpa,
@@ -2964,11 +2976,14 @@ export function stepGoodyearRubber(
     isGlassy,
     isRawGumMelted: sulfur < 2 && specimen > 35,
     isRawGumBrittle: sulfur < 2 && specimen < 0,
-    trueStressMpa: Number(stressMpaUnrounded.toFixed(2)),
+    nominalStressMpa: Number(stressMpaUnrounded.toFixed(2)),
+    trueStressMpa: Number((lambda * stressMpaUnrounded).toFixed(2)),
+    engineeringStrainPct: (lambda - 1) * 100,
+    initialYoungModulusGpa: (3 * tensileStrengthMpa) / 1000,
     stressMpaUnrounded,
+    strainEnergyDensityJPerM3,
     // Local slope of this declared stress model with the cure settings held fixed.
     stressSlopeMpaPerStretch: tensileStrengthMpa * (1 + 2 / lambda ** 3),
-    entropicReductionJ: Number((0.5 * 1.38e-23 * 1e26 * (lambda ** 2 + 2 / lambda - 3)).toFixed(1)),
     glassyModulusMpa: 2400,
     stressScale: Number(
       Math.min(2.8, Math.max(0.35, (tensileStrengthPsi / 2800) * (lambda - 0.6))).toFixed(3),

@@ -66,6 +66,7 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       }
     }
     expect(Object.keys(ENERGY_CHANNEL_OMISSION_REASONS)).toEqual([
+      "us-3633-goodyear-rubber",
       "gb-931-arkwright-water-frame",
       "gb-1306-watt-rotary-engine",
       "gb-1420-cort-puddling-rolling",

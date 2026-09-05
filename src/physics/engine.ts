@@ -19,6 +19,8 @@ import {
   stepLincolnBuoy as catalogStepLincolnBuoy,
   farnsworthDisplaySweepRates,
   goddardSchematicStack,
+  type LandPolaroidInput,
+  type LandPolaroidState,
   stepBellTelephone,
   stepCorlissEngine,
   stepDavenportMotor,
@@ -33,6 +35,7 @@ import {
   stepGoodyearRubber as stepGoodyearRubberCatalog,
   stepGrammeDynamo,
   stepHyattCelluloid,
+  stepLandPolaroidInstantFilm,
   stepMarconiRadio as stepMarconiRadioCatalog,
   stepMaximMachineGun,
   stepMcCormickReaper,
@@ -67,6 +70,12 @@ import { stepDieselEngine as kernelStepDieselEngine } from "./dieselEngineKernel
 import { stepFermiKinetics } from "./fermiKinetics";
 import { tryGoddardApparatusWasmStep, tryGoddardWasmStep } from "./goddardWasm";
 import { stepHullStereolithographySi } from "./hullStereolithographyKernel";
+import {
+  type KamenInjectionControls,
+  type KamenInjectionState,
+  type KamenInjectionTapeFrame,
+  stepKamenInjectionMechanism,
+} from "./kamenInjectionKernel";
 import { stepKamenSegwaySi } from "./kamenSegwayKernel";
 import {
   type KamenTransporterControls,
@@ -1343,6 +1352,18 @@ export const FrankenSimEngine = {
 
   stepMestralVelcro(controls: MestralVelcroControls, timeSec = 0): MestralVelcroTelemetry {
     return stepMestralVelcroSi(controls, timeSec);
+  },
+
+  stepLandPolaroid(input: LandPolaroidInput): LandPolaroidState {
+    return stepLandPolaroidInstantFilm(input);
+  },
+
+  stepKamenInjection(
+    state: KamenInjectionState,
+    controls: KamenInjectionControls,
+    dtSeconds = 0.016,
+  ): KamenInjectionTapeFrame {
+    return stepKamenInjectionMechanism(state, controls, dtSeconds);
   },
 
   /** US 3,081,379 Lemelson automatic measurement & machine vision apparatus. */

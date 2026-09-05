@@ -257,13 +257,16 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
     return [];
   }
   if (patentId === "us-3633-goodyear-vulcanization" || patentId === "us-3633-goodyear-rubber") {
-    const gum = stepGoodyearRubber(params.vulcanizationTempC ?? 145, params.sulfurPct ?? 8);
+    const gum = stepGoodyearRubber(
+      params.vulcanTemp ?? params.vulcanizationTempC ?? 145,
+      params.sulfurPct ?? 8,
+    );
     return [
       {
         from: "sulfur",
-        to: "cross-link density",
-        gain: Number((gum.crossLinkDensity / Math.max(0.1, params.sulfurPct ?? 8)).toFixed(4)),
-        unit: "1 / %",
+        to: "relative crosslink factor",
+        gain: gum.relativeCrossLinkSlopePerSulfurPct,
+        unit: "relative / %",
         crate: "fs-couple",
         source: "ts-fallback",
       },

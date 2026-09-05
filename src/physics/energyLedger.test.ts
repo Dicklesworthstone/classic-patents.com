@@ -1,9 +1,66 @@
 import { describe, expect, test } from "bun:test";
+import { stepGoodyearRubber } from "./catalogKernels";
+import { coupleEdgesFor } from "./coupleGraph";
 import { computePortHamiltonianEnergy, measureSteadyPowerBalance } from "./energyLedger";
 import { readWattCondenserControls, stepWattCondenser } from "./wattCondenserKernel";
 import { WRIGHT_GROSS_WEIGHT_N } from "./wrightKernel";
 
 describe("Energy readouts distinguish partial, steady and unavailable evidence", () => {
+  test("Goodyear reports the same elastic density as its instrument without fabricated volume or power", () => {
+    for (const vulcanTemp of [110, 145, 180]) {
+      for (const sulfurPct of [0, 4, 8, 30]) {
+        for (const appliedTensileStretch of [1, 1.8, 2.5]) {
+          const params = { vulcanTemp, sulfurPct, appliedTensileStretch, specimenTempC: 35 };
+          const state = stepGoodyearRubber(vulcanTemp, sulfurPct, 30, appliedTensileStretch, 35);
+          const report = computePortHamiltonianEnergy("us-3633-goodyear-rubber", params);
+          expect(report.strainEnergyDensityJPerM3).toBe(state.strainEnergyDensityJPerM3);
+          expect(report.availability).toBe("kernel-partial");
+          expect(report.runtimeSource).toBe("ts-fallback");
+          expect(report.storedEnergyAvailable).toBe(false);
+          expect(report.inputPowerAvailable).toBe(false);
+          expect(report.dissipatedPowerAvailable).toBe(false);
+          expect(report.outputPowerWatts).toBeNull();
+          expect(report.balance.kind).toBe("unavailable");
+          expect(
+            computePortHamiltonianEnergy("us-3633-goodyear-rubber", params, 30)
+              .strainEnergyDensityJPerM3,
+          ).toBe(report.strainEnergyDensityJPerM3);
+        }
+      }
+    }
+    const a = computePortHamiltonianEnergy("us-3633-goodyear-rubber", { sulfurPct: 4 });
+    const b = computePortHamiltonianEnergy("us-3633-goodyear-rubber", { sulfurPct: 8 });
+    expect(a.stateDigest).not.toBe(b.stateDigest);
+  });
+
+  test("Goodyear energy rejects invalid controls instead of clamping into plausible values", () => {
+    for (const params of [
+      { appliedTensileStretch: 0.99 },
+      { appliedTensileStretch: 2.51 },
+      { sulfurPct: -0.1 },
+      { sulfurPct: 30.1 },
+      { vulcanTemp: 109 },
+      { vulcanTemp: 191 },
+      { specimenTempC: -21 },
+      { specimenTempC: 101 },
+      { sulfurPct: Number.NaN },
+    ] as Record<string, number>[]) {
+      const report = computePortHamiltonianEnergy("us-3633-goodyear-rubber", params);
+      expect(report.availability).toBe("unavailable");
+      expect(report.strainEnergyDensityJPerM3).toBeUndefined();
+    }
+  });
+
+  test("Goodyear sulfur coupling uses the canonical cure temperature, including zero sulfur", () => {
+    for (const sulfurPct of [0, 4, 30]) {
+      const warm = coupleEdgesFor("us-3633-goodyear-rubber", { sulfurPct, vulcanTemp: 145 })[0];
+      const cold = coupleEdgesFor("us-3633-goodyear-rubber", { sulfurPct, vulcanTemp: 110 })[0];
+      expect(warm.gain).toBe(1 / 8);
+      expect(cold.gain).toBe(0.4 / 8);
+      expect(cold.unit).toBe("relative / %");
+    }
+  });
+
   test("Thomson contact power follows I²R without inventing stored heat or cooling losses", () => {
     for (const current of [1000, 2000, 4500, 5800, 6000]) {
       for (const pressure of [10, 35, 60]) {

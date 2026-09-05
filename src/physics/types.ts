@@ -156,7 +156,10 @@ export interface ContinuumState {
   tensileStressMpa: number; // MPa
   tensileStrainPct: number; // %
   elasticModulusGpa: number; // GPa
-  crossLinkDensityMolesPerCm3: number; // mol/cm^3
+  crossLinkDensityMolesPerCm3: number | null; // mol/cm^3; null when not calibrated
+  relativeCrossLinkDensity?: number; // dimensionless teaching-model factor
+  tensileStressMeasure?: "nominal" | "cauchy";
+  strainEnergyDensityJPerM3?: number; // per undeformed volume
   stitchFrequencyHz: number; // Hz
   feedVelocityMmPs: number; // mm/s
   buoyancyLiftForceKiloNewtons: number; // kN

@@ -28,6 +28,8 @@ const MECHANICAL_HORSEPOWER_W = 745.7;
 
 /** Explicit reasons that a published record has no honest SI power-flow strip. */
 export const ENERGY_CHANNEL_OMISSION_REASONS = {
+  "us-3633-goodyear-rubber":
+    "The Goodyear teaching model supplies elastic strain energy per undeformed volume, but no specimen volume, loading rate, cure-heater power, heat capacity or hysteresis law. Energy density cannot determine a continuous power-flow partition.",
   "gb-931-arkwright-water-frame":
     "The pinned GB 931 artifact is a modern reconstruction and supplies no authenticated water head, flow rate, wheel torque, bearing friction, roller work, spindle inertia, or loss measurements from which a closed SI energy partition can be derived.",
   "gb-1306-watt-rotary-engine":
@@ -565,12 +567,7 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-3633-goodyear-rubber") {
-    const steamW = 3500;
-    return [
-      { name: "Autoclave Steam Heat", watts: steamW, tone: "in" },
-      { name: "Polymer Crosslinking Enthalpy", watts: steamW * 0.65, tone: "useful" },
-      { name: "Vessel Thermal Radiation", watts: steamW * 0.35, tone: "loss" },
-    ];
+    return [];
   }
 
   if (patentId === "us-313224-mergenthaler-linotype") {

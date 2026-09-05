@@ -1,4 +1,5 @@
 import {
+  GOODYEAR_CURE_TEMPERATURE_RANGE,
   GOODYEAR_SULFUR_RANGE,
   stepBaekelandBakelite,
   stepBellPhotophone,
@@ -3431,9 +3432,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "vulcanTemp",
         label: "Vulcanization Temperature",
-        min: 110,
-        max: 190,
-        step: 2,
+        ...GOODYEAR_CURE_TEMPERATURE_RANGE,
         defaultValue: 145,
         unit: "°C",
       },
@@ -3471,7 +3470,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         p.appliedTensileStretch ?? 1.8,
         p.specimenTempC ?? 35,
       );
-      const crossLink = rubber.crossLinkDensity.toFixed(3);
+      const crossLink = rubber.relativeCrossLinkDensity.toFixed(3);
       const tensilePsi = rubber.tensileStrengthPsi;
       const returnPct = rubber.elasticReturnPct;
 
@@ -3495,13 +3494,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
             "Illustrative Arrhenius-shaped sulfur-cure response normalized at 145 °C and 8% sulfur; not a value printed in US 3,633.",
         },
         {
-          label: "Cross-Link Density (Model)",
+          label: "Relative Crosslinks (Model)",
           value: crossLink,
-          unit: "mol/cm³",
+          unit: "relative",
           badgeColor: "emerald",
           progressPct: clampProgress((Number(crossLink) / 1.5) * 100),
           provenance: "scenario-modern",
-          provenanceCitation: "Modern sulfur crosslink kinetics model.",
+          provenanceCitation:
+            "Dimensionless factor relative to 145 °C, 8% sulfur and a declared 30-minute cure; not a molar concentration.",
         },
         {
           label: "Tensile Strength (Model)",
@@ -3528,11 +3528,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           provenance: "scenario-modern",
         },
         {
-          label: "True Stress (Model)",
-          value: `${rubber.trueStressMpa}`,
+          label: "Strain Energy Density (Model)",
+          value: (rubber.strainEnergyDensityJPerM3 / 1e6).toFixed(3),
+          unit: "MJ/m³",
+          badgeColor: "amber",
+          provenance: "scenario-modern",
+          provenanceCitation:
+            "Integral of the displayed nominal-stress law per undeformed volume. Illustrative coefficient; no specimen volume or loading-rate assumption.",
+        },
+        {
+          label: "Nominal Stress (Model)",
+          value: `${rubber.nominalStressMpa}`,
           unit: "MPa",
           badgeColor: "indigo",
-          progressPct: Math.min(100, (rubber.trueStressMpa / 30) * 100),
+          progressPct: Math.min(100, (rubber.nominalStressMpa / 30) * 100),
           provenance: "scenario-modern",
         },
       ];

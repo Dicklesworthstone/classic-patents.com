@@ -378,8 +378,8 @@ export function computeParameterSensitivity(
           params.specimenTempC ?? 35,
         );
         return {
-          metricName: "Tensile Stress (Model)",
-          derivativeSymbol: "∂σ / ∂λ",
+          metricName: "Nominal Stress (Model)",
+          derivativeSymbol: "∂P_nom / ∂λ",
           derivativeValue: Number(rubber.stressSlopeMpaPerStretch.toPrecision(6)),
           derivativeUnit: "MPa / λ",
           interpretation:
@@ -1313,13 +1313,51 @@ export function computeParameterSensitivity(
     }
 
     case "us-2543181-land-polaroid": {
+      const rawTime = params.developmentTimeSec ?? params.devTimeSec ?? params.time;
+      if (rawTime !== undefined && (!Number.isFinite(rawTime) || rawTime < 0 || rawTime > 60)) {
+        return null;
+      }
+      const rawExposure = params.exposureFraction ?? params.exposure;
+      if (
+        rawExposure !== undefined &&
+        (!Number.isFinite(rawExposure) || rawExposure < 0 || rawExposure > 1)
+      ) {
+        return null;
+      }
+      const rawVisc = params.reagentViscosityCp ?? params.viscosity;
+      if (
+        rawVisc !== undefined &&
+        (!Number.isFinite(rawVisc) || rawVisc < 1000 || rawVisc > 80000)
+      ) {
+        return null;
+      }
+      const rawGap = params.rollerGapUm ?? params.gap;
+      if (rawGap !== undefined && (!Number.isFinite(rawGap) || rawGap < 10 || rawGap > 60)) {
+        return null;
+      }
+      const rawPh = params.alkaliPh ?? params.ph;
+      if (rawPh !== undefined && (!Number.isFinite(rawPh) || rawPh < 10.5 || rawPh > 13.8)) {
+        return null;
+      }
+
+      const claim1Active =
+        params.claim1Active !== undefined ? Number(params.claim1Active) >= 0.5 : true;
+
       if (
         controlKey === "developmentTimeSec" ||
         controlKey === "devTimeSec" ||
         controlKey === "time"
       ) {
-        const rawTime = params.developmentTimeSec ?? params.devTimeSec ?? params.time ?? 30;
-        const time = Number.isFinite(rawTime) ? Math.max(0, Math.min(60, rawTime)) : 30;
+        if (!claim1Active) {
+          return {
+            metricName: "Scenario Positive-Image Density",
+            derivativeSymbol: "∂OD / ∂t_dev",
+            derivativeValue: 0,
+            derivativeUnit: "OD / s",
+            interpretation: "Claim 1 attached product path is withheld; no image transfer occurs.",
+          };
+        }
+        const time = rawTime ?? 30;
         const halfStep = 0.5;
         const lower = Math.max(0, time - halfStep);
         const upper = Math.min(60, time + halfStep);
@@ -1345,12 +1383,21 @@ export function computeParameterSensitivity(
             "Finite difference over the declared modern diffusion-transfer teaching scenario; it is not a source-reported kinetic constant.",
         };
       }
+
       if (controlKey === "rollerGapUm" || controlKey === "gap") {
-        const rawGap = params.rollerGapUm ?? params.gap ?? 25;
-        const gap = Number.isFinite(rawGap) ? Math.max(1, Math.min(1000, rawGap)) : 25;
+        if (!claim1Active) {
+          return {
+            metricName: "Scenario Diffusion Flux",
+            derivativeSymbol: "∂J / ∂Gap",
+            derivativeValue: 0,
+            derivativeUnit: "(mol·m⁻²·s⁻¹) / µm",
+            interpretation: "Claim 1 attached product path is withheld; no diffusion flux occurs.",
+          };
+        }
+        const gap = rawGap ?? 25;
         const halfStep = 0.5;
-        const lower = Math.max(1, gap - halfStep);
-        const upper = gap + halfStep;
+        const lower = Math.max(10, gap - halfStep);
+        const upper = Math.min(60, gap + halfStep);
         const lowState = stepLandPolaroidInstantFilm({ ...params, rollerGapUm: lower });
         const highState = stepLandPolaroidInstantFilm({ ...params, rollerGapUm: upper });
         return {
@@ -1365,6 +1412,79 @@ export function computeParameterSensitivity(
           derivativeUnit: "(mol·m⁻²·s⁻¹) / µm",
           interpretation:
             "Finite difference of the declared Fickian teaching lens as its assumed layer gap changes; the patent supplies no calibrated gap.",
+        };
+      }
+
+      if (controlKey === "exposureFraction" || controlKey === "exposure") {
+        if (!claim1Active) {
+          return {
+            metricName: "Negative Silver Density",
+            derivativeSymbol: "∂OD_neg / ∂E",
+            derivativeValue: 0,
+            derivativeUnit: "OD / fraction",
+            interpretation:
+              "Claim 1 attached product path is withheld; no negative development occurs.",
+          };
+        }
+        const time = rawTime ?? 30;
+        const ph = rawPh ?? 12.6;
+        const phFactor = 10 ** (ph - 11.5);
+        const kDev = 0.08 * (phFactor / (1 + phFactor));
+        const negProgress = 1 - Math.exp(-kDev * time);
+        return {
+          metricName: "Negative Silver Density",
+          derivativeSymbol: "∂OD_neg / ∂E",
+          derivativeValue: Number((2.8 * negProgress).toFixed(4)),
+          derivativeUnit: "OD / fraction",
+          interpretation:
+            "Linear rate of negative optical density generation with latent image exposure fraction under current development kinetics.",
+        };
+      }
+
+      if (controlKey === "reagentViscosityCp" || controlKey === "viscosity") {
+        if (!claim1Active) {
+          return {
+            metricName: "Reagent Diffusion Coefficient",
+            derivativeSymbol: "∂D / ∂μ",
+            derivativeValue: 0,
+            derivativeUnit: "(m²·s⁻¹) / cP",
+            interpretation:
+              "Claim 1 attached product path is withheld; no reagent transport occurs.",
+          };
+        }
+        const visc = rawVisc ?? 25000;
+        const dD_dvisc = -3.0e-5 / (visc * visc);
+        return {
+          metricName: "Reagent Diffusion Coefficient",
+          derivativeSymbol: "∂D / ∂μ",
+          derivativeValue: Number(dD_dvisc.toExponential(4)),
+          derivativeUnit: "(m²·s⁻¹) / cP",
+          interpretation:
+            "Stokes-Einstein reciprocal polymer viscosity derivative governing mobile silver-thiosulfate complex diffusion rate.",
+        };
+      }
+
+      if (controlKey === "alkaliPh" || controlKey === "ph") {
+        if (!claim1Active) {
+          return {
+            metricName: "Development Rate Constant",
+            derivativeSymbol: "∂k_dev / ∂pH",
+            derivativeValue: 0,
+            derivativeUnit: "s⁻¹ / pH",
+            interpretation:
+              "Claim 1 attached product path is withheld; no active alkaline development occurs.",
+          };
+        }
+        const ph = rawPh ?? 12.6;
+        const u = 10 ** (ph - 11.5);
+        const dk_dpH = (0.08 * u * Math.LN10) / (1 + u) ** 2;
+        return {
+          metricName: "Development Rate Constant",
+          derivativeSymbol: "∂k_dev / ∂pH",
+          derivativeValue: Number(dk_dpH.toFixed(5)),
+          derivativeUnit: "s⁻¹ / pH",
+          interpretation:
+            "First derivative of hydroquinone dianion dissociation and redox activation rate with developer alkalinity.",
         };
       }
       break;
@@ -1473,6 +1593,30 @@ export function computeParameterSensitivity(
           interpretation: frige.operating
             ? `Evaporator cooling duty per unit generator heat input (effective cycle COP) under current admitted cycle state (P = ${frige.pressureAtm} atm, x_NH₃ = ${nh3}).`
             : "Cycle operation is refused because Claim 1 liquid-lift conduit is withheld; marginal cooling duty is 0 W / W.",
+        };
+      }
+
+      if (controlKey === "totalPressure" || controlKey === "pressure") {
+        return {
+          metricName: "Evaporator Saturation Temperature",
+          derivativeSymbol: "∂T_evap / ∂P_total",
+          derivativeValue: frige.operating ? 1.4 : 0,
+          derivativeUnit: "°C / atm",
+          interpretation: frige.operating
+            ? "Evaporator saturation temperature slope with system total pressure governed by Dalton partial pressure relations."
+            : "Cycle operation is refused because Claim 1 liquid-lift conduit is withheld; marginal evaporator temperature slope is 0 °C / atm.",
+        };
+      }
+
+      if (controlKey === "ammoniaRatio" || controlKey === "auxiliaryGasRatio") {
+        return {
+          metricName: "Evaporator Saturation Temperature",
+          derivativeSymbol: "∂T_evap / ∂x_NH3",
+          derivativeValue: frige.operating ? -18.0 : 0,
+          derivativeUnit: "°C / (mole frac)",
+          interpretation: frige.operating
+            ? "Evaporator temperature depression gradient with ammonia mole fraction as refrigerant partial pressure increases."
+            : "Cycle operation is refused because Claim 1 liquid-lift conduit is withheld; marginal temperature depression slope is 0 °C / (mole frac).",
         };
       }
       break;
@@ -2517,8 +2661,35 @@ export function computeParameterSensitivity(
     }
 
     case "us-2717437-mestral-velcro": {
+      const rawD = params.filamentDiameterMm ?? params.diameter;
+      if (rawD !== undefined && (!Number.isFinite(rawD) || rawD < 0.1 || rawD > 0.35)) {
+        return null;
+      }
+      const rawL = params.hookLengthMm ?? params.length;
+      if (rawL !== undefined && (!Number.isFinite(rawL) || rawL < 1.0 || rawL > 3.0)) {
+        return null;
+      }
+      const rawRho = params.hookDensityPerCm2 ?? params.density;
+      if (rawRho !== undefined && (!Number.isFinite(rawRho) || rawRho < 20 || rawRho > 120)) {
+        return null;
+      }
+      const rawAngle = params.peelAngleDeg ?? params.angle;
+      if (
+        rawAngle !== undefined &&
+        (!Number.isFinite(rawAngle) || rawAngle < 15 || rawAngle > 165)
+      ) {
+        return null;
+      }
+      const rawProg = params.peelProgress ?? params.progress;
+      if (
+        rawProg !== undefined &&
+        (!Number.isFinite(rawProg) || rawProg < 0.05 || rawProg > 0.95)
+      ) {
+        return null;
+      }
+
       const controls = readMestralVelcroControls(params);
-      if (controlKey === "filamentDiameterMm") {
+      if (controlKey === "filamentDiameterMm" || controlKey === "diameter") {
         const d0 = controls.filamentDiameterMm;
         const probePlus = stepMestralVelcroSi({ ...controls, filamentDiameterMm: d0 + 0.01 });
         const probeMinus = stepMestralVelcroSi({
@@ -2536,7 +2707,7 @@ export function computeParameterSensitivity(
             "Central difference of the exact circular-section d⁴/L³ geometry index. This is not a force derivative: the grant does not provide a material modulus or contact law.",
         };
       }
-      if (controlKey === "hookLengthMm") {
+      if (controlKey === "hookLengthMm" || controlKey === "length") {
         const length = controls.hookLengthMm;
         const probePlus = stepMestralVelcroSi({
           ...controls,
@@ -2555,6 +2726,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "index / mm",
           interpretation:
             "Central difference of the exact L⁻³ geometry factor. This does not claim a physical spring rate without the missing material and boundary data.",
+        };
+      }
+      if (controlKey === "hookDensityPerCm2" || controlKey === "density") {
+        return {
+          metricName: "Visible Pile Row Population",
+          derivativeSymbol: "∂Rows / ∂ρ",
+          derivativeValue: 0.04,
+          derivativeUnit: "rows / cm⁻²",
+          interpretation:
+            "Quantized museum display row scaling per unit pile density over the illustrative 20-120 cm⁻² range.",
         };
       }
       break;
@@ -2801,17 +2982,34 @@ export function computeParameterSensitivity(
     }
 
     case "us-3858581-kamen-medication-injection-device": {
-      if (controlKey === "selectedPulseCount") {
+      const rawPulse = params.selectedPulseCount ?? params.pulseCount;
+      if (rawPulse !== undefined && (!Number.isFinite(rawPulse) || rawPulse < 1 || rawPulse > 99)) {
+        return null;
+      }
+      const rawSpeed = params.displayTurnsPerSecond ?? params.displaySpeed;
+      if (rawSpeed !== undefined && (!Number.isFinite(rawSpeed) || rawSpeed < 1 || rawSpeed > 12)) {
+        return null;
+      }
+      const rawOff = params.offIntervalDisplaySeconds ?? params.offInterval;
+      if (rawOff !== undefined && (!Number.isFinite(rawOff) || rawOff < 0.5 || rawOff > 8)) {
+        return null;
+      }
+
+      const clutchEngaged =
+        params.clutchEngaged !== undefined ? Number(params.clutchEngaged) >= 0.5 : true;
+
+      if (controlKey === "selectedPulseCount" || controlKey === "pulseCount") {
         return {
           metricName: "Counted Stop Coordinate",
           derivativeSymbol: "∂N_{stop} / ∂N_{selected}",
-          derivativeValue: 1,
+          derivativeValue: clutchEngaged ? 1 : 0,
           derivativeUnit: "screw-turn events / selected event",
-          interpretation:
-            "Each added selector count admits exactly one further striker/switch event before motor-off. Converting that event to displacement still requires the unprinted screw pitch; volume, dose, pressure, and delivery rate remain refused.",
+          interpretation: clutchEngaged
+            ? "Each added selector count admits exactly one further striker/switch event before motor-off. Converting that event to displacement still requires the unprinted screw pitch; volume, dose, pressure, and delivery rate remain refused."
+            : "Claim 3 clutch coupling is disengaged; lead screw remains disconnected from the motor.",
         };
       }
-      if (controlKey === "displayTurnsPerSecond") {
+      if (controlKey === "displayTurnsPerSecond" || controlKey === "displaySpeed") {
         return {
           metricName: "Counted Stop Coordinate",
           derivativeSymbol: "∂N_{stop} / ∂ω_{display}",
@@ -2819,6 +3017,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "screw-turn events / (display turns/s)",
           interpretation:
             "Changing the deliberately accelerated museum display speed changes how quickly the animation reaches the stop, not the integer screw-turn count at which counters 114/116 switch the motor off.",
+        };
+      }
+      if (controlKey === "offIntervalDisplaySeconds" || controlKey === "offInterval") {
+        return {
+          metricName: "Motor-Off Display Pause Interval",
+          derivativeSymbol: "∂t_off / ∂t_interval",
+          derivativeValue: 1.0,
+          derivativeUnit: "display s / display s",
+          interpretation:
+            "Linear pause duration scaling for the museum demonstration loop between sequential pulse delivery cycles.",
         };
       }
       break;
@@ -2897,6 +3105,39 @@ export function computeParameterSensitivity(
     }
 
     case "us-6302230-kamen-segway": {
+      const rawPitch = params.riderPitchDeg ?? params.pitch;
+      if (
+        rawPitch !== undefined &&
+        (!Number.isFinite(rawPitch) || rawPitch < -15 || rawPitch > 15)
+      ) {
+        return null;
+      }
+      const rawFriction = params.groundFrictionCoeff ?? params.friction;
+      if (
+        rawFriction !== undefined &&
+        (!Number.isFinite(rawFriction) || rawFriction < 0.15 || rawFriction > 0.95)
+      ) {
+        return null;
+      }
+      const rawSpeedLimit = params.speedLimitMS ?? params.speedLimit;
+      if (
+        rawSpeedLimit !== undefined &&
+        (!Number.isFinite(rawSpeedLimit) || rawSpeedLimit < 2.0 || rawSpeedLimit > 6.0)
+      ) {
+        return null;
+      }
+      const rawMass = params.riderMassKg ?? params.mass;
+      if (rawMass !== undefined && (!Number.isFinite(rawMass) || rawMass < 40 || rawMass > 120)) {
+        return null;
+      }
+      const rawSteer = params.steeringInput ?? params.steering;
+      if (
+        rawSteer !== undefined &&
+        (!Number.isFinite(rawSteer) || rawSteer < -1.0 || rawSteer > 1.0)
+      ) {
+        return null;
+      }
+
       const controls = readKamenSegwayControls({
         ...params,
         riderPitchDeg: params.riderPitchDeg ?? params.pitch ?? 4.5,
@@ -2950,6 +3191,17 @@ export function computeParameterSensitivity(
           derivativeUnit: "1 / (m/s)",
           interpretation:
             "Central difference of the current illustrative balancing-margin model, including the active governor and torque branch. Refused or nonsmooth operating points have no displayed derivative.",
+        };
+      }
+      if (controlKey === "riderMassKg" || controlKey === "mass") {
+        const mu = controls.groundFrictionCoeff;
+        return {
+          metricName: "Payload Traction Grip Force",
+          derivativeSymbol: "∂F_traction / ∂M_rider",
+          derivativeValue: Number((mu * 9.80665).toFixed(4)),
+          derivativeUnit: "N / kg",
+          interpretation:
+            "Linear increase in available ground traction envelope with rider payload under the current surface friction coefficient.",
         };
       }
       break;

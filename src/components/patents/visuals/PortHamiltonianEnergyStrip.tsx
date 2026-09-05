@@ -23,6 +23,12 @@ function formatWatts(watts: number) {
   return `${watts.toFixed(1)} W`;
 }
 
+function formatEnergyDensity(joulesPerM3: number) {
+  if (joulesPerM3 >= 1e6) return `${(joulesPerM3 / 1e6).toFixed(2)} MJ/m³`;
+  if (joulesPerM3 >= 1e3) return `${(joulesPerM3 / 1e3).toFixed(1)} kJ/m³`;
+  return `${joulesPerM3.toFixed(1)} J/m³`;
+}
+
 export const PortHamiltonianEnergyStrip: React.FC<PortHamiltonianEnergyStripProps> = ({
   patentId,
   params,
@@ -35,6 +41,7 @@ export const PortHamiltonianEnergyStrip: React.FC<PortHamiltonianEnergyStripProp
     <div
       data-energy-availability={ledger.availability}
       data-energy-runtime={ledger.runtimeSource}
+      data-strain-energy-density-j-per-m3={ledger.strainEnergyDensityJPerM3}
       className={`grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-between gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 bg-parchment-100/90 dark:bg-ink-950/90 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 text-[10px] sm:text-[11px] font-mono text-ink-800 dark:text-parchment-200 shadow-xs ${className}`}
     >
       {ledger.availability === "unavailable" ? (
@@ -43,6 +50,20 @@ export const PortHamiltonianEnergyStrip: React.FC<PortHamiltonianEnergyStripProp
         </p>
       ) : (
         <>
+          {ledger.strainEnergyDensityJPerM3 !== undefined && (
+            <div
+              className="col-span-2 flex min-w-0 flex-wrap items-center gap-1.5"
+              title={ledger.reason}
+            >
+              <Gauge className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
+              <span className="font-sans text-ink-500 dark:text-ink-400">
+                Strain energy density:
+              </span>
+              <span className="font-bold text-ink-900 dark:text-parchment-100">
+                {formatEnergyDensity(ledger.strainEnergyDensityJPerM3)}
+              </span>
+            </div>
+          )}
           {/* Total Stored Energy */}
           <div className="flex items-center gap-1 sm:gap-1.5 min-w-0" title={ledger.reason}>
             <Gauge className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />

@@ -1572,4 +1572,295 @@ describe("Sensitivities follow the current admitted operating point", () => {
       ).toBeNull();
     }
   });
+
+  test("Einstein refrigerator derives total pressure and ammonia ratio saturation temperature sensitivities", () => {
+    const id = "us-1781541-einstein-refrigerator";
+    for (const press of [8, 12, 16, 20]) {
+      const sens = computeParameterSensitivity(id, "totalPressure", { totalPressure: press });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Evaporator Saturation Temperature");
+      expect(sens?.derivativeSymbol).toBe("∂T_evap / ∂P_total");
+      expect(sens?.derivativeUnit).toBe("°C / atm");
+      expect(sens?.derivativeValue).toBe(1.4);
+    }
+
+    for (const nh3 of [0.45, 0.65, 0.85]) {
+      const sens = computeParameterSensitivity(id, "ammoniaRatio", { ammoniaRatio: nh3 });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Evaporator Saturation Temperature");
+      expect(sens?.derivativeSymbol).toBe("∂T_evap / ∂x_NH3");
+      expect(sens?.derivativeUnit).toBe("°C / (mole frac)");
+      expect(sens?.derivativeValue).toBe(-18.0);
+    }
+
+    // Refusal when Claim 1 liquid-lift path is withheld
+    const withheldPress = computeParameterSensitivity(id, "totalPressure", {
+      claim1LiftPathPresent: false,
+    });
+    expect(withheldPress?.derivativeValue).toBe(0);
+    expect(withheldPress?.interpretation).toContain("withheld");
+
+    const withheldNh3 = computeParameterSensitivity(id, "ammoniaRatio", {
+      claim1LiftPathPresent: false,
+    });
+    expect(withheldNh3?.derivativeValue).toBe(0);
+    expect(withheldNh3?.interpretation).toContain("withheld");
+
+    // Invalid bounds
+    for (const invalid of [5.5, 22.5, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "totalPressure", { totalPressure: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.39, 0.91, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "ammoniaRatio", { ammoniaRatio: invalid })).toBeNull();
+    }
+  });
+
+  test("Land Polaroid instant film derives development time, gap, exposure, viscosity, and pH sensitivities", () => {
+    const id = "us-2543181-land-polaroid";
+
+    // Development time sensitivity
+    for (const t of [5, 20, 45, 55]) {
+      const sens = computeParameterSensitivity(id, "developmentTimeSec", {
+        developmentTimeSec: t,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Scenario Positive-Image Density");
+      expect(sens?.derivativeSymbol).toBe("∂OD / ∂t_dev");
+      expect(sens?.derivativeUnit).toBe("OD / s");
+      expect(sens?.derivativeValue).toBeGreaterThanOrEqual(0);
+    }
+
+    // Roller spread gap sensitivity
+    for (const gap of [15, 25, 40, 55]) {
+      const sens = computeParameterSensitivity(id, "rollerGapUm", { rollerGapUm: gap });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Scenario Diffusion Flux");
+      expect(sens?.derivativeSymbol).toBe("∂J / ∂Gap");
+      expect(sens?.derivativeUnit).toBe("(mol·m⁻²·s⁻¹) / µm");
+      expect(sens?.derivativeValue).toBeLessThanOrEqual(0);
+    }
+
+    // Exposure fraction sensitivity
+    for (const exp of [0.2, 0.5, 0.8]) {
+      const sens = computeParameterSensitivity(id, "exposureFraction", { exposureFraction: exp });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Negative Silver Density");
+      expect(sens?.derivativeSymbol).toBe("∂OD_neg / ∂E");
+      expect(sens?.derivativeUnit).toBe("OD / fraction");
+      expect(sens?.derivativeValue).toBeGreaterThan(0);
+    }
+
+    // Reagent viscosity sensitivity
+    for (const visc of [5000, 25000, 60000]) {
+      const sens = computeParameterSensitivity(id, "reagentViscosityCp", {
+        reagentViscosityCp: visc,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Reagent Diffusion Coefficient");
+      expect(sens?.derivativeSymbol).toBe("∂D / ∂μ");
+      expect(sens?.derivativeUnit).toBe("(m²·s⁻¹) / cP");
+      expect(sens?.derivativeValue).toBeLessThan(0);
+    }
+
+    // Developer pH sensitivity
+    for (const ph of [11.0, 12.0, 13.0]) {
+      const sens = computeParameterSensitivity(id, "alkaliPh", { alkaliPh: ph });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Development Rate Constant");
+      expect(sens?.derivativeSymbol).toBe("∂k_dev / ∂pH");
+      expect(sens?.derivativeUnit).toBe("s⁻¹ / pH");
+      expect(sens?.derivativeValue).toBeGreaterThan(0);
+    }
+
+    // Claim 1 withholding sets 0 slope
+    expect(
+      computeParameterSensitivity(id, "developmentTimeSec", { claim1Active: 0 })?.derivativeValue,
+    ).toBe(0);
+    expect(
+      computeParameterSensitivity(id, "exposureFraction", { claim1Active: 0 })?.derivativeValue,
+    ).toBe(0);
+
+    // Invalid parameters
+    for (const invalid of [-1, 61, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "developmentTimeSec", { developmentTimeSec: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "exposureFraction", { exposureFraction: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [999, 80001, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "reagentViscosityCp", { reagentViscosityCp: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [9, 61, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "rollerGapUm", { rollerGapUm: invalid })).toBeNull();
+    }
+    for (const invalid of [10.4, 13.9, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "alkaliPh", { alkaliPh: invalid })).toBeNull();
+    }
+  });
+
+  test("Mestral Velcro derives filament geometry and pile density sensitivities", () => {
+    const id = "us-2717437-mestral-velcro";
+
+    for (const d of [0.15, 0.22, 0.32]) {
+      const sens = computeParameterSensitivity(id, "filamentDiameterMm", { filamentDiameterMm: d });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Relative Bending Geometry");
+      expect(sens?.derivativeSymbol).toBe("∂K_geometry,rel / ∂d");
+      expect(sens?.derivativeUnit).toBe("index / mm");
+      expect(sens?.derivativeValue).toBeGreaterThan(0);
+    }
+
+    for (const l of [1.2, 2.0, 2.8]) {
+      const sens = computeParameterSensitivity(id, "hookLengthMm", { hookLengthMm: l });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Relative Bending Geometry");
+      expect(sens?.derivativeSymbol).toBe("∂K_geometry,rel / ∂L");
+      expect(sens?.derivativeUnit).toBe("index / mm");
+      expect(sens?.derivativeValue).toBeLessThan(0);
+    }
+
+    for (const rho of [30, 60, 100]) {
+      const sens = computeParameterSensitivity(id, "hookDensityPerCm2", { hookDensityPerCm2: rho });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Visible Pile Row Population");
+      expect(sens?.derivativeSymbol).toBe("∂Rows / ∂ρ");
+      expect(sens?.derivativeUnit).toBe("rows / cm⁻²");
+      expect(sens?.derivativeValue).toBe(0.04);
+    }
+
+    // Invalid parameters
+    for (const invalid of [0.09, 0.36, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "filamentDiameterMm", { filamentDiameterMm: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.9, 3.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "hookLengthMm", { hookLengthMm: invalid })).toBeNull();
+    }
+    for (const invalid of [19, 121, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "hookDensityPerCm2", { hookDensityPerCm2: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [14, 166, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "peelAngleDeg", { peelAngleDeg: invalid })).toBeNull();
+    }
+    for (const invalid of [0.04, 0.96, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "peelProgress", { peelProgress: invalid })).toBeNull();
+    }
+  });
+
+  test("Kamen injection device derives counted stop coordinate and motor-off pause sensitivities", () => {
+    const id = "us-3858581-kamen-medication-injection-device";
+
+    for (const pulse of [5, 27, 80]) {
+      const sens = computeParameterSensitivity(id, "selectedPulseCount", {
+        selectedPulseCount: pulse,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Counted Stop Coordinate");
+      expect(sens?.derivativeSymbol).toBe("∂N_{stop} / ∂N_{selected}");
+      expect(sens?.derivativeUnit).toBe("screw-turn events / selected event");
+      expect(sens?.derivativeValue).toBe(1);
+    }
+
+    for (const speed of [2, 6, 11]) {
+      const sens = computeParameterSensitivity(id, "displayTurnsPerSecond", {
+        displayTurnsPerSecond: speed,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Counted Stop Coordinate");
+      expect(sens?.derivativeSymbol).toBe("∂N_{stop} / ∂ω_{display}");
+      expect(sens?.derivativeUnit).toBe("screw-turn events / (display turns/s)");
+      expect(sens?.derivativeValue).toBe(0);
+    }
+
+    for (const off of [1.0, 2.5, 6.0]) {
+      const sens = computeParameterSensitivity(id, "offIntervalDisplaySeconds", {
+        offIntervalDisplaySeconds: off,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Motor-Off Display Pause Interval");
+      expect(sens?.derivativeSymbol).toBe("∂t_off / ∂t_interval");
+      expect(sens?.derivativeUnit).toBe("display s / display s");
+      expect(sens?.derivativeValue).toBe(1.0);
+    }
+
+    // Claim 3 clutch disengagement stops transmission to lead screw
+    const disengagedSens = computeParameterSensitivity(id, "selectedPulseCount", {
+      clutchEngaged: 0,
+    });
+    expect(disengagedSens?.derivativeValue).toBe(0);
+    expect(disengagedSens?.interpretation).toContain("disengaged");
+
+    // Invalid parameters
+    for (const invalid of [0, 100, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "selectedPulseCount", { selectedPulseCount: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.5, 13, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "displayTurnsPerSecond", {
+          displayTurnsPerSecond: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.4, 8.5, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "offIntervalDisplaySeconds", {
+          offIntervalDisplaySeconds: invalid,
+        }),
+      ).toBeNull();
+    }
+  });
+
+  test("Kamen Segway derives rider mass traction sensitivity and enforces control domain bounds", () => {
+    const id = "us-6302230-kamen-segway";
+
+    for (const mass of [50, 75, 100]) {
+      for (const mu of [0.3, 0.6, 0.85]) {
+        const sens = computeParameterSensitivity(id, "riderMassKg", {
+          riderMassKg: mass,
+          groundFrictionCoeff: mu,
+        });
+        expect(sens).toBeDefined();
+        expect(sens?.metricName).toBe("Payload Traction Grip Force");
+        expect(sens?.derivativeSymbol).toBe("∂F_traction / ∂M_rider");
+        expect(sens?.derivativeUnit).toBe("N / kg");
+        expect(sens?.derivativeValue).toBeCloseTo(mu * 9.80665, 3);
+      }
+    }
+
+    // Invalid parameters
+    for (const invalid of [-16, 16, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "riderPitchDeg", { riderPitchDeg: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [0.14, 0.96, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "groundFrictionCoeff", { groundFrictionCoeff: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [1.9, 6.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "speedLimitMS", { speedLimitMS: invalid })).toBeNull();
+    }
+    for (const invalid of [39, 121, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "riderMassKg", { riderMassKg: invalid })).toBeNull();
+    }
+    for (const invalid of [-1.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "steeringInput", { steeringInput: invalid }),
+      ).toBeNull();
+    }
+  });
 });

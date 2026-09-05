@@ -3,6 +3,29 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { PortHamiltonianEnergyStrip } from "./PortHamiltonianEnergyStrip";
 
 describe("Energy strip evidence labels", () => {
+  test("Goodyear displays energy density without relabeling it as total or kinetic energy", () => {
+    const html = renderToStaticMarkup(
+      <PortHamiltonianEnergyStrip
+        patentId="us-3633-goodyear-rubber"
+        params={{ vulcanTemp: 145, sulfurPct: 8, appliedTensileStretch: 2 }}
+      />,
+    );
+    expect(html).toContain("Strain energy density:");
+    expect(html).toContain("19.31 MJ/m³");
+    expect(html.match(/Unknown/g)?.length).toBe(3);
+    expect(html).toContain("Balance unmeasured");
+    expect(html).not.toContain("Kinetic:");
+    expect(html).not.toContain("Steady power balanced");
+    expect(html).not.toContain("0.0 W");
+    const rest = renderToStaticMarkup(
+      <PortHamiltonianEnergyStrip
+        patentId="us-3633-goodyear-rubber"
+        params={{ appliedTensileStretch: 1 }}
+      />,
+    );
+    expect(rest).toContain("0.0 J/m³");
+    expect(rest).toContain("undeformed volume");
+  });
   test("Watt displays separate air-pump and shaft power with unknown stored energy", () => {
     const html = renderToStaticMarkup(
       <PortHamiltonianEnergyStrip patentId="gb-913-watt-separate-condenser" params={{}} />,

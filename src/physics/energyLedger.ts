@@ -7,7 +7,7 @@
  * shared steady radiative model currently provides a checked power balance.
  */
 
-import { stepThomsonWelding } from "./catalogKernels";
+import { stepGoodyearRubber, stepThomsonWelding } from "./catalogKernels";
 import { hostStateDigest } from "./deepWasm";
 import {
   EDISON_DECLARED_FILAMENT_LENGTH_CM,
@@ -44,6 +44,8 @@ export interface PortHamiltonianReport {
   dissipatedPowerWatts: number;
   /** Explicit useful output when the model supplies it; null means unavailable. */
   outputPowerWatts: number | null;
+  /** Elastic energy per undeformed volume; does not imply a known specimen volume. */
+  strainEnergyDensityJPerM3?: number;
   dissipationLabel?: string;
   /** Difference of available ports only; incomplete ports cannot determine dH/dt. */
   netPowerRateWatts: number;
@@ -70,6 +72,7 @@ export function computePortHamiltonianEnergy(
   let powerIn = 0;
   let dissipated = 0;
   let outputPower: number | null = null;
+  let strainEnergyDensityJPerM3: number | undefined;
   let dissipationLabel: string | undefined;
   let availability: PortHamiltonianReport["availability"] = "illustrative-snapshot";
   let runtimeSource: PortHamiltonianReport["runtimeSource"] = "host-estimate";
@@ -85,8 +88,11 @@ export function computePortHamiltonianEnergy(
   };
   const omissionReason =
     ENERGY_CHANNEL_OMISSION_REASONS[patentId as keyof typeof ENERGY_CHANNEL_OMISSION_REASONS];
+  // An unknown power partition does not erase Goodyear's modeled elastic
+  // energy density. Its branch below admits that quantity alone.
+  const hasElasticDensityModel = patentId === "us-3633-goodyear-rubber";
   if (
-    omissionReason ||
+    (omissionReason && !hasElasticDensityModel) ||
     !Number.isFinite(simTimeSec) ||
     Object.values(params).some((value) => !Number.isFinite(value))
   ) {
@@ -166,14 +172,34 @@ export function computePortHamiltonianEnergy(
 
     case "us-3633-goodyear-rubber": {
       const stretch = params.appliedTensileStretch ?? 1.8;
-      const tempC = params.vulcanTemp ?? 145.0;
-      const gModulusPa = 1.2e6; // 1.2 MPa shear modulus
-      const volumeM3 = 1.0e-4; // 100 cm^3 test strip
-      // Strain energy density W = 1/2 G (lambda^2 + 2/lambda - 3)
-      potential = 0.5 * gModulusPa * (stretch * stretch + 2.0 / stretch - 3.0) * volumeM3;
-      thermal = 0.1 * 1800.0 * (tempC + 273.15); // Heat content of rubber specimen
-      powerIn = 12.0 * stretch; // Mechanical stretching work input
-      dissipated = 0.8 * stretch; // Viscoelastic internal friction dissipation
+      const tempC = params.vulcanTemp ?? 145;
+      const sulfur = params.sulfurPct ?? 8;
+      const specimen = params.specimenTempC ?? 35;
+      if (
+        stretch < 1 ||
+        stretch > 2.5 ||
+        tempC < 110 ||
+        tempC > 190 ||
+        sulfur < 0 ||
+        sulfur > 30 ||
+        specimen < -20 ||
+        specimen > 100
+      )
+        return unavailableEnergy("Controls are outside the Goodyear teaching model's range.");
+      strainEnergyDensityJPerM3 = stepGoodyearRubber(
+        tempC,
+        sulfur,
+        30,
+        stretch,
+        specimen,
+      ).strainEnergyDensityJPerM3;
+      availability = "kernel-partial";
+      runtimeSource = "ts-fallback";
+      storedEnergyAvailable = false;
+      inputPowerAvailable = false;
+      dissipatedPowerAvailable = false;
+      reason =
+        "Elastic strain energy per undeformed volume, from the displayed nominal-stress model at the current sulfur and cure settings (30 min). The coefficient is illustrative. Specimen volume, thermal energy, loading rate and hysteresis are not supplied, so total joules and power remain unknown.";
       break;
     }
 
@@ -911,7 +937,17 @@ export function computePortHamiltonianEnergy(
   const totalH = kinetic + potential + em + thermal;
   const netPower = powerIn - dissipated - (outputPower ?? 0);
   if (
-    ![kinetic, potential, em, thermal, powerIn, dissipated, totalH, netPower].every(Number.isFinite)
+    ![
+      kinetic,
+      potential,
+      em,
+      thermal,
+      powerIn,
+      dissipated,
+      totalH,
+      netPower,
+      strainEnergyDensityJPerM3 ?? 0,
+    ].every(Number.isFinite)
   )
     return unavailableEnergy("The energy calculation produced a non-finite quantity.");
   if (availability === "illustrative-snapshot" && totalH === 0 && powerIn === 0 && dissipated === 0)
@@ -927,6 +963,7 @@ export function computePortHamiltonianEnergy(
     netPower,
     simTimeSec,
     ...(outputPower === null ? [] : [outputPower]),
+    ...(strainEnergyDensityJPerM3 === undefined ? [] : [strainEnergyDensityJPerM3]),
   ]);
 
   return {
@@ -947,6 +984,7 @@ export function computePortHamiltonianEnergy(
     inputPowerWatts: Number(powerIn.toFixed(1)),
     dissipatedPowerWatts: Number(dissipated.toFixed(1)),
     outputPowerWatts: outputPower === null ? null : Number(outputPower.toFixed(1)),
+    ...(strainEnergyDensityJPerM3 === undefined ? {} : { strainEnergyDensityJPerM3 }),
     ...(dissipationLabel ? { dissipationLabel } : {}),
     netPowerRateWatts: Number(netPower.toFixed(1)),
     stateDigest,
