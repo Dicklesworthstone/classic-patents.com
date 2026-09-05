@@ -10,6 +10,7 @@ import {
   WRIGHT_PATENT_ID,
 } from "@/physics/wrightKernel";
 import { soundEngine } from "@/utils/soundEngine";
+import { ControlTapeScrubber } from "./ControlTapeScrubber";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function WrightFlyerSim() {
@@ -163,6 +164,18 @@ export function WrightFlyerSim() {
           </button>
         </div>
       </div>
+
+      {/* Replay Tape & Checkpoint Scrubber */}
+      <ControlTapeScrubber
+        patentId={WRIGHT_PATENT_ID}
+        modelIdentity="wrightKernel.ts@v1"
+        currentParams={params}
+        onApplyParams={(newParams) => {
+          for (const [key, val] of Object.entries(newParams)) {
+            updateParam(key, val);
+          }
+        }}
+      />
 
       {/* Aerodynamic Visualizer Canvas & Flight Vehicle */}
       <div className="flex flex-col items-center justify-center rounded-2xl bg-ink-950 p-6 border border-parchment-200 dark:border-ink-800 relative min-h-[360px] overflow-hidden">

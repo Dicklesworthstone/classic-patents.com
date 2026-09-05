@@ -6,6 +6,7 @@ import { readLamarrRuntimeControls, readLamarrTapeFrame } from "@/physics/lamarr
 import { usePatentRuntimeTick } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ControlTapeScrubber } from "./ControlTapeScrubber";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -98,6 +99,18 @@ export function LamarrFrequencyHoppingSim() {
           </button>
         </div>
       </div>
+
+      {/* Replay Tape & Checkpoint Scrubber */}
+      <ControlTapeScrubber
+        patentId="us-2292387-lamarr-frequency-hopping"
+        modelIdentity="lamarrSharedKernel.ts@v1"
+        currentParams={effectiveParams}
+        onApplyParams={(newParams) => {
+          for (const [key, val] of Object.entries(newParams)) {
+            updateParam(key, val);
+          }
+        }}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 rounded-2xl bg-ink-950 p-6 border border-ink-800 space-y-5">
