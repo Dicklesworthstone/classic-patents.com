@@ -18,16 +18,114 @@ export type PhysicsDomain =
   | "materials_kinetics"
   | "optics_waves"
   | "solid_mechanics"
-  /**
-   * A deterministic, source-bounded command-decision topology. It carries no
-   * inferred material, electrical, kinematic, or energy law.
-   */
+  | "source_reading"
   | "source_bounded_command_classification";
+
+export type MetricProvenanceClassification =
+  | "source-disclosed"
+  | "source-derived"
+  | "scenario-modern"
+  | "scenario-reader"
+  | "topology-normalized"
+  | "refusal-bounded";
+
+export type RuntimeExecutionState =
+  | "cold"
+  | "loading"
+  | "WASM"
+  | "fallback"
+  | "refused"
+  | "unavailable";
 
 export interface RefusalBoundary {
   isRefused: boolean;
   reason?: string;
   divergenceMetric?: number;
+}
+
+export interface StepReceipt {
+  computingOwner: string;
+  executionState: RuntimeExecutionState;
+  tick: number;
+  computedAtMs?: number;
+  moduleLoaded?: boolean;
+  moduleStepped?: boolean;
+  outputsStepped?: readonly string[];
+  stepDurationMs?: number;
+  refusal?: RefusalBoundary;
+  error?: Error | string;
+  digest?: string;
+}
+
+export interface OutputProvenanceReceipt {
+  owner: string;
+  state: RuntimeExecutionState;
+  tick: number;
+  computedAtMs: number;
+  digest: string;
+  stepped: boolean;
+  refusalReason?: string;
+}
+
+export interface QualifiedOutputRecord {
+  outputId: string;
+  value: unknown;
+  unit: string;
+  owner: string;
+  provenance: MetricProvenanceClassification | RuntimeExecutionState;
+  tick: number;
+  digest: string;
+  governingFunction?: string;
+  fallback?: string;
+  refusal?: RefusalBoundary;
+}
+
+export interface FieldInventoryControl {
+  id: string;
+  label: string;
+  unit: string;
+  origin: MetricProvenanceClassification;
+  originCitation?: string;
+  defaultValue: number;
+  min: number;
+  max: number;
+  step: number;
+  owner: string;
+}
+
+export interface FieldInventoryOutput {
+  id: string;
+  label: string;
+  unit: string;
+  origin: MetricProvenanceClassification;
+  originCitation?: string;
+  governingFunction: string;
+  fallback: string;
+  domain: PhysicsDomain | string;
+  refusal: RefusalBoundary;
+  owner: string;
+}
+
+export interface PatentFieldInventory {
+  patentId: string;
+  domain: string;
+  domainTitle: string;
+  equationName: string;
+  governingEquation: string;
+  engineMethod: string;
+  controls: readonly FieldInventoryControl[];
+  outputs: readonly FieldInventoryOutput[];
+  runtimeOwner: {
+    wasmSurface: string;
+    sourceCrate?: string;
+    actualComputingOwner: string;
+    fallbackComputingOwner: string;
+    refusal: RefusalBoundary;
+  };
+  energyChannels?: {
+    hasEnergyChannels: boolean;
+    omissionReason?: string;
+  };
 }
 
 // 1. Aerodynamics & 6-DoF Multi-Body Dynamics
@@ -265,4 +363,6 @@ export interface UniversalPatentPhysicsTelemetry {
   video?: VideoElectronicsState;
   network?: NetworkElectrodynamicsState;
   raster?: ElectronOpticsRasterState;
+  qualifiedOutputs?: Record<string, QualifiedOutputRecord>;
+  outputReceipts?: Record<string, OutputProvenanceReceipt>;
 }

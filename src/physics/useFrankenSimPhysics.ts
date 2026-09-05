@@ -3,7 +3,12 @@
 import { useCallback, useLayoutEffect, useRef, useSyncExternalStore } from "react";
 import { FrankenSimEngine } from "./engine";
 import { TickScheduler } from "./tickScheduler";
-import type { UniversalPatentPhysicsTelemetry } from "./types";
+import type {
+  RefusalBoundary,
+  RuntimeExecutionState,
+  StepReceipt,
+  UniversalPatentPhysicsTelemetry,
+} from "./types";
 
 export type Provenance = "WASM" | "TS_FALLBACK" | "HONEST_PLACEHOLDER";
 
@@ -51,6 +56,134 @@ export function telemetryDigest(telemetry: UniversalPatentPhysicsTelemetry): str
     hash = Math.imul(hash, 0x01000193);
   }
   return (hash >>> 0).toString(16).padStart(8, "0");
+}
+
+/**
+ * Stable FNV-1a digest over an individual qualified output record.
+ * Guarantees that borrowed or forged digests across outputs or owners are detected.
+ */
+export function computeOutputDigest(
+  outputId: string,
+  value: unknown,
+  owner: string,
+  tick: number,
+): string {
+  const json = JSON.stringify({
+    outputId,
+    value: canonicalizeTelemetry(value),
+    owner,
+    tick,
+  });
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < json.length; i++) {
+    hash ^= json.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
+}
+
+/**
+ * Truthfully derives runtime execution state from receipts.
+ * A module loaded without stepping cannot promote the label;
+ * a stepped adjunct cannot promote unrelated host outputs.
+ */
+export function deriveRuntimeExecutionState(options: {
+  tick: number;
+  declaredProvenance?: Provenance;
+  receipt?: StepReceipt;
+  refusal?: RefusalBoundary;
+  isWasmLoaded?: boolean;
+}): RuntimeExecutionState {
+  if (options.tick === 0) return "cold";
+  if (options.refusal?.isRefused || options.receipt?.refusal?.isRefused) return "refused";
+  if (options.receipt?.error) return "unavailable";
+
+  const isWasmCrate = options.receipt?.computingOwner.endsWith("-wasm");
+  const claimsWasm = options.declaredProvenance === "WASM" || isWasmCrate;
+
+  if (claimsWasm) {
+    // Loaded without stepping: CANNOT promote to WASM!
+    if (options.receipt && !options.receipt.moduleStepped) {
+      return options.receipt.moduleLoaded ? "fallback" : "unavailable";
+    }
+    if (options.isWasmLoaded && !options.receipt?.moduleStepped) {
+      return "fallback";
+    }
+    if (options.receipt?.moduleStepped) {
+      return "WASM";
+    }
+    return "fallback";
+  }
+
+  if (options.isWasmLoaded && !options.receipt?.moduleStepped) {
+    return "fallback";
+  }
+
+  return "fallback";
+}
+
+export interface EnvelopeValidationResult {
+  valid: boolean;
+  violations: string[];
+}
+
+/**
+ * Validates qualified outputs within a transport envelope.
+ * Forbids mixed ticks, stale incompatible states, borrowed digests, and unproven WASM promotion.
+ */
+export function validateEnvelopeOutputs(
+  telemetry: UniversalPatentPhysicsTelemetry,
+  expectedTick: number,
+): EnvelopeValidationResult {
+  const violations: string[] = [];
+  if (!telemetry.qualifiedOutputs) {
+    return { valid: true, violations: [] };
+  }
+
+  for (const [key, out] of Object.entries(telemetry.qualifiedOutputs)) {
+    // 1. Forbid mixed ticks
+    if (out.tick !== expectedTick) {
+      violations.push(
+        `Mixed tick detected for output '${key}': expected tick ${expectedTick}, found ${out.tick}`,
+      );
+    }
+
+    // 2. Forbid borrowed or forged digests
+    const expectedDigest = computeOutputDigest(out.outputId, out.value, out.owner, out.tick);
+    if (out.digest !== expectedDigest) {
+      violations.push(
+        `Borrowed or forged digest detected for output '${key}': claimed ${out.digest}, computed ${expectedDigest}`,
+      );
+    }
+
+    // 3. Forbid unproven WASM promotion
+    if (out.provenance === "WASM") {
+      const isWasmOwner = out.owner.endsWith("-wasm") || out.owner.startsWith("fs-");
+      if (!isWasmOwner) {
+        violations.push(
+          `Forged WASM provenance on non-WASM owner '${out.owner}' for output '${key}'`,
+        );
+      }
+    }
+  }
+
+  return {
+    valid: violations.length === 0,
+    violations,
+  };
+}
+
+/**
+ * Assert that an envelope's qualified outputs are valid, throwing on violation.
+ */
+export function assertValidEnvelopeOutputs(
+  telemetry: UniversalPatentPhysicsTelemetry,
+  expectedTick: number,
+): void {
+  const result = validateEnvelopeOutputs(telemetry, expectedTick);
+  if (!result.valid) {
+    throw new Error(`Envelope output validation failed: ${result.violations.join("; ")}`);
+  }
 }
 
 class PatentTransport {
@@ -122,6 +255,9 @@ class PatentTransport {
           timestampMs: nowMs,
           timeStepDt: this.tickS,
         };
+        if (merged.qualifiedOutputs) {
+          assertValidEnvelopeOutputs(merged, tickNo);
+        }
         this.lastFrame = {
           tick: tickNo,
           atMs: nowMs,
@@ -142,16 +278,20 @@ class PatentTransport {
     update: Partial<UniversalPatentPhysicsTelemetry>,
     provenance: Provenance,
   ) {
+    const nextTick = this.lastFrame.tick + 1;
     const merged: UniversalPatentPhysicsTelemetry = {
       ...this.lastFrame.telemetry,
       ...update,
       timestampMs: nowMs,
     };
+    if (merged.qualifiedOutputs) {
+      assertValidEnvelopeOutputs(merged, nextTick);
+    }
     const digest = telemetryDigest(merged);
     if (digest === this.lastFrame.digest && provenance === this.lastFrame.provenance) return;
 
     this.lastFrame = {
-      tick: this.lastFrame.tick + 1,
+      tick: nextTick,
       atMs: nowMs,
       digest,
       provenance,

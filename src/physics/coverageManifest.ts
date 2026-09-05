@@ -3,6 +3,14 @@ import type {
   ArchivalPublicationStateKind,
 } from "@/data/editions/archivalPublicationState";
 import type { Patent } from "@/types/patent";
+import {
+  buildFieldInventoryForPatent,
+  GENERIC_CRATE_EXPORT_AVAILABILITY,
+  getAllPatentFieldInventories,
+  KERNEL_MAPPING,
+  type PatentFieldInventory,
+  verifyFieldInventoryCompleteness,
+} from "./fieldInventory";
 
 export type WasmSurfaceKind =
   | "none"
@@ -62,6 +70,7 @@ export interface PatentCoverageRow {
     sharedBus: SharedBusParticipation;
     admittedSharedBusProvenance: readonly RuntimeProvenance[];
   };
+  fieldInventory: PatentFieldInventory;
 }
 
 export interface PatentCoverageSummary {
@@ -335,6 +344,7 @@ export function buildPatentCoverageManifest(
               ? (["WASM", "TS_FALLBACK"] as const)
               : (["TS_FALLBACK"] as const),
       },
+      fieldInventory: buildFieldInventoryForPatent(patent.id),
     };
   });
 }
@@ -368,3 +378,12 @@ export function summarizePatentCoverage(
     missingSharedBus: manifest.filter((row) => row.runtime.sharedBus === "missing").length,
   };
 }
+
+export {
+  buildFieldInventoryForPatent,
+  GENERIC_CRATE_EXPORT_AVAILABILITY,
+  getAllPatentFieldInventories,
+  KERNEL_MAPPING,
+  type PatentFieldInventory,
+  verifyFieldInventoryCompleteness,
+};

@@ -194,7 +194,7 @@ import {
   stepTownesMaserTopology,
   TOWNES_MASER_DEFAULT_CONTROLS,
 } from "./townesMaserKernel";
-
+import type { MetricProvenanceClassification } from "./types";
 import {
   readWatsonRemoteCenterComplianceControls,
   stepWatsonRemoteCenterComplianceTopology,
@@ -208,13 +208,7 @@ import {
 import { stepWattRotaryEngine } from "./wattRotaryKernel";
 import { readWrightControls, stepWrightFlyerSi, WRIGHT_COUPLING } from "./wrightKernel";
 
-export type MetricProvenanceClassification =
-  | "source-disclosed"
-  | "source-derived"
-  | "scenario-modern"
-  | "scenario-reader"
-  | "topology-normalized"
-  | "refusal-bounded";
+export type { MetricProvenanceClassification };
 
 export interface PhysicsControl {
   id: string;
