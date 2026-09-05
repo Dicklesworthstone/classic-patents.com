@@ -2,6 +2,7 @@
 
 import { Disc, Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepDeLavalSeparator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -270,38 +271,32 @@ export function DeLavalSeparatorSim() {
 
       {/* Sliders */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Rotor Bowl Rotational Speed</span>
-            <span className="font-mono">{bowlRpm} RPM</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Rotor bowl rotational speed in revolutions per minute"
-            min="2000"
-            max="9000"
-            step="250"
-            value={bowlRpm}
-            onChange={(e) => updateParam("bowlRpm", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Raw Milk Feed Rate</span>
-            <span className="font-mono">{rawMilkFlowLph} L/hr</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Raw milk feed rate in liters per hour"
-            min="100"
-            max="600"
-            step="25"
-            value={rawMilkFlowLph}
-            onChange={(e) => updateParam("rawMilkFlowLph", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="delavalBowlRpm2D"
+          patentId="us-247804-delaval-separator"
+          paramKey="bowlRpm"
+          label="Rotor Bowl Rotational Speed"
+          value={bowlRpm}
+          min={2000}
+          max={9000}
+          step={250}
+          unit="RPM"
+          onChange={(val) => updateParam("bowlRpm", val)}
+          allParams={params}
+        />
+        <SensitivitySlider
+          id="delavalRawMilkFlow2D"
+          patentId="us-247804-delaval-separator"
+          paramKey="rawMilkFlowLph"
+          label="Raw Milk Feed Rate"
+          value={rawMilkFlowLph}
+          min={100}
+          max={600}
+          step={25}
+          unit="L/hr"
+          onChange={(val) => updateParam("rawMilkFlowLph", val)}
+          allParams={params}
+        />
       </div>
     </div>
   );

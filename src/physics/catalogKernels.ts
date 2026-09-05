@@ -655,17 +655,30 @@ export function stepDeLavalSeparator(params: { bowlRpm?: number; rawMilkFlowLph?
   const rpm = params.bowlRpm ?? 6500;
   const flow = params.rawMilkFlowLph ?? 300;
   const bowlOmegaRadPerS = (rpm * 2 * Math.PI) / 60;
-  const gForce = Math.round((bowlOmegaRadPerS ** 2 * 0.1) / 9.80665);
+  const gForceUnrounded = (bowlOmegaRadPerS ** 2 * 0.1) / 9.80665;
+  const gForce = Math.round(gForceUnrounded);
+  const gForceSlopeGPerRpm = (2 * bowlOmegaRadPerS * (Math.PI / 30) * 0.1) / 9.80665;
   // 6500 rpm is a blur; 0.15 keeps the nested discs readable.
   const displaySlowdown = 0.15;
-  const creamFlowLph = Number((flow * 0.12).toFixed(1));
+  const creamFlowLphUnrounded = flow * 0.12;
+  const creamFlowLph = Number(creamFlowLphUnrounded.toFixed(1));
+  const creamYieldSlopeLphPerLph = 0.12;
+  const skimFlowLphUnrounded = flow * 0.88;
+  const skimFlowLph = Number(skimFlowLphUnrounded.toFixed(1));
+  const skimYieldSlopeLphPerLph = 0.88;
   const creamCrate = delavalCreamCrate(rpm);
   const creamDens = 1 + creamCrate.creamCrateDensity;
   return {
     gForce,
+    gForceUnrounded,
+    gForceSlopeGPerRpm,
     fatYieldPct: Math.min(99.9, Number((95 + (gForce / 5000) * 4.5).toFixed(1))),
     creamFlowLph,
-    skimFlowLph: Number((flow * 0.88).toFixed(1)),
+    creamFlowLphUnrounded,
+    creamYieldSlopeLphPerLph,
+    skimFlowLph,
+    skimFlowLphUnrounded,
+    skimYieldSlopeLphPerLph,
     creamDropAdvancePerS: Number(((creamFlowLph / 300) * 1.6 * creamDens).toFixed(3)),
     ...creamCrate,
     bowlOmegaRadPerS: Number(bowlOmegaRadPerS.toFixed(2)),
@@ -1112,15 +1125,27 @@ export function stepCorlissEngine(params: {
   // Default 25% cutoff keeps the historical IHP; earlier cutoff admits less steam.
   const mepFactor = 0.75 + cutoff;
   const crank = rpmToOmega(rpm);
-  const ihpPressureSlopeHpPerPsi = Number((rpm * 0.45 * mepFactor).toFixed(2));
-  const ihpRpmSlopeHpPerRpm = Number((psi * 0.45 * mepFactor).toFixed(2));
+  const indicatedHpUnrounded = psi * rpm * 0.45 * mepFactor;
+  const ihpPressureSlopeHpPerPsiUnrounded = rpm * 0.45 * mepFactor;
+  const ihpRpmSlopeHpPerRpmUnrounded = psi * 0.45 * mepFactor;
+  const ihpCutoffSlopeHpPerPctUnrounded = 0.0045 * psi * rpm;
+  const ihpPressureSlopeHpPerPsi = Number(ihpPressureSlopeHpPerPsiUnrounded.toFixed(2));
+  const ihpRpmSlopeHpPerRpm = Number(ihpRpmSlopeHpPerRpmUnrounded.toFixed(2));
+  const ihpCutoffSlopeHpPerPct = Number(ihpCutoffSlopeHpPerPctUnrounded.toFixed(3));
+  const thermalEfficiencyPctUnrounded = 24.5 + (0.25 - cutoff) * 12;
   const thermalEfficiencySlopePctPerPct = -0.12;
   return {
-    indicatedHp: Math.round(psi * rpm * 0.25 * 1.8 * mepFactor),
+    indicatedHp: Math.round(indicatedHpUnrounded),
+    indicatedHpUnrounded,
     ihpPressureSlopeHpPerPsi,
+    ihpPressureSlopeHpPerPsiUnrounded,
     ihpRpmSlopeHpPerRpm,
+    ihpRpmSlopeHpPerRpmUnrounded,
+    ihpCutoffSlopeHpPerPct,
+    ihpCutoffSlopeHpPerPctUnrounded,
     thermalEfficiencySlopePctPerPct,
-    thermalEfficiencyPct: Number((24.5 + (0.25 - cutoff) * 12).toFixed(1)),
+    thermalEfficiencyPct: Number(thermalEfficiencyPctUnrounded.toFixed(1)),
+    thermalEfficiencyPctUnrounded,
     boilerMpa: Number((psi * 0.00689476).toFixed(2)),
     expansionRatio: Number((1 / Math.max(0.05, cutoff)).toFixed(1)),
     crankOmegaRadPerS: crank.omegaRadPerS,

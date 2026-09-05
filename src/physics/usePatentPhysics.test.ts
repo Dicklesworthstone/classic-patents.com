@@ -127,6 +127,72 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
     }
   });
 
+  test("Corliss aliases (pressure, rpm, cutoff) update canonical controls and notify subscribers", () => {
+    const id = "us-6162-corliss-steam-engine";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.steamPressurePsi),
+    );
+    try {
+      setPatentPhysicsParam(id, "pressure", 140);
+      const params = getPatentPhysicsParams(id);
+      expect(params.steamPressurePsi).toBe(140);
+      expect(params.boilerPressure).toBe(140);
+      expect(params.pressure).toBe(140);
+      expect(observations).toEqual([140]);
+      expect(getLastParamChange(id)?.id).toBe("steamPressurePsi");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((metric) => metric.label === "Indicated Horsepower")?.value).not.toBe(
+        initial.find((metric) => metric.label === "Indicated Horsepower")?.value,
+      );
+
+      setPatentPhysicsParam(id, "rpm", 90);
+      expect(getPatentPhysicsParams(id).engineRpm).toBe(90);
+      expect(getPatentPhysicsParams(id).rpm).toBe(90);
+
+      setPatentPhysicsParam(id, "cutoff", 40);
+      expect(getPatentPhysicsParams(id).cutoffPct).toBe(40);
+      expect(getPatentPhysicsParams(id).cutoff).toBe(40);
+      expect(getPatentPhysicsParams(id).cutoffPercentage).toBe(40);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("DeLaval aliases (rpm, rotorRpm, flow, feedRateLph) update canonical controls and notify subscribers", () => {
+    const id = "us-247804-delaval-separator";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) => observations.push(params.bowlRpm));
+    try {
+      setPatentPhysicsParam(id, "rpm", 8000);
+      const params = getPatentPhysicsParams(id);
+      expect(params.bowlRpm).toBe(8000);
+      expect(params.rotorRpm).toBe(8000);
+      expect(params.rpm).toBe(8000);
+      expect(observations).toEqual([8000]);
+      expect(getLastParamChange(id)?.id).toBe("bowlRpm");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((metric) => metric.label === "Centrifugal G-Force")?.value).not.toBe(
+        initial.find((metric) => metric.label === "Centrifugal G-Force")?.value,
+      );
+
+      setPatentPhysicsParam(id, "flow", 450);
+      expect(getPatentPhysicsParams(id).rawMilkFlowLph).toBe(450);
+      expect(getPatentPhysicsParams(id).flow).toBe(450);
+      expect(getPatentPhysicsParams(id).feedRateLph).toBe(450);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
   test("shares claim state across subscribers while retaining raw controls and deriving effective topology", () => {
     const goertzId = "us-2846084-goertz-electronic-master-slave-manipulator";
     resetPatentPhysicsParams(goertzId);

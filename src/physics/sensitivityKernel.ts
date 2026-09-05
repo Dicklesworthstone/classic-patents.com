@@ -13,6 +13,7 @@
 import {
   stepBellTelephone,
   stepCorlissEngine,
+  stepDeLavalSeparator,
   stepEinsteinRefrigerator,
   stepEngelbartMouse,
   stepEricssonPropeller,
@@ -1518,12 +1519,12 @@ export function computeParameterSensitivity(
     }
 
     case "us-247804-delaval-separator": {
-      const rpm = params.bowlRpm ?? params.rpm ?? 6500;
-      const flow = params.rawMilkFlowLph ?? params.flow ?? 300;
+      const rpm = params.bowlRpm ?? params.rotorRpm ?? params.rpm ?? 6500;
+      const flow = params.rawMilkFlowLph ?? params.feedRateLph ?? params.flow ?? 300;
 
       if (
         !Number.isFinite(rpm) ||
-        rpm < 3000 ||
+        rpm < 2000 ||
         rpm > 9000 ||
         !Number.isFinite(flow) ||
         flow < 100 ||
@@ -1532,22 +1533,27 @@ export function computeParameterSensitivity(
         return null;
       }
 
-      if (controlKey === "bowlRpm" || controlKey === "rpm") {
-        const dG_dRpm = Number((2.236068e-4 * rpm).toFixed(3));
+      const sep = stepDeLavalSeparator({ bowlRpm: rpm, rawMilkFlowLph: flow });
+
+      if (controlKey === "bowlRpm" || controlKey === "rotorRpm" || controlKey === "rpm") {
         return {
           metricName: "Centrifugal Separation Force",
           derivativeSymbol: "∂G / ∂RPM",
-          derivativeValue: dG_dRpm,
+          derivativeValue: Number(sep.gForceSlopeGPerRpm.toFixed(4)),
           derivativeUnit: "G / RPM",
           interpretation:
             "Stokes creaming centrifugal acceleration gradient scaling with bowl rotation speed under the rotating disc stack model.",
         };
       }
-      if (controlKey === "rawMilkFlowLph" || controlKey === "flow") {
+      if (
+        controlKey === "rawMilkFlowLph" ||
+        controlKey === "feedRateLph" ||
+        controlKey === "flow"
+      ) {
         return {
           metricName: "Continuous Cream Discharge Yield",
           derivativeSymbol: "∂Q_cream / ∂Q_milk",
-          derivativeValue: 0.12,
+          derivativeValue: sep.creamYieldSlopeLphPerLph,
           derivativeUnit: "(L/h) / (L/h)",
           interpretation:
             "Volumetric cream discharge partition fraction from incoming raw whole milk feed across inner annular weir.",
@@ -1945,9 +1951,15 @@ export function computeParameterSensitivity(
     }
 
     case "us-6162-corliss-steam-engine": {
-      const psi = params.steamPressurePsi ?? params.boilerPressurePsi ?? params.pressure ?? 100;
+      const psi =
+        params.steamPressurePsi ??
+        params.boilerPressurePsi ??
+        params.boilerPressure ??
+        params.pressure ??
+        100;
       const rpm = params.engineRpm ?? params.rpm ?? 65;
-      const cutoff = params.cutoffPct ?? params.cutoff ?? 25;
+      const cutoff =
+        params.cutoffPct ?? params.cutoff ?? params.cutoffPercentage ?? params.cutoffRatioPct ?? 25;
 
       if (
         !Number.isFinite(psi) ||
@@ -1957,7 +1969,7 @@ export function computeParameterSensitivity(
         rpm < 30 ||
         rpm > 120 ||
         !Number.isFinite(cutoff) ||
-        cutoff < 5 ||
+        cutoff < 10 ||
         cutoff > 60
       ) {
         return null;
@@ -1972,12 +1984,13 @@ export function computeParameterSensitivity(
       if (
         controlKey === "steamPressurePsi" ||
         controlKey === "boilerPressurePsi" ||
+        controlKey === "boilerPressure" ||
         controlKey === "pressure"
       ) {
         return {
           metricName: "Indicated Cylinder Power",
           derivativeSymbol: "∂IHP / ∂P_boiler",
-          derivativeValue: Number(corliss.ihpPressureSlopeHpPerPsi.toFixed(2)),
+          derivativeValue: Number(corliss.ihpPressureSlopeHpPerPsiUnrounded.toFixed(2)),
           derivativeUnit: "HP / psi",
           interpretation:
             "Model-derived indicated power scaling with boiler admission pressure under the four-valve rotary cut-off expansion model. It is not a dynamometer reading printed in US 6,162.",
@@ -1987,13 +2000,18 @@ export function computeParameterSensitivity(
         return {
           metricName: "Flywheel Shaft Power",
           derivativeSymbol: "∂P / ∂RPM",
-          derivativeValue: Number(corliss.ihpRpmSlopeHpPerRpm.toFixed(2)),
+          derivativeValue: Number(corliss.ihpRpmSlopeHpPerRpmUnrounded.toFixed(2)),
           derivativeUnit: "HP / RPM",
           interpretation:
             "Model-derived power scaling of double-acting steam expansion with automatic trip cut-off. It is not a measured shop trial recorded in US 6,162.",
         };
       }
-      if (controlKey === "cutoffPct" || controlKey === "cutoff") {
+      if (
+        controlKey === "cutoffPct" ||
+        controlKey === "cutoff" ||
+        controlKey === "cutoffPercentage" ||
+        controlKey === "cutoffRatioPct"
+      ) {
         return {
           metricName: "Expansion Thermal Efficiency",
           derivativeSymbol: "∂η_th / ∂Cutoff",

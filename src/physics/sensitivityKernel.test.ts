@@ -3,6 +3,7 @@ import { allPatents } from "@/data/patents";
 import {
   stepBellTelephone,
   stepCorlissEngine,
+  stepDeLavalSeparator,
   stepEinsteinRefrigerator,
   stepEngelbartMouse,
   stepEricssonPropeller,
@@ -973,8 +974,10 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("Corliss Steam Engine derives indicated power and thermal efficiency slopes", () => {
     const id = "us-6162-corliss-steam-engine";
+    const h = 1e-5;
 
-    for (const psi of [50, 100, 150]) {
+    // Steam pressure sensitivity vs finite differences
+    for (const psi of [40, 60, 100, 140, 180]) {
       const sens = computeParameterSensitivity(id, "steamPressurePsi", {
         steamPressurePsi: psi,
         engineRpm: 65,
@@ -989,10 +992,34 @@ describe("Sensitivities follow the current admitted operating point", () => {
         engineRpm: 65,
         cutoffPct: 25,
       });
-      expect(sens?.derivativeValue).toBeCloseTo(corliss.ihpPressureSlopeHpPerPsi, 2);
+      expect(sens?.derivativeValue).toBeCloseTo(corliss.ihpPressureSlopeHpPerPsiUnrounded, 2);
+
+      const fPlus = stepCorlissEngine({
+        steamPressurePsi: psi + h,
+        engineRpm: 65,
+        cutoffPct: 25,
+      }).indicatedHpUnrounded;
+      const fMinus = stepCorlissEngine({
+        steamPressurePsi: psi - h,
+        engineRpm: 65,
+        cutoffPct: 25,
+      }).indicatedHpUnrounded;
+      const fd = (fPlus - fMinus) / (2 * h);
+      expect(sens?.derivativeValue).toBeCloseTo(fd, 2);
+
+      // Aliases
+      for (const key of ["boilerPressurePsi", "boilerPressure", "pressure"]) {
+        const aliasSens = computeParameterSensitivity(id, key, {
+          [key]: psi,
+          engineRpm: 65,
+          cutoffPct: 25,
+        });
+        expect(aliasSens?.derivativeValue).toBe(sens?.derivativeValue);
+      }
     }
 
-    for (const rpm of [40, 65, 100]) {
+    // Engine speed sensitivity vs finite differences
+    for (const rpm of [30, 50, 65, 90, 120]) {
       const sens = computeParameterSensitivity(id, "engineRpm", {
         steamPressurePsi: 100,
         engineRpm: rpm,
@@ -1007,10 +1034,32 @@ describe("Sensitivities follow the current admitted operating point", () => {
         engineRpm: rpm,
         cutoffPct: 25,
       });
-      expect(sens?.derivativeValue).toBeCloseTo(corliss.ihpRpmSlopeHpPerRpm, 2);
+      expect(sens?.derivativeValue).toBeCloseTo(corliss.ihpRpmSlopeHpPerRpmUnrounded, 2);
+
+      const fPlus = stepCorlissEngine({
+        steamPressurePsi: 100,
+        engineRpm: rpm + h,
+        cutoffPct: 25,
+      }).indicatedHpUnrounded;
+      const fMinus = stepCorlissEngine({
+        steamPressurePsi: 100,
+        engineRpm: rpm - h,
+        cutoffPct: 25,
+      }).indicatedHpUnrounded;
+      const fd = (fPlus - fMinus) / (2 * h);
+      expect(sens?.derivativeValue).toBeCloseTo(fd, 2);
+
+      // Alias rpm
+      const aliasSens = computeParameterSensitivity(id, "rpm", {
+        steamPressurePsi: 100,
+        rpm,
+        cutoffPct: 25,
+      });
+      expect(aliasSens?.derivativeValue).toBe(sens?.derivativeValue);
     }
 
-    for (const cutoff of [15, 25, 45]) {
+    // Cut-off ratio sensitivity vs finite differences
+    for (const cutoff of [10, 20, 25, 40, 60]) {
       const sens = computeParameterSensitivity(id, "cutoffPct", {
         steamPressurePsi: 100,
         engineRpm: 65,
@@ -1021,18 +1070,48 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeSymbol).toBe("∂η_th / ∂Cutoff");
       expect(sens?.derivativeUnit).toBe("% / %");
       expect(sens?.derivativeValue).toBe(-0.12);
+
+      const fPlus = stepCorlissEngine({
+        steamPressurePsi: 100,
+        engineRpm: 65,
+        cutoffPct: cutoff + h,
+      }).thermalEfficiencyPctUnrounded;
+      const fMinus = stepCorlissEngine({
+        steamPressurePsi: 100,
+        engineRpm: 65,
+        cutoffPct: cutoff - h,
+      }).thermalEfficiencyPctUnrounded;
+      const fd = (fPlus - fMinus) / (2 * h);
+      expect(sens?.derivativeValue).toBeCloseTo(fd, 4);
+
+      // Aliases
+      for (const key of ["cutoff", "cutoffPercentage", "cutoffRatioPct"]) {
+        const aliasSens = computeParameterSensitivity(id, key, {
+          steamPressurePsi: 100,
+          engineRpm: 65,
+          [key]: cutoff,
+        });
+        expect(aliasSens?.derivativeValue).toBe(sens?.derivativeValue);
+      }
     }
 
-    // Invalid parameters
-    for (const invalid of [39, 181, Number.NaN]) {
+    // Defaults when omitted
+    const defaultSens = computeParameterSensitivity(id, "steamPressurePsi", {});
+    expect(defaultSens).toBeDefined();
+    expect(defaultSens?.derivativeValue).toBe(
+      Number(stepCorlissEngine({}).ihpPressureSlopeHpPerPsiUnrounded.toFixed(2)),
+    );
+
+    // Invalid / out-of-domain parameters
+    for (const invalid of [39.9, 180.1, Number.NaN, Number.POSITIVE_INFINITY]) {
       expect(
         computeParameterSensitivity(id, "steamPressurePsi", { steamPressurePsi: invalid }),
       ).toBeNull();
     }
-    for (const invalid of [29, 121, Number.NaN]) {
+    for (const invalid of [29.9, 120.1, Number.NaN, Number.NEGATIVE_INFINITY]) {
       expect(computeParameterSensitivity(id, "engineRpm", { engineRpm: invalid })).toBeNull();
     }
-    for (const invalid of [4, 61, Number.NaN]) {
+    for (const invalid of [9.9, 60.1, Number.NaN, Number.POSITIVE_INFINITY]) {
       expect(computeParameterSensitivity(id, "cutoffPct", { cutoffPct: invalid })).toBeNull();
     }
   });
@@ -1328,30 +1407,88 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("DeLaval Separator derives centrifugal acceleration and cream yield sensitivities", () => {
     const id = "us-247804-delaval-separator";
+    const h = 1e-4;
 
-    for (const rpm of [4000, 6500, 8000]) {
-      const sens = computeParameterSensitivity(id, "bowlRpm", { bowlRpm: rpm });
+    // Centrifugal acceleration sensitivity vs finite differences
+    for (const rpm of [2000, 3500, 5000, 6500, 8000, 9000]) {
+      const sens = computeParameterSensitivity(id, "bowlRpm", {
+        bowlRpm: rpm,
+        rawMilkFlowLph: 300,
+      });
       expect(sens).toBeDefined();
       expect(sens?.metricName).toBe("Centrifugal Separation Force");
       expect(sens?.derivativeSymbol).toBe("∂G / ∂RPM");
       expect(sens?.derivativeUnit).toBe("G / RPM");
-      expect(sens?.derivativeValue).toBeCloseTo(2.236068e-4 * rpm, 3);
+
+      const sep = stepDeLavalSeparator({ bowlRpm: rpm, rawMilkFlowLph: 300 });
+      expect(sens?.derivativeValue).toBeCloseTo(sep.gForceSlopeGPerRpm, 4);
+
+      const fPlus = stepDeLavalSeparator({
+        bowlRpm: rpm + h,
+        rawMilkFlowLph: 300,
+      }).gForceUnrounded;
+      const fMinus = stepDeLavalSeparator({
+        bowlRpm: rpm - h,
+        rawMilkFlowLph: 300,
+      }).gForceUnrounded;
+      const fd = (fPlus - fMinus) / (2 * h);
+      expect(sens?.derivativeValue).toBeCloseTo(fd, 3);
+
+      // Aliases
+      for (const key of ["rotorRpm", "rpm"]) {
+        const aliasSens = computeParameterSensitivity(id, key, {
+          [key]: rpm,
+          rawMilkFlowLph: 300,
+        });
+        expect(aliasSens?.derivativeValue).toBe(sens?.derivativeValue);
+      }
     }
 
-    for (const flow of [200, 300, 500]) {
-      const sens = computeParameterSensitivity(id, "rawMilkFlowLph", { rawMilkFlowLph: flow });
+    // Cream yield sensitivity vs finite differences
+    for (const flow of [100, 200, 300, 450, 600]) {
+      const sens = computeParameterSensitivity(id, "rawMilkFlowLph", {
+        bowlRpm: 6500,
+        rawMilkFlowLph: flow,
+      });
       expect(sens).toBeDefined();
       expect(sens?.metricName).toBe("Continuous Cream Discharge Yield");
       expect(sens?.derivativeSymbol).toBe("∂Q_cream / ∂Q_milk");
       expect(sens?.derivativeUnit).toBe("(L/h) / (L/h)");
       expect(sens?.derivativeValue).toBe(0.12);
+
+      const fPlus = stepDeLavalSeparator({
+        bowlRpm: 6500,
+        rawMilkFlowLph: flow + h,
+      }).creamFlowLphUnrounded;
+      const fMinus = stepDeLavalSeparator({
+        bowlRpm: 6500,
+        rawMilkFlowLph: flow - h,
+      }).creamFlowLphUnrounded;
+      const fd = (fPlus - fMinus) / (2 * h);
+      expect(sens?.derivativeValue).toBeCloseTo(fd, 4);
+
+      // Aliases
+      for (const key of ["feedRateLph", "flow"]) {
+        const aliasSens = computeParameterSensitivity(id, key, {
+          bowlRpm: 6500,
+          [key]: flow,
+        });
+        expect(aliasSens?.derivativeValue).toBe(sens?.derivativeValue);
+      }
     }
 
-    // Invalid parameters
-    for (const invalid of [2999, 9001, Number.NaN]) {
+    // Defaults when omitted
+    const defaultSens = computeParameterSensitivity(id, "bowlRpm", {});
+    expect(defaultSens).toBeDefined();
+    expect(defaultSens?.derivativeValue).toBe(
+      Number(stepDeLavalSeparator({}).gForceSlopeGPerRpm.toFixed(4)),
+    );
+
+    // Invalid parameters / out-of-domain refusals
+    for (const invalid of [1999.9, 9000.1, Number.NaN, Number.POSITIVE_INFINITY]) {
       expect(computeParameterSensitivity(id, "bowlRpm", { bowlRpm: invalid })).toBeNull();
     }
-    for (const invalid of [99, 601, Number.NaN]) {
+    for (const invalid of [99.9, 600.1, Number.NaN, Number.NEGATIVE_INFINITY]) {
       expect(
         computeParameterSensitivity(id, "rawMilkFlowLph", { rawMilkFlowLph: invalid }),
       ).toBeNull();

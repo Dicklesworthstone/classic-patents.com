@@ -39,7 +39,12 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
     nitroglycerinRatioPct: same("ngConcentrationPct"),
   },
   "us-135245-pasteur-fermentation": { tempCelsius: same("wortTempC") },
-  "us-247804-delaval-separator": { rotorRpm: same("bowlRpm") },
+  "us-247804-delaval-separator": {
+    feedRateLph: same("rawMilkFlowLph"),
+    flow: same("rawMilkFlowLph"),
+    rotorRpm: same("bowlRpm"),
+    rpm: same("bowlRpm"),
+  },
   "us-200521-edison-phonograph": { cylinderRpm: same("mandrelRpm") },
   "us-x8277-mccormick-reaper": {
     groundSpeedMph: same("forwardSpeedMph"),
@@ -59,8 +64,10 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
   "us-6162-corliss-steam-engine": {
     boilerPressure: same("steamPressurePsi"),
     boilerPressurePsi: same("steamPressurePsi"),
+    cutoff: same("cutoffPct"),
     cutoffPercentage: same("cutoffPct"),
     cutoffRatioPct: same("cutoffPct"),
+    pressure: same("steamPressurePsi"),
     rpm: same("engineRpm"),
   },
   "us-79265-sholes-typewriter": { typingWpm: same("typingSpeedWpm") },

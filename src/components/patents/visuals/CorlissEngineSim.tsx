@@ -2,6 +2,7 @@
 
 import { Cog, Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { corlissConnectingRod, sliderStrokeSvg, stepCorlissEngine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -339,54 +340,45 @@ export function CorlissEngineSim() {
 
       {/* Sliders */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Boiler Steam Pressure</span>
-            <span className="font-mono">{boilerPressurePsi} psi</span>
-          </div>
-          <input
-            type="range"
-            min="40"
-            max="180"
-            step="5"
-            aria-label="Boiler Steam Pressure"
-            value={boilerPressurePsi}
-            onChange={(e) => updateParam("steamPressurePsi", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Engine Speed</span>
-            <span className="font-mono">{engineRpm} RPM</span>
-          </div>
-          <input
-            type="range"
-            min="30"
-            max="120"
-            step="5"
-            aria-label="Engine Speed"
-            value={engineRpm}
-            onChange={(e) => updateParam("engineRpm", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Cut-Off Stroke Ratio</span>
-            <span className="font-mono">{cutoffFractionPct}%</span>
-          </div>
-          <input
-            type="range"
-            min="10"
-            max="60"
-            step="2"
-            aria-label="Cut-Off Stroke Ratio"
-            value={cutoffFractionPct}
-            onChange={(e) => updateParam("cutoffPct", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
+        <SensitivitySlider
+          id="corlissSteamPressure2D"
+          patentId="us-6162-corliss-steam-engine"
+          paramKey="steamPressurePsi"
+          label="Boiler Steam Pressure"
+          value={boilerPressurePsi}
+          min={40}
+          max={180}
+          step={5}
+          unit="psi"
+          onChange={(val) => updateParam("steamPressurePsi", val)}
+          allParams={params}
+        />
+        <SensitivitySlider
+          id="corlissEngineRpm2D"
+          patentId="us-6162-corliss-steam-engine"
+          paramKey="engineRpm"
+          label="Engine Speed"
+          value={engineRpm}
+          min={30}
+          max={120}
+          step={5}
+          unit="RPM"
+          onChange={(val) => updateParam("engineRpm", val)}
+          allParams={params}
+        />
+        <SensitivitySlider
+          id="corlissCutoffPct2D"
+          patentId="us-6162-corliss-steam-engine"
+          paramKey="cutoffPct"
+          label="Cut-Off Stroke Ratio"
+          value={cutoffFractionPct}
+          min={10}
+          max={60}
+          step={2}
+          unit="%"
+          onChange={(val) => updateParam("cutoffPct", val)}
+          allParams={params}
+        />
       </div>
 
       <div className="mt-4 pt-3 border-t border-parchment-200 dark:border-ink-800 space-y-3">
