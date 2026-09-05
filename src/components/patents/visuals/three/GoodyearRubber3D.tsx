@@ -296,7 +296,7 @@ export function GoodyearRubber3D() {
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Tensile Modulus:</span>
+              <span className="text-ink-600 dark:text-ink-400">Tensile strength (model):</span>
               <span className="text-purple-800 dark:text-purple-400 font-bold">
                 {rubberPhysics.tensileStrengthMpa.toFixed(2)} MPa
               </span>
@@ -384,6 +384,9 @@ export function GoodyearRubber3D() {
             allParams={params}
           />
         </div>
+        <p className="mt-3 text-xs font-mono text-ink-600 dark:text-ink-400">
+          Tensile stress (model): {rubberPhysics.trueStressMpa.toFixed(2)} MPa
+        </p>
       </div>
     </div>
   );
