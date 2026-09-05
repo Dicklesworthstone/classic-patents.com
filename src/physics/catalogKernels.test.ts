@@ -1,4 +1,32 @@
 import { describe, expect, test } from "bun:test";
+
+describe("Continuous teaching-model outputs", () => {
+  test("Thomson preserves exact watts before rounding the kW display", () => {
+    const state = stepThomsonWelding({ weldCurrentAmps: 4500, clampPressureMpa: 35 });
+    expect(state.jouleWatts).toBeCloseTo(3645, 10);
+    expect(state.jouleKw).toBe(3.65);
+    expect(state.jouleSlopeWattsPerAmp).toBeCloseTo(1.62, 12);
+    expect(state.upsetBurrWidthMmUnrounded).toBeCloseTo(3.8, 12);
+    const next = stepThomsonWelding({ weldCurrentAmps: 4500.01 });
+    expect(next.jouleWatts).toBeGreaterThan(state.jouleWatts);
+    expect(next.jouleKw).toBe(state.jouleKw);
+  });
+
+  test("Goodyear starts at zero stress and reports its unrounded stress law", () => {
+    for (const sulfur of [0, 4, 8, 30]) {
+      const rest = stepGoodyearRubber(145, sulfur, 30, 1, 35);
+      expect(rest.trueStressMpa).toBe(0);
+      expect(rest.stressMpaUnrounded).toBe(0);
+      const stretched = stepGoodyearRubber(145, sulfur, 30, 2.1, 35);
+      expect(stretched.stressMpaUnrounded).toBeCloseTo(
+        stretched.tensileStrengthMpa * (2.1 - 1 / 2.1 ** 2),
+        12,
+      );
+      expect(stretched.trueStressMpa).toBeCloseTo(stretched.stressMpaUnrounded, 2);
+    }
+  });
+});
+
 import {
   BARDEEN_HOLE_RESET_PAD,
   BARDEEN_HOLE_WRAP_PAD,

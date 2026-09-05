@@ -1,5 +1,124 @@
 import { describe, expect, test } from "bun:test";
 import { allPatents } from "@/data/patents";
+import { stepGoodyearRubber, stepThomsonWelding } from "./catalogKernels";
+
+describe("Thomson and Goodyear sensitivities use the displayed model", () => {
+  test("welding current uses the current I²R derivative, including one-sided endpoints", () => {
+    const id = "us-347140-thomson-welding";
+    for (const current of [1000, 2000, 4500, 5800, 6000]) {
+      const params = { weldCurrentAmps: current, clampPressureMpa: 50 };
+      const slope = computeParameterSensitivity(id, "weldCurrentAmps", params);
+      expect(slope).toBeDefined();
+      if (!slope) throw new Error("Expected slope");
+      expect(slope.derivativeValue).toBeCloseTo(2 * current * 0.00018, 6);
+      expect(slope.derivativeUnit).toBe("W / A");
+      const lo = Math.max(1000, current - 0.01),
+        hi = Math.min(6000, current + 0.01);
+      const numerical =
+        (stepThomsonWelding({ ...params, weldCurrentAmps: hi }).jouleWatts -
+          stepThomsonWelding({ ...params, weldCurrentAmps: lo }).jouleWatts) /
+        (hi - lo);
+      expect(slope.derivativeValue).toBeCloseTo(numerical, 5);
+      expect(
+        computeParameterSensitivity(id, "currentAmperes", {
+          currentAmperes: current,
+          clampPressureMpa: 50,
+        }),
+      ).toEqual(slope);
+    }
+    expect(
+      computeParameterSensitivity(id, "weldCurrentAmps", { weldCurrentAmps: 4500 })
+        ?.derivativeValue,
+    ).toBe(1.62);
+  });
+
+  test("welding pressure differentiates burr width before 0.1 mm display rounding", () => {
+    for (const pressure of [10, 35, 60]) {
+      const slope = computeParameterSensitivity("us-347140-thomson-welding", "clampPressureMpa", {
+        clampPressureMpa: pressure,
+        weldCurrentAmps: 5800,
+      });
+      expect(slope).toBeDefined();
+      if (!slope) throw new Error("Expected slope");
+      expect(slope.derivativeUnit).toBe("mm / MPa");
+      const lo = Math.max(10, pressure - 0.01),
+        hi = Math.min(60, pressure + 0.01);
+      const numerical =
+        (stepThomsonWelding({ clampPressureMpa: hi }).upsetBurrWidthMmUnrounded -
+          stepThomsonWelding({ clampPressureMpa: lo }).upsetBurrWidthMmUnrounded) /
+        (hi - lo);
+      expect(slope.derivativeValue).toBeCloseTo(numerical, 6);
+    }
+  });
+
+  test("rubber stretch slope follows sulfur and cure state instead of a fixed modulus", () => {
+    const id = "us-3633-goodyear-rubber";
+    for (const vulcanTemp of [110, 145, 190]) {
+      for (const sulfurPct of [0, 4, 8, 30]) {
+        for (const stretch of [1, 1.8, 2.1, 2.5]) {
+          const params = {
+            vulcanTemp,
+            sulfurPct,
+            appliedTensileStretch: stretch,
+            specimenTempC: 20,
+          };
+          const slope = computeParameterSensitivity(id, "appliedTensileStretch", params);
+          expect(slope).toBeDefined();
+          if (!slope) throw new Error("Expected slope");
+          const lo = Math.max(1, stretch - 1e-5),
+            hi = Math.min(2.5, stretch + 1e-5);
+          const probe = (lambda: number) =>
+            stepGoodyearRubber(vulcanTemp, sulfurPct, 30, lambda, 20).stressMpaUnrounded;
+          expect(slope.derivativeValue).toBeCloseTo((probe(hi) - probe(lo)) / (hi - lo), 2);
+          expect(slope.derivativeUnit).toBe("MPa / λ");
+          expect(slope.interpretation).toContain("illustrative");
+        }
+      }
+    }
+    const common = { vulcanTemp: 145, appliedTensileStretch: 2.1 };
+    const low = computeParameterSensitivity(id, "appliedTensileStretch", {
+      ...common,
+      sulfurPct: 4,
+    });
+    expect(low).toBeDefined();
+    if (!low) throw new Error("Expected low");
+    const high = computeParameterSensitivity(id, "appliedTensileStretch", {
+      ...common,
+      sulfurPct: 8,
+    });
+    expect(high).toBeDefined();
+    if (!high) throw new Error("Expected high");
+    expect(low.derivativeValue).toBeCloseTo(11.734, 4);
+    expect(high.derivativeValue).toBeCloseTo(23.4802, 4);
+    expect(high.derivativeValue).toBeGreaterThan(low.derivativeValue * 1.99);
+    expect(
+      computeParameterSensitivity(id, "stretch", { vulcanTemp: 145, sulfurPct: 8, stretch: 2.1 }),
+    ).toEqual(high);
+  });
+
+  test("out-of-range and non-finite controls do not produce plausible-looking slopes", () => {
+    for (const invalid of [0, 999, 6001, Number.NaN, Number.POSITIVE_INFINITY]) {
+      expect(
+        computeParameterSensitivity("us-347140-thomson-welding", "weldCurrentAmps", {
+          weldCurrentAmps: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [9, 61])
+      expect(
+        computeParameterSensitivity("us-347140-thomson-welding", "clampPressureMpa", {
+          clampPressureMpa: invalid,
+        }),
+      ).toBeNull();
+    for (const invalid of [0.99, 2.51, Number.NaN])
+      expect(
+        computeParameterSensitivity("us-3633-goodyear-rubber", "appliedTensileStretch", {
+          appliedTensileStretch: invalid,
+        }),
+      ).toBeNull();
+  });
+});
+
 import { stepClavelDeltaRobotTopology } from "./clavelDeltaRobotKernel";
 import { readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
 import { EDISON_DECLARED_FILAMENT_LENGTH_CM, stepEdisonRadiativeBalance } from "./edisonWasm";

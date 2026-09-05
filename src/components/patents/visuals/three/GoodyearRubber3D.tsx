@@ -1,6 +1,7 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { GOODYEAR_SULFUR_RANGE } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -163,7 +164,12 @@ export function GoodyearRubber3D() {
   }, [activeCamera]);
 
   return (
-    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+    <div
+      data-testid="goodyear-rubber-three"
+      data-goodyear-stress-mpa={rubberPhysics.trueStressMpa}
+      data-goodyear-stress-runtime="ts-fallback"
+      className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent"
+    >
       <PortHamiltonianEnergyStrip
         patentId="us-3633-goodyear-rubber"
         params={{
@@ -310,7 +316,7 @@ export function GoodyearRubber3D() {
               value: String(Math.round(rubberPhysics.tensileStrengthPsi)),
               unit: "psi",
             },
-            { label: "Modulus", value: rubberPhysics.tensileStrengthMpa.toFixed(2), unit: "MPa" },
+            { label: "Stress (model)", value: rubberPhysics.trueStressMpa.toFixed(2), unit: "MPa" },
             {
               label: "Crosslink ρ",
               value: rubberPhysics.crossLinkDensity.toExponential(2),
@@ -358,9 +364,7 @@ export function GoodyearRubber3D() {
             paramKey="sulfurPct"
             label="Sulfur Fraction"
             value={sulfurWeightPct}
-            min={2}
-            max={14}
-            step={0.5}
+            {...GOODYEAR_SULFUR_RANGE}
             unit="wt%"
             onChange={(val) => updateParam("sulfurPct", val)}
             allParams={params}

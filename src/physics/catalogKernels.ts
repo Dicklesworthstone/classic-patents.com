@@ -1556,22 +1556,31 @@ export function phonographAxialTravelMm(
   return Number((((cylinderAngleDeg / 360) * leadScrewPitchMm) % wrapMm).toFixed(1));
 }
 
+/** Declared contact resistance in the illustrative welding model, not a grant measurement. */
+export const THOMSON_CONTACT_RESISTANCE_OHM = 0.00018;
+
 export function stepThomsonWelding(params: {
   weldCurrentAmps?: number;
   clampPressureMpa?: number;
 }) {
   const i = params.weldCurrentAmps ?? 4500;
   const press = params.clampPressureMpa ?? 35;
-  const kw = Number(((i ** 2 * 0.00018) / 1000).toFixed(2));
+  const jouleWatts = i ** 2 * THOMSON_CONTACT_RESISTANCE_OHM;
+  const kw = Number((jouleWatts / 1000).toFixed(2));
   const tempC = Math.round(25 + (kw / 3.645) * 850);
-  const upsetBurrWidthMm = Number(((press / 35) * 3.8).toFixed(1));
+  const upsetBurrWidthMmUnrounded = (press / 35) * 3.8;
+  const upsetBurrWidthMm = Number(upsetBurrWidthMmUnrounded.toFixed(1));
   return {
     jouleKw: kw,
     interfaceTempC: tempC,
     isForged: tempC >= 1150 && press >= 25,
     upsetBurrWidthMm,
+    upsetBurrWidthMmUnrounded,
+    upsetSlopeMmPerMpa: 3.8 / 35,
     burrSvgRx: Number((upsetBurrWidthMm * 1.5).toFixed(2)),
-    jouleWatts: kw * 1000,
+    // Keep the physical power continuous; round only its kW display.
+    jouleWatts,
+    jouleSlopeWattsPerAmp: 2 * i * THOMSON_CONTACT_RESISTANCE_OHM,
     weldPulseMs: Math.round(Math.max(200, 5.4e6 / Math.max(500, i))),
     weldGlowIntensity: Number((Math.min(1.5, Math.max(0, tempC / 1300)) * 1.8).toFixed(3)),
     weldSeamScale: Number((1 + (press / 35) * 0.35).toFixed(4)),
@@ -2879,6 +2888,9 @@ export function coltSchematicTrigger(
   return { x, y: isLocked ? cockY : restY, w, h: isLocked ? cockH : restH };
 }
 
+/** Shared sulfur range includes the raw-gum and high-sulfur teaching comparisons. */
+export const GOODYEAR_SULFUR_RANGE = { min: 0, max: 30, step: 0.5 } as const;
+
 export function stepGoodyearRubber(
   vulcanizationTempC?: number,
   sulfurPct?: number,
@@ -2889,7 +2901,7 @@ export function stepGoodyearRubber(
   const temp = vulcanizationTempC ?? 145;
   const sulfur = sulfurPct ?? 8;
   const duration = durationMin ?? 30;
-  const lambda = Math.max(1.01, stretchLambda ?? 1.8);
+  const lambda = Math.max(1, stretchLambda ?? 1.8);
   const specimen = specimenTempC ?? 35;
   const isOptimalTemp = temp >= 135 && temp <= 165;
   const crossLinkDensity = (sulfur / 8.0) * (duration / 30) * (isOptimalTemp ? 1.0 : 0.4);
@@ -2899,6 +2911,7 @@ export function stepGoodyearRubber(
   const cure = vulcanKinetics(temp, sulfur);
   const isGlassy = specimen < glassTransitionTempC;
   const isVulcanized = isOptimalTemp && crossLinkDensity >= 0.3;
+  const stressMpaUnrounded = tensileStrengthMpa * (lambda - 1 / lambda ** 2);
   return {
     crossLinkDensity: Number(crossLinkDensity.toFixed(3)),
     tensileStrengthPsi,
@@ -2911,7 +2924,10 @@ export function stepGoodyearRubber(
     isGlassy,
     isRawGumMelted: sulfur < 2 && specimen > 35,
     isRawGumBrittle: sulfur < 2 && specimen < 0,
-    trueStressMpa: Number((tensileStrengthMpa * (lambda - 1 / lambda ** 2)).toFixed(2)),
+    trueStressMpa: Number(stressMpaUnrounded.toFixed(2)),
+    stressMpaUnrounded,
+    // Local slope of this declared stress model with the cure settings held fixed.
+    stressSlopeMpaPerStretch: tensileStrengthMpa * (1 + 2 / lambda ** 3),
     entropicReductionJ: Number((0.5 * 1.38e-23 * 1e26 * (lambda ** 2 + 2 / lambda - 3)).toFixed(1)),
     glassyModulusMpa: 2400,
     stressScale: Number(

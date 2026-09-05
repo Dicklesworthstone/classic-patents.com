@@ -10,7 +10,11 @@
  * use automatic differentiation; the unused Dual class was removed.
  */
 
-import { stepLandPolaroidInstantFilm } from "./catalogKernels";
+import {
+  stepGoodyearRubber,
+  stepLandPolaroidInstantFilm,
+  stepThomsonWelding,
+} from "./catalogKernels";
 import {
   readClavelDeltaRobotControls,
   stepClavelDeltaRobotTopology,
@@ -331,16 +335,21 @@ export function computeParameterSensitivity(
     case "us-3633-goodyear-rubber": {
       if (controlKey === "appliedTensileStretch" || controlKey === "stretch") {
         const lambda = params.appliedTensileStretch ?? params.stretch ?? 1.8;
-        const gModulus = 1.2; // MPa
-        // d(sigma)/d(lambda) = G * (1 + 2 / lambda^3)
-        const dSigma_dLambda = gModulus * (1 + 2 / lambda ** 3);
+        if (lambda < 1 || lambda > 2.5) return null;
+        const rubber = stepGoodyearRubber(
+          params.vulcanTemp ?? 145,
+          params.sulfurPct ?? 8,
+          30,
+          lambda,
+          params.specimenTempC ?? 35,
+        );
         return {
-          metricName: "Tangent Elastic Modulus",
+          metricName: "Tensile Stress (Model)",
           derivativeSymbol: "∂σ / ∂λ",
-          derivativeValue: Number(dSigma_dLambda.toFixed(2)),
-          derivativeUnit: "MPa / extension",
+          derivativeValue: Number(rubber.stressSlopeMpaPerStretch.toPrecision(6)),
+          derivativeUnit: "MPa / λ",
           interpretation:
-            "Conformational entropy restoring force rate under uniaxial polymer elongation.",
+            "Local slope of the shared illustrative stress model at the current cure temperature, sulfur content and stretch; the cure duration is the declared 30 minutes. The model's strength coefficient is held fixed. At λ = 1 or 2.5 this is the admitted one-sided slope, not a measured material modulus.",
         };
       }
       break;
@@ -1244,13 +1253,36 @@ export function computeParameterSensitivity(
     }
 
     case "us-347140-thomson-welding": {
-      if (controlKey === "weldCurrentAmps") {
+      if (controlKey === "weldCurrentAmps" || controlKey === "currentAmperes") {
+        const current = params.weldCurrentAmps ?? params.currentAmperes ?? 4500;
+        if (current < 1000 || current > 6000) return null;
+        const weld = stepThomsonWelding({
+          weldCurrentAmps: current,
+          clampPressureMpa: params.clampPressureMpa,
+        });
         return {
           metricName: "Interface Joule Heating Rate",
           derivativeSymbol: "∂P_joule / ∂I_weld",
-          derivativeValue: 0.084,
+          derivativeValue: Number(weld.jouleSlopeWattsPerAmp.toPrecision(6)),
           derivativeUnit: "W / A",
-          interpretation: "Joule heating rate at high-resistance contact interface ($P = I^2 R$).",
+          interpretation:
+            "Analytic slope 2IR of the shared illustrative Joule-heating model at the current amperage and declared 0.18 mΩ contact resistance. At 1,000 or 6,000 A this is the admitted one-sided slope. Pressure does not change resistance in this model.",
+        };
+      }
+      if (controlKey === "clampPressureMpa") {
+        const pressure = params.clampPressureMpa ?? 35;
+        if (pressure < 10 || pressure > 60) return null;
+        const weld = stepThomsonWelding({
+          weldCurrentAmps: params.weldCurrentAmps ?? params.currentAmperes,
+          clampPressureMpa: pressure,
+        });
+        return {
+          metricName: "Upset Burr Width (Model)",
+          derivativeSymbol: "∂w_burr / ∂p",
+          derivativeValue: Number(weld.upsetSlopeMmPerMpa.toPrecision(6)),
+          derivativeUnit: "mm / MPa",
+          interpretation:
+            "Local slope of the shared illustrative pressure-to-burr relation before display rounding. This is a declared geometry model, not a measured weld-strength or contact-resistance law; endpoints use the admitted one-sided slope.",
         };
       }
       break;
