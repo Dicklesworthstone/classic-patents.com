@@ -5,6 +5,7 @@ import path from "node:path";
 import { rillieuxEvaporatorPatent } from "../patents/rillieux-evaporator";
 import { validateReviewedTranscriptionEditorialIntegrity } from "../patents/sourceTextValidation";
 import { completeArchivalEditionForViewer } from "./publicationApproval";
+import { evaluateReviewedLedgerTextEvidence } from "./reviewedLedgerPublicationEvidence";
 import { reviewedLedgerTextForViewer } from "./reviewedLedgerPublicationEvidence.server";
 import {
   manualRillieuxClaimText,
@@ -41,12 +42,12 @@ describe("US 3,237 Norbert Rillieux Multiple-Effect Evaporator Archival Edition 
     }
   });
 
-  test("marks the short reconstruction as a draft so the source reader falls open to the ledger", () => {
+  test("marks the source-bound partial packet as held so the source reader falls open to the ledger", () => {
     expect(rillieuxEvaporatorArchivalEdition.completeFacsimileReviewed).toBe(false);
     expect(completeArchivalEditionForViewer(rillieuxEvaporatorPatent)).toBeUndefined();
   });
 
-  test("all active figure previews are complete pinned source sheets", () => {
+  test("keeps reconstructed figure prose out of the held packet while retaining pinned sheets", () => {
     const figurePreviews = rillieuxEvaporatorArchivalEdition.blocks.flatMap((block) => {
       if (block.kind === "paragraph") {
         return block.inlines.flatMap((inline) =>
@@ -58,15 +59,18 @@ describe("US 3,237 Norbert Rillieux Multiple-Effect Evaporator Archival Edition 
       return [];
     });
 
-    expect(figurePreviews.length).toBeGreaterThanOrEqual(6);
+    expect(figurePreviews).toHaveLength(0);
 
-    for (const preview of figurePreviews) {
-      const relativePath = preview.src.replace(/^\//, "");
-      const fullPath = path.join(process.cwd(), "public", relativePath);
+    for (let sheet = 1; sheet <= 6; sheet++) {
+      const fullPath = path.join(
+        process.cwd(),
+        "public",
+        "patents",
+        "figures",
+        "us-3237-rillieux-evaporator",
+        `source-sheet-${sheet}-v1.png`,
+      );
       expect(fs.existsSync(fullPath)).toBe(true);
-      expect(preview.src).toMatch(/\/source-sheet-[1-6]-v1\.png$/);
-      expect(preview.width).toBe(2320);
-      expect(preview.height).toBe(3408);
     }
   });
 
@@ -122,6 +126,46 @@ describe("US 3,237 Norbert Rillieux Multiple-Effect Evaporator Archival Edition 
     expect(content).toContain("N. Rillieux.");
     expect(content).toContain("Vacuum Pan.");
     expect(content).not.toMatch(/\[Drawing Plate \d+\]/);
+  });
+
+  test("reconciles the pinned page-seven masthead and opening paragraph literally", () => {
+    const ledgerPath = path.join(
+      process.cwd(),
+      "public",
+      "patents",
+      "transcripts",
+      "us-3237-rillieux-evaporator-reviewed.txt",
+    );
+    const content = fs.readFileSync(ledgerPath, "utf8");
+    const opening = rillieuxEvaporatorArchivalEdition.blocks[1];
+    if (opening?.kind !== "paragraph") {
+      throw new Error("Rillieux archival edition is missing its opening paragraph.");
+    }
+
+    expect(content).toContain("UNITED STATES PATENT OFFICE.");
+    expect(content).toContain(
+      "Specification forming part of Letters Patent No. 3,237, dated August 26, 1843.",
+    );
+    expect(content).toContain(opening.inlines.map((inline) => inline.text).join(""));
+  });
+
+  test("binds every retained source section to the complete ledger without promoting the packet", () => {
+    const ledgerPath = path.join(
+      process.cwd(),
+      "public",
+      "patents",
+      "transcripts",
+      "us-3237-rillieux-evaporator-reviewed.txt",
+    );
+    const evidence = evaluateReviewedLedgerTextEvidence(
+      rillieuxEvaporatorPatent,
+      fs.readFileSync(ledgerPath, "utf8"),
+    );
+
+    expect(evidence.status).toBe("verified");
+    expect(evidence.missingSectionIndexes).toEqual([]);
+    expect(evidence.missingClaimNumbers).toEqual([]);
+    expect(rillieuxEvaporatorArchivalEdition.completeFacsimileReviewed).toBe(false);
   });
 
   test("continues to serve the complete eleven-page ledger while the reconstruction is held", () => {

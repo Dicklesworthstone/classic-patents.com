@@ -92,3 +92,14 @@ these pages, and the short React draft remains incomplete. Those are now
 bounded line-by-line transcription work; they are not evidence that the
 source instrument is absent, and they do not alter the reader's full-ledger
 and PDF availability.
+
+The page-seven masthead and opening paragraph were reconciled on 2026-09-05
+from a direct 300-DPI rendering of the pinned facsimile. The ledger and held
+candidate now reproduce the printed August 26, 1843 date, Rillieux/Merrick/
+Towne assignment line, and opening description of evaporating and
+concentrating saccharine juices and sirups. The old candidate body was a
+source-like reconstruction rather than a verified transcription, so it was
+removed rather than represented as archival text. The held packet now
+contains only the checked opening, printed claims, signature, and witnesses.
+The remainder of pages 7–11 is still open line-by-line work; this correction
+does not promote the draft or alter complete-ledger/PDF reader delivery.
