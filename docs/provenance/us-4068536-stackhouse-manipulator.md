@@ -11,7 +11,8 @@
 - **Grant Date**: `1978-01-17`
 - **Primary Public Record URL**: `https://patents.google.com/patent/US4068536A/en`
 - **Local PDF Facsimile**: `public/patents/pdfs/us-4068536-stackhouse-manipulator.pdf`
-- **Retrieval & Full-Facsimile Review Date**: `2026-09-01`
+- **Retrieval Date**: `2026-09-01`
+- **Full-Facsimile Review Date**: `2026-09-05`
 - **Rights Basis**: Historical United States patent grant (public domain United States Government work).
 - **Source PDF SHA-256**: `dcd6652f996f2583bb6bd39f341bac2474b08472adb931972e94137aea1b7846`
 - **PDF Page Count**: `8`
