@@ -621,43 +621,33 @@ export function WrightFlyer3D() {
             allParams={params}
           />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Pitch Canard</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {elevatorPitchDeg}°
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Pitch canard angle"
-              min="-15"
-              max="15"
-              step="0.5"
-              value={elevatorPitchDeg}
-              onChange={(e) => updateParam("elevator", Number.parseFloat(e.target.value))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-emerald-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
+          <SensitivitySlider
+            id="elevator"
+            patentId={WRIGHT_PATENT_ID}
+            paramKey="elevator"
+            label="Pitch Canard"
+            value={elevatorPitchDeg}
+            min={-15}
+            max={15}
+            step={0.5}
+            unit="°"
+            onChange={(val) => updateParam("elevator", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Coupled Rudder</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {rudderYawDeg}°
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Coupled rudder angle"
-              min="-20"
-              max="20"
-              step="0.5"
-              value={rudderYawDeg}
-              onChange={(e) => updateParam("rudder", Number.parseFloat(e.target.value))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-purple-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
+          <SensitivitySlider
+            id="rudder"
+            patentId={WRIGHT_PATENT_ID}
+            paramKey="rudder"
+            label={isCoupled ? "Coupled Rudder (Slaved)" : "Independent Rudder"}
+            value={rudderYawDeg}
+            min={-20}
+            max={20}
+            step={0.5}
+            unit="°"
+            onChange={(val) => updateParam("rudder", val)}
+            allParams={params}
+          />
         </div>
 
         <PortHamiltonianEnergyStrip patentId={WRIGHT_PATENT_ID} params={params} className="mt-3" />

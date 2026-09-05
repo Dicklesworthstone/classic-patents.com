@@ -344,22 +344,122 @@ describe("Watt current-state sensitivities", () => {
 });
 
 describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
-  test("Wright Flyer computes finite-difference sensitivity for wing warp and airspeed", () => {
-    const warpSens = computeParameterSensitivity("us-821393-wright-flyer", "wingWarp", {
+  test("Wright Flyer computes finite-difference sensitivity for all 3-axis controls and Claim 18 interlock", () => {
+    const id = "us-821393-wright-flyer";
+
+    // 1. Wing Warp (Adverse Yaw)
+    const warpSensUncoupled = computeParameterSensitivity(id, "wingWarp", {
       wingWarp: 5.0,
       rudder: 0,
       coupled: 0,
+      airspeed: 30.0,
     });
-    expect(warpSens).toBeDefined();
-    expect(warpSens?.metricName).toBe("Adverse Yaw Moment");
-    expect(warpSens?.derivativeSymbol).toBe("∂N / ∂δ_warp");
-    expect(warpSens?.derivativeUnit).toBe("N·m / deg");
+    expect(warpSensUncoupled).toBeDefined();
+    expect(warpSensUncoupled?.metricName).toBe("Adverse Yaw Moment");
+    expect(warpSensUncoupled?.derivativeSymbol).toBe("∂N / ∂δ_warp");
+    expect(warpSensUncoupled?.derivativeUnit).toBe("N·m / deg");
+    expect(warpSensUncoupled?.derivativeValue).toBeCloseTo(-1.7, 1);
 
-    const speedSens = computeParameterSensitivity("us-821393-wright-flyer", "airspeed", {
-      airspeed: 28.0,
+    const warpSensCoupled = computeParameterSensitivity(id, "wingWarp", {
+      wingWarp: 5.0,
+      coupled: 1,
+      airspeed: 30.0,
+    });
+    // With Claim 18 interlock engaged, adverse yaw is mechanically cancelled by slaved rudder:
+    expect(Math.abs(warpSensCoupled?.derivativeValue ?? 99)).toBeLessThan(0.1);
+
+    // Warp aliases
+    for (const alias of ["warp", "wingWarpDeg"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { [alias]: 5.0, coupled: 0, airspeed: 30 })
+          ?.derivativeValue,
+      ).toBeCloseTo(-1.7, 1);
+    }
+
+    // 2. Airspeed (Dynamic Pressure Lift Growth)
+    const speedSens = computeParameterSensitivity(id, "airspeed", {
+      airspeed: 30.0,
     });
     expect(speedSens).toBeDefined();
     expect(speedSens?.metricName).toBe("Aerodynamic Lift");
+    expect(speedSens?.derivativeSymbol).toBe("∂L / ∂V");
+    expect(speedSens?.derivativeUnit).toBe("N / mph");
+    expect(speedSens?.derivativeValue).toBeGreaterThan(0);
+
+    for (const alias of ["speed", "airspeedMph", "airspeedKts"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 30.0 })?.derivativeValue).toBe(
+        speedSens?.derivativeValue,
+      );
+    }
+
+    // 3. Rudder (Aerodynamic Yaw Restoring Moment)
+    const rudderSensUncoupled = computeParameterSensitivity(id, "rudder", {
+      rudder: 5.0,
+      coupled: 0,
+      airspeed: 30.0,
+    });
+    expect(rudderSensUncoupled).toBeDefined();
+    expect(rudderSensUncoupled?.metricName).toBe("Rudder Aerodynamic Yaw Moment");
+    expect(rudderSensUncoupled?.derivativeSymbol).toBe("∂N / ∂δ_rudder");
+    expect(rudderSensUncoupled?.derivativeUnit).toBe("N·m / deg");
+    expect(rudderSensUncoupled?.derivativeValue).toBeCloseTo(3.8, 1);
+
+    const rudderSensCoupled = computeParameterSensitivity(id, "rudder", {
+      rudder: 5.0,
+      coupled: 1,
+    });
+    // With Claim 18 interlock engaged, manual rudder is slaved and has no independent sensitivity:
+    expect(rudderSensCoupled).toBeNull();
+
+    for (const alias of ["rudderDeg", "rudderAngle"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { [alias]: 5.0, coupled: 0, airspeed: 30 })
+          ?.derivativeValue,
+      ).toBeCloseTo(3.8, 1);
+    }
+
+    // 4. Elevator / Canard (Pitching Moment)
+    const elevSens = computeParameterSensitivity(id, "elevator", {
+      elevator: 4.0,
+      airspeed: 30.0,
+    });
+    expect(elevSens).toBeDefined();
+    expect(elevSens?.metricName).toBe("Canard Pitch Moment");
+    expect(elevSens?.derivativeSymbol).toBe("∂M / ∂δ_canard");
+    expect(elevSens?.derivativeUnit).toBe("N·m / deg");
+    expect(elevSens?.derivativeValue).toBeCloseTo(-2.2, 1);
+
+    for (const alias of ["canard", "canardDeg", "elevatorDeg", "pitchAngle"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { [alias]: 4.0, airspeed: 30 })?.derivativeValue,
+      ).toBeCloseTo(-2.2, 1);
+    }
+
+    // 5. Coupled Mode Toggle
+    const coupledSens = computeParameterSensitivity(id, "coupled", { coupled: 1 });
+    expect(coupledSens).toBeDefined();
+    expect(coupledSens?.metricName).toBe("Claim 18 Rudder Coordination Interlock");
+    expect(coupledSens?.derivativeSymbol).toBe("ΔState / ΔCoupled");
+    expect(coupledSens?.derivativeValue).toBe(0);
+    expect(coupledSens?.derivativeUnit).toBe("state");
+
+    for (const alias of ["coupling", "claim18Coupled", "rudderInterlock"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(0);
+    }
+
+    // Bounds checking
+    for (const invalid of [9, 61, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "airspeed", { airspeed: invalid })).toBeNull();
+    }
+    for (const invalid of [-21, 21, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "wingWarp", { wingWarp: invalid })).toBeNull();
+    }
+    for (const invalid of [-31, 31, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "rudder", { rudder: invalid })).toBeNull();
+    }
+    for (const invalid of [-26, 26, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "elevator", { elevator: invalid })).toBeNull();
+    }
   });
 
   test("Edison lightbulb computes Stefan-Boltzmann thermal radiation sensitivity", () => {
@@ -3151,6 +3251,35 @@ describe("Sensitivities follow the current admitted operating point", () => {
       }
     }
 
+    for (const d of [20, 25, 35]) {
+      const sensD = computeParameterSensitivity(id, "tubeDiameterMm", { tubeDiameterMm: d });
+      expect(sensD).toBeDefined();
+      expect(sensD?.metricName).toBe("Tube Confinement Luminous Flux");
+      expect(sensD?.derivativeSymbol).toBe("∂Φ / ∂D_tube");
+      expect(sensD?.derivativeUnit).toBe("lm / mm");
+
+      const fwd = stepHewittMercuryLamp({
+        mainsVoltageV: 110,
+        ballastResistanceOhms: 12,
+        tubeLengthCm: 100,
+        tubeDiameterMm: d + h,
+      }).luminousFluxLumensUnrounded;
+      const bwd = stepHewittMercuryLamp({
+        mainsVoltageV: 110,
+        ballastResistanceOhms: 12,
+        tubeLengthCm: 100,
+        tubeDiameterMm: d - h,
+      }).luminousFluxLumensUnrounded;
+      const fd = (fwd - bwd) / (2 * h);
+      expect(sensD?.derivativeValue).toBeCloseTo(fd, 3);
+
+      // Aliases
+      for (const key of ["diameter", "tubeDiameter", "tubeDiamMm", "diamMm"]) {
+        const aliasSens = computeParameterSensitivity(id, key, { [key]: d });
+        expect(aliasSens?.derivativeValue).toBe(sensD?.derivativeValue);
+      }
+    }
+
     // Claim 1 refusal gating
     const gatedV = computeParameterSensitivity(id, "mainsVoltageV", {
       mainsVoltageV: 110,
@@ -3158,6 +3287,13 @@ describe("Sensitivities follow the current admitted operating point", () => {
     });
     expect(gatedV?.derivativeValue).toBe(0);
     expect(gatedV?.interpretation).toContain("Claim 1");
+
+    const gatedD = computeParameterSensitivity(id, "tubeDiameterMm", {
+      tubeDiameterMm: 25,
+      claim1Active: false,
+    });
+    expect(gatedD?.derivativeValue).toBe(0);
+    expect(gatedD?.interpretation).toContain("Claim 1");
 
     const gatedR = computeParameterSensitivity(id, "ballastResistanceOhms", {
       ballastResistanceOhms: 12,
@@ -4894,6 +5030,25 @@ describe("Sensitivities follow the current admitted operating point", () => {
     const numDerivTime = (fTimePlus - fTimeMinus) / (2 * hTime);
     expect(sensTime?.derivativeValue).toBeCloseTo(numDerivTime, 4);
 
+    // Catalyst percentage sensitivity
+    const sensCat = computeParameterSensitivity(id, "catalystPct", {
+      curingTempC: 150,
+      autoclavePressurePsi: 75,
+      catalystPct: 1.5,
+      curingTimeMin: 60,
+    });
+    expect(sensCat).toBeDefined();
+    expect(sensCat?.metricName).toBe("Catalytic Condensation Acceleration");
+    expect(sensCat?.derivativeSymbol).toBe("∂k_crosslink / ∂catalyst");
+    expect(sensCat?.derivativeUnit).toBe("min⁻¹ / %");
+
+    // Central finite difference verification for catalyst
+    const hCat = 1e-4;
+    const fCatPlus = stepBaekelandBakelite(150, 75, 1.5 + hCat, 60).kRateUnrounded;
+    const fCatMinus = stepBaekelandBakelite(150, 75, 1.5 - hCat, 60).kRateUnrounded;
+    const numDerivCat = (fCatPlus - fCatMinus) / (2 * hCat);
+    expect(sensCat?.derivativeValue).toBeCloseTo(numDerivCat, 4);
+
     // Claim 1 gating
     const claim1Off = computeParameterSensitivity(id, "autoclavePressurePsi", {
       curingTempC: 150,
@@ -4902,6 +5057,15 @@ describe("Sensitivities follow the current admitted operating point", () => {
     });
     expect(claim1Off?.derivativeValue).toBe(0);
     expect(claim1Off?.interpretation).toContain("Claim 1");
+
+    const claim1OffCat = computeParameterSensitivity(id, "catalystPct", {
+      curingTempC: 150,
+      autoclavePressurePsi: 75,
+      catalystPct: 1.5,
+      claim1Active: false,
+    });
+    expect(claim1OffCat?.derivativeValue).toBe(0);
+    expect(claim1OffCat?.interpretation).toContain("Claim 1");
 
     // Parameter alias checks
     const nominalP = sensPress?.derivativeValue;
@@ -4947,6 +5111,18 @@ describe("Sensitivities follow the current admitted operating point", () => {
         curingTimeMin: 60,
       })?.derivativeValue,
     ).toBe(nominalT);
+
+    const nominalCat = sensCat?.derivativeValue;
+    for (const key of ["catalyst", "catPct", "catalystConcentration", "catalystPercent"]) {
+      expect(
+        computeParameterSensitivity(id, key, {
+          curingTempC: 150,
+          autoclavePressurePsi: 75,
+          catalystPct: 1.5,
+          curingTimeMin: 60,
+        })?.derivativeValue,
+      ).toBe(nominalCat);
+    }
 
     // Invalid bounds
     for (const invalid of [109, 201, Number.NaN]) {
@@ -6470,6 +6646,35 @@ describe("Sensitivities follow the current admitted operating point", () => {
       stepDeForestAudion({ ...baseParams, filamentCurrentA: 1.0 - h }).filamentPowerWUnrounded ?? 0;
     const fdFil = (pForwardFil - pBackwardFil) / (2 * h);
     expect(sensFil?.derivativeValue).toBeCloseTo(fdFil, 4);
+
+    // Small-Signal Voltage Gain with respect to RF grid signal amplitude
+    const sensSignal = computeParameterSensitivity(id, "gridSignalAmplitudeMv", baseParams);
+    expect(sensSignal).toBeDefined();
+    expect(sensSignal?.metricName).toBe("Small-Signal Voltage Gain");
+    expect(sensSignal?.derivativeSymbol).toBe("∂v_out / ∂v_in");
+    expect(sensSignal?.derivativeUnit).toBe("mV / mV");
+    expect(sensSignal?.derivativeValue).toBe(stepDeForestAudion(baseParams).voltageGain);
+
+    // Aliases
+    for (const key of [
+      "rfInputMv",
+      "rfInput",
+      "signalAmplitude",
+      "signalAmplitudeMv",
+      "inputSignalMv",
+      "gridSignalMv",
+    ]) {
+      expect(computeParameterSensitivity(id, key, baseParams)?.derivativeValue).toBe(
+        sensSignal?.derivativeValue,
+      );
+    }
+
+    // Claim 1 refusal: when grid is absent, small-signal voltage gain is 0
+    const sensSignalRefused = computeParameterSensitivity(id, "gridSignalAmplitudeMv", {
+      ...baseParams,
+      claim1GridPresent: false,
+    });
+    expect(sensSignalRefused?.derivativeValue).toBe(0);
 
     // Bounds checking
     for (const invalid of [4, 201, Number.NaN]) {

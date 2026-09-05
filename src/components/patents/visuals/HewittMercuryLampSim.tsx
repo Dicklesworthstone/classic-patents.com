@@ -442,23 +442,19 @@ export function HewittMercuryLampSim({
         />
 
         {/* Tube Diameter */}
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between text-xs font-semibold">
-            <span className="text-emerald-400">Tube Diameter</span>
-            <span className="font-mono text-emerald-300">{tubeDiameterMm} mm</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Mercury-vapor tube diameter in millimeters"
-            min={15}
-            max={40}
-            step={1}
-            value={tubeDiameterMm}
-            onChange={(e) => updateParam("tubeDiameterMm", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-          />
-          <span className="text-[10px] text-slate-400">Discharge bore width</span>
-        </div>
+        <SensitivitySlider
+          id="hewitt-tube-diameter-2d"
+          patentId="us-682690-hewitt-mercury-lamp"
+          paramKey="tubeDiameterMm"
+          label="Tube Diameter"
+          value={tubeDiameterMm}
+          min={15}
+          max={40}
+          step={1}
+          unit="mm"
+          onChange={(val) => updateParam("tubeDiameterMm", val)}
+          allParams={params}
+        />
 
         {/* Condenser Cooling */}
         <div className="flex flex-col gap-1">

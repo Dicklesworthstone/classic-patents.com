@@ -62,6 +62,55 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
     expect(restored.airspeed).toBe(28);
   });
 
+  test("Wright Flyer aliases (speed, warp, rudder, canard, coupling) update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-821393-wright-flyer";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) => observations.push(params.airspeed));
+    try {
+      setPatentPhysicsParam(id, "speed", 36);
+      const params = getPatentPhysicsParams(id);
+      expect(params.airspeed).toBe(36);
+      expect(params.speed).toBe(36);
+      expect(params.airspeedMph).toBe(36);
+      expect(params.airspeedKts).toBe(36);
+      expect(observations).toEqual([36]);
+      expect(getLastParamChange(id)?.id).toBe("airspeed");
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Gross Lift")?.value).not.toBe(
+        initial.find((m) => m.label === "Gross Lift")?.value,
+      );
+
+      setPatentPhysicsParam(id, "warp", 8);
+      expect(getPatentPhysicsParams(id).wingWarp).toBe(8);
+      expect(getPatentPhysicsParams(id).warp).toBe(8);
+      expect(getPatentPhysicsParams(id).wingWarpDeg).toBe(8);
+
+      setPatentPhysicsParam(id, "rudderAngle", 6);
+      expect(getPatentPhysicsParams(id).rudder).toBe(6);
+      expect(getPatentPhysicsParams(id).rudderDeg).toBe(6);
+      expect(getPatentPhysicsParams(id).rudderAngle).toBe(6);
+
+      setPatentPhysicsParam(id, "canard", -4);
+      expect(getPatentPhysicsParams(id).elevator).toBe(-4);
+      expect(getPatentPhysicsParams(id).canard).toBe(-4);
+      expect(getPatentPhysicsParams(id).canardDeg).toBe(-4);
+      expect(getPatentPhysicsParams(id).elevatorDeg).toBe(-4);
+      expect(getPatentPhysicsParams(id).pitchAngle).toBe(-4);
+
+      setPatentPhysicsParam(id, "rudderInterlock", 0);
+      expect(getPatentPhysicsParams(id).coupled).toBe(0);
+      expect(getPatentPhysicsParams(id).coupling).toBe(0);
+      expect(getPatentPhysicsParams(id).claim18Coupled).toBe(0);
+      expect(getPatentPhysicsParams(id).rudderInterlock).toBe(0);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
   test("canonicalizes 3D slider aliases seamlessly across component boundaries", () => {
     const maximId = "us-319596-maxim-machine-gun";
     setPatentPhysicsParam(maximId, "fireRateRpm", 700);
@@ -323,6 +372,13 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
 
       setPatentPhysicsParam(id, "loadResistance", 35);
       expect(getPatentPhysicsParams(id).loadResistanceKOhms).toBe(35);
+
+      setPatentPhysicsParam(id, "signalAmplitude", 45);
+      expect(getPatentPhysicsParams(id).gridSignalAmplitudeMv).toBe(45);
+      expect(getPatentPhysicsParams(id).signalAmplitude).toBe(45);
+      expect(getPatentPhysicsParams(id).signalAmplitudeMv).toBe(45);
+      expect(getPatentPhysicsParams(id).inputSignalMv).toBe(45);
+      expect(getPatentPhysicsParams(id).gridSignalMv).toBe(45);
     } finally {
       unsubscribe();
       resetPatentPhysicsParams(id);
@@ -853,6 +909,13 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       expect(getPatentPhysicsParams(id).tubeLengthCm).toBe(120);
       expect(getPatentPhysicsParams(id).tubeLength).toBe(120);
       expect(getPatentPhysicsParams(id).length).toBe(120);
+
+      setPatentPhysicsParam(id, "diameter", 32);
+      expect(getPatentPhysicsParams(id).tubeDiameterMm).toBe(32);
+      expect(getPatentPhysicsParams(id).diameter).toBe(32);
+      expect(getPatentPhysicsParams(id).tubeDiameter).toBe(32);
+      expect(getPatentPhysicsParams(id).tubeDiamMm).toBe(32);
+      expect(getPatentPhysicsParams(id).diamMm).toBe(32);
     } finally {
       unsubscribe();
       resetPatentPhysicsParams(id);
@@ -1041,6 +1104,9 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       setPatentPhysicsParam(id, "catalyst", 3.5);
       expect(getPatentPhysicsParams(id).catalystPct).toBe(3.5);
       expect(getPatentPhysicsParams(id).catalyst).toBe(3.5);
+      expect(getPatentPhysicsParams(id).catPct).toBe(3.5);
+      expect(getPatentPhysicsParams(id).catalystConcentration).toBe(3.5);
+      expect(getPatentPhysicsParams(id).catalystPercent).toBe(3.5);
 
       setPatentPhysicsParam(id, "curingTime", 90);
       expect(getPatentPhysicsParams(id).curingTimeMin).toBe(90);

@@ -2,6 +2,7 @@
 
 import { FlaskConical, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useMemo } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepBaekelandBakelite } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -444,80 +445,62 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
       </div>
 
       {/* Physics Sliders & Parameter Controllers */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4 border-t border-stone-800">
-        <div className="flex flex-col gap-1.5 bg-stone-950/40 p-3 rounded-lg border border-stone-800/80">
-          <div className="flex justify-between text-xs font-mono">
-            <span className="text-stone-300">Curing Temp (°C)</span>
-            <span className="text-amber-400 font-bold">{curingTempC} °C</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Curing temperature in degrees Celsius"
-            min="90"
-            max="180"
-            step="5"
-            value={curingTempC}
-            onChange={(e) => setControl("curingTempC", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-          <span className="text-[10px] text-stone-500">Nominal 110–140 °C range</span>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-stone-800">
+        <SensitivitySlider
+          id="bakelite-curing-temp"
+          patentId="us-942699-baekeland-bakelite"
+          paramKey="curingTempC"
+          label="Curing Temperature"
+          value={curingTempC}
+          min={100}
+          max={200}
+          step={5}
+          unit="°C"
+          onChange={(val) => setControl("curingTempC", val)}
+          allParams={controls}
+        />
 
-        <div className="flex flex-col gap-1.5 bg-stone-950/40 p-3 rounded-lg border border-stone-800/80">
-          <div className="flex justify-between text-xs font-mono">
-            <span className="text-stone-300">Closed-Vessel Pressure (psi)</span>
-            <span className="text-sky-400 font-bold">{autoclavePressurePsi} psi</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Closed-vessel pressure in pounds per square inch"
-            min="0"
-            max="120"
-            step="5"
-            value={autoclavePressurePsi}
-            onChange={(e) => setControl("autoclavePressurePsi", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-sky-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-sky-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-          <span className="text-[10px] text-stone-500">
-            Illustrative model control; no source pressure range
-          </span>
-        </div>
+        <SensitivitySlider
+          id="bakelite-pressure"
+          patentId="us-942699-baekeland-bakelite"
+          paramKey="autoclavePressurePsi"
+          label="Closed-Vessel Pressure"
+          value={autoclavePressurePsi}
+          min={20}
+          max={200}
+          step={5}
+          unit="psi"
+          onChange={(val) => setControl("autoclavePressurePsi", val)}
+          allParams={controls}
+        />
 
-        <div className="flex flex-col gap-1.5 bg-stone-950/40 p-3 rounded-lg border border-stone-800/80">
-          <div className="flex justify-between text-xs font-mono">
-            <span className="text-stone-300">Cure Duration (min)</span>
-            <span className="text-emerald-400 font-bold">{curingTimeMin} min</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Cure duration in minutes"
-            min="10"
-            max="180"
-            step="5"
-            value={curingTimeMin}
-            onChange={(e) => setControl("curingTimeMin", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-emerald-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-          <span className="text-[10px] text-stone-500">Sustained baking duration</span>
-        </div>
+        <SensitivitySlider
+          id="bakelite-curing-time"
+          patentId="us-942699-baekeland-bakelite"
+          paramKey="curingTimeMin"
+          label="Cure Duration"
+          value={curingTimeMin}
+          min={10}
+          max={120}
+          step={5}
+          unit="min"
+          onChange={(val) => setControl("curingTimeMin", val)}
+          allParams={controls}
+        />
 
-        <div className="flex flex-col gap-1.5 bg-stone-950/40 p-3 rounded-lg border border-stone-800/80">
-          <div className="flex justify-between text-xs font-mono">
-            <span className="text-stone-300">Condensing Catalyst (%)</span>
-            <span className="text-purple-400 font-bold">{catalystPct.toFixed(1)} %</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Condensing catalyst percentage"
-            min="0.2"
-            max="5.0"
-            step="0.1"
-            value={catalystPct}
-            onChange={(e) => setControl("catalystPct", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-purple-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-          <span className="text-[10px] text-stone-500">Acid/base reaction accelerator</span>
-        </div>
+        <SensitivitySlider
+          id="bakelite-catalyst"
+          patentId="us-942699-baekeland-bakelite"
+          paramKey="catalystPct"
+          label="Condensing Catalyst"
+          value={catalystPct}
+          min={0.5}
+          max={5.0}
+          step={0.1}
+          unit="%"
+          onChange={(val) => setControl("catalystPct", val)}
+          allParams={controls}
+        />
 
         <div className="flex flex-col gap-1.5 bg-stone-950/40 p-3 rounded-lg border border-stone-800/80 sm:col-span-2 lg:col-span-2">
           <div className="flex justify-between text-xs font-mono">

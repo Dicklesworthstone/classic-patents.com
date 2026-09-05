@@ -148,11 +148,55 @@ export function computeParameterSensitivity(
       // readWrightControls keeps the Claim 18 rudder interlock in the loop:
       // with coupling ON the warp-induced adverse yaw is cancelled and the
       // chip honestly reads ~0 — toggle the coupling to see the gradient.
-      const warpProbe = (warpDeg: number) =>
-        stepWrightFlyerSi(readWrightControls({ ...params, wingWarp: warpDeg }));
-      if (controlKey === "wingWarp" || controlKey === "wingWarpDeg") {
-        const warp = params.wingWarp ?? params.wingWarpDeg ?? 5.0;
-        const dYawDwarp = (warpProbe(warp + 0.5).netYawNm - warpProbe(warp - 0.5).netYawNm) / 1.0;
+      const airspeed =
+        params.airspeed ?? params.speed ?? params.airspeedMph ?? params.airspeedKts ?? 28.0;
+      const wingWarp = params.wingWarp ?? params.wingWarpDeg ?? params.warp ?? 0;
+      const rudder = params.rudder ?? params.rudderDeg ?? params.rudderAngle ?? 0;
+      const elevator =
+        params.elevator ??
+        params.elevatorDeg ??
+        params.canard ??
+        params.canardDeg ??
+        params.pitchAngle ??
+        0;
+      const rawCoupled =
+        params.coupled !== undefined
+          ? params.coupled
+          : params.coupling !== undefined
+            ? params.coupling
+            : params.claim18Coupled !== undefined
+              ? params.claim18Coupled
+              : params.rudderInterlock !== undefined
+                ? params.rudderInterlock
+                : 1;
+      const isCoupled =
+        rawCoupled === true ||
+        rawCoupled === 1 ||
+        rawCoupled === "1" ||
+        String(rawCoupled).toLowerCase() === "true";
+
+      if (
+        !Number.isFinite(airspeed) ||
+        airspeed < 10 ||
+        airspeed > 60 ||
+        !Number.isFinite(wingWarp) ||
+        wingWarp < -20 ||
+        wingWarp > 20 ||
+        !Number.isFinite(rudder) ||
+        rudder < -30 ||
+        rudder > 30 ||
+        !Number.isFinite(elevator) ||
+        elevator < -25 ||
+        elevator > 25
+      ) {
+        return null;
+      }
+
+      if (controlKey === "wingWarp" || controlKey === "wingWarpDeg" || controlKey === "warp") {
+        const warpProbe = (warpDeg: number) =>
+          stepWrightFlyerSi(readWrightControls({ ...params, wingWarp: warpDeg }));
+        const dYawDwarp =
+          (warpProbe(wingWarp + 0.5).netYawNm - warpProbe(wingWarp - 0.5).netYawNm) / 1.0;
         return {
           metricName: "Adverse Yaw Moment",
           derivativeSymbol: "∂N / ∂δ_warp",
@@ -162,17 +206,75 @@ export function computeParameterSensitivity(
             "Central difference of the live kernel. With the Claim 18 rudder interlock engaged the residual gradient is ~0; uncoupled it shows the raw adverse-yaw gradient.",
         };
       }
-      if (controlKey === "airspeed" || controlKey === "airspeedKts") {
-        const mph = params.airspeed ?? 28.0;
-        const liftProbe = (airspeedMph: number) =>
-          stepWrightFlyerSi(readWrightControls({ ...params, airspeed: airspeedMph }));
-        const dLiftDv = (liftProbe(mph + 0.5).liftNewtons - liftProbe(mph - 0.5).liftNewtons) / 1.0;
+      if (
+        controlKey === "airspeed" ||
+        controlKey === "airspeedKts" ||
+        controlKey === "airspeedMph" ||
+        controlKey === "speed"
+      ) {
+        const liftProbe = (vMph: number) =>
+          stepWrightFlyerSi(readWrightControls({ ...params, airspeed: vMph }));
+        const dLiftDv =
+          (liftProbe(airspeed + 0.5).liftNewtons - liftProbe(airspeed - 0.5).liftNewtons) / 1.0;
         return {
           metricName: "Aerodynamic Lift",
           derivativeSymbol: "∂L / ∂V",
           derivativeValue: Number(dLiftDv.toFixed(1)),
           derivativeUnit: "N / mph",
           interpretation: "Dynamic pressure lift growth scaling with velocity squared.",
+        };
+      }
+      if (controlKey === "rudder" || controlKey === "rudderDeg" || controlKey === "rudderAngle") {
+        if (isCoupled) {
+          return null;
+        }
+        const rudderProbe = (rDeg: number) =>
+          stepWrightFlyerSi(readWrightControls({ ...params, coupled: 0, rudder: rDeg }));
+        const dYawDrudder =
+          (rudderProbe(rudder + 0.5).netYawNm - rudderProbe(rudder - 0.5).netYawNm) / 1.0;
+        return {
+          metricName: "Rudder Aerodynamic Yaw Moment",
+          derivativeSymbol: "∂N / ∂δ_rudder",
+          derivativeValue: Number(dYawDrudder.toFixed(2)),
+          derivativeUnit: "N·m / deg",
+          interpretation:
+            "Vertical tail rudder aerodynamic restoring yaw moment counteracting differential wing warp adverse yaw.",
+        };
+      }
+      if (
+        controlKey === "elevator" ||
+        controlKey === "elevatorDeg" ||
+        controlKey === "canard" ||
+        controlKey === "canardDeg" ||
+        controlKey === "pitchAngle"
+      ) {
+        const elevProbe = (eDeg: number) =>
+          stepWrightFlyerSi(readWrightControls({ ...params, elevator: eDeg }));
+        const dPitchDelev =
+          (elevProbe(elevator + 0.5).pitchNm - elevProbe(elevator - 0.5).pitchNm) / 1.0;
+        return {
+          metricName: "Canard Pitch Moment",
+          derivativeSymbol: "∂M / ∂δ_canard",
+          derivativeValue: Number(dPitchDelev.toFixed(2)),
+          derivativeUnit: "N·m / deg",
+          interpretation:
+            "Forward horizontal canard aerodynamic pitching moment governing aircraft longitudinal trim and angle of attack.",
+        };
+      }
+      if (
+        controlKey === "coupled" ||
+        controlKey === "coupling" ||
+        controlKey === "claim18Coupled" ||
+        controlKey === "rudderInterlock"
+      ) {
+        return {
+          metricName: "Claim 18 Rudder Coordination Interlock",
+          derivativeSymbol: "ΔState / ΔCoupled",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation: isCoupled
+            ? "Claim 18 interlock mechanically couples vertical rudder to the hip cradle (0.45° rudder per 1° warp), autonomously nulling adverse yaw."
+            : "Claim 18 interlock is disengaged; adverse yaw is uncompensated and requires manual counter-rudder.",
         };
       }
       break;
@@ -1279,7 +1381,13 @@ export function computeParameterSensitivity(
         params.arcCurrent ??
         12;
       const lenCm = params.tubeLengthCm ?? params.tubeLength ?? params.length ?? 100;
-      const diamMm = params.tubeDiameterMm ?? params.diameter ?? 25;
+      const diamMm =
+        params.tubeDiameterMm ??
+        params.diameter ??
+        params.tubeDiameter ??
+        params.tubeDiamMm ??
+        params.diamMm ??
+        25;
       const claim1Active = params.claim1Active !== undefined ? Boolean(params.claim1Active) : true;
 
       if (
@@ -1394,6 +1502,46 @@ export function computeParameterSensitivity(
           derivativeUnit: "V / cm",
           interpretation:
             "Uniform electric field gradient in the ionized positive column across tube elongation.",
+        };
+      }
+      if (
+        controlKey === "tubeDiameterMm" ||
+        controlKey === "diameter" ||
+        controlKey === "tubeDiameter" ||
+        controlKey === "tubeDiamMm" ||
+        controlKey === "diamMm"
+      ) {
+        if (!claim1Active) {
+          return {
+            metricName: "Tube Confinement Luminous Flux",
+            derivativeSymbol: "∂Φ / ∂D_tube",
+            derivativeValue: 0,
+            derivativeUnit: "lm / mm",
+            interpretation:
+              "Claim 1 enclosed evacuated mercury vapor gas discharge arc is withheld; zero arc discharge.",
+          };
+        }
+        const fwd = stepHewittMercuryLamp({
+          mainsVoltageV: vMains,
+          ballastResistanceOhms: rBallast,
+          tubeLengthCm: lenCm,
+          tubeDiameterMm: diamMm + h,
+        });
+        const bwd = stepHewittMercuryLamp({
+          mainsVoltageV: vMains,
+          ballastResistanceOhms: rBallast,
+          tubeLengthCm: lenCm,
+          tubeDiameterMm: diamMm - h,
+        });
+        const dPhi_dD =
+          (fwd.luminousFluxLumensUnrounded - bwd.luminousFluxLumensUnrounded) / (2 * h);
+        return {
+          metricName: "Tube Confinement Luminous Flux",
+          derivativeSymbol: "∂Φ / ∂D_tube",
+          derivativeValue: dPhi_dD,
+          derivativeUnit: "lm / mm",
+          interpretation:
+            "Plasma column wall-stabilization and surface recombination scaling with internal tube bore diameter.",
         };
       }
       break;
@@ -3064,6 +3212,34 @@ export function computeParameterSensitivity(
           interpretation: `Analytic Joule heating rate ($2 I_\\text{fil} R_\\text{fil}$) at current $I_\\text{fil} = ${ifil.toFixed(2)}$ A and declared 5.5 Ω filament cold/hot baseline.`,
         };
       }
+
+      if (
+        controlKey === "gridSignalAmplitudeMv" ||
+        controlKey === "rfInputMv" ||
+        controlKey === "rfInput" ||
+        controlKey === "signalAmplitude" ||
+        controlKey === "signalAmplitudeMv" ||
+        controlKey === "inputSignalMv" ||
+        controlKey === "gridSignalMv"
+      ) {
+        if (!claim1GridPresent) {
+          return {
+            metricName: "Small-Signal Voltage Gain",
+            derivativeSymbol: "∂v_out / ∂v_in",
+            derivativeValue: 0,
+            derivativeUnit: "mV / mV",
+            interpretation:
+              "Claim 1 interposed conducting grid is withheld; operating as passive diode with zero active small-signal amplification.",
+          };
+        }
+        return {
+          metricName: "Small-Signal Voltage Gain",
+          derivativeSymbol: "∂v_out / ∂v_in",
+          derivativeValue: audion.voltageGain,
+          derivativeUnit: "mV / mV",
+          interpretation: `Linear small-signal voltage amplification ($A_v = \\mu R_L / (r_p + R_L) = ${audion.voltageGain}$) at input signal $v_\\text{in} = ${rfIn}$ mV.`,
+        };
+      }
       break;
     }
 
@@ -3163,6 +3339,24 @@ export function computeParameterSensitivity(
           interpretation: claim1Active
             ? "Fractional conversion progression per minute toward Carothers gel point and C-stage network formation."
             : "Claim 1's closed-vessel reaction is withheld; polycondensation progression without pressure produces a defective porous mass.",
+        };
+      }
+      if (
+        controlKey === "catalystPct" ||
+        controlKey === "catalyst" ||
+        controlKey === "catPct" ||
+        controlKey === "catalystConcentration" ||
+        controlKey === "catalystPercent"
+      ) {
+        const dK_dCat = (0.8 * bakelite.kRateUnrounded) / (1 + 0.8 * catPct);
+        return {
+          metricName: "Catalytic Condensation Acceleration",
+          derivativeSymbol: "∂k_crosslink / ∂catalyst",
+          derivativeValue: claim1Active ? Number(dK_dCat.toPrecision(6)) : 0,
+          derivativeUnit: "min⁻¹ / %",
+          interpretation: claim1Active
+            ? "Basic/acidic condensing agent acceleration of phenol-formaldehyde methylene bridge condensation rate."
+            : "Claim 1's closed-vessel reaction is withheld; condensation kinetics without pressure yield a defective porous mass.",
         };
       }
       break;
