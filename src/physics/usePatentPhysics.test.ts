@@ -1956,4 +1956,101 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
       resetPatentPhysicsParams(id);
     }
   });
+
+  test("Goddard Rocket aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-1102653-goddard-rocket";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.tubeLengthRatio));
+
+    try {
+      setPatentPhysicsParam(id, "ratio", 5.2);
+      const params = getPatentPhysicsParams(id);
+      expect(params.tubeLengthRatio).toBe(5.2);
+      expect(params.ratio).toBe(5.2);
+      expect(params.ldRatio).toBe(5.2);
+      expect(params.aspectRatio).toBe(5.2);
+      expect(observations).toEqual([5.2]);
+
+      setPatentPhysicsParam(id, "spinRpm", 150);
+      expect(getPatentPhysicsParams(id).primarySpinRpm).toBe(150);
+      expect(getPatentPhysicsParams(id).spinRpm).toBe(150);
+      expect(getPatentPhysicsParams(id).primarySpin).toBe(150);
+
+      setPatentPhysicsParam(id, "gyroRpm", 8000);
+      expect(getPatentPhysicsParams(id).gyroSpinRpm).toBe(8000);
+      expect(getPatentPhysicsParams(id).gyroRpm).toBe(8000);
+      expect(getPatentPhysicsParams(id).gyroSpin).toBe(8000);
+
+      setPatentPhysicsParam(id, "stagingFraction", 0.5);
+      expect(getPatentPhysicsParams(id).auxiliaryReleaseFraction).toBe(0.5);
+      expect(getPatentPhysicsParams(id).stagingFraction).toBe(0.5);
+      expect(getPatentPhysicsParams(id).releaseFraction).toBe(0.5);
+
+      setPatentPhysicsParam(id, "primaryConsumed", 1);
+      expect(getPatentPhysicsParams(id).primaryChargeConsumed).toBe(1);
+      expect(getPatentPhysicsParams(id).primaryConsumed).toBe(1);
+      expect(getPatentPhysicsParams(id).chargeConsumed).toBe(1);
+
+      setPatentPhysicsParam(id, "gyroActive", 0);
+      expect(getPatentPhysicsParams(id).gyroEnabled).toBe(0);
+      expect(getPatentPhysicsParams(id).gyroActive).toBe(0);
+      expect(getPatentPhysicsParams(id).gyro).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Claim 2 Tapered-Tube Ratio")?.value).toBe("5.2");
+      expect(metrics.find((m) => m.label === "Claim 1 Firing Sequence")?.value).toBe("ordered");
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Sundback Zipper aliases update canonical controls, notify subscribers, and update metrics", () => {
+    const id = "us-1219881-sundback-zipper";
+    resetPatentPhysicsParams(id);
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (p) => observations.push(p.sliderPositionPct));
+
+    try {
+      setPatentPhysicsParam(id, "sliderPos", 85);
+      const params = getPatentPhysicsParams(id);
+      expect(params.sliderPositionPct).toBe(85);
+      expect(params.sliderPos).toBe(85);
+      expect(params.posPct).toBe(85);
+      expect(params.position).toBe(85);
+      expect(observations).toEqual([85]);
+
+      setPatentPhysicsParam(id, "pull", 30);
+      expect(getPatentPhysicsParams(id).pullForceN).toBe(30);
+      expect(getPatentPhysicsParams(id).pull).toBe(30);
+      expect(getPatentPhysicsParams(id).pullN).toBe(30);
+
+      setPatentPhysicsParam(id, "tension", 60);
+      expect(getPatentPhysicsParams(id).lateralTensionN).toBe(60);
+      expect(getPatentPhysicsParams(id).tension).toBe(60);
+      expect(getPatentPhysicsParams(id).transverseTension).toBe(60);
+
+      setPatentPhysicsParam(id, "flexAngle", 45);
+      expect(getPatentPhysicsParams(id).flexAngleDeg).toBe(45);
+      expect(getPatentPhysicsParams(id).flexAngle).toBe(45);
+      expect(getPatentPhysicsParams(id).bendingAngle).toBe(45);
+
+      setPatentPhysicsParam(id, "tpi", 12);
+      expect(getPatentPhysicsParams(id).toothDensityTpi).toBe(12);
+      expect(getPatentPhysicsParams(id).tpi).toBe(12);
+      expect(getPatentPhysicsParams(id).toothDensity).toBe(12);
+
+      setPatentPhysicsParam(id, "claim1Stagger", 0);
+      expect(getPatentPhysicsParams(id).staggerAligned).toBe(0);
+      expect(getPatentPhysicsParams(id).claim1Stagger).toBe(0);
+      expect(getPatentPhysicsParams(id).stagger).toBe(0);
+
+      const metrics = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+      expect(metrics.find((m) => m.label === "Lock Status")?.value).toBe("COLLISION");
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
 });

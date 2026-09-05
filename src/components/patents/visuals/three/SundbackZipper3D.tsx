@@ -13,6 +13,7 @@ import {
   createThreeStudioScene,
   type StudioContext,
 } from "@/components/patents/visuals/three/ThreeStudioScene";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
 import { readSundbackZipperControls, stepSundbackZipperSi } from "@/physics/sundbackZipperKernel";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -204,63 +205,48 @@ export default function SundbackZipper3D({
 
       {/* Control Sliders */}
       <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
-        <div className="p-3 bg-parchment-100 dark:bg-ink-900 rounded-lg border border-parchment-200 dark:border-ink-800 space-y-2">
-          <div className="flex justify-between items-center text-ink-700 dark:text-parchment-200">
-            <label htmlFor="slider-pos-3d">Slider Position</label>
-            <span className="font-bold text-amber-600 dark:text-amber-400">
-              {controls.sliderPositionPct}%
-            </span>
-          </div>
-          <input
-            id="slider-pos-3d"
-            data-audit-primary-control="true"
-            type="range"
-            min="0"
-            max="100"
-            step="1"
-            value={controls.sliderPositionPct}
-            onChange={(e) => updateParam("sliderPositionPct", Number(e.target.value))}
-            className="w-full accent-amber-600"
-          />
-        </div>
+        <SensitivitySlider
+          id="slider-pos-3d"
+          patentId={patentId}
+          paramKey="sliderPositionPct"
+          label="Slider Position"
+          value={controls.sliderPositionPct}
+          min={0}
+          max={100}
+          step={1}
+          unit="%"
+          onChange={(val) => updateParam("sliderPositionPct", val)}
+          allParams={params}
+          data-audit-primary-control="true"
+        />
 
-        <div className="p-3 bg-parchment-100 dark:bg-ink-900 rounded-lg border border-parchment-200 dark:border-ink-800 space-y-2">
-          <div className="flex justify-between items-center text-ink-700 dark:text-parchment-200">
-            <label htmlFor="flex-angle-3d">Transverse Flexion</label>
-            <span className="font-bold text-amber-600 dark:text-amber-400">
-              {controls.flexAngleDeg}°
-            </span>
-          </div>
-          <input
-            id="flex-angle-3d"
-            type="range"
-            min="0"
-            max="180"
-            step="5"
-            value={controls.flexAngleDeg}
-            onChange={(e) => updateParam("flexAngleDeg", Number(e.target.value))}
-            className="w-full accent-amber-600"
-          />
-        </div>
+        <SensitivitySlider
+          id="flex-angle-3d"
+          patentId={patentId}
+          paramKey="flexAngleDeg"
+          label="Transverse Flexion"
+          value={controls.flexAngleDeg}
+          min={0}
+          max={180}
+          step={5}
+          unit="°"
+          onChange={(val) => updateParam("flexAngleDeg", val)}
+          allParams={params}
+        />
 
-        <div className="p-3 bg-parchment-100 dark:bg-ink-900 rounded-lg border border-parchment-200 dark:border-ink-800 space-y-2">
-          <div className="flex justify-between items-center text-ink-700 dark:text-parchment-200">
-            <label htmlFor="lat-tension-3d">Lateral Tension</label>
-            <span className="font-bold text-amber-600 dark:text-amber-400">
-              {controls.lateralTensionN} N
-            </span>
-          </div>
-          <input
-            id="lat-tension-3d"
-            type="range"
-            min="0"
-            max="200"
-            step="5"
-            value={controls.lateralTensionN}
-            onChange={(e) => updateParam("lateralTensionN", Number(e.target.value))}
-            className="w-full accent-amber-600"
-          />
-        </div>
+        <SensitivitySlider
+          id="lat-tension-3d"
+          patentId={patentId}
+          paramKey="lateralTensionN"
+          label="Lateral Tension"
+          value={controls.lateralTensionN}
+          min={0}
+          max={200}
+          step={5}
+          unit=" N"
+          onChange={(val) => updateParam("lateralTensionN", val)}
+          allParams={params}
+        />
       </div>
 
       <div className="p-4 bg-parchment-100 dark:bg-ink-900 rounded-lg border border-parchment-200 dark:border-ink-800">

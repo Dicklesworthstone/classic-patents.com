@@ -42,6 +42,7 @@ import {
   readSikorskyControls,
   stepSikorskyHelicopterSi,
 } from "./sikorskyHelicopterKernel";
+import { stepSundbackZipperSi } from "./sundbackZipperKernel";
 
 describe("Thomson and Goodyear sensitivities use the displayed model", () => {
   test("welding current uses the current I²R derivative, including one-sided endpoints", () => {
@@ -1290,6 +1291,21 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(claim2Withheld?.derivativeValue).toBe(0);
     expect(claim2Withheld?.interpretation).toContain("Claim 2 withheld");
 
+    // 6. Engine running drive state
+    const engineOn = computeParameterSensitivity(id, "engineRunning", { engineRunning: 1 });
+    expect(engineOn).toBeDefined();
+    expect(engineOn?.metricName).toBe("Engine Drive & Governor State");
+    expect(engineOn?.derivativeSymbol).toBe("ΔState / ΔEngine");
+    expect(engineOn?.derivativeValue).toBe(0);
+    expect(engineOn?.interpretation).toContain("geared to main and tail rotor drive shafts");
+
+    const engineOff = computeParameterSensitivity(id, "engineRunning", { engineRunning: 0 });
+    expect(engineOff?.interpretation).toContain("autorotation");
+
+    for (const alias of ["running", "engine", "ignition"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 1 })?.derivativeValue).toBe(0);
+    }
+
     // Invalid parameters
     for (const invalid of [1.9, 16.1, Number.NaN]) {
       expect(
@@ -1305,6 +1321,11 @@ describe("Sensitivities follow the current admitted operating point", () => {
     expect(
       computeParameterSensitivity(id, "cyclicPitchForwardDeg", { cyclicPitchForwardDeg: 12 }),
     ).toBeNull();
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "engineRunning", { engineRunning: invalid }),
+      ).toBeNull();
+    }
   });
 
   test("Hollerith tabulator derives tally rate, solenoid force, and voltage sensitivities", () => {
@@ -2446,7 +2467,7 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
   });
 
-  test("Sundback Zipper derives scoop engagement, cam wedge force, and cord strain sensitivities", () => {
+  test("Sundback Zipper derives scoop engagement, cam wedge force, cord strain, flex burst, and density sensitivities", () => {
     const id = "us-1219881-sundback-zipper";
 
     for (const pos of [20, 50, 80]) {
@@ -2460,6 +2481,10 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeValue).toBe(0.65);
     }
 
+    for (const alias of ["sliderPosition", "posPct", "position", "sliderPos"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 50 })?.derivativeValue).toBe(0.65);
+    }
+
     for (const pull of [10, 25, 45]) {
       const sens = computeParameterSensitivity(id, "pullForceN", { pullForceN: pull });
       expect(sens).toBeDefined();
@@ -2467,6 +2492,10 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeSymbol).toBe("∂F_n / ∂F_pull");
       expect(sens?.derivativeUnit).toBe("N / N");
       expect(sens?.derivativeValue).toBe(1.25);
+    }
+
+    for (const alias of ["pullForce", "pull", "pullN"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 25 })?.derivativeValue).toBe(1.25);
     }
 
     for (const lat of [20, 80, 150]) {
@@ -2477,6 +2506,102 @@ describe("Sensitivities follow the current admitted operating point", () => {
       expect(sens?.derivativeUnit).toBe("% / N");
       expect(sens?.derivativeValue).toBeCloseTo(100 / 1700, 4);
     }
+
+    for (const alias of ["lateralTension", "tension", "tensionN", "transverseTension"]) {
+      expect(computeParameterSensitivity(id, alias, { [alias]: 80 })?.derivativeValue).toBeCloseTo(
+        100 / 1700,
+        4,
+      );
+    }
+
+    // Tape flex angle burst resistance sensitivity
+    const baseSundback = {
+      sliderPositionPct: 65,
+      pullForceN: 15,
+      lateralTensionN: 40,
+      flexAngleDeg: 25,
+      toothDensityTpi: 11,
+      staggerAligned: 1,
+    };
+    const sensFlex = computeParameterSensitivity(id, "flexAngleDeg", baseSundback);
+    expect(sensFlex).toBeDefined();
+    expect(sensFlex?.metricName).toBe("Bending Burst Resistance");
+    expect(sensFlex?.derivativeSymbol).toBe("∂F_burst / ∂θ_flex");
+    expect(sensFlex?.derivativeUnit).toBe("N / deg");
+
+    const hFlex = 1e-3;
+    const burstPlus = stepSundbackZipperSi({
+      ...baseSundback,
+      flexAngleDeg: 25 + hFlex,
+      staggerAligned: true,
+    }).burstResistanceN;
+    const burstMinus = stepSundbackZipperSi({
+      ...baseSundback,
+      flexAngleDeg: 25 - hFlex,
+      staggerAligned: true,
+    }).burstResistanceN;
+    const numDerivFlex = (burstPlus - burstMinus) / (2 * hFlex);
+    expect(sensFlex?.derivativeValue).toBeCloseTo(numDerivFlex, 2);
+
+    for (const alias of ["flexAngle", "flexDeg", "flexion", "bendingAngle"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseSundback, [alias]: 25 })?.derivativeValue,
+      ).toBe(sensFlex?.derivativeValue);
+    }
+
+    // Tooth density TPI sensitivity
+    const sensTpi = computeParameterSensitivity(id, "toothDensityTpi", baseSundback);
+    expect(sensTpi).toBeDefined();
+    expect(sensTpi?.metricName).toBe("Tooth Density Capacity");
+    expect(sensTpi?.derivativeSymbol).toBe("∂N_engaged / ∂TPI");
+    expect(sensTpi?.derivativeUnit).toBe("teeth / TPI");
+
+    const hTpi = 1e-3;
+    const teethPlus = stepSundbackZipperSi({
+      ...baseSundback,
+      toothDensityTpi: 11 + hTpi,
+      staggerAligned: true,
+    }).engagedTeeth;
+    const teethMinus = stepSundbackZipperSi({
+      ...baseSundback,
+      toothDensityTpi: 11 - hTpi,
+      staggerAligned: true,
+    }).engagedTeeth;
+    const numDerivTpi = (teethPlus - teethMinus) / (2 * hTpi);
+    expect(sensTpi?.derivativeValue).toBeCloseTo(numDerivTpi, 2);
+
+    for (const alias of ["toothDensity", "tpi", "densityTpi"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseSundback, [alias]: 11 })?.derivativeValue,
+      ).toBe(sensTpi?.derivativeValue);
+    }
+
+    // Stagger aligned interlock state
+    const sensStaggerOn = computeParameterSensitivity(id, "staggerAligned", baseSundback);
+    expect(sensStaggerOn).toBeDefined();
+    expect(sensStaggerOn?.metricName).toBe("Claim 1 Half-Pitch Stagger Interlock");
+    expect(sensStaggerOn?.derivativeSymbol).toBe("ΔState / ΔStagger");
+    expect(sensStaggerOn?.derivativeValue).toBe(0);
+    expect(sensStaggerOn?.interpretation).toContain("Claim 1 compliant");
+
+    const sensStaggerOff = computeParameterSensitivity(id, "staggerAligned", {
+      ...baseSundback,
+      staggerAligned: 0,
+    });
+    expect(sensStaggerOff?.interpretation).toContain("jamming the slider throat");
+
+    for (const alias of ["stagger", "staggered", "claim1Stagger"]) {
+      expect(
+        computeParameterSensitivity(id, alias, { ...baseSundback, [alias]: 1 })?.derivativeValue,
+      ).toBe(0);
+    }
+
+    // When stagger is violated, slider engagement derivative is 0 (jammed)
+    const sensSliderJammed = computeParameterSensitivity(id, "sliderPositionPct", {
+      ...baseSundback,
+      staggerAligned: 0,
+    });
+    expect(sensSliderJammed?.derivativeValue).toBe(0);
 
     // Invalid parameters
     for (const invalid of [-1, 101, Number.NaN]) {
@@ -2498,6 +2623,11 @@ describe("Sensitivities follow the current admitted operating point", () => {
     for (const invalid of [7, 15, Number.NaN]) {
       expect(
         computeParameterSensitivity(id, "toothDensityTpi", { toothDensityTpi: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "staggerAligned", { staggerAligned: invalid }),
       ).toBeNull();
     }
   });
@@ -5292,6 +5422,132 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
   });
 
+  test("Goddard Rocket derives L/D ratio margin, spin angular velocity, staging travel, and interlock sensitivities", () => {
+    const id = "us-1102653-goddard-rocket";
+    const nominal = {
+      tubeLengthRatio: 4.5,
+      primarySpinRpm: 120,
+      gyroSpinRpm: 6000,
+      auxiliaryReleaseFraction: 0.35,
+      primaryChargeConsumed: 0.8,
+      gyroEnabled: 1,
+    };
+
+    // 1. Tube length-to-diameter ratio
+    const sensRatio = computeParameterSensitivity(id, "tubeLengthRatio", nominal);
+    expect(sensRatio).toBeDefined();
+    expect(sensRatio?.metricName).toBe("Claim 2 Ratio Margin");
+    expect(sensRatio?.derivativeSymbol).toBe("∂(L/D - 3) / ∂(L/D)");
+    expect(sensRatio?.derivativeUnit).toBe("ratio / ratio");
+    expect(sensRatio?.derivativeValue).toBe(1);
+    for (const alias of ["ratio", "ldRatio", "aspectRatio"]) {
+      expect(computeParameterSensitivity(id, alias, nominal)?.derivativeValue).toBe(1);
+    }
+
+    // 2. Primary rocket spin angular velocity
+    const sensSpin = computeParameterSensitivity(id, "primarySpinRpm", nominal);
+    expect(sensSpin).toBeDefined();
+    expect(sensSpin?.metricName).toBe("Primary Angular Velocity");
+    expect(sensSpin?.derivativeSymbol).toBe("∂ω / ∂N");
+    expect(sensSpin?.derivativeUnit).toBe("rad/s / rpm");
+    expect(sensSpin?.derivativeValue).toBeCloseTo((2 * Math.PI) / 60, 5);
+    for (const alias of ["primarySpin", "spinRpm", "primaryRpm"]) {
+      expect(computeParameterSensitivity(id, alias, nominal)?.derivativeValue).toBe(
+        sensSpin?.derivativeValue,
+      );
+    }
+
+    // 3. Gyroscope spin angular velocity
+    const sensGyroSpin = computeParameterSensitivity(id, "gyroSpinRpm", nominal);
+    expect(sensGyroSpin).toBeDefined();
+    expect(sensGyroSpin?.metricName).toBe("Gyroscope Angular Velocity");
+    expect(sensGyroSpin?.derivativeSymbol).toBe("∂ω / ∂N");
+    expect(sensGyroSpin?.derivativeUnit).toBe("rad/s / rpm");
+    expect(sensGyroSpin?.derivativeValue).toBeCloseTo((2 * Math.PI) / 60, 5);
+    for (const alias of ["gyroSpin", "gyroRpm"]) {
+      expect(computeParameterSensitivity(id, alias, nominal)?.derivativeValue).toBe(
+        sensGyroSpin?.derivativeValue,
+      );
+    }
+
+    // 4. Auxiliary rocket staging travel
+    const sensTravel = computeParameterSensitivity(id, "auxiliaryReleaseFraction", nominal);
+    expect(sensTravel).toBeDefined();
+    expect(sensTravel?.metricName).toBe("Auxiliary Rocket Staging Travel");
+    expect(sensTravel?.derivativeSymbol).toBe("∂(s/L) / ∂f_release");
+    expect(sensTravel?.derivativeUnit).toBe("fraction / fraction");
+    expect(sensTravel?.derivativeValue).toBe(1.0);
+    for (const alias of ["releaseFraction", "auxRelease", "stagingFraction"]) {
+      expect(computeParameterSensitivity(id, alias, nominal)?.derivativeValue).toBe(1.0);
+    }
+
+    // 5. Primary charge consumption interlock
+    const sensChargeConsumed = computeParameterSensitivity(id, "primaryChargeConsumed", nominal);
+    expect(sensChargeConsumed).toBeDefined();
+    expect(sensChargeConsumed?.metricName).toBe("Claim 1 Staging Firing Interlock");
+    expect(sensChargeConsumed?.derivativeSymbol).toBe("ΔState / ΔCharge");
+    expect(sensChargeConsumed?.derivativeValue).toBe(0);
+    expect(sensChargeConsumed?.interpretation).toContain("unlocked");
+
+    const sensChargeUnconsumed = computeParameterSensitivity(id, "primaryChargeConsumed", {
+      ...nominal,
+      primaryChargeConsumed: 0.2,
+    });
+    expect(sensChargeUnconsumed?.interpretation).toContain("locked out");
+    for (const alias of ["chargeConsumed", "primaryConsumed"]) {
+      expect(computeParameterSensitivity(id, alias, nominal)?.derivativeValue).toBe(0);
+    }
+
+    // 6. Gyroscopic stabilization state
+    const sensGyroOn = computeParameterSensitivity(id, "gyroEnabled", nominal);
+    expect(sensGyroOn).toBeDefined();
+    expect(sensGyroOn?.metricName).toBe("Claim 7 Gyroscopic Stabilization State");
+    expect(sensGyroOn?.derivativeSymbol).toBe("ΔState / ΔGyro");
+    expect(sensGyroOn?.derivativeValue).toBe(0);
+    expect(sensGyroOn?.interpretation).toContain("isolates instrument");
+
+    const sensGyroOff = computeParameterSensitivity(id, "gyroEnabled", {
+      ...nominal,
+      gyroEnabled: 0,
+    });
+    expect(sensGyroOff?.interpretation).toContain("rotates with primary");
+    for (const alias of ["gyro", "hasGyro", "gyroActive"]) {
+      expect(computeParameterSensitivity(id, alias, nominal)?.derivativeValue).toBe(0);
+    }
+
+    // Bounds checking
+    for (const invalid of [1.4, 6.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "tubeLengthRatio", { tubeLengthRatio: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-1, 301, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "primarySpinRpm", { primarySpinRpm: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [-1, 12001, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "gyroSpinRpm", { gyroSpinRpm: invalid })).toBeNull();
+    }
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "auxiliaryReleaseFraction", {
+          auxiliaryReleaseFraction: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "primaryChargeConsumed", {
+          primaryChargeConsumed: invalid,
+        }),
+      ).toBeNull();
+    }
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "gyroEnabled", { gyroEnabled: invalid })).toBeNull();
+    }
+  });
+
   test("Carlson Electrophotography derives surface potential, discharge, layer thickness, and fuser sensitivities", () => {
     const id = "us-2297691-carlson-electrophotography";
 
@@ -6772,6 +7028,48 @@ describe("Sensitivities follow the current admitted operating point", () => {
     });
     expect(sensAnodeHigh?.derivativeValue).toBeLessThan(sensAnode?.derivativeValue ?? 0);
 
+    // Horizontal line sweep angular frequency sensitivity
+    const sensHFreq = computeParameterSensitivity(id, "horizontalFreqKhz", baseParams);
+    expect(sensHFreq).toBeDefined();
+    expect(sensHFreq?.metricName).toBe("Horizontal Line Sweep Angular Frequency");
+    expect(sensHFreq?.derivativeSymbol).toBe("∂ω_H / ∂f_H");
+    expect(sensHFreq?.derivativeUnit).toBe("rad·s⁻¹ / kHz");
+    expect(sensHFreq?.derivativeValue).toBeCloseTo(2000 * Math.PI, 4);
+
+    for (const alias of ["hFreq", "horizontalFreq", "lineFreqKhz", "hScanFreq"]) {
+      expect(computeParameterSensitivity(id, alias, baseParams)?.derivativeValue).toBe(
+        sensHFreq?.derivativeValue,
+      );
+    }
+
+    // Vertical frame sweep angular frequency sensitivity
+    const sensVFreq = computeParameterSensitivity(id, "verticalFreqHz", baseParams);
+    expect(sensVFreq).toBeDefined();
+    expect(sensVFreq?.metricName).toBe("Vertical Frame Sweep Angular Frequency");
+    expect(sensVFreq?.derivativeSymbol).toBe("∂ω_V / ∂f_V");
+    expect(sensVFreq?.derivativeUnit).toBe("rad·s⁻¹ / Hz");
+    expect(sensVFreq?.derivativeValue).toBeCloseTo(2 * Math.PI, 5);
+
+    for (const alias of ["vFreq", "verticalFreq", "frameFreqHz", "vScanFreq"]) {
+      expect(computeParameterSensitivity(id, alias, baseParams)?.derivativeValue).toBe(
+        sensVFreq?.derivativeValue,
+      );
+    }
+
+    // Raster line pitch fraction sensitivity
+    const sensLines = computeParameterSensitivity(id, "scanLines", baseParams);
+    expect(sensLines).toBeDefined();
+    expect(sensLines?.metricName).toBe("Raster Line Pitch Fraction");
+    expect(sensLines?.derivativeSymbol).toBe("∂(Δy/H) / ∂N_lines");
+    expect(sensLines?.derivativeUnit).toBe("% / line");
+    expect(sensLines?.derivativeValue).toBeCloseTo(-100 / (60 * 60), 5);
+
+    for (const alias of ["lines", "rasterLines", "numLines"]) {
+      expect(computeParameterSensitivity(id, alias, baseParams)?.derivativeValue).toBe(
+        sensLines?.derivativeValue,
+      );
+    }
+
     // Claim 1 refusal: when raster traversal is withheld, derivatives are refused with 0
     const sensLuxRefused = computeParameterSensitivity(id, "lightIntensityLux", {
       ...baseParams,
@@ -6779,6 +7077,27 @@ describe("Sensitivities follow the current admitted operating point", () => {
     });
     expect(sensLuxRefused?.derivativeValue).toBe(0);
     expect(sensLuxRefused?.derivativeUnit).toBe("refused");
+
+    const sensHRefused = computeParameterSensitivity(id, "horizontalFreqKhz", {
+      ...baseParams,
+      claim1ScanPathPresent: false,
+    });
+    expect(sensHRefused?.derivativeValue).toBe(0);
+    expect(sensHRefused?.derivativeUnit).toBe("refused");
+
+    const sensVRefused = computeParameterSensitivity(id, "verticalFreqHz", {
+      ...baseParams,
+      claim1ScanPathPresent: false,
+    });
+    expect(sensVRefused?.derivativeValue).toBe(0);
+    expect(sensVRefused?.derivativeUnit).toBe("refused");
+
+    const sensLinesRefused = computeParameterSensitivity(id, "scanLines", {
+      ...baseParams,
+      claim1ScanPathPresent: false,
+    });
+    expect(sensLinesRefused?.derivativeValue).toBe(0);
+    expect(sensLinesRefused?.derivativeUnit).toBe("refused");
 
     // Bounds checking
     for (const invalid of [499, 6001, Number.NaN]) {

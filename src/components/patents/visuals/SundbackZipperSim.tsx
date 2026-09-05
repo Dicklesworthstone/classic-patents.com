@@ -5,6 +5,7 @@ import { useId, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "@/components/patents/visuals/PortHamiltonianEnergyStrip";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
 import { readSundbackZipperControls, stepSundbackZipperSi } from "@/physics/sundbackZipperKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -428,43 +429,33 @@ export function SundbackZipperSim({
 
       {/* Interactive Controls Panel */}
       <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
-        <div className="p-3 bg-parchment-100 dark:bg-ink-900 rounded-lg border border-parchment-200 dark:border-ink-800 space-y-2">
-          <div className="flex justify-between items-center text-ink-700 dark:text-parchment-200">
-            <label htmlFor="slider-pos-range">Slider Position</label>
-            <span className="font-bold text-amber-600 dark:text-amber-400">
-              {controls.sliderPositionPct}%
-            </span>
-          </div>
-          <input
-            id="slider-pos-range"
-            type="range"
-            min="0"
-            max="100"
-            step="1"
-            value={controls.sliderPositionPct}
-            onChange={(e) => updateParam("sliderPositionPct", Number(e.target.value))}
-            className="w-full accent-amber-600"
-          />
-        </div>
+        <SensitivitySlider
+          id="sliderPositionPct"
+          patentId={patentId}
+          paramKey="sliderPositionPct"
+          label="Slider Position"
+          value={controls.sliderPositionPct}
+          min={0}
+          max={100}
+          step={1}
+          unit="%"
+          onChange={(val) => updateParam("sliderPositionPct", val)}
+          allParams={params}
+        />
 
-        <div className="p-3 bg-parchment-100 dark:bg-ink-900 rounded-lg border border-parchment-200 dark:border-ink-800 space-y-2">
-          <div className="flex justify-between items-center text-ink-700 dark:text-parchment-200">
-            <label htmlFor="lat-tens-range">Transverse Tension</label>
-            <span className="font-bold text-amber-600 dark:text-amber-400">
-              {controls.lateralTensionN} N
-            </span>
-          </div>
-          <input
-            id="lat-tens-range"
-            type="range"
-            min="0"
-            max="200"
-            step="5"
-            value={controls.lateralTensionN}
-            onChange={(e) => updateParam("lateralTensionN", Number(e.target.value))}
-            className="w-full accent-amber-600"
-          />
-        </div>
+        <SensitivitySlider
+          id="lateralTensionN"
+          patentId={patentId}
+          paramKey="lateralTensionN"
+          label="Transverse Tension"
+          value={controls.lateralTensionN}
+          min={0}
+          max={200}
+          step={5}
+          unit=" N"
+          onChange={(val) => updateParam("lateralTensionN", val)}
+          allParams={params}
+        />
 
         <div className="p-3 bg-parchment-100 dark:bg-ink-900 rounded-lg border border-parchment-200 dark:border-ink-800 flex items-center justify-between">
           <div className="flex flex-col">

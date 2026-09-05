@@ -95,6 +95,7 @@ import {
   stepSikorskyHelicopterSi,
 } from "./sikorskyHelicopterKernel";
 import { stepStackhouseSourceTopology } from "./stackhouseSourceKernel";
+import { stepSundbackZipperSi, ZIPPER_CHAIN_LENGTH_MM } from "./sundbackZipperKernel";
 import { stepTeslaTransformerSi } from "./teslaTransformerKernel";
 import { stepWatsonRemoteCenterComplianceTopology } from "./watsonRemoteCenterComplianceKernel";
 import {
@@ -747,7 +748,51 @@ export function computeParameterSensitivity(
       return null;
 
     case "us-1102653-goddard-rocket": {
-      if (controlKey === "tubeLengthRatio") {
+      const tubeRatio =
+        params.tubeLengthRatio ?? params.ratio ?? params.ldRatio ?? params.aspectRatio ?? 4.5;
+      const pSpin =
+        params.primarySpinRpm ?? params.primarySpin ?? params.spinRpm ?? params.primaryRpm ?? 120;
+      const gSpin = params.gyroSpinRpm ?? params.gyroSpin ?? params.gyroRpm ?? 6000;
+      const auxRelease =
+        params.auxiliaryReleaseFraction ??
+        params.releaseFraction ??
+        params.auxRelease ??
+        params.stagingFraction ??
+        0;
+      const chargeConsumed =
+        params.primaryChargeConsumed ?? params.chargeConsumed ?? params.primaryConsumed ?? 0;
+      const gyroActive =
+        params.gyroEnabled ?? params.gyro ?? params.hasGyro ?? params.gyroActive ?? 1;
+
+      if (
+        !Number.isFinite(tubeRatio) ||
+        tubeRatio < 1.5 ||
+        tubeRatio > 6 ||
+        !Number.isFinite(pSpin) ||
+        pSpin < 0 ||
+        pSpin > 300 ||
+        !Number.isFinite(gSpin) ||
+        gSpin < 0 ||
+        gSpin > 12000 ||
+        !Number.isFinite(auxRelease) ||
+        auxRelease < 0 ||
+        auxRelease > 1 ||
+        !Number.isFinite(chargeConsumed) ||
+        chargeConsumed < 0 ||
+        chargeConsumed > 1 ||
+        !Number.isFinite(gyroActive) ||
+        gyroActive < 0 ||
+        gyroActive > 1
+      ) {
+        return null;
+      }
+
+      if (
+        controlKey === "tubeLengthRatio" ||
+        controlKey === "ratio" ||
+        controlKey === "ldRatio" ||
+        controlKey === "aspectRatio"
+      ) {
         return {
           metricName: "Claim 2 Ratio Margin",
           derivativeSymbol: "∂(L/D - 3) / ∂(L/D)",
@@ -757,17 +802,77 @@ export function computeParameterSensitivity(
             "The printed Claim 2 margin changes one-for-one with the declared tapered-tube length-to-diameter ratio.",
         };
       }
-      if (controlKey === "primarySpinRpm" || controlKey === "gyroSpinRpm") {
+      if (
+        controlKey === "primarySpinRpm" ||
+        controlKey === "primarySpin" ||
+        controlKey === "spinRpm" ||
+        controlKey === "primaryRpm"
+      ) {
         return {
-          metricName:
-            controlKey === "primarySpinRpm"
-              ? "Primary Angular Velocity"
-              : "Gyroscope Angular Velocity",
+          metricName: "Primary Angular Velocity",
           derivativeSymbol: "∂ω / ∂N",
           derivativeValue: Number(((2 * Math.PI) / 60).toFixed(6)),
           derivativeUnit: "rad/s / rpm",
           interpretation:
             "Exact revolutions-per-minute to radians-per-second conversion; the source prints no absolute spin rate.",
+        };
+      }
+      if (controlKey === "gyroSpinRpm" || controlKey === "gyroSpin" || controlKey === "gyroRpm") {
+        return {
+          metricName: "Gyroscope Angular Velocity",
+          derivativeSymbol: "∂ω / ∂N",
+          derivativeValue: Number(((2 * Math.PI) / 60).toFixed(6)),
+          derivativeUnit: "rad/s / rpm",
+          interpretation:
+            "Exact revolutions-per-minute to radians-per-second conversion; the source prints no absolute spin rate.",
+        };
+      }
+      if (
+        controlKey === "auxiliaryReleaseFraction" ||
+        controlKey === "releaseFraction" ||
+        controlKey === "auxRelease" ||
+        controlKey === "stagingFraction"
+      ) {
+        return {
+          metricName: "Auxiliary Rocket Staging Travel",
+          derivativeSymbol: "∂(s/L) / ∂f_release",
+          derivativeValue: 1.0,
+          derivativeUnit: "fraction / fraction",
+          interpretation:
+            "Normalized axial travel of the secondary rocket along primary guide tube 24 prior to separation.",
+        };
+      }
+      if (
+        controlKey === "primaryChargeConsumed" ||
+        controlKey === "chargeConsumed" ||
+        controlKey === "primaryConsumed"
+      ) {
+        return {
+          metricName: "Claim 1 Staging Firing Interlock",
+          derivativeSymbol: "ΔState / ΔCharge",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation:
+            chargeConsumed >= 0.5
+              ? "Primary propellant charge is substantially consumed; auxiliary rocket firing sequence is unlocked (Claim 1 compliant)."
+              : "Primary charge is still burning; auxiliary charge firing is locked out to prevent premature staging.",
+        };
+      }
+      if (
+        controlKey === "gyroEnabled" ||
+        controlKey === "gyro" ||
+        controlKey === "hasGyro" ||
+        controlKey === "gyroActive"
+      ) {
+        return {
+          metricName: "Claim 7 Gyroscopic Stabilization State",
+          derivativeSymbol: "ΔState / ΔGyro",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation:
+            gyroActive >= 0.5
+              ? "Claim 7 gyroscopic apparatus isolates instrument and camera platform from rocket spin (ω_support = 0)."
+              : "Gyroscope disengaged; camera platform rotates with primary rocket body.",
         };
       }
       break;
@@ -3899,12 +4004,32 @@ export function computeParameterSensitivity(
 
     case "us-1773980-farnsworth-tv": {
       const anodeV =
-        params.anodeVoltage ?? (params.anodeKv !== undefined ? params.anodeKv * 1000 : 1500);
-      const coilI = params.coilCurrent ?? params.deflectionCoilCurrent ?? 0.42;
-      const lux = params.lightIntensityLux ?? params.lightIntensity ?? 500;
-      const hFreq = params.horizontalFreqKhz ?? 15.75;
-      const vFreq = params.verticalFreqHz ?? 60;
-      const lines = params.scanLines ?? 60;
+        params.anodeVoltage ??
+        (params.anodeKv !== undefined ? params.anodeKv * 1000 : undefined) ??
+        (params.voltageKv !== undefined ? params.voltageKv * 1000 : undefined) ??
+        1500;
+      const coilI =
+        params.coilCurrent ??
+        params.deflectionCoilCurrent ??
+        params.deflectionCurrent ??
+        params.deflectionCurrentA ??
+        0.42;
+      const lux = params.lightIntensityLux ?? params.lightIntensity ?? params.lux ?? 500;
+      const hFreq =
+        params.horizontalFreqKhz ??
+        params.hFreq ??
+        params.horizontalFreq ??
+        params.lineFreqKhz ??
+        params.hScanFreq ??
+        15.75;
+      const vFreq =
+        params.verticalFreqHz ??
+        params.vFreq ??
+        params.verticalFreq ??
+        params.frameFreqHz ??
+        params.vScanFreq ??
+        60;
+      const lines = params.scanLines ?? params.lines ?? params.rasterLines ?? params.numLines ?? 60;
       const claim1ScanPathPresent =
         params.claim1ScanPathPresent === undefined
           ? true
@@ -3937,10 +4062,28 @@ export function computeParameterSensitivity(
         if (
           controlKey === "lightIntensityLux" ||
           controlKey === "lightIntensity" ||
+          controlKey === "lux" ||
           controlKey === "coilCurrent" ||
           controlKey === "deflectionCoilCurrent" ||
+          controlKey === "deflectionCurrent" ||
+          controlKey === "deflectionCurrentA" ||
           controlKey === "anodeVoltage" ||
-          controlKey === "anodeKv"
+          controlKey === "anodeKv" ||
+          controlKey === "voltageKv" ||
+          controlKey === "horizontalFreqKhz" ||
+          controlKey === "hFreq" ||
+          controlKey === "horizontalFreq" ||
+          controlKey === "lineFreqKhz" ||
+          controlKey === "hScanFreq" ||
+          controlKey === "verticalFreqHz" ||
+          controlKey === "vFreq" ||
+          controlKey === "verticalFreq" ||
+          controlKey === "frameFreqHz" ||
+          controlKey === "vScanFreq" ||
+          controlKey === "scanLines" ||
+          controlKey === "lines" ||
+          controlKey === "rasterLines" ||
+          controlKey === "numLines"
         ) {
           return {
             metricName: "Scanning Beam Telemetry",
@@ -3962,7 +4105,11 @@ export function computeParameterSensitivity(
         vFreq,
       );
 
-      if (controlKey === "lightIntensityLux" || controlKey === "lightIntensity") {
+      if (
+        controlKey === "lightIntensityLux" ||
+        controlKey === "lightIntensity" ||
+        controlKey === "lux"
+      ) {
         return {
           metricName: "Photo-Dissector Video Current",
           derivativeSymbol: "∂I_video / ∂L_scene",
@@ -3972,7 +4119,12 @@ export function computeParameterSensitivity(
             "Linear photoelectric conversion from continuous photocathode electron cloud emission under the admitted 0.045 µA/Lux quantum sensitivity model.",
         };
       }
-      if (controlKey === "coilCurrent" || controlKey === "deflectionCoilCurrent") {
+      if (
+        controlKey === "coilCurrent" ||
+        controlKey === "deflectionCoilCurrent" ||
+        controlKey === "deflectionCurrent" ||
+        controlKey === "deflectionCurrentA"
+      ) {
         return {
           metricName: "Magnetic Deflection Field Sensitivity",
           derivativeSymbol: "∂B / ∂I_coil",
@@ -3991,13 +4143,60 @@ export function computeParameterSensitivity(
           interpretation: `Relativistic electron beam velocity scaling with electrostatic anode accelerating potential ($v = \\sqrt{2 q V / m}$, $\\partial v / \\partial V = v / (2 V)$) at current $V_\\text{anode} = ${anodeV}$ V.`,
         };
       }
-      if (controlKey === "anodeKv") {
+      if (controlKey === "anodeKv" || controlKey === "voltageKv") {
         return {
           metricName: "Electron Beam Velocity Acceleration Sensitivity",
           derivativeSymbol: "∂v / ∂V_anode_kV",
           derivativeValue: Number(beam.electronVelocitySlopeKmSPerKv.toPrecision(6)),
           derivativeUnit: "km·s⁻¹ / kV",
           interpretation: `Relativistic electron beam velocity scaling per kilovolt ($v = \\sqrt{2 q V / m}$, $\\partial v / \\partial V_\\text{kV} = 1000 \\cdot v / (2 V)$) at current anode potential ${(anodeV / 1000).toFixed(2)} kV.`,
+        };
+      }
+      if (
+        controlKey === "horizontalFreqKhz" ||
+        controlKey === "hFreq" ||
+        controlKey === "horizontalFreq" ||
+        controlKey === "lineFreqKhz" ||
+        controlKey === "hScanFreq"
+      ) {
+        return {
+          metricName: "Horizontal Line Sweep Angular Frequency",
+          derivativeSymbol: "∂ω_H / ∂f_H",
+          derivativeValue: Number((2000 * Math.PI).toFixed(4)),
+          derivativeUnit: "rad·s⁻¹ / kHz",
+          interpretation:
+            "Harmonic deflection frequency of the horizontal magnetic line-scanning coil driving electron image dissection.",
+        };
+      }
+      if (
+        controlKey === "verticalFreqHz" ||
+        controlKey === "vFreq" ||
+        controlKey === "verticalFreq" ||
+        controlKey === "frameFreqHz" ||
+        controlKey === "vScanFreq"
+      ) {
+        return {
+          metricName: "Vertical Frame Sweep Angular Frequency",
+          derivativeSymbol: "∂ω_V / ∂f_V",
+          derivativeValue: Number((2 * Math.PI).toFixed(6)),
+          derivativeUnit: "rad·s⁻¹ / Hz",
+          interpretation:
+            "Field repetition rate of the sawtooth magnetic vertical frame-scanning field.",
+        };
+      }
+      if (
+        controlKey === "scanLines" ||
+        controlKey === "lines" ||
+        controlKey === "rasterLines" ||
+        controlKey === "numLines"
+      ) {
+        return {
+          metricName: "Raster Line Pitch Fraction",
+          derivativeSymbol: "∂(Δy/H) / ∂N_lines",
+          derivativeValue: Number((-100 / (lines * lines)).toFixed(5)),
+          derivativeUnit: "% / line",
+          interpretation:
+            "Line-to-line vertical aperture traversal spacing per scan line across the electrical image.",
         };
       }
       break;
@@ -4680,6 +4879,8 @@ export function computeParameterSensitivity(
         params.throttlePercent ??
         params.engineThrottle ??
         85;
+      const isRunning =
+        params.engineRunning ?? params.running ?? params.engine ?? params.ignition ?? 1;
       const claim1Active =
         params.claim1Active !== undefined
           ? typeof params.claim1Active === "number"
@@ -4708,7 +4909,10 @@ export function computeParameterSensitivity(
         pedal > 100 ||
         !Number.isFinite(throttle) ||
         throttle < 0 ||
-        throttle > 100
+        throttle > 100 ||
+        !Number.isFinite(isRunning) ||
+        isRunning < 0 ||
+        isRunning > 1
       ) {
         return null;
       }
@@ -4720,6 +4924,7 @@ export function computeParameterSensitivity(
         cyclicRollRightDeg: rollStick,
         tailRotorPedalPercent: pedal,
         engineThrottlePercent: throttle,
+        engineRunning: isRunning >= 0.5,
         collectiveThrottleLinked: claim1Active ? (params.collectiveThrottleLinked ?? 1) : 0,
         auxiliaryRotorEnabled: claim2Active ? (params.auxiliaryRotorEnabled ?? 1) : 0,
       });
@@ -4808,6 +5013,22 @@ export function computeParameterSensitivity(
           derivativeUnit: "deg / deg",
           interpretation:
             "Direct 1:1 mechanical swashplate lateral tilt per degree of left/right cyclic roll control displacement.",
+        };
+      }
+      if (
+        controlKey === "engineRunning" ||
+        controlKey === "running" ||
+        controlKey === "engine" ||
+        controlKey === "ignition"
+      ) {
+        return {
+          metricName: "Engine Drive & Governor State",
+          derivativeSymbol: "ΔState / ΔEngine",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation: controls.engineRunning
+            ? "Engine is running and mechanically geared to main and tail rotor drive shafts under governing control."
+            : "Engine is shut down; drive freewheeling clutch decouples rotor for autorotation descent.",
         };
       }
       break;
@@ -6613,11 +6834,32 @@ export function computeParameterSensitivity(
     }
 
     case "us-1219881-sundback-zipper": {
-      const pos = params.sliderPositionPct ?? 65;
-      const pull = params.pullForceN ?? 15;
-      const lat = params.lateralTensionN ?? 40;
-      const flex = params.flexAngleDeg ?? 25;
-      const tpi = params.toothDensityTpi ?? 11;
+      const pos =
+        params.sliderPositionPct ??
+        params.sliderPosition ??
+        params.posPct ??
+        params.position ??
+        params.sliderPos ??
+        65;
+      const pull = params.pullForceN ?? params.pullForce ?? params.pull ?? params.pullN ?? 15;
+      const lat =
+        params.lateralTensionN ??
+        params.lateralTension ??
+        params.tension ??
+        params.tensionN ??
+        params.transverseTension ??
+        40;
+      const flex =
+        params.flexAngleDeg ??
+        params.flexAngle ??
+        params.flexDeg ??
+        params.flexion ??
+        params.bendingAngle ??
+        25;
+      const tpi =
+        params.toothDensityTpi ?? params.toothDensity ?? params.tpi ?? params.densityTpi ?? 11;
+      const stagger =
+        params.staggerAligned ?? params.stagger ?? params.staggered ?? params.claim1Stagger ?? 1;
 
       if (
         !Number.isFinite(pos) ||
@@ -6634,22 +6876,38 @@ export function computeParameterSensitivity(
         flex > 180 ||
         !Number.isFinite(tpi) ||
         tpi < 8 ||
-        tpi > 14
+        tpi > 14 ||
+        !Number.isFinite(stagger) ||
+        stagger < 0 ||
+        stagger > 1
       ) {
         return null;
       }
 
-      if (controlKey === "sliderPositionPct") {
+      if (
+        controlKey === "sliderPositionPct" ||
+        controlKey === "sliderPosition" ||
+        controlKey === "posPct" ||
+        controlKey === "position" ||
+        controlKey === "sliderPos"
+      ) {
+        const totalTeeth = Math.round(ZIPPER_CHAIN_LENGTH_MM / (25.4 / tpi));
+        const rate = (stagger >= 0.5 ? 1 : 0) * (totalTeeth / 100);
         return {
           metricName: "Engaged Tooth Count",
           derivativeSymbol: "∂N_engaged / ∂x_slider",
-          derivativeValue: 0.65,
+          derivativeValue: Number(rate.toFixed(3)),
           derivativeUnit: "teeth / %",
           interpretation:
             "Linear progression of Y-slider cam engaging opposing staggered scoops sequentially.",
         };
       }
-      if (controlKey === "pullForceN") {
+      if (
+        controlKey === "pullForceN" ||
+        controlKey === "pullForce" ||
+        controlKey === "pull" ||
+        controlKey === "pullN"
+      ) {
         return {
           metricName: "Cam Wedge Normal Force",
           derivativeSymbol: "∂F_n / ∂F_pull",
@@ -6659,7 +6917,13 @@ export function computeParameterSensitivity(
             "Mechanical advantage of the converging slider guide channels converting axial pull into transverse scoop compression.",
         };
       }
-      if (controlKey === "lateralTensionN") {
+      if (
+        controlKey === "lateralTensionN" ||
+        controlKey === "lateralTension" ||
+        controlKey === "tension" ||
+        controlKey === "tensionN" ||
+        controlKey === "transverseTension"
+      ) {
         return {
           metricName: "Corded Tape Strain",
           derivativeSymbol: "∂ε / ∂F_lat",
@@ -6667,6 +6931,90 @@ export function computeParameterSensitivity(
           derivativeValue: Number((100 / (850 * 2)).toFixed(4)),
           interpretation:
             "Elastic elongation of reinforced cotton cords under transverse tensile load.",
+        };
+      }
+      if (
+        controlKey === "flexAngleDeg" ||
+        controlKey === "flexAngle" ||
+        controlKey === "flexDeg" ||
+        controlKey === "flexion" ||
+        controlKey === "bendingAngle"
+      ) {
+        const h = 1e-3;
+        const fwd = stepSundbackZipperSi({
+          sliderPositionPct: pos,
+          pullForceN: pull,
+          lateralTensionN: lat,
+          flexAngleDeg: flex + h,
+          toothDensityTpi: tpi,
+          staggerAligned: stagger >= 0.5,
+        }).burstResistanceN;
+        const bwd = stepSundbackZipperSi({
+          sliderPositionPct: pos,
+          pullForceN: pull,
+          lateralTensionN: lat,
+          flexAngleDeg: flex - h,
+          toothDensityTpi: tpi,
+          staggerAligned: stagger >= 0.5,
+        }).burstResistanceN;
+        const dBurst_dFlex = (fwd - bwd) / (2 * h);
+        return {
+          metricName: "Bending Burst Resistance",
+          derivativeSymbol: "∂F_burst / ∂θ_flex",
+          derivativeValue: Number(dBurst_dFlex.toFixed(3)),
+          derivativeUnit: "N / deg",
+          interpretation:
+            "Reduction in transverse interlocking burst resistance caused by angular scoop misalignment under tape flexing.",
+        };
+      }
+      if (
+        controlKey === "toothDensityTpi" ||
+        controlKey === "toothDensity" ||
+        controlKey === "tpi" ||
+        controlKey === "densityTpi"
+      ) {
+        const h = 1e-3;
+        const fwd = stepSundbackZipperSi({
+          sliderPositionPct: pos,
+          pullForceN: pull,
+          lateralTensionN: lat,
+          flexAngleDeg: flex,
+          toothDensityTpi: tpi + h,
+          staggerAligned: stagger >= 0.5,
+        }).engagedTeeth;
+        const bwd = stepSundbackZipperSi({
+          sliderPositionPct: pos,
+          pullForceN: pull,
+          lateralTensionN: lat,
+          flexAngleDeg: flex,
+          toothDensityTpi: tpi - h,
+          staggerAligned: stagger >= 0.5,
+        }).engagedTeeth;
+        const dTeeth_dTpi = (fwd - bwd) / (2 * h);
+        return {
+          metricName: "Tooth Density Capacity",
+          derivativeSymbol: "∂N_engaged / ∂TPI",
+          derivativeValue: Number(dTeeth_dTpi.toFixed(2)),
+          derivativeUnit: "teeth / TPI",
+          interpretation:
+            "Increase in linear interlocking scoop packing and chain shear capacity with higher teeth-per-inch density.",
+        };
+      }
+      if (
+        controlKey === "staggerAligned" ||
+        controlKey === "stagger" ||
+        controlKey === "staggered" ||
+        controlKey === "claim1Stagger"
+      ) {
+        return {
+          metricName: "Claim 1 Half-Pitch Stagger Interlock",
+          derivativeSymbol: "ΔState / ΔStagger",
+          derivativeValue: 0,
+          derivativeUnit: "state",
+          interpretation:
+            stagger >= 0.5
+              ? "Opposing scoops staggered by one-half pitch nest smoothly into alternating sockets (Claim 1 compliant)."
+              : "Claim 1 stagger violated: opposing scoops collide head-to-head, jamming the slider throat.",
         };
       }
       break;

@@ -369,24 +369,20 @@ export function GoddardRocket3D() {
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_1fr_auto_auto]">
-          <label className="space-y-1 font-mono text-xs text-ink-700 dark:text-ink-200">
-            <span className="flex justify-between gap-2">
-              <span>Auxiliary release from tube 24</span>
-              <span>{Math.round(auxiliaryReleaseFraction * 100)}%</span>
-            </span>
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.02}
-              value={auxiliaryReleaseFraction}
-              onChange={(event) =>
-                updateParam("auxiliaryReleaseFraction", Number(event.target.value))
-              }
-              className="h-11 w-full cursor-pointer accent-amber-700"
-            />
-          </label>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_auto]">
+          <SensitivitySlider
+            id="auxiliaryReleaseFraction"
+            patentId="us-1102653-goddard-rocket"
+            paramKey="auxiliaryReleaseFraction"
+            label="Auxiliary release from tube 24"
+            value={auxiliaryReleaseFraction}
+            min={0}
+            max={1}
+            step={0.02}
+            unit="frac"
+            onChange={(value) => updateParam("auxiliaryReleaseFraction", value)}
+            allParams={params}
+          />
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
