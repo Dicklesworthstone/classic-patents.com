@@ -57,20 +57,37 @@ function clamp(value: number, min: number, max: number): number {
 export function readKilbySourceCircuitControls(
   params: Partial<KilbySourceCircuitControls> | Record<string, number | undefined>,
 ): KilbySourceCircuitControls {
+  const p = params as Record<string, number | undefined>;
   return {
     sectionRevealFraction: clamp(
-      finiteOr(params.sectionRevealFraction, KILBY_SOURCE_CIRCUIT_DEFAULTS.sectionRevealFraction),
+      finiteOr(
+        p.sectionRevealFraction ?? p.sectionReveal ?? p.revealFraction ?? p.reveal ?? p.section,
+        KILBY_SOURCE_CIRCUIT_DEFAULTS.sectionRevealFraction,
+      ),
       0,
       1,
     ),
     wireArchFraction: clamp(
-      finiteOr(params.wireArchFraction, KILBY_SOURCE_CIRCUIT_DEFAULTS.wireArchFraction),
+      finiteOr(
+        p.wireArchFraction ??
+          p.wireArch ??
+          p.archFraction ??
+          p.wireHeight ??
+          p.wire70Arch ??
+          p.arch,
+        KILBY_SOURCE_CIRCUIT_DEFAULTS.wireArchFraction,
+      ),
       0.2,
       1,
     ),
     claim1ConductiveMeansPresent:
       finiteOr(
-        params.claim1ConductiveMeansPresent,
+        p.claim1ConductiveMeansPresent ??
+          p.conductiveMeans ??
+          p.conductiveMeansPresent ??
+          p.claim1 ??
+          p.claim1ConductiveMeans ??
+          p.interconnections,
         KILBY_SOURCE_CIRCUIT_DEFAULTS.claim1ConductiveMeansPresent,
       ) >= 0.5
         ? 1

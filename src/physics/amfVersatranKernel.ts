@@ -239,34 +239,67 @@ export function signedAmfVersatranPhaseDifference(recorded: number, feedback: nu
 }
 
 export function readAmfVersatranControls(params: AmfVersatranParams = {}): AmfVersatranControls {
+  const p = params as Record<string, number | undefined>;
   return {
     columnRotation: signedUnit(
-      params.columnRotation,
+      p.columnRotation ?? p.column ?? p.rotation ?? p.columnTurn ?? p.turn,
       AMF_VERSATRAN_DEFAULT_CONTROLS.columnRotation,
     ),
-    carriageLift: unit(params.carriageLift, AMF_VERSATRAN_DEFAULT_CONTROLS.carriageLift),
-    armTravel: unit(params.armTravel, AMF_VERSATRAN_DEFAULT_CONTROLS.armTravel),
-    wristRotation: signedUnit(params.wristRotation, AMF_VERSATRAN_DEFAULT_CONTROLS.wristRotation),
-    wristSwing: signedUnit(params.wristSwing, AMF_VERSATRAN_DEFAULT_CONTROLS.wristSwing),
+    carriageLift: unit(
+      p.carriageLift ?? p.lift ?? p.carriage ?? p.verticalLift ?? p.verticalTravel,
+      AMF_VERSATRAN_DEFAULT_CONTROLS.carriageLift,
+    ),
+    armTravel: unit(
+      p.armTravel ?? p.reach ?? p.arm ?? p.horizontalTravel ?? p.horizontalReach ?? p.extension,
+      AMF_VERSATRAN_DEFAULT_CONTROLS.armTravel,
+    ),
+    wristRotation: signedUnit(
+      p.wristRotation ?? p.wristTurn ?? p.roll ?? p.armAxisRotation,
+      AMF_VERSATRAN_DEFAULT_CONTROLS.wristRotation,
+    ),
+    wristSwing: signedUnit(
+      p.wristSwing ?? p.swing ?? p.yaw ?? p.wristAngle,
+      AMF_VERSATRAN_DEFAULT_CONTROLS.wristSwing,
+    ),
     gripperOperation: unit(
-      params.gripperOperation,
+      p.gripperOperation ?? p.gripper ?? p.jaw ?? p.grip ?? p.jawClosure,
       AMF_VERSATRAN_DEFAULT_CONTROLS.gripperOperation,
     ),
-    teachReplayMode: binary(params.teachReplayMode, AMF_VERSATRAN_DEFAULT_CONTROLS.teachReplayMode),
+    teachReplayMode: binary(
+      p.teachReplayMode ??
+        p.mode ??
+        p.replayMode ??
+        p.teachMode ??
+        p.playbackMode ??
+        p.recordReplay,
+      AMF_VERSATRAN_DEFAULT_CONTROLS.teachReplayMode,
+    ),
     resolverPhaseOffset: signedUnit(
-      params.resolverPhaseOffset,
+      p.resolverPhaseOffset ?? p.phaseOffset ?? p.offset ?? p.resolverOffset ?? p.phaseError,
       AMF_VERSATRAN_DEFAULT_CONTROLS.resolverPhaseOffset,
     ),
     claim1TopologyEnabled: binary(
-      params.claim1TopologyEnabled,
+      p.claim1TopologyEnabled ??
+        p.claim1 ??
+        p.claim1Topology ??
+        p.sixMotionTopology ??
+        p.topologyEnabled,
       AMF_VERSATRAN_DEFAULT_CONTROLS.claim1TopologyEnabled,
     ),
     claim8RecordPlaybackEnabled: binary(
-      params.claim8RecordPlaybackEnabled,
+      p.claim8RecordPlaybackEnabled ??
+        p.claim8 ??
+        p.claim8Playback ??
+        p.recordPlaybackEnabled ??
+        p.recordPlayback,
       AMF_VERSATRAN_DEFAULT_CONTROLS.claim8RecordPlaybackEnabled,
     ),
     claim12PinionGripperEnabled: binary(
-      params.claim12PinionGripperEnabled,
+      p.claim12PinionGripperEnabled ??
+        p.claim12 ??
+        p.claim12Gripper ??
+        p.pinionGripperEnabled ??
+        p.pinionGripper,
       AMF_VERSATRAN_DEFAULT_CONTROLS.claim12PinionGripperEnabled,
     ),
   };

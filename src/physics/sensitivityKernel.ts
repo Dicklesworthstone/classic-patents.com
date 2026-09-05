@@ -516,7 +516,49 @@ export function computeParameterSensitivity(
     }
 
     case "us-3138743-kilby-integrated-circuit": {
-      if (controlKey === "sectionRevealFraction") {
+      const rawReveal =
+        params.sectionRevealFraction ??
+        params.sectionReveal ??
+        params.revealFraction ??
+        params.reveal ??
+        params.section;
+      if (
+        rawReveal !== undefined &&
+        (!Number.isFinite(rawReveal) || rawReveal < 0 || rawReveal > 1)
+      ) {
+        return null;
+      }
+      const rawArch =
+        params.wireArchFraction ??
+        params.wireArch ??
+        params.archFraction ??
+        params.wireHeight ??
+        params.wire70Arch ??
+        params.arch;
+      if (rawArch !== undefined && (!Number.isFinite(rawArch) || rawArch < 0.2 || rawArch > 1)) {
+        return null;
+      }
+      const rawClaim1 =
+        params.claim1ConductiveMeansPresent ??
+        params.conductiveMeans ??
+        params.conductiveMeansPresent ??
+        params.claim1 ??
+        params.claim1ConductiveMeans ??
+        params.interconnections;
+      if (
+        rawClaim1 !== undefined &&
+        (!Number.isFinite(Number(rawClaim1)) || Number(rawClaim1) < 0 || Number(rawClaim1) > 1)
+      ) {
+        return null;
+      }
+
+      if (
+        controlKey === "sectionRevealFraction" ||
+        controlKey === "sectionReveal" ||
+        controlKey === "revealFraction" ||
+        controlKey === "reveal" ||
+        controlKey === "section"
+      ) {
         return {
           metricName: "Displayed Semiconductor Section Reveal",
           derivativeSymbol: "∂s_{display} / ∂s_{reader}",
@@ -526,7 +568,14 @@ export function computeParameterSensitivity(
             "Identity slope for the normalized section-view control only; no electrical performance sensitivity is inferred.",
         };
       }
-      if (controlKey === "wireArchFraction") {
+      if (
+        controlKey === "wireArchFraction" ||
+        controlKey === "wireArch" ||
+        controlKey === "archFraction" ||
+        controlKey === "wireHeight" ||
+        controlKey === "wire70Arch" ||
+        controlKey === "arch"
+      ) {
         return {
           metricName: "Displayed Wire 70 Arch",
           derivativeSymbol: "∂h_{display} / ∂h_{reader}",
@@ -534,6 +583,23 @@ export function computeParameterSensitivity(
           derivativeUnit: "fraction / fraction",
           interpretation:
             "Identity slope for the normalized drawing geometry only; both bond endpoints remain fixed and no wire inductance or delay is inferred.",
+        };
+      }
+      if (
+        controlKey === "claim1ConductiveMeansPresent" ||
+        controlKey === "conductiveMeans" ||
+        controlKey === "conductiveMeansPresent" ||
+        controlKey === "claim1" ||
+        controlKey === "claim1ConductiveMeans" ||
+        controlKey === "interconnections"
+      ) {
+        return {
+          metricName: "Claim 1 Conductive Means Completion",
+          derivativeSymbol: "∂C_1 / ∂m_{conductive}",
+          derivativeValue: 1,
+          derivativeUnit: "complete / binary switch",
+          interpretation:
+            "Binary state transition for Claim 1 conductive interconnection means; electrical continuity and oscillation frequency are refused without unprinted geometry.",
         };
       }
       break;
@@ -8165,26 +8231,172 @@ export function computeParameterSensitivity(
     }
 
     case "us-3212649-amf-versatran": {
+      const rawColumn =
+        params.columnRotation ??
+        params.column ??
+        params.rotation ??
+        params.columnTurn ??
+        params.turn;
+      if (
+        rawColumn !== undefined &&
+        (!Number.isFinite(rawColumn) || rawColumn < -1 || rawColumn > 1)
+      ) {
+        return null;
+      }
+      const rawLift =
+        params.carriageLift ??
+        params.lift ??
+        params.carriage ??
+        params.verticalLift ??
+        params.verticalTravel;
+      if (rawLift !== undefined && (!Number.isFinite(rawLift) || rawLift < 0 || rawLift > 1)) {
+        return null;
+      }
+      const rawReach =
+        params.armTravel ??
+        params.reach ??
+        params.arm ??
+        params.horizontalTravel ??
+        params.horizontalReach ??
+        params.extension;
+      if (rawReach !== undefined && (!Number.isFinite(rawReach) || rawReach < 0 || rawReach > 1)) {
+        return null;
+      }
+      const rawWristRot =
+        params.wristRotation ?? params.wristTurn ?? params.roll ?? params.armAxisRotation;
+      if (
+        rawWristRot !== undefined &&
+        (!Number.isFinite(rawWristRot) || rawWristRot < -1 || rawWristRot > 1)
+      ) {
+        return null;
+      }
+      const rawWristSwing = params.wristSwing ?? params.swing ?? params.yaw ?? params.wristAngle;
+      if (
+        rawWristSwing !== undefined &&
+        (!Number.isFinite(rawWristSwing) || rawWristSwing < -1 || rawWristSwing > 1)
+      ) {
+        return null;
+      }
+      const rawGripper =
+        params.gripperOperation ?? params.gripper ?? params.jaw ?? params.grip ?? params.jawClosure;
+      if (
+        rawGripper !== undefined &&
+        (!Number.isFinite(rawGripper) || rawGripper < 0 || rawGripper > 1)
+      ) {
+        return null;
+      }
+      const rawMode =
+        params.teachReplayMode ??
+        params.mode ??
+        params.replayMode ??
+        params.teachMode ??
+        params.playbackMode ??
+        params.recordReplay;
+      if (
+        rawMode !== undefined &&
+        (!Number.isFinite(Number(rawMode)) || Number(rawMode) < 0 || Number(rawMode) > 1)
+      ) {
+        return null;
+      }
+      const rawOffset =
+        params.resolverPhaseOffset ??
+        params.phaseOffset ??
+        params.offset ??
+        params.resolverOffset ??
+        params.phaseError;
+      if (
+        rawOffset !== undefined &&
+        (!Number.isFinite(rawOffset) || rawOffset < -1 || rawOffset > 1)
+      ) {
+        return null;
+      }
+      const rawClaim1 =
+        params.claim1TopologyEnabled ??
+        params.claim1 ??
+        params.claim1Topology ??
+        params.sixMotionTopology ??
+        params.topologyEnabled;
+      if (
+        rawClaim1 !== undefined &&
+        (!Number.isFinite(Number(rawClaim1)) || Number(rawClaim1) < 0 || Number(rawClaim1) > 1)
+      ) {
+        return null;
+      }
+      const rawClaim8 =
+        params.claim8RecordPlaybackEnabled ??
+        params.claim8 ??
+        params.claim8Playback ??
+        params.recordPlaybackEnabled ??
+        params.recordPlayback;
+      if (
+        rawClaim8 !== undefined &&
+        (!Number.isFinite(Number(rawClaim8)) || Number(rawClaim8) < 0 || Number(rawClaim8) > 1)
+      ) {
+        return null;
+      }
+      const rawClaim12 =
+        params.claim12PinionGripperEnabled ??
+        params.claim12 ??
+        params.claim12Gripper ??
+        params.pinionGripperEnabled ??
+        params.pinionGripper;
+      if (
+        rawClaim12 !== undefined &&
+        (!Number.isFinite(Number(rawClaim12)) || Number(rawClaim12) < 0 || Number(rawClaim12) > 1)
+      ) {
+        return null;
+      }
+
+      const claim1TopologyEnabled = rawClaim1 !== undefined ? Number(rawClaim1) >= 0.5 : true;
+      const claim8RecordPlaybackEnabled = rawClaim8 !== undefined ? Number(rawClaim8) >= 0.5 : true;
+      const claim12PinionGripperEnabled =
+        rawClaim12 !== undefined ? Number(rawClaim12) >= 0.5 : true;
+
+      // Motion channels gated by Claim 1
       if (
         controlKey === "columnRotation" ||
+        controlKey === "column" ||
+        controlKey === "rotation" ||
+        controlKey === "columnTurn" ||
+        controlKey === "turn" ||
         controlKey === "carriageLift" ||
+        controlKey === "lift" ||
+        controlKey === "carriage" ||
+        controlKey === "verticalLift" ||
+        controlKey === "verticalTravel" ||
         controlKey === "armTravel" ||
+        controlKey === "reach" ||
+        controlKey === "arm" ||
+        controlKey === "horizontalTravel" ||
+        controlKey === "horizontalReach" ||
+        controlKey === "extension" ||
         controlKey === "wristRotation" ||
+        controlKey === "wristTurn" ||
+        controlKey === "roll" ||
+        controlKey === "armAxisRotation" ||
         controlKey === "wristSwing" ||
-        controlKey === "gripperOperation" ||
-        controlKey === "resolverPhaseOffset"
+        controlKey === "swing" ||
+        controlKey === "yaw" ||
+        controlKey === "wristAngle"
       ) {
-        if (controlKey === "resolverPhaseOffset") {
+        if (!claim1TopologyEnabled) {
           return {
-            metricName: "Phase Error Sensitivity",
-            derivativeSymbol: "∂(Δφ) / ∂(φ_offset)",
-            derivativeValue: 1.0,
-            derivativeUnit: "normalized phase / normalized phase",
+            metricName: "Normalized Motion Display Sensitivity",
+            derivativeSymbol: "∂p_{display} / ∂q_{joint}",
+            derivativeValue: 0,
+            derivativeUnit: "display coordinate / command",
             interpretation:
-              "Direct display relationship between the deliberately injected normalized phase offset and the normalized resolver/tape phase difference.",
+              "Claim 1 six-motion topology withheld; motion commands are disengaged from the hydraulic manipulator.",
           };
         }
-        if (controlKey === "armTravel") {
+        if (
+          controlKey === "armTravel" ||
+          controlKey === "reach" ||
+          controlKey === "arm" ||
+          controlKey === "horizontalTravel" ||
+          controlKey === "horizontalReach" ||
+          controlKey === "extension"
+        ) {
           return {
             metricName: "Horizontal Reach Sensitivity",
             derivativeSymbol: "∂r_{display} / ∂q_{arm}",
@@ -8192,16 +8404,6 @@ export function computeParameterSensitivity(
             derivativeUnit: "normalized radius / control increment",
             interpretation:
               "Display-only radial relationship used to make arm travel legible. It is not a recovered arm length, calibrated workspace, or speed relationship.",
-          };
-        }
-        if (controlKey === "gripperOperation") {
-          return {
-            metricName: "Normalized Gripper Operation",
-            derivativeSymbol: "∂g_{display} / ∂q_{gripper}",
-            derivativeValue: 1.0,
-            derivativeUnit: "display command / control increment",
-            interpretation:
-              "Direct display relationship for the source-described work-manipulating-member operation. It does not predict jaw travel, grip force, contact, or payload.",
           };
         }
         return {
@@ -8213,36 +8415,238 @@ export function computeParameterSensitivity(
             "Display relationship for one source-described motion channel. It retains topology without asserting unprinted dimensions, pressure, speed, payload, or dynamics.",
         };
       }
+
+      if (
+        controlKey === "gripperOperation" ||
+        controlKey === "gripper" ||
+        controlKey === "jaw" ||
+        controlKey === "grip" ||
+        controlKey === "jawClosure"
+      ) {
+        return {
+          metricName: "Normalized Gripper Operation",
+          derivativeSymbol: "∂g_{display} / ∂q_{gripper}",
+          derivativeValue: claim12PinionGripperEnabled ? 1.0 : 0,
+          derivativeUnit: "display command / control increment",
+          interpretation: claim12PinionGripperEnabled
+            ? "Direct display relationship for the source-described work-manipulating-member operation. It does not predict jaw travel, grip force, contact, or payload."
+            : "Claim 12 pinion gripper mechanism disengaged; gripper command does not actuate the jaws.",
+        };
+      }
+
+      if (
+        controlKey === "resolverPhaseOffset" ||
+        controlKey === "phaseOffset" ||
+        controlKey === "offset" ||
+        controlKey === "resolverOffset" ||
+        controlKey === "phaseError"
+      ) {
+        return {
+          metricName: "Phase Error Sensitivity",
+          derivativeSymbol: "∂(Δφ) / ∂(φ_offset)",
+          derivativeValue: claim8RecordPlaybackEnabled ? 1.0 : 0,
+          derivativeUnit: "normalized phase / normalized phase",
+          interpretation: claim8RecordPlaybackEnabled
+            ? "Direct display relationship between the deliberately injected normalized phase offset and the normalized resolver/tape phase difference."
+            : "Claim 8 record/playback path disengaged; resolver phase comparison channels are not active.",
+        };
+      }
+
+      if (
+        controlKey === "teachReplayMode" ||
+        controlKey === "mode" ||
+        controlKey === "replayMode" ||
+        controlKey === "teachMode" ||
+        controlKey === "playbackMode" ||
+        controlKey === "recordReplay"
+      ) {
+        return {
+          metricName: "Recorded Playback Mode Transition",
+          derivativeSymbol: "∂(mode) / ∂(teachReplay)",
+          derivativeValue: claim8RecordPlaybackEnabled ? 1.0 : 0,
+          derivativeUnit: "playback state / mode switch",
+          interpretation: claim8RecordPlaybackEnabled
+            ? "Binary state transition between manual teach/record and automatic recorded-signal playback (gated by Claim 8 record/playback path)."
+            : "Claim 8 record/playback path disengaged; mode switch cannot activate automated tape playback.",
+        };
+      }
+
+      if (
+        controlKey === "claim1TopologyEnabled" ||
+        controlKey === "claim1" ||
+        controlKey === "claim1Topology" ||
+        controlKey === "sixMotionTopology" ||
+        controlKey === "topologyEnabled"
+      ) {
+        return {
+          metricName: "Claim 1 Six-Motion Topology Gate",
+          derivativeSymbol: "∂(topology) / ∂(claim1)",
+          derivativeValue: 1.0,
+          derivativeUnit: "active / claim probe",
+          interpretation: "Claim 1 gating for the six-motion hydraulic manipulator topology.",
+        };
+      }
+
+      if (
+        controlKey === "claim8RecordPlaybackEnabled" ||
+        controlKey === "claim8" ||
+        controlKey === "claim8Playback" ||
+        controlKey === "recordPlaybackEnabled" ||
+        controlKey === "recordPlayback"
+      ) {
+        return {
+          metricName: "Claim 8 Record/Playback Path Gate",
+          derivativeSymbol: "∂(playback) / ∂(claim8)",
+          derivativeValue: 1.0,
+          derivativeUnit: "active / claim probe",
+          interpretation:
+            "Claim 8 gating for the continuous tape record and resolver playback comparison path.",
+        };
+      }
+
+      if (
+        controlKey === "claim12PinionGripperEnabled" ||
+        controlKey === "claim12" ||
+        controlKey === "claim12Gripper" ||
+        controlKey === "pinionGripperEnabled" ||
+        controlKey === "pinionGripper"
+      ) {
+        return {
+          metricName: "Claim 12 Pinion Gripper Gate",
+          derivativeSymbol: "∂(gripper) / ∂(claim12)",
+          derivativeValue: 1.0,
+          derivativeUnit: "active / claim probe",
+          interpretation: "Claim 12 gating for the rack-and-pinion mechanical gripper mechanism.",
+        };
+      }
       break;
     }
 
     case "us-3260375-lemelson-adjustable-manipulator": {
+      const rawCarriage =
+        params.carriagePosition ??
+        params.carriage ??
+        params.carriageX ??
+        params.xPosition ??
+        params.positionX;
+      if (
+        rawCarriage !== undefined &&
+        (!Number.isFinite(rawCarriage) || rawCarriage < -1 || rawCarriage > 1)
+      ) {
+        return null;
+      }
+      const rawElevation =
+        params.columnElevation ?? params.elevation ?? params.columnZ ?? params.lift ?? params.hoist;
+      if (
+        rawElevation !== undefined &&
+        (!Number.isFinite(rawElevation) || rawElevation < 0 || rawElevation > 1)
+      ) {
+        return null;
+      }
+      const rawAzimuth =
+        params.columnAzimuth ??
+        params.azimuth ??
+        params.turntable ??
+        params.turntableAngle ??
+        params.rotation;
+      if (
+        rawAzimuth !== undefined &&
+        (!Number.isFinite(rawAzimuth) || rawAzimuth < -1 || rawAzimuth > 1)
+      ) {
+        return null;
+      }
+      const rawPivot =
+        params.wristPivot ?? params.pivot ?? params.wrist ?? params.wristAngle ?? params.bevelPivot;
+      if (rawPivot !== undefined && (!Number.isFinite(rawPivot) || rawPivot < -1 || rawPivot > 1)) {
+        return null;
+      }
+      const rawJaw =
+        params.jawClosure ?? params.gripper ?? params.jaw ?? params.grip ?? params.closure;
+      if (rawJaw !== undefined && (!Number.isFinite(rawJaw) || rawJaw < 0 || rawJaw > 1)) {
+        return null;
+      }
+      const rawPhase =
+        params.cyclePhase ?? params.phase ?? params.stage ?? params.sequencePhase ?? params.step;
+      if (rawPhase !== undefined && (!Number.isFinite(rawPhase) || rawPhase < 0 || rawPhase > 5)) {
+        return null;
+      }
+      const rawStop1Az =
+        params.stop1Azimuth ?? params.stop1Rotary ?? params.azimuthLimit1 ?? params.stop1Angle;
+      if (
+        rawStop1Az !== undefined &&
+        (!Number.isFinite(rawStop1Az) || rawStop1Az < -1 || rawStop1Az > 1)
+      ) {
+        return null;
+      }
+      const rawStop2Az =
+        params.stop2Azimuth ?? params.stop2Rotary ?? params.azimuthLimit2 ?? params.stop2Angle;
+      if (
+        rawStop2Az !== undefined &&
+        (!Number.isFinite(rawStop2Az) || rawStop2Az < -1 || rawStop2Az > 1)
+      ) {
+        return null;
+      }
+      const rawStop1El =
+        params.stop1Elevation ??
+        params.stop1Vertical ??
+        params.verticalLimit1 ??
+        params.stop1Height;
+      if (
+        rawStop1El !== undefined &&
+        (!Number.isFinite(rawStop1El) || rawStop1El < 0 || rawStop1El > 1)
+      ) {
+        return null;
+      }
+      const rawStop2El =
+        params.stop2Elevation ??
+        params.stop2Vertical ??
+        params.verticalLimit2 ??
+        params.stop2Height;
+      if (
+        rawStop2El !== undefined &&
+        (!Number.isFinite(rawStop2El) || rawStop2El < 0 || rawStop2El > 1)
+      ) {
+        return null;
+      }
+
       if (
         controlKey === "columnAzimuth" ||
-        controlKey === "carriagePosition" ||
-        controlKey === "columnElevation" ||
-        controlKey === "wristPivot" ||
-        controlKey === "jawClosure"
+        controlKey === "azimuth" ||
+        controlKey === "turntable" ||
+        controlKey === "turntableAngle" ||
+        controlKey === "rotation"
       ) {
-        if (controlKey === "columnAzimuth") {
-          return {
-            metricName: "Azimuth Angle Sensitivity",
-            derivativeSymbol: "∂θ_{rad} / ∂q_{azimuth}",
-            derivativeValue: Math.PI,
-            derivativeUnit: "rad / control increment",
-            interpretation:
-              "Direct coordinate angular gradient for the rotating manipulator turntable.",
-          };
-        }
-        if (controlKey === "wristPivot") {
-          return {
-            metricName: "Wrist Pivot Angle Sensitivity",
-            derivativeSymbol: "∂φ_{rad} / ∂q_{pivot}",
-            derivativeValue: Math.PI / 2,
-            derivativeUnit: "rad / control increment",
-            interpretation: "Geometric rate of wrist bevel pivot rotation.",
-          };
-        }
+        return {
+          metricName: "Azimuth Angle Sensitivity",
+          derivativeSymbol: "∂θ_{rad} / ∂q_{azimuth}",
+          derivativeValue: Math.PI,
+          derivativeUnit: "rad / control increment",
+          interpretation:
+            "Direct coordinate angular gradient for the rotating manipulator turntable.",
+        };
+      }
+      if (
+        controlKey === "wristPivot" ||
+        controlKey === "pivot" ||
+        controlKey === "wrist" ||
+        controlKey === "wristAngle" ||
+        controlKey === "bevelPivot"
+      ) {
+        return {
+          metricName: "Wrist Pivot Angle Sensitivity",
+          derivativeSymbol: "∂φ_{rad} / ∂q_{pivot}",
+          derivativeValue: Math.PI / 2,
+          derivativeUnit: "rad / control increment",
+          interpretation: "Geometric rate of wrist bevel pivot rotation.",
+        };
+      }
+      if (
+        controlKey === "carriagePosition" ||
+        controlKey === "carriage" ||
+        controlKey === "carriageX" ||
+        controlKey === "xPosition" ||
+        controlKey === "positionX"
+      ) {
         return {
           metricName: "Normalized Axis Coordinate Sensitivity",
           derivativeSymbol: "∂q_{display} / ∂q_{control}",
@@ -8250,6 +8654,110 @@ export function computeParameterSensitivity(
           derivativeUnit: "display coordinate / control unit",
           interpretation:
             "Linear coordinate mapping for the gantry and hoist motions without unprinted force or velocity assumptions.",
+        };
+      }
+      if (
+        controlKey === "columnElevation" ||
+        controlKey === "elevation" ||
+        controlKey === "columnZ" ||
+        controlKey === "lift" ||
+        controlKey === "hoist"
+      ) {
+        return {
+          metricName: "Normalized Axis Coordinate Sensitivity",
+          derivativeSymbol: "∂q_{display} / ∂q_{control}",
+          derivativeValue: 1.0,
+          derivativeUnit: "display coordinate / control unit",
+          interpretation:
+            "Linear coordinate mapping for the gantry and hoist motions without unprinted force or velocity assumptions.",
+        };
+      }
+      if (
+        controlKey === "jawClosure" ||
+        controlKey === "gripper" ||
+        controlKey === "jaw" ||
+        controlKey === "grip" ||
+        controlKey === "closure"
+      ) {
+        return {
+          metricName: "Jaw Closure Sensitivity",
+          derivativeSymbol: "∂g / ∂q_{jaw}",
+          derivativeValue: -1.0,
+          derivativeUnit: "opening fraction / control increment",
+          interpretation:
+            "Normalized jaw opening complement relationship without unprinted grip force or contact mechanics.",
+        };
+      }
+      if (
+        controlKey === "cyclePhase" ||
+        controlKey === "phase" ||
+        controlKey === "stage" ||
+        controlKey === "sequencePhase" ||
+        controlKey === "step"
+      ) {
+        return {
+          metricName: "Sequential Phase Index Step",
+          derivativeSymbol: "∂(phase) / ∂(cyclePhase)",
+          derivativeValue: 1.0,
+          derivativeUnit: "phase index / phase step",
+          interpretation:
+            "Discrete step advance through the source-described 6-stage sequential limit-switch cycle.",
+        };
+      }
+      if (
+        controlKey === "stop1Azimuth" ||
+        controlKey === "stop1Rotary" ||
+        controlKey === "azimuthLimit1" ||
+        controlKey === "stop1Angle"
+      ) {
+        return {
+          metricName: "Stop 1 Azimuth Limit Sensitivity",
+          derivativeSymbol: "∂θ_{stop1} / ∂q_{stop1}",
+          derivativeValue: Math.PI,
+          derivativeUnit: "rad / control increment",
+          interpretation: "Angular limit position for adjustable rotary stop 1.",
+        };
+      }
+      if (
+        controlKey === "stop2Azimuth" ||
+        controlKey === "stop2Rotary" ||
+        controlKey === "azimuthLimit2" ||
+        controlKey === "stop2Angle"
+      ) {
+        return {
+          metricName: "Stop 2 Azimuth Limit Sensitivity",
+          derivativeSymbol: "∂θ_{stop2} / ∂q_{stop2}",
+          derivativeValue: Math.PI,
+          derivativeUnit: "rad / control increment",
+          interpretation: "Angular limit position for adjustable rotary stop 2.",
+        };
+      }
+      if (
+        controlKey === "stop1Elevation" ||
+        controlKey === "stop1Vertical" ||
+        controlKey === "verticalLimit1" ||
+        controlKey === "stop1Height"
+      ) {
+        return {
+          metricName: "Stop 1 Vertical Limit Sensitivity",
+          derivativeSymbol: "∂z_{stop1} / ∂q_{stop1}",
+          derivativeValue: 1.0,
+          derivativeUnit: "normalized stroke / control increment",
+          interpretation: "Vertical limit position for adjustable hoist stop 1.",
+        };
+      }
+      if (
+        controlKey === "stop2Elevation" ||
+        controlKey === "stop2Vertical" ||
+        controlKey === "verticalLimit2" ||
+        controlKey === "stop2Height"
+      ) {
+        return {
+          metricName: "Stop 2 Vertical Limit Sensitivity",
+          derivativeSymbol: "∂z_{stop2} / ∂q_{stop2}",
+          derivativeValue: 1.0,
+          derivativeUnit: "normalized stroke / control increment",
+          interpretation: "Vertical limit position for adjustable hoist stop 2.",
         };
       }
       break;
@@ -8504,18 +9012,168 @@ export function computeParameterSensitivity(
     }
 
     case "us-3313014-lemelson-automatic-production": {
+      const rawAddress =
+        params.carrierAddressFraction ??
+        params.carrierAddress ??
+        params.carrierX ??
+        params.addressFraction ??
+        params.address;
+      if (
+        rawAddress !== undefined &&
+        (!Number.isFinite(rawAddress) || rawAddress < 0 || rawAddress > 1)
+      ) {
+        return null;
+      }
+      const rawLift =
+        params.liftFraction ??
+        params.lift ??
+        params.verticalLift ??
+        params.liftPose ??
+        params.mzLift;
+      if (rawLift !== undefined && (!Number.isFinite(rawLift) || rawLift < 0 || rawLift > 1)) {
+        return null;
+      }
+      const rawReach =
+        params.reachFraction ??
+        params.reach ??
+        params.platformReach ??
+        params.myReach ??
+        params.extension;
+      if (rawReach !== undefined && (!Number.isFinite(rawReach) || rawReach < 0 || rawReach > 1)) {
+        return null;
+      }
+      const rawDetected =
+        params.stationDetected ??
+        params.marker ??
+        params.markerDetected ??
+        params.markerSensed ??
+        params.stationSensed;
+      if (
+        rawDetected !== undefined &&
+        (!Number.isFinite(Number(rawDetected)) ||
+          Number(rawDetected) < 0 ||
+          Number(rawDetected) > 1)
+      ) {
+        return null;
+      }
+      const rawCoupled =
+        params.stationCoupled ??
+        params.coupled ??
+        params.contactsCoupled ??
+        params.stationContact ??
+        params.claim7;
+      if (
+        rawCoupled !== undefined &&
+        (!Number.isFinite(Number(rawCoupled)) || Number(rawCoupled) < 0 || Number(rawCoupled) > 1)
+      ) {
+        return null;
+      }
+      const rawProgress =
+        params.cycleProgress ??
+        params.progress ??
+        params.cycle ??
+        params.sequenceProgress ??
+        params.cycleFraction;
+      if (
+        rawProgress !== undefined &&
+        (!Number.isFinite(rawProgress) || rawProgress < 0 || rawProgress > 1)
+      ) {
+        return null;
+      }
+
       if (
         controlKey === "carrierAddressFraction" ||
-        controlKey === "liftFraction" ||
-        controlKey === "reachFraction"
+        controlKey === "carrierAddress" ||
+        controlKey === "carrierX" ||
+        controlKey === "addressFraction" ||
+        controlKey === "address"
       ) {
         return {
-          metricName: "Normalized Stage Interlock Coordination",
-          derivativeSymbol: "∂Pose / ∂q",
+          metricName: "Normalized Carrier Address Position",
+          derivativeSymbol: "∂x_{carrier} / ∂a_{carrier}",
           derivativeValue: 1.0,
-          derivativeUnit: "normalized / input",
+          derivativeUnit: "normalized position / address increment",
           interpretation:
-            "Linear kinematic positioning of carrier address, Mz vertical lift, and My platform reach in automatic production sequence.",
+            "Linear kinematic positioning of carrier along the guide rail in automatic production sequence.",
+        };
+      }
+      if (
+        controlKey === "liftFraction" ||
+        controlKey === "lift" ||
+        controlKey === "verticalLift" ||
+        controlKey === "liftPose" ||
+        controlKey === "mzLift"
+      ) {
+        return {
+          metricName: "Normalized Mz Lift Pose",
+          derivativeSymbol: "∂z_{lift} / ∂q_{lift}",
+          derivativeValue: 1.0,
+          derivativeUnit: "normalized position / lift increment",
+          interpretation: "Vertical lift displacement of the production manipulator carrier.",
+        };
+      }
+      if (
+        controlKey === "reachFraction" ||
+        controlKey === "reach" ||
+        controlKey === "platformReach" ||
+        controlKey === "myReach" ||
+        controlKey === "extension"
+      ) {
+        return {
+          metricName: "Normalized My Platform Reach",
+          derivativeSymbol: "∂y_{reach} / ∂q_{reach}",
+          derivativeValue: 1.0,
+          derivativeUnit: "normalized position / reach increment",
+          interpretation:
+            "Horizontal reach displacement of the transfer platform into the machine work zone.",
+        };
+      }
+      if (
+        controlKey === "stationDetected" ||
+        controlKey === "marker" ||
+        controlKey === "markerDetected" ||
+        controlKey === "markerSensed" ||
+        controlKey === "stationSensed"
+      ) {
+        return {
+          metricName: "Marker Recognition Interlock",
+          derivativeSymbol: "∂(marker) / ∂(sensor)",
+          derivativeValue: 1.0,
+          derivativeUnit: "matched state / sensor toggle",
+          interpretation:
+            "Binary state transition for photoelectric or marker sensing at work station.",
+        };
+      }
+      if (
+        controlKey === "stationCoupled" ||
+        controlKey === "coupled" ||
+        controlKey === "contactsCoupled" ||
+        controlKey === "stationContact" ||
+        controlKey === "claim7"
+      ) {
+        return {
+          metricName: "Station Contacts Coupling Interlock",
+          derivativeSymbol: "∂(coupling) / ∂(contacts)",
+          derivativeValue: 1.0,
+          derivativeUnit: "coupled state / contact toggle",
+          interpretation:
+            "Binary state transition for carrier-to-station control circuit coupling (Claim 7).",
+        };
+      }
+      if (
+        controlKey === "cycleProgress" ||
+        controlKey === "progress" ||
+        controlKey === "cycle" ||
+        controlKey === "sequenceProgress" ||
+        controlKey === "cycleFraction"
+      ) {
+        return {
+          metricName: "Production Sequence Cycle Progress",
+          derivativeSymbol: "∂(phase) / ∂(cycleProgress)",
+          derivativeValue: 1.0,
+          derivativeUnit: "progress increment / input increment",
+          interpretation:
+            "Ordered progression through the automated production cycle (locate, retain, position, couple, operate, release).",
         };
       }
       break;

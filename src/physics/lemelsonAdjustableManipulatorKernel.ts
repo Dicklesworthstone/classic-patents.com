@@ -116,64 +116,80 @@ function binary(value: unknown, fallback: number): number {
 export function readLemelsonControls(
   params: LemelsonManipulatorParams | Record<string, number> = {},
 ): LemelsonManipulatorControls {
+  const p = params as Record<string, number | undefined>;
   return {
     carriagePosition: sanitizeNumber(
-      params.carriagePosition,
+      p.carriagePosition ?? p.carriage ?? p.carriageX ?? p.xPosition ?? p.positionX,
       LEMELSON_DEFAULT_CONTROLS.carriagePosition,
       -1,
       1,
     ),
     columnElevation: sanitizeNumber(
-      params.columnElevation,
+      p.columnElevation ?? p.elevation ?? p.columnZ ?? p.lift ?? p.hoist,
       LEMELSON_DEFAULT_CONTROLS.columnElevation,
       0,
       1,
     ),
     columnAzimuth: sanitizeNumber(
-      params.columnAzimuth,
+      p.columnAzimuth ?? p.azimuth ?? p.turntable ?? p.turntableAngle ?? p.rotation,
       LEMELSON_DEFAULT_CONTROLS.columnAzimuth,
       -1,
       1,
     ),
-    wristPivot: sanitizeNumber(params.wristPivot, LEMELSON_DEFAULT_CONTROLS.wristPivot, -1, 1),
-    jawClosure: sanitizeNumber(params.jawClosure, LEMELSON_DEFAULT_CONTROLS.jawClosure, 0, 1),
+    wristPivot: sanitizeNumber(
+      p.wristPivot ?? p.pivot ?? p.wrist ?? p.wristAngle ?? p.bevelPivot,
+      LEMELSON_DEFAULT_CONTROLS.wristPivot,
+      -1,
+      1,
+    ),
+    jawClosure: sanitizeNumber(
+      p.jawClosure ?? p.gripper ?? p.jaw ?? p.grip ?? p.closure,
+      LEMELSON_DEFAULT_CONTROLS.jawClosure,
+      0,
+      1,
+    ),
     cyclePhase: Math.round(
-      sanitizeNumber(params.cyclePhase, LEMELSON_DEFAULT_CONTROLS.cyclePhase, 0, 5),
+      sanitizeNumber(
+        p.cyclePhase ?? p.phase ?? p.stage ?? p.sequencePhase ?? p.step,
+        LEMELSON_DEFAULT_CONTROLS.cyclePhase,
+        0,
+        5,
+      ),
     ),
     stop1Azimuth: sanitizeNumber(
-      params.stop1Azimuth,
+      p.stop1Azimuth ?? p.stop1Rotary ?? p.azimuthLimit1 ?? p.stop1Angle,
       LEMELSON_DEFAULT_CONTROLS.stop1Azimuth,
       -1,
       1,
     ),
     stop2Azimuth: sanitizeNumber(
-      params.stop2Azimuth,
+      p.stop2Azimuth ?? p.stop2Rotary ?? p.azimuthLimit2 ?? p.stop2Angle,
       LEMELSON_DEFAULT_CONTROLS.stop2Azimuth,
       -1,
       1,
     ),
     stop1Elevation: sanitizeNumber(
-      params.stop1Elevation,
+      p.stop1Elevation ?? p.stop1Vertical ?? p.verticalLimit1 ?? p.stop1Height,
       LEMELSON_DEFAULT_CONTROLS.stop1Elevation,
       0,
       1,
     ),
     stop2Elevation: sanitizeNumber(
-      params.stop2Elevation,
+      p.stop2Elevation ?? p.stop2Vertical ?? p.verticalLimit2 ?? p.stop2Height,
       LEMELSON_DEFAULT_CONTROLS.stop2Elevation,
       0,
       1,
     ),
     claim1SelectedSwitchesEnabled: binary(
-      params.claim1SelectedSwitchesEnabled,
+      p.claim1SelectedSwitchesEnabled,
       LEMELSON_DEFAULT_CONTROLS.claim1SelectedSwitchesEnabled,
     ),
     claim8BistableSwitchEnabled: binary(
-      params.claim8BistableSwitchEnabled,
+      p.claim8BistableSwitchEnabled,
       LEMELSON_DEFAULT_CONTROLS.claim8BistableSwitchEnabled,
     ),
     claim15ServoHandoffEnabled: binary(
-      params.claim15ServoHandoffEnabled,
+      p.claim15ServoHandoffEnabled,
       LEMELSON_DEFAULT_CONTROLS.claim15ServoHandoffEnabled,
     ),
   };

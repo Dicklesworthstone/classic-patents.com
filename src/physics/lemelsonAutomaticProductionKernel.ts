@@ -73,29 +73,30 @@ function unit(value: number | undefined, fallback: number): number {
 export function readLemelsonAutomaticProductionControls(
   raw: Partial<LemelsonAutomaticProductionControls> | Record<string, number | undefined>,
 ): LemelsonAutomaticProductionControls {
+  const p = raw as Record<string, number | undefined>;
   return {
     carrierAddressFraction: unit(
-      raw.carrierAddressFraction,
+      p.carrierAddressFraction ?? p.carrierAddress ?? p.carrierX ?? p.addressFraction ?? p.address,
       LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.carrierAddressFraction,
     ),
     liftFraction: unit(
-      raw.liftFraction,
+      p.liftFraction ?? p.lift ?? p.verticalLift ?? p.liftPose ?? p.mzLift,
       LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.liftFraction,
     ),
     reachFraction: unit(
-      raw.reachFraction,
+      p.reachFraction ?? p.reach ?? p.platformReach ?? p.myReach ?? p.extension,
       LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.reachFraction,
     ),
     stationDetected: unit(
-      raw.stationDetected,
+      p.stationDetected ?? p.marker ?? p.markerDetected ?? p.markerSensed ?? p.stationSensed,
       LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.stationDetected,
     ),
     stationCoupled: unit(
-      raw.stationCoupled,
+      p.stationCoupled ?? p.coupled ?? p.contactsCoupled ?? p.stationContact ?? p.claim7,
       LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.stationCoupled,
     ),
     cycleProgress: unit(
-      raw.cycleProgress,
+      p.cycleProgress ?? p.progress ?? p.cycle ?? p.sequenceProgress ?? p.cycleFraction,
       LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.cycleProgress,
     ),
   };
