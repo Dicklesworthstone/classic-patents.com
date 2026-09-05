@@ -2,8 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { allPatents } from "@/data/patents";
 import {
   stepBellTelephone,
+  stepCorlissEngine,
   stepEinsteinRefrigerator,
   stepEngelbartMouse,
+  stepEricssonPropeller,
   stepGoodyearRubber,
   stepHollerithTabulating,
   stepThomsonWelding,
@@ -963,6 +965,267 @@ describe("Sensitivities follow the current admitted operating point", () => {
     }
     for (const invalid of [-1, 3, Number.NaN]) {
       expect(computeParameterSensitivity(id, "fingerCount", { fingerCount: invalid })).toBeNull();
+    }
+  });
+
+  test("Corliss Steam Engine derives indicated power and thermal efficiency slopes", () => {
+    const id = "us-6162-corliss-steam-engine";
+
+    for (const psi of [50, 100, 150]) {
+      const sens = computeParameterSensitivity(id, "steamPressurePsi", {
+        steamPressurePsi: psi,
+        engineRpm: 65,
+        cutoffPct: 25,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Indicated Cylinder Power");
+      expect(sens?.derivativeSymbol).toBe("∂IHP / ∂P_boiler");
+      expect(sens?.derivativeUnit).toBe("HP / psi");
+      const corliss = stepCorlissEngine({
+        steamPressurePsi: psi,
+        engineRpm: 65,
+        cutoffPct: 25,
+      });
+      expect(sens?.derivativeValue).toBeCloseTo(corliss.ihpPressureSlopeHpPerPsi, 2);
+    }
+
+    for (const rpm of [40, 65, 100]) {
+      const sens = computeParameterSensitivity(id, "engineRpm", {
+        steamPressurePsi: 100,
+        engineRpm: rpm,
+        cutoffPct: 25,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Flywheel Shaft Power");
+      expect(sens?.derivativeSymbol).toBe("∂P / ∂RPM");
+      expect(sens?.derivativeUnit).toBe("HP / RPM");
+      const corliss = stepCorlissEngine({
+        steamPressurePsi: 100,
+        engineRpm: rpm,
+        cutoffPct: 25,
+      });
+      expect(sens?.derivativeValue).toBeCloseTo(corliss.ihpRpmSlopeHpPerRpm, 2);
+    }
+
+    for (const cutoff of [15, 25, 45]) {
+      const sens = computeParameterSensitivity(id, "cutoffPct", {
+        steamPressurePsi: 100,
+        engineRpm: 65,
+        cutoffPct: cutoff,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Expansion Thermal Efficiency");
+      expect(sens?.derivativeSymbol).toBe("∂η_th / ∂Cutoff");
+      expect(sens?.derivativeUnit).toBe("% / %");
+      expect(sens?.derivativeValue).toBe(-0.12);
+    }
+
+    // Invalid parameters
+    for (const invalid of [39, 181, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "steamPressurePsi", { steamPressurePsi: invalid }),
+      ).toBeNull();
+    }
+    for (const invalid of [29, 121, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "engineRpm", { engineRpm: invalid })).toBeNull();
+    }
+    for (const invalid of [4, 61, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "cutoffPct", { cutoffPct: invalid })).toBeNull();
+    }
+  });
+
+  test("Ericsson Propeller derives thrust and blade pitch angle sensitivities", () => {
+    const id = "us-588-ericsson-propeller";
+
+    for (const rpm of [60, 120, 180, 240]) {
+      const sens = computeParameterSensitivity(id, "shaftRpm", {
+        shaftRpm: rpm,
+        bladePitchAngleDeg: 35,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Submerged Propeller Hydrodynamic Thrust");
+      expect(sens?.derivativeSymbol).toBe("∂T / ∂RPM");
+      expect(sens?.derivativeUnit).toBe("kN / RPM");
+      const ericsson = stepEricssonPropeller({ shaftRpm: rpm, bladePitchAngleDeg: 35 });
+      expect(sens?.derivativeValue).toBeCloseTo(ericsson.thrustRpmSlopeKnPerRpm, 4);
+    }
+
+    for (const pitch of [25, 35, 45, 55]) {
+      const sens = computeParameterSensitivity(id, "bladePitchAngleDeg", {
+        shaftRpm: 120,
+        bladePitchAngleDeg: pitch,
+      });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Propeller Hydrodynamic Thrust Pitch Sensitivity");
+      expect(sens?.derivativeSymbol).toBe("∂T / ∂θ_pitch");
+      expect(sens?.derivativeUnit).toBe("kN / deg");
+      expect(sens?.derivativeValue).toBeGreaterThan(0);
+    }
+
+    // Invalid parameters
+    for (const invalid of [39, 241, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "shaftRpm", { shaftRpm: invalid })).toBeNull();
+    }
+    for (const invalid of [19, 56, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "bladePitchAngleDeg", { bladePitchAngleDeg: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Gatling Gun derives cyclic rate of fire scaling from barrel cluster and crank", () => {
+    const id = "us-36836-gatling-gun";
+
+    for (const rpm of [30, 60, 100]) {
+      for (const barrels of [4, 6, 8, 10]) {
+        const sensRpm = computeParameterSensitivity(id, "crankRpm", {
+          crankRpm: rpm,
+          barrelCount: barrels,
+        });
+        expect(sensRpm).toBeDefined();
+        expect(sensRpm?.metricName).toBe("Cluster Cyclic Fire Rate");
+        expect(sensRpm?.derivativeSymbol).toBe("∂ROF / ∂CrankRPM");
+        expect(sensRpm?.derivativeValue).toBe(barrels);
+        expect(sensRpm?.derivativeUnit).toBe("RPM / RPM");
+
+        const sensBarrels = computeParameterSensitivity(id, "barrelCount", {
+          crankRpm: rpm,
+          barrelCount: barrels,
+        });
+        expect(sensBarrels).toBeDefined();
+        expect(sensBarrels?.metricName).toBe("Cluster Barrel Scaling");
+        expect(sensBarrels?.derivativeSymbol).toBe("∂ROF / ∂N_barrels");
+        expect(sensBarrels?.derivativeValue).toBe(rpm);
+        expect(sensBarrels?.derivativeUnit).toBe("rounds/min / barrel");
+      }
+    }
+
+    // Invalid parameters
+    for (const invalid of [19, 121, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "crankRpm", { crankRpm: invalid })).toBeNull();
+    }
+    for (const invalid of [3, 11, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "barrelCount", { barrelCount: invalid })).toBeNull();
+    }
+  });
+
+  test("Whitney Cotton Gin derives throughput and grate stroke sensitivities", () => {
+    const id = "us-x72-whitney-cotton-gin";
+
+    for (const rpm of [30, 60, 120]) {
+      const sens = computeParameterSensitivity(id, "crankRpm", { crankRpm: rpm });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Clean Lint Extraction Throughput");
+      expect(sens?.derivativeSymbol).toBe("∂m_lint / ∂RPM_crank");
+      expect(sens?.derivativeUnit).toBe("lb/day / RPM");
+      expect(sens?.derivativeValue).toBeCloseTo(50 / 60, 4);
+    }
+
+    for (const clr of [2.0, 3.2, 5.0]) {
+      const sens = computeParameterSensitivity(id, "seedGridClearance", { seedGridClearance: clr });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Grate Stroke Pitch Clearance");
+      expect(sens?.derivativeSymbol).toBe("∂Stroke / ∂Clearance");
+      expect(sens?.derivativeUnit).toBe("px / mm");
+      expect(sens?.derivativeValue).toBe(2.5);
+    }
+
+    // Invalid parameters
+    for (const invalid of [19, 181, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "crankRpm", { crankRpm: invalid })).toBeNull();
+    }
+    for (const invalid of [0.9, 10.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "seedGridClearance", { seedGridClearance: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("McCormick Reaper derives kinematic cutter reciprocation frequency scaling", () => {
+    const id = "us-x8277-mccormick-reaper";
+
+    for (const speed of [1.0, 2.5, 4.0, 5.0]) {
+      const sens = computeParameterSensitivity(id, "forwardSpeedMph", { forwardSpeedMph: speed });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Cutter Reciprocation Frequency");
+      expect(sens?.derivativeSymbol).toBe("∂f_cut / ∂v_ground");
+      expect(sens?.derivativeUnit).toBe("Hz / MPH");
+      expect(sens?.derivativeValue).toBe(2.33);
+    }
+
+    // Invalid parameters
+    for (const invalid of [0.4, 6.1, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "forwardSpeedMph", { forwardSpeedMph: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Yale Lock derives pin tumbler shear alignment and plug rotational velocity", () => {
+    const id = "us-48475-yale-lock";
+
+    // Unlocked with fully inserted authorized key
+    const unlockedAlign = computeParameterSensitivity(id, "keyInsertion", {
+      keyInsertion: 1.0,
+      appliedTorqueNm: 0.15,
+    });
+    expect(unlockedAlign).toBeDefined();
+    expect(unlockedAlign?.metricName).toBe("Pin Tumbler Shear Line Alignment");
+    expect(unlockedAlign?.derivativeValue).toBe(1.0);
+
+    const unlockedTorque = computeParameterSensitivity(id, "appliedTorqueNm", {
+      keyInsertion: 1.0,
+      appliedTorqueNm: 0.15,
+    });
+    expect(unlockedTorque).toBeDefined();
+    expect(unlockedTorque?.metricName).toBe("Plug Rotational Angular Velocity");
+    expect(unlockedTorque?.derivativeSymbol).toBe("∂ω_plug / ∂τ");
+    expect(unlockedTorque?.derivativeValue).toBe(18.0);
+    expect(unlockedTorque?.derivativeUnit).toBe("(rad/s) / (N·m)");
+
+    // Locked when key partially inserted
+    const lockedAlign = computeParameterSensitivity(id, "keyInsertion", {
+      keyInsertion: 0.5,
+      appliedTorqueNm: 0.15,
+    });
+    expect(lockedAlign).toBeDefined();
+    expect(lockedAlign?.derivativeValue).toBe(0.0);
+
+    const lockedTorque = computeParameterSensitivity(id, "appliedTorqueNm", {
+      keyInsertion: 0.5,
+      appliedTorqueNm: 0.15,
+    });
+    expect(lockedTorque).toBeDefined();
+    expect(lockedTorque?.derivativeValue).toBe(0.0);
+
+    // Invalid parameters
+    for (const invalid of [-0.1, 1.1, Number.NaN]) {
+      expect(computeParameterSensitivity(id, "keyInsertion", { keyInsertion: invalid })).toBeNull();
+    }
+    for (const invalid of [-0.1, 0.6, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "appliedTorqueNm", { appliedTorqueNm: invalid }),
+      ).toBeNull();
+    }
+  });
+
+  test("Sholes Typewriter derives demonstration event cadence scaling", () => {
+    const id = "us-79265-sholes-typewriter";
+
+    for (const cadence of [20, 40, 80, 120]) {
+      const sens = computeParameterSensitivity(id, "typingSpeedWpm", { typingSpeedWpm: cadence });
+      expect(sens).toBeDefined();
+      expect(sens?.metricName).toBe("Demonstration Event Frequency");
+      expect(sens?.derivativeSymbol).toBe("∂f_event / ∂Cadence");
+      expect(sens?.derivativeUnit).toBe("strokes/s / (strokes/min)");
+      expect(sens?.derivativeValue).toBeCloseTo(1 / 60, 4);
+    }
+
+    // Invalid parameters
+    for (const invalid of [9, 121, Number.NaN]) {
+      expect(
+        computeParameterSensitivity(id, "typingSpeedWpm", { typingSpeedWpm: invalid }),
+      ).toBeNull();
     }
   });
 });

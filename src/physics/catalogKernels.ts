@@ -587,13 +587,18 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
         )
       : 0.15;
   const shaftOmegaRadPerS = (rpm * 2 * Math.PI) / 60;
-  const thrustKn = Math.round((rpm / 120) ** 2 * 18 * pitchFactor);
+  const rawThrustKn = (rpm / 120) ** 2 * 18 * pitchFactor;
+  const thrustKn = Math.round(rawThrustKn);
+  const thrustRpmSlopeKnPerRpm = Number(((2 * rawThrustKn) / rpm).toFixed(4));
+  const speedRpmSlopeKnotsPerRpm = Number(((8.5 * pitchFactor) / 120).toFixed(4));
   return {
     isIllustrativeDisplayModel: true,
     sourceSpiralAdvanceDiameters: 3,
     sourceCasingClearanceInches: 0.125,
     shipSpeedKnots,
     thrustKn,
+    thrustRpmSlopeKnPerRpm,
+    speedRpmSlopeKnotsPerRpm,
     pitchMeters,
     theoreticalSpeedKnots,
     slipFraction,
@@ -1098,8 +1103,14 @@ export function stepCorlissEngine(params: {
   // Default 25% cutoff keeps the historical IHP; earlier cutoff admits less steam.
   const mepFactor = 0.75 + cutoff;
   const crank = rpmToOmega(rpm);
+  const ihpPressureSlopeHpPerPsi = Number((rpm * 0.45 * mepFactor).toFixed(2));
+  const ihpRpmSlopeHpPerRpm = Number((psi * 0.45 * mepFactor).toFixed(2));
+  const thermalEfficiencySlopePctPerPct = -0.12;
   return {
     indicatedHp: Math.round(psi * rpm * 0.25 * 1.8 * mepFactor),
+    ihpPressureSlopeHpPerPsi,
+    ihpRpmSlopeHpPerRpm,
+    thermalEfficiencySlopePctPerPct,
     thermalEfficiencyPct: Number((24.5 + (0.25 - cutoff) * 12).toFixed(1)),
     boilerMpa: Number((psi * 0.00689476).toFixed(2)),
     expansionRatio: Number((1 / Math.max(0.05, cutoff)).toFixed(1)),

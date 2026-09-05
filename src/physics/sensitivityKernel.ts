@@ -12,13 +12,16 @@
 
 import {
   stepBellTelephone,
+  stepCorlissEngine,
   stepEinsteinRefrigerator,
   stepEngelbartMouse,
+  stepEricssonPropeller,
   stepGoodyearRubber,
   stepHollerithTabulating,
   stepLandPolaroidInstantFilm,
   stepThomsonWelding,
   stepWozniakApple,
+  stepYaleLock,
   stepZeppelinAirship,
 } from "./catalogKernels";
 import {
@@ -972,14 +975,38 @@ export function computeParameterSensitivity(
     }
 
     case "us-36836-gatling-gun": {
+      const rpm = params.crankRpm ?? params.rpm ?? 60;
+      const count = params.barrelCount ?? 6;
+
+      if (
+        !Number.isFinite(rpm) ||
+        rpm < 20 ||
+        rpm > 120 ||
+        !Number.isFinite(count) ||
+        count < 4 ||
+        count > 10
+      ) {
+        return null;
+      }
+
       if (controlKey === "crankRpm" || controlKey === "rpm") {
         return {
           metricName: "Cluster Cyclic Fire Rate",
           derivativeSymbol: "∂ROF / ∂CrankRPM",
-          derivativeValue: 6.0,
+          derivativeValue: count,
           derivativeUnit: "RPM / RPM",
           interpretation:
-            "6-fold mechanical rate multiplication from 6 revolving barrel cluster cam tracks.",
+            "Mechanical rate multiplication from revolving barrel cluster cam tracks under the kinematic firing model.",
+        };
+      }
+      if (controlKey === "barrelCount") {
+        return {
+          metricName: "Cluster Barrel Scaling",
+          derivativeSymbol: "∂ROF / ∂N_barrels",
+          derivativeValue: rpm,
+          derivativeUnit: "rounds/min / barrel",
+          interpretation:
+            "Rate of fire increase per added barrel at the selected hand-crank rotation rate.",
         };
       }
       break;
@@ -1104,6 +1131,30 @@ export function computeParameterSensitivity(
     }
 
     case "us-6162-corliss-steam-engine": {
+      const psi = params.steamPressurePsi ?? params.boilerPressurePsi ?? params.pressure ?? 100;
+      const rpm = params.engineRpm ?? params.rpm ?? 65;
+      const cutoff = params.cutoffPct ?? params.cutoff ?? 25;
+
+      if (
+        !Number.isFinite(psi) ||
+        psi < 40 ||
+        psi > 180 ||
+        !Number.isFinite(rpm) ||
+        rpm < 30 ||
+        rpm > 120 ||
+        !Number.isFinite(cutoff) ||
+        cutoff < 5 ||
+        cutoff > 60
+      ) {
+        return null;
+      }
+
+      const corliss = stepCorlissEngine({
+        steamPressurePsi: psi,
+        engineRpm: rpm,
+        cutoffPct: cutoff,
+      });
+
       if (
         controlKey === "steamPressurePsi" ||
         controlKey === "boilerPressurePsi" ||
@@ -1112,30 +1163,30 @@ export function computeParameterSensitivity(
         return {
           metricName: "Indicated Cylinder Power",
           derivativeSymbol: "∂IHP / ∂P_boiler",
-          derivativeValue: 0.75,
+          derivativeValue: Number(corliss.ihpPressureSlopeHpPerPsi.toFixed(2)),
           derivativeUnit: "HP / psi",
           interpretation:
-            "Indicated horsepower scaling with full initial boiler admission pressure without throttling.",
+            "Model-derived indicated power scaling with boiler admission pressure under the four-valve rotary cut-off expansion model. It is not a dynamometer reading printed in US 6,162.",
         };
       }
       if (controlKey === "engineRpm" || controlKey === "rpm") {
         return {
           metricName: "Flywheel Shaft Power",
           derivativeSymbol: "∂P / ∂RPM",
-          derivativeValue: 2.15,
+          derivativeValue: Number(corliss.ihpRpmSlopeHpPerRpm.toFixed(2)),
           derivativeUnit: "HP / RPM",
           interpretation:
-            "Linear power scaling of double-acting steam expansion with automatic cutoff.",
+            "Model-derived power scaling of double-acting steam expansion with automatic trip cut-off. It is not a measured shop trial recorded in US 6,162.",
         };
       }
       if (controlKey === "cutoffPct" || controlKey === "cutoff") {
         return {
           metricName: "Expansion Thermal Efficiency",
           derivativeSymbol: "∂η_th / ∂Cutoff",
-          derivativeValue: -0.42,
+          derivativeValue: corliss.thermalEfficiencySlopePctPerPct,
           derivativeUnit: "% / %",
           interpretation:
-            "Thermodynamic Rankine expansion gain as cut-off is shortened by governor trip-gear.",
+            "Thermodynamic Rankine expansion sensitivity as cut-off stroke fraction varies under the modern teaching model. It is not a calibrated engine trial from US 6,162.",
         };
       }
       break;
@@ -1400,13 +1451,46 @@ export function computeParameterSensitivity(
     }
 
     case "us-588-ericsson-propeller": {
-      if (controlKey === "shaftRpm") {
+      const rpm = params.shaftRpm ?? params.rpm ?? 120;
+      const pitchDeg = params.bladePitchAngleDeg ?? params.pitchDeg ?? 35;
+
+      if (
+        !Number.isFinite(rpm) ||
+        rpm < 40 ||
+        rpm > 240 ||
+        !Number.isFinite(pitchDeg) ||
+        pitchDeg < 20 ||
+        pitchDeg > 55
+      ) {
+        return null;
+      }
+
+      const ericsson = stepEricssonPropeller({
+        shaftRpm: rpm,
+        bladePitchAngleDeg: pitchDeg,
+      });
+
+      if (controlKey === "shaftRpm" || controlKey === "rpm") {
         return {
           metricName: "Submerged Propeller Hydrodynamic Thrust",
           derivativeSymbol: "∂T / ∂RPM",
-          derivativeValue: 14.5,
-          derivativeUnit: "N / RPM",
-          interpretation: "Hydrodynamic lift generated by submerged rotating helical blades.",
+          derivativeValue: ericsson.thrustRpmSlopeKnPerRpm,
+          derivativeUnit: "kN / RPM",
+          interpretation:
+            "Illustrative display model thrust sensitivity with shaft rotation speed. US 588 specifies contrary-turning shafts and 3-diameter spiral advance, not dynamometer thrust.",
+        };
+      }
+      if (controlKey === "bladePitchAngleDeg" || controlKey === "pitchDeg") {
+        const dPitchFactor_dDeg =
+          (Math.cos((pitchDeg * Math.PI) / 180) * (Math.PI / 180)) / Math.sin((35 * Math.PI) / 180);
+        const dThrust_dDeg = Number(((rpm / 120) ** 2 * 18 * dPitchFactor_dDeg).toFixed(4));
+        return {
+          metricName: "Propeller Hydrodynamic Thrust Pitch Sensitivity",
+          derivativeSymbol: "∂T / ∂θ_pitch",
+          derivativeValue: dThrust_dDeg,
+          derivativeUnit: "kN / deg",
+          interpretation:
+            "Illustrative display model hydrodynamic thrust sensitivity to helical blade pitch angle. US 588 discloses spiral advance proportions rather than hydrofoil lift data.",
         };
       }
       break;
@@ -1873,28 +1957,58 @@ export function computeParameterSensitivity(
     }
 
     case "us-x72-whitney-cotton-gin": {
-      if (controlKey === "crankRpm") {
+      const rpm = params.crankRpm ?? params.rpm ?? 60;
+      const clearance = params.seedGridClearance ?? params.grateClearanceMm ?? 3.2;
+
+      if (
+        !Number.isFinite(rpm) ||
+        rpm < 20 ||
+        rpm > 180 ||
+        !Number.isFinite(clearance) ||
+        clearance < 1.0 ||
+        clearance > 10.0
+      ) {
+        return null;
+      }
+
+      if (controlKey === "crankRpm" || controlKey === "rpm") {
         return {
           metricName: "Clean Lint Extraction Throughput",
           derivativeSymbol: "∂m_lint / ∂RPM_crank",
-          derivativeValue: 0.85,
-          derivativeUnit: "lb/hr / RPM",
+          derivativeValue: Number((50 / 60).toFixed(4)),
+          derivativeUnit: "lb/day / RPM",
           interpretation:
-            "Wire tooth cylinder pulling lint through grate slots separated from green seeds.",
+            "Modern illustrative scenario throughput scaling with crank rotation speed. US X72 records a 49/50 labor reduction rather than continuous calibrated mass flow.",
+        };
+      }
+      if (controlKey === "seedGridClearance" || controlKey === "grateClearanceMm") {
+        return {
+          metricName: "Grate Stroke Pitch Clearance",
+          derivativeSymbol: "∂Stroke / ∂Clearance",
+          derivativeValue: 2.5,
+          derivativeUnit: "px / mm",
+          interpretation:
+            "Illustrative display slot stroke scaling with seed grate clearance under the teaching model.",
         };
       }
       break;
     }
 
     case "us-x8277-mccormick-reaper": {
-      if (controlKey === "forwardSpeedMph") {
+      const speed = params.forwardSpeedMph ?? params.speedMph ?? params.speed ?? 2.5;
+
+      if (!Number.isFinite(speed) || speed < 0.5 || speed > 6.0) {
+        return null;
+      }
+
+      if (controlKey === "forwardSpeedMph" || controlKey === "speedMph" || controlKey === "speed") {
         return {
-          metricName: "Acreage Harvesting Rate",
-          derivativeSymbol: "∂Area / ∂v_ground",
-          derivativeValue: 1.25,
-          derivativeUnit: "acres/hr / MPH",
+          metricName: "Cutter Reciprocation Frequency",
+          derivativeSymbol: "∂f_cut / ∂v_ground",
+          derivativeValue: 2.33,
+          derivativeUnit: "Hz / MPH",
           interpretation:
-            "Reciprocating serrated sickle swath cutting efficiency over standing grain fields.",
+            "Kinematic cutter reciprocation frequency scaling derived from the two-foot ground wheel and 30:9 × 27:9 gear train printed in US X8277.",
         };
       }
       break;
@@ -1942,14 +2056,43 @@ export function computeParameterSensitivity(
     }
 
     case "us-48475-yale-lock": {
+      const insertion = params.keyInsertion ?? 1.0;
+      const torque = params.appliedTorqueNm ?? 0.15;
+
+      if (
+        !Number.isFinite(insertion) ||
+        insertion < 0.0 ||
+        insertion > 1.0 ||
+        !Number.isFinite(torque) ||
+        torque < 0.0 ||
+        torque > 0.5
+      ) {
+        return null;
+      }
+
+      const yale = stepYaleLock({
+        keyInsertion: insertion,
+        appliedTorqueNm: torque,
+      });
+
       if (controlKey === "keyInsertion") {
         return {
           metricName: "Pin Tumbler Shear Line Alignment",
           derivativeSymbol: "∂Alignment / ∂x_key",
-          derivativeValue: 1.0,
+          derivativeValue: yale.isUnlocked ? 1.0 : 0.0,
           derivativeUnit: "unit / unit",
           interpretation:
-            "Bitted flat key lifting driver and key pins to cylindrical plug shear boundary.",
+            "Binary shear line clearing state as the bitted flat key lifts driver and key pins to cylindrical plug boundary. Returns 1.0 when fully aligned and 0.0 when blocked.",
+        };
+      }
+      if (controlKey === "appliedTorqueNm" || controlKey === "torque") {
+        return {
+          metricName: "Plug Rotational Angular Velocity",
+          derivativeSymbol: "∂ω_plug / ∂τ",
+          derivativeValue: yale.isUnlocked ? 18.0 : 0.0,
+          derivativeUnit: "(rad/s) / (N·m)",
+          interpretation:
+            "Plug rotational response to applied turning torque: freely accelerates when shear line is cleared (18 (rad/s)/(N·m)), or deadlocked by binding pins (0 (rad/s)/(N·m)).",
         };
       }
       break;
@@ -1970,14 +2113,18 @@ export function computeParameterSensitivity(
     }
 
     case "us-79265-sholes-typewriter": {
-      if (controlKey === "typingSpeedWpm") {
+      const cadence = params.typingSpeedWpm ?? params.cadence ?? 40;
+      if (!Number.isFinite(cadence) || cadence < 10 || cadence > 120) {
+        return null;
+      }
+      if (controlKey === "typingSpeedWpm" || controlKey === "cadence") {
         return {
-          metricName: "Carriage Escapement Advance Rate",
-          derivativeSymbol: "∂Strokes / ∂WPM",
-          derivativeValue: 5.0,
-          derivativeUnit: "characters/min / WPM",
+          metricName: "Demonstration Event Frequency",
+          derivativeSymbol: "∂f_event / ∂Cadence",
+          derivativeValue: Number((1 / 60).toFixed(4)),
+          derivativeUnit: "strokes/s / (strokes/min)",
           interpretation:
-            "Type-bar basket striking and ratchet wheel carriage letter-spacing escapement.",
+            "Linear scaling of demonstration stroke frequency with input typing cadence under the source-constrained display model.",
         };
       }
       break;
