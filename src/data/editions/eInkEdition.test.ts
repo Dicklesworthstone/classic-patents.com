@@ -9,7 +9,6 @@ import {
   isArchivalEditionExplicitlyWithheld,
 } from "@/data/editions/publicationApproval";
 import { eInkPatent } from "@/data/patents/eink";
-import type { CuratedSpecificationInline } from "@/types/patent";
 
 const PINNED_SHA256 = "574678473ca13e7daaeb661cfd96808fffb6c16d06d86872923fec52a08ab324";
 
@@ -129,71 +128,29 @@ describe("US 6,120,588 E-Ink Archival Edition Contract", () => {
     expect(eInkPatent.originalText).not.toContain("\nCLAIMS\n");
   });
 
-  test("all figure preview assets exist on disk with exact pixel dimensions", () => {
-    const figurePreviews = einkArchivalEdition.blocks.flatMap((block) => {
-      if (block.kind === "paragraph") {
-        return block.inlines.flatMap((inline) =>
-          inline.kind === "reference" && inline.referenceType === "figure"
-            ? (inline.figurePreviews ?? [])
-            : [],
-        );
-      }
-      return [];
-    });
-
-    expect(figurePreviews.length).toBe(24);
-
-    for (const preview of figurePreviews) {
-      const relPath = preview.src.replace(/^\//, "");
-      const fullPath = path.join(process.cwd(), "public", relPath);
-      expect(fs.existsSync(fullPath)).toBe(true);
-
-      const buf = fs.readFileSync(fullPath);
-      const width = buf.readUInt32BE(16);
-      const height = buf.readUInt32BE(20);
-
-      expect(preview.width).toBe(width);
-      expect(preview.height).toBe(height);
-    }
-  });
-
-  test("maps every authored figure occurrence to the exact pinned source sheets", () => {
-    const sourceReferences = einkArchivalEdition.blocks.flatMap((block) =>
+  test("keeps unverified figure prose out of the held source packet while preserving pinned sheets", () => {
+    const figureReferences = einkArchivalEdition.blocks.flatMap((block) =>
       block.kind === "paragraph"
         ? block.inlines.filter(
-            (inline): inline is Extract<CuratedSpecificationInline, { kind: "reference" }> =>
-              inline.kind === "reference" &&
-              inline.referenceType === "figure" &&
-              inline.figurePreviews?.some((preview) => preview.src.includes("/sheet-")) === true,
+            (inline) => inline.kind === "reference" && inline.referenceType === "figure",
           )
         : [],
     );
-    const expectedSheets: Readonly<Record<string, readonly number[]>> = {
-      "FIG. 1": [1, 2],
-      "FIG. 3B": [4],
-      "FIGS. 1A, 1B, 1C, 1D, 1E, and 1F": [1, 2],
-      "FIGS. 2A, 2B and 2C": [3],
-      "FIGS. 3A, 3B, 3C, 3D, and 3E": [4],
-      "FIGS. 4A through 4M": [5, 6, 7],
-      "FIGS. 5A through 6E": [8, 9],
-      "FIGS. 7 through 10": [10, 11, 12, 13],
-      "FIGS. 11 through 14": [14, 15, 16],
-      "FIG. 1A": [1],
-      "FIGS. 4A and B": [5],
-      "FIGS. 3C-D": [4],
-      "FIG. 14": [16],
-    };
+    expect(figureReferences).toHaveLength(0);
 
-    expect(sourceReferences).toHaveLength(14);
-    for (const reference of sourceReferences) {
-      const expected = expectedSheets[reference.text];
-      expect(expected).toBeDefined();
-      if (!expected) throw new Error(`Unexpected E Ink figure reference: ${reference.text}`);
-      expect(
-        reference.figurePreviews?.map((preview) =>
-          Number(preview.src.match(/\/sheet-(\d+)-source-crop-v1\.png$/)?.[1]),
-        ),
-      ).toEqual([...expected]);
+    for (let sheetNumber = 1; sheetNumber <= 16; sheetNumber += 1) {
+      const sheetPath = path.join(
+        process.cwd(),
+        "public",
+        "patents",
+        "figures",
+        "us-6120588-eink",
+        `sheet-${sheetNumber}-source-crop-v1.png`,
+      );
+      expect(fs.existsSync(sheetPath)).toBe(true);
+      const buf = fs.readFileSync(sheetPath);
+      expect(buf.readUInt32BE(16)).toBe(928);
+      expect(buf.readUInt32BE(20)).toBe(1364);
     }
   });
 
