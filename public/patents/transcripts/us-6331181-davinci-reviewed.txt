@@ -1,5 +1,19 @@
 --- REVIEWED TRANSCRIPTION PAGE 1 OF 34 ---
 
+United States Patent
+Tierney et al.
+Patent No.: US 6,331,181 B1
+Date of Patent: Dec. 18, 2001
+SURGICAL ROBOTIC TOOLS, DATA
+ARCHITECTURE, AND USE
+Inventors: Michael J. Tierney, Pleasanton; Thomas G. Cooper, Menlo Park; Chris A. Julian, Los Gatos; Stephen J. Blumenkranz, Redwood City; Gary S. Guthart, Foster City; Robert G. Younge, Portola Valley, all of CA (US)
+Assignee: Intuitive Surgical, Inc., Mountain View, CA (US)
+Appl. No.: 09/418,726
+Filed: Oct. 15, 1999
+
+ABSTRACT
+Robotic surgical tools, systems, and methods for preparing for and performing robotic surgery include a memory mounted on the tool. The memory can perform a number of functions when the tool is loaded on the tool manipulator: first, the memory can provide a signal verifying that the tool is compatible with that particular robotic system. Secondly, the tool memory may identify the tool-type to the robotic system so that the robotic system can reconfigure its programming. Thirdly, the memory of the tool may indicate tool-specific information, including measured calibration offsets indicating misalignment of the tool drive system, tool life data, or the like. This information may be stored in a read only memory (ROM), or in a nonvolatile memory which can be written to only a single time. The invention further provides improved engagement structures for coupling robotic surgical tools with manipulator structures.
+
 (12) United States Patent
 
 Tierney

@@ -6,7 +6,6 @@ import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValid
 import { davinciArchivalEdition } from "@/data/editions/daVinciEdition";
 import { archivalEditionForPublication } from "@/data/editions/publicationApproval";
 import { daVinciPatent } from "@/data/patents/davinci";
-import type { CuratedSpecificationInline } from "@/types/patent";
 
 const PINNED_SHA256 = "ff8eef36d94ec5ec3ec01038b7145030caf617ea018fcde9f00df6380beb3d91";
 
@@ -32,6 +31,38 @@ describe("US 6,331,181 Surgical Robotic Tools Archival Research Boundary", () =>
     expect(fs.existsSync(pdfPath)).toBe(true);
     const diskSha = createHash("sha256").update(fs.readFileSync(pdfPath)).digest("hex");
     expect(diskSha).toBe(PINNED_SHA256);
+  });
+
+  test("keeps visually checked front-page identity and abstract literal to the pinned grant", () => {
+    const transcriptPath = path.join(
+      process.cwd(),
+      "public",
+      "patents",
+      "transcripts",
+      "us-6331181-davinci-reviewed.txt",
+    );
+    const transcript = fs.readFileSync(transcriptPath, "utf-8");
+    const masthead = davinciArchivalEdition.blocks[0];
+    if (masthead?.kind !== "masthead") {
+      throw new Error("Da Vinci held packet is missing the front-page masthead.");
+    }
+    for (const line of masthead.lines) {
+      expect(transcript).toContain(line);
+    }
+
+    const abstract = davinciArchivalEdition.blocks.find(
+      (block) =>
+        block.kind === "paragraph" &&
+        block.inlines
+          .map((inline) => inline.text)
+          .join("")
+          .startsWith("Robotic surgical tools, systems"),
+    );
+    if (abstract?.kind !== "paragraph") {
+      throw new Error("Da Vinci held packet is missing the printed abstract.");
+    }
+    expect(transcript).toContain("ABSTRACT");
+    expect(transcript).toContain(abstract.inlines.map((inline) => inline.text).join(""));
   });
 
   test("contains all 28 printed claims exactly matching manual claim text", () => {
@@ -60,79 +91,30 @@ describe("US 6,331,181 Surgical Robotic Tools Archival Research Boundary", () =>
     }
   });
 
-  test("all figure preview assets exist on disk with exact pixel dimensions", () => {
-    const figurePreviews = davinciArchivalEdition.blocks.flatMap((block) => {
-      if (block.kind === "paragraph") {
-        return block.inlines.flatMap((inline) =>
-          inline.kind === "reference" && inline.referenceType === "figure"
-            ? (inline.figurePreviews ?? [])
-            : [],
-        );
-      }
-      return [];
-    });
-
-    expect(figurePreviews).toHaveLength(32);
-
-    for (const preview of figurePreviews) {
-      const relPath = preview.src.replace(/^\//, "");
-      const fullPath = path.join(process.cwd(), "public", relPath);
-      expect(fs.existsSync(fullPath)).toBe(true);
-
-      const buf = fs.readFileSync(fullPath);
-      const width = buf.readUInt32BE(16);
-      const height = buf.readUInt32BE(20);
-
-      expect(preview.width).toBe(width);
-      expect(preview.height).toBe(height);
-    }
-  });
-
-  test("maps later figure citations to the exact pinned source sheets", () => {
-    const sourceReferences = davinciArchivalEdition.blocks.flatMap((block) =>
+  test("keeps unverified figure prose out of the held source packet while preserving pinned sheets", () => {
+    const figureReferences = davinciArchivalEdition.blocks.flatMap((block) =>
       block.kind === "paragraph"
         ? block.inlines.filter(
-            (inline): inline is Extract<CuratedSpecificationInline, { kind: "reference" }> =>
-              inline.kind === "reference" &&
-              inline.referenceType === "figure" &&
-              inline.figurePreviews?.some((preview) => preview.src.includes("/sheet-")) === true,
+            (inline) => inline.kind === "reference" && inline.referenceType === "figure",
           )
         : [],
     );
-    const expectedSheets: Readonly<Record<string, readonly number[]>> = {
-      "FIG. 1": [1],
-      "FIG. 2": [2],
-      "FIGS. 2A-C": [3, 4],
-      "FIG. 2A": [3, 4],
-      "FIGS. 3 and 3A": [5, 6],
-      "FIG. 4": [7],
-      "FIGS. 4A-B": [7, 8],
-      "FIGS. 5A-H": [9, 10],
-      "FIG. 6": [11],
-      "FIGS. 7A-E and 7G-L": [11, 12, 13],
-      "FIG. 8": [14],
-      "FIGS. 8A-B": [15],
-      "FIGS. 9-10": [16, 17],
-      "FIGS. 11-13": [18, 19, 20],
-      "FIGS. 14A-C": [21],
-      "FIG. 15": [22],
-    };
+    expect(figureReferences).toHaveLength(0);
 
-    expect(sourceReferences).toHaveLength(17);
-    for (const reference of sourceReferences) {
-      const expected = expectedSheets[reference.text];
-      expect(expected).toBeDefined();
-      if (!expected) throw new Error(`Unexpected Da Vinci figure reference: ${reference.text}`);
-      expect(
-        reference.figurePreviews
-          ?.filter((preview) => preview.src.includes("/sheet-"))
-          .map((preview) => Number(preview.src.match(/\/sheet-(\d+)-source-crop-v1\.png$/)?.[1])),
-      ).toEqual([...expected]);
+    for (let sheetNumber = 1; sheetNumber <= 22; sheetNumber += 1) {
+      const sheetPath = path.join(
+        process.cwd(),
+        "public",
+        "patents",
+        "figures",
+        "us-6331181-davinci",
+        `sheet-${sheetNumber}-source-crop-v1.png`,
+      );
+      expect(fs.existsSync(sheetPath)).toBe(true);
+      const png = fs.readFileSync(sheetPath);
+      expect(png.readUInt32BE(16)).toBe(928);
+      expect(png.readUInt32BE(20)).toBe(1364);
     }
-
-    const figure8 = sourceReferences.find((reference) => reference.text === "FIGS. 8A-B");
-    expect(figure8?.label).toContain("FIG. 8B is cited");
-    expect(figure8?.label).toContain("absent from the pinned drawing sheets");
   });
 
   test("reviewed transcript ledger exists and contains page markers", () => {

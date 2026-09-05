@@ -53,7 +53,7 @@ that absence instead of pointing at sheet 16, which is FIG. 9.
 
 ## Editorial and preservation boundaries
 
-- The authored React edition in `src/data/editions/daVinciEdition.ts` is a stored source-audit draft. Its claims and figure mappings are source-bound, but its selected specification paragraphs do not reproduce the complete 16-page body; a negative publication attestation therefore keeps it outside the public source face.
+- The authored React edition in `src/data/editions/daVinciEdition.ts` is a stored source-audit draft. Its active held packet contains only the visually checked front-page masthead/abstract and source-bound claims; the selected specification body and figure prose remain research material. A negative publication attestation keeps the draft outside the public source face.
 - The page-complete research ledger is `public/patents/transcripts/us-6331181-davinci-reviewed.txt`; it has one marker for each of the 34 PDF pages and splits the claims between PDF pages 33 and 34.
 - The canonical record is `src/data/patents/davinci.ts`. Its claim text is read dynamically from the edition's claim blocks, never duplicated in a record-local literal map.
 - Figure previews are source crops only. The procedural 2D/3D instruments are explanatory renderings and are not archival citations.
@@ -63,4 +63,19 @@ that absence instead of pointing at sheet 16, which is FIG. 9.
 
 ## Independent source-sheet review (2026-09-04)
 
-The 22 preserved source-sheet assets were independently checked against PDF pages 3–24. Each is a byte-for-byte direct 120-DPI rasterization of its corresponding page (928 × 1364 pixels); no source pixels were redrawn, isolated, or removed. All seventeen active figure-reference occurrences now lead with their complete cited drawing sheet, and their locator rectangles deliberately cover the entire source page. The legacy close crops remain supplemental reading aids after that source sheet. This drawing evidence does not alter the separate incomplete-specification status of the stored editorial draft; visitors continue to receive the page-complete reviewed ledger and pinned PDF.
+The 22 preserved source-sheet assets were independently checked against PDF pages 3–24. Each is a byte-for-byte direct 120-DPI rasterization of its corresponding page (928 × 1364 pixels); no source pixels were redrawn, isolated, or removed. The former seventeen reconstruction-era figure-reference occurrences led with their complete cited drawing sheet, and their locator rectangles deliberately covered the entire source page. The active held packet no longer exposes that incomplete figure prose; the assets remain pinned preservation material. This drawing evidence does not alter the separate incomplete-specification status of the stored editorial draft; visitors continue to receive the page-complete reviewed ledger and pinned PDF.
+
+## Front-page and held-packet reconciliation (2026-09-05)
+
+PDF page 1 was rendered directly from the pinned facsimile at 220 DPI and
+visually checked. The held packet and reviewed ledger now preserve the printed
+two-line title, complete inventor/locality line, assignee, separate application
+and filing lines, and the complete printed abstract. The prior abstract had
+shortened the memory's compatibility, reconfiguration, calibration, ROM, and
+engagement-structure language, so it was replaced rather than promoted.
+
+The candidate's selected body and figure prose remain incomplete against the
+16-page specification. They are retained for source-comparison research but
+cannot surface as archival text. This does **not** withhold any visitor source:
+the complete 34-page ledger and pinned facsimile remain the reader path while
+the continuous edition is rebuilt.

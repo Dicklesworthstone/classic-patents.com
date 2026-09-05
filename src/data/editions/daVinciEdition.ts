@@ -15,6 +15,18 @@ const term = (
   definition,
 });
 
+/**
+ * The selected body below is retained as research material, but it is not a
+ * page-complete archival transcription. The active held packet contains only
+ * the visually checked front-page identity/abstract and the printed claims.
+ * Until the full edition is rebuilt, the reader independently serves the
+ * complete reviewed ledger and pinned facsimile.
+ */
+const HELD_SOURCE_BOUND_BLOCK_INDEXES = new Set([
+  0, 1, 2, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
+  42, 43, 44, 45, 46, 47, 48,
+]);
+
 export const DAVINCI_FIGURE_DIMS: Record<number, { width: number; height: number }> = {
   1: { width: 1856, height: 2385 },
   2: { width: 1856, height: 2385 },
@@ -95,42 +107,6 @@ export const davinciParallelReadings: Readonly<Record<number, readonly string[]>
   2: [
     "The abstract describes a memory mounted on the robotic tool. It verifies compatibility, identifies the tool type, and carries calibration offsets or tool-life information to the manipulator.",
   ],
-  4: [
-    "This field statement places the invention in robotically assisted surgery and, more specifically, in tool, system, and method improvements for that setting.",
-  ],
-  6: [
-    "The background explains that robotic surgery introduces its own challenges: many instruments may be needed, manipulators are limited by space and cost, and several tools may share one trocar sleeve.",
-  ],
-  7: [
-    "The specification says the system can reduce patient trauma by limiting simultaneous tools and entry ports, while still allowing different tools to be exchanged through a common sleeve.",
-  ],
-  9: [
-    "The first summary aspect is a tool with a probe, distal surgical end effector, releasable proximal interface, and circuitry that transmits a compatibility signal to the processor.",
-  ],
-  10: [
-    "The source says the compatibility signal may be a unique identifier, a value listed in a processor table, or an arbitrary compatibility string. It can also carry tool-type and tool-specific calibration or life data.",
-  ],
-  12: [
-    "The drawing list is source-specific: FIG. 1 shows a robotic procedure and tool change; FIG. 2 shows the arm cart; FIGS. 2A-C show the manipulator linkage and remote center; FIGS. 3-15 cover carts, tools, end effectors, interfaces, adapters, wiring, software, engagement logic, and compatibility verification.",
-  ],
-  14: [
-    "In the detailed embodiment, the robotic system uses multiple arms. Arms may support articulated tools such as graspers, needle holders, or cautery probes, and may also support image-capture devices such as endoscopes.",
-  ],
-  15: [
-    "FIG. 1's master controller is a manual six-degree-of-freedom input device with an actuated handle, while the slave cart positions shafts through patient openings. The patent does not specify a sampling rate, motion-scaling ratio, or tremor-filter cutoff here.",
-  ],
-  16: [
-    "The FIG. 2A-C linkage uses rigid links and rotational joints in a parallelogram arrangement. Pitch and yaw axes intersect at a remote center aligned with the tool shaft; insertion along the shaft leaves that remote center fixed relative to the manipulator base.",
-  ],
-  17: [
-    "Motors drive the linkage, tool rotation, distal wrist motion, and end-effector actuation. Flexible members may transfer motion to the tool, and a cannula supports rotation and axial movement for endoscopic procedures.",
-  ],
-  18: [
-    "The tool interface includes driven elements coupled to distal degrees of motion. The specification describes memory on the tool, manipulator arm, or support structure for compatibility, tool type, calibration offsets, tool life, and coupling state.",
-  ],
-  19: [
-    "The source also describes engagement structures and sensors, a sterile-drape adapter with movable bodies, and a magnet at the tool interface that can actuate circuitry in the holder. These are source mechanisms, not a claim that every commercial Da Vinci system uses the same implementation.",
-  ],
 };
 
 export const davinciArchivalEdition: CuratedSpecificationEdition = {
@@ -149,10 +125,12 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
         "Tierney et al.",
         "Patent No.: US 6,331,181 B1",
         "Date of Patent: Dec. 18, 2001",
-        "SURGICAL ROBOTIC TOOLS, DATA ARCHITECTURE, AND USE",
-        "Inventors: Michael J. Tierney, Thomas G. Cooper, Chris A. Julian, Stephen J. Blumenkranz, Gary S. Guthart, Robert G. Younge",
+        "SURGICAL ROBOTIC TOOLS, DATA",
+        "ARCHITECTURE, AND USE",
+        "Inventors: Michael J. Tierney, Pleasanton; Thomas G. Cooper, Menlo Park; Chris A. Julian, Los Gatos; Stephen J. Blumenkranz, Redwood City; Gary S. Guthart, Foster City; Robert G. Younge, Portola Valley, all of CA (US)",
         "Assignee: Intuitive Surgical, Inc., Mountain View, CA (US)",
-        "Application No.: 09/418,726 · Filed: Oct. 15, 1999",
+        "Appl. No.: 09/418,726",
+        "Filed: Oct. 15, 1999",
       ],
     },
     {
@@ -161,13 +139,7 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
       text: "ABSTRACT",
     },
     p(
-      "Robotic surgical tools, systems, and methods for preparing for and performing robotic surgery include a memory mounted on the tool. The memory can provide a compatibility signal, identify the tool type so the system can reconfigure its programming, and indicate tool-specific information such as calibration offsets or tool life data. The information may be stored in read-only or ",
-      term(
-        "nonvolatile memory",
-        "Nonvolatile tool memory",
-        "Memory that retains compatibility, tool-type, calibration, or use information when the detachable surgical tool is disconnected from the robotic controller.",
-      ),
-      ", and the invention further provides engagement structures for coupling tools with manipulators.",
+      "Robotic surgical tools, systems, and methods for preparing for and performing robotic surgery include a memory mounted on the tool. The memory can perform a number of functions when the tool is loaded on the tool manipulator: first, the memory can provide a signal verifying that the tool is compatible with that particular robotic system. Secondly, the tool memory may identify the tool-type to the robotic system so that the robotic system can reconfigure its programming. Thirdly, the memory of the tool may indicate tool-specific information, including measured calibration offsets indicating misalignment of the tool drive system, tool life data, or the like. This information may be stored in a read only memory (ROM), or in a nonvolatile memory which can be written to only a single time. The invention further provides improved engagement structures for coupling robotic surgical tools with manipulator structures.",
     ),
     {
       kind: "heading",
@@ -571,7 +543,7 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
         },
       ],
     },
-  ],
+  ].filter((_block, blockIndex) => HELD_SOURCE_BOUND_BLOCK_INDEXES.has(blockIndex)),
 };
 
 export const davinciEdition = davinciArchivalEdition;
