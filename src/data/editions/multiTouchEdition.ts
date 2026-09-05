@@ -358,3 +358,16 @@ export const multiTouchArchivalEdition: CuratedSpecificationEdition = {
 };
 
 export const multiTouchEdition = multiTouchArchivalEdition;
+
+export function manualMultiTouchClaimText(claimNumber: number): string {
+  const claim = multiTouchArchivalEdition.blocks.find(
+    (block) => block.kind === "claim" && block.number === claimNumber,
+  );
+  if (claim?.kind !== "claim") {
+    throw new Error(`Multi-Touch source-bound held packet is missing Claim ${claimNumber}.`);
+  }
+  return claim.inlines
+    .map((inline) => inline.text)
+    .join("")
+    .trim();
+}

@@ -15,6 +15,7 @@ import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 import type { Patent } from "../src/types/patent";
 import {
   assertPatentSourceIdentity,
+  assertSourceHeldVisual,
   buildPatentE2EScenarios,
   classifyPatentE2EDiagnostic,
   createPatentE2EEvent,
@@ -64,6 +65,23 @@ describe("patent E2E scenario contract", () => {
     );
     expect(scenarios[0].visualAvailability).toBe("source-hold");
     expect(scenarios[1].visualAvailability).toBe("interactive");
+  });
+
+  test("held-model check fails if an unsupported canvas, mode or control is enabled", () => {
+    const held = {
+      explanation:
+        "The full patent text is readable while this physical model awaits source review.",
+      modelCount: 0,
+      modeCount: 0,
+      unsupportedControls: 0,
+    };
+    expect(() => assertSourceHeldVisual(held)).not.toThrow();
+    for (const key of ["modelCount", "modeCount", "unsupportedControls"] as const) {
+      expect(() => assertSourceHeldVisual({ ...held, [key]: 1 })).toThrow("unexpectedly enabled");
+    }
+    expect(() => assertSourceHeldVisual({ ...held, explanation: "" })).toThrow(
+      "no explanatory status",
+    );
   });
   test("builds one source-state-aware scenario per exact catalogue id", () => {
     const scenarios = buildPatentE2EScenarios(

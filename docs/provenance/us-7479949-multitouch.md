@@ -4,13 +4,13 @@
 
 - Catalogue id: `us-7479949-multitouch`
 - Granted title: **Touch Screen Device, Method, and Graphical User Interface for Determining Commands by Applying Heuristics**
-- Inventors as printed: Steven P. Jobs; Scott Forstall; Greg Christie; J. Stephen Lemay; Scott Herz; Marcel Van Os; Bas Ording; Imran Chaudhri
+- Inventors as printed: the complete front-page inventor list beginning Steven P. Jobs, Scott Forstall, Greg Christie, Stephen O. Lemay, Scott Herz, Marcel Van Os, and Bas Ording; the pinned facsimile, not a shortened editorial list, is the authority for every printed name and location.
 - Inventor location as printed: Cupertino, California (US)
-- Filing date: April 11, 2007
+- Filing date: April 11, 2008
 - Grant date: January 20, 2009
 - Primary public record: <https://patents.google.com/patent/US7479949B2/en>
 - Pinned facsimile: `public/patents/pdfs/us-7479949-multitouch.pdf`
-- Retrieval and ledger review dates: 2026-08-20 (initial ledger review); 2026-08-22 (receipt authored against pinned PDF). The stored manual edition is an incomplete editorial draft and has not received a full-facsimile-review attestation.
+- Retrieval and ledger review dates: 2026-08-20 (initial ledger review); 2026-08-22 (receipt authored against pinned PDF). A direct source check subsequently compared pinned PDF page 1 (front-page identity), page 298 (the actual brief drawing list beginning with Figs. 1A and 1B), and page 356 (the opening of Claim 1). The stored manual edition is an incomplete editorial draft and has not received a full-facsimile-review attestation.
 - Rights basis: United States patent text and government-issued drawings are historical public-domain source material; this receipt does not assert rights in later commentary or derivative assets.
 - SHA-256 (lowercase): `9b29747e60aad27302671e1be32fda99680c474d4e3a5ce0ffc93201460bfe1c`
 - PDF page count: 364
@@ -41,4 +41,3 @@ The pinned PDF is the issued B2 document without a printed cover page: page 1 is
 - Claim text in the catalogue record is dynamically joined from the edition's claim nodes; no literal duplication exists in `src/data/patents/multitouch.ts`.
 - No local OCR engine, OCR daemon, or local recognition process was run at any point in preparing the ledger or edition. Any cloud machine draft remains private research evidence only; every served line must stand against the pinned facsimile.
 - The pinned PDF, reviewed ledger, archival edition, figure crops, physics telemetry, and visual are separate evidence layers. No derivative explanation substitutes for the facsimile.
-

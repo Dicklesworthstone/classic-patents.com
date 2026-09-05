@@ -29,6 +29,7 @@ import { energyChannelsFor } from "../src/physics/energyChannels";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 import {
   assertPatentSourceIdentity,
+  assertSourceHeldVisual,
   buildPatentE2EScenarios,
   classifyPatentE2EDiagnostic,
   createPatentE2EEvent,
@@ -253,7 +254,13 @@ async function main() {
     if (options.selfTestFailure) {
       await runFailureEvidenceSelfTest({ browser, baseUrl: options.baseUrl, recorder });
     } else {
-      for (const scenario of selected) {
+      for (const [index, scenario] of selected.entries()) {
+        if (index > 0) {
+          // Bound GPU/process lifetime per patent. This is isolation, not a
+          // retry: every failed viewport remains a failed event in the run.
+          await browser.close();
+          browser = await chromium.launch({ headless: !options.headed });
+        }
         for (const viewport of options.viewports) {
           const passed = await runPatentViewport({
             browser,
@@ -267,16 +274,32 @@ async function main() {
         if (options.failFast && recorder.events.some((event) => event.status === "fail")) break;
       }
     }
+  } catch (error) {
+    recorder.emit({
+      runId: recorder.runId,
+      patentId: "__run__",
+      route: "/",
+      viewport: "run",
+      face: "runtime",
+      action: "browser-run",
+      status: "fail",
+      durationMs: 0,
+      errors: [formatError(error)],
+    });
   } finally {
-    await browser.close();
+    try {
+      await browser.close();
+    } finally {
+      // A browser crash must retain a nonzero summary and all earlier events,
+      // including when the next context could not be created.
+      finishRun(recorder, {
+        startedAt,
+        baseUrl: options.baseUrl,
+        patentIds: selected.map((scenario) => scenario.patentId),
+        viewports: options.viewports,
+      });
+    }
   }
-
-  finishRun(recorder, {
-    startedAt,
-    baseUrl: options.baseUrl,
-    patentIds: selected.map((scenario) => scenario.patentId),
-    viewports: options.viewports,
-  });
 }
 
 async function runFailureEvidenceSelfTest(args: {
@@ -862,8 +885,6 @@ async function verifyVisualAndTelemetry(
         );
         await status.waitFor({ state: "visible" });
         const explanation = await status.innerText();
-        if (explanation.trim().length < 40)
-          throw new Error("Held model has no explanatory status.");
         const modelCount = await surface
           .locator('canvas, input[type="range"], input[type="checkbox"]')
           .count();
@@ -874,10 +895,7 @@ async function verifyVisualAndTelemetry(
           .getByTestId("physics-telemetry-badge")
           .locator("input:not([disabled])")
           .count();
-        if (modelCount || modeCount || unsupportedControls)
-          throw new Error(
-            `Source-held model unexpectedly enabled: surfaces/controls=${modelCount}, modes=${modeCount}, telemetry controls=${unsupportedControls}.`,
-          );
+        assertSourceHeldVisual({ explanation, modelCount, modeCount, unsupportedControls });
         return { explanation, modelCount, modeCount, unsupportedControls };
       },
     );
@@ -1325,10 +1343,14 @@ async function verifyRemainingFaces(
   await checked(
     recorder,
     meta(scenario, viewport, "split-view", "dual-projection"),
-    ["Face 1: Plain English Breakdown", "Face 2: Complete Archival Source Text"],
+    ["plain-english", "original-spec"],
     async () => {
-      await page.getByRole("heading", { name: "Face 1: Plain English Breakdown" }).waitFor();
-      await page.getByRole("heading", { name: "Face 2: Complete Archival Source Text" }).waitFor();
+      for (const projection of ["plain-english", "original-spec"]) {
+        const pane = page.locator(`[data-patent-projection="${projection}"]`);
+        await pane.getByRole("heading").first().waitFor({ state: "visible" });
+        if ((await pane.innerText()).trim().length < 100)
+          throw new Error(`Empty ${projection} reading pane.`);
+      }
       return "both projections visible";
     },
   );
