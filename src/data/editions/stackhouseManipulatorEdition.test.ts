@@ -27,6 +27,35 @@ describe("US 4,068,536 source boundary", () => {
     expect(archivalEditionForPublication(stackhouseManipulatorPatent)).toBeUndefined();
   });
 
+  test("preserves direct, full-sheet drawing evidence without promoting the withdrawn draft", () => {
+    const figureRoot = `${process.cwd()}/public/patents/figures/us-4068536-stackhouse-manipulator`;
+    const sourceSheets = [
+      {
+        file: "sheet-1-source-crop-v2.png",
+        digest: "024e21e4cb3434111466a5bfe129012eef80b17b79277eb8becb33bb244946bd",
+      },
+      {
+        file: "sheet-2-source-crop-v2.png",
+        digest: "b55771dd6a708c55937e09db3de6bba82f8225349ff12d091d7e48d687190844",
+      },
+    ] as const;
+
+    for (const sourceSheet of sourceSheets) {
+      const sheetPath = `${figureRoot}/${sourceSheet.file}`;
+      expect(existsSync(sheetPath)).toBe(true);
+      const bytes = readFileSync(sheetPath);
+      expect(bytes.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
+      expect(bytes.readUInt32BE(16)).toBe(2320);
+      expect(bytes.readUInt32BE(20)).toBe(3408);
+      const hasher = new Bun.CryptoHasher("sha256");
+      hasher.update(bytes);
+      expect(hasher.digest("hex")).toBe(sourceSheet.digest);
+    }
+
+    expect(stackhouseManipulatorPatent.drawings).toEqual([]);
+    expect(archivalEditionForPublication(stackhouseManipulatorPatent)).toBeUndefined();
+  });
+
   test("publishes no claim decoder, drawing annotation, or reviewed-ledger assertion", () => {
     expect(stackhouseManipulatorPatent.claims).toEqual([]);
     expect(stackhouseManipulatorPatent.drawings).toEqual([]);
