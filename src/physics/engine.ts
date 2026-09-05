@@ -710,25 +710,44 @@ export const FrankenSimEngine = {
     const speedOfLightMps = 299792458;
 
     const kineticEnergyJoules = anodeKv * 1000 * electronChargeC;
-    const velocityMps = Math.min(
+    const velocityMpsUnrounded = Math.min(
       speedOfLightMps * 0.99,
       Math.sqrt((2 * kineticEnergyJoules) / electronMassKg),
     );
-    const relativisticBeta = velocityMps / speedOfLightMps;
+    const velocityMps = Math.round(velocityMpsUnrounded);
+    const relativisticBeta = velocityMpsUnrounded / speedOfLightMps;
 
     // Lorentz Magnetic Deflection Radius: r = (m * v) / (q * B)
     const bTesla = magneticDeflectionGauss * 1e-4;
     const gyroRadiusMm =
-      bTesla > 1e-6 ? ((electronMassKg * velocityMps) / (electronChargeC * bTesla)) * 1000 : 9999;
+      bTesla > 1e-6
+        ? ((electronMassKg * velocityMpsUnrounded) / (electronChargeC * bTesla)) * 1000
+        : 9999;
 
     const sweepRates = farnsworthDisplaySweepRates(horizontalFreqKhz, verticalFreqHz);
+    const acceleratingVoltageVolts = anodeKv * 1000;
+    const electronVelocitySlopeKmSPerV =
+      acceleratingVoltageVolts > 0
+        ? velocityMpsUnrounded / (2 * acceleratingVoltageVolts) / 1000
+        : 0;
+    const electronVelocitySlopeKmSPerKv =
+      anodeKv > 0 ? velocityMpsUnrounded / 1000 / (2 * anodeKv) : 0;
+    const photocathodeCurrentUaUnrounded = Math.max(0, incidentLux) * 0.045;
+    const photocathodeCurrentSlopeUaPerLux = 0.045;
+    const magneticDeflectionSlopeGaussPerA = 120 / 0.42;
 
     return {
       anodeKv,
-      electronVelocityMps: Math.round(velocityMps),
+      electronVelocityMps: velocityMps,
+      electronVelocityMpsUnrounded: velocityMpsUnrounded,
+      electronVelocitySlopeKmSPerV,
+      electronVelocitySlopeKmSPerKv,
       relativisticBeta: Number(relativisticBeta.toFixed(3)),
       gyroRadiusMm: Number(gyroRadiusMm.toFixed(1)),
-      photocathodeCurrentUa: Number((Math.max(0, incidentLux) * 0.045).toFixed(1)),
+      photocathodeCurrentUa: Number(photocathodeCurrentUaUnrounded.toFixed(1)),
+      photocathodeCurrentUaUnrounded,
+      photocathodeCurrentSlopeUaPerLux,
+      magneticDeflectionSlopeGaussPerA,
       rasterAdvance: Number(Math.max(1, velocityMps / 2.1e7).toFixed(2)),
       rasterLinePct: 100 / Math.max(1, scanLines),
       rasterLineWrapPct: 100,
@@ -737,7 +756,7 @@ export const FrankenSimEngine = {
       electronDisplaySpeed: Number(((velocityMps / 2e7) * 45).toFixed(3)),
       electronVelocityMegaMps: Number((velocityMps / 1e6).toFixed(1)),
       relativisticPct: Number((relativisticBeta * 100).toFixed(1)),
-      acceleratingVoltageVolts: Number((anodeKv * 1000).toFixed(0)),
+      acceleratingVoltageVolts: Number(acceleratingVoltageVolts.toFixed(0)),
       schematicCathodeCx: 95,
       schematicCathodeCy: 150,
       schematicCathodeR: 28,

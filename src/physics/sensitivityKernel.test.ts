@@ -3,6 +3,7 @@ import { allPatents } from "@/data/patents";
 import {
   stepBellTelephone,
   stepCorlissEngine,
+  stepDeForestAudion,
   stepDeLavalSeparator,
   stepEinsteinRefrigerator,
   stepEngelbartMouse,
@@ -11,6 +12,7 @@ import {
   stepHaberAmmonia,
   stepHallAluminium,
   stepHollerithTabulating,
+  stepMorseTelegraph,
   stepOttoEngine,
   stepParsonsTurbine,
   stepThomsonWelding,
@@ -18,6 +20,7 @@ import {
   stepZeppelinAirship,
 } from "./catalogKernels";
 import { stepDieselEngine } from "./dieselEngineKernel";
+import { FrankenSimEngine } from "./engine";
 
 describe("Thomson and Goodyear sensitivities use the displayed model", () => {
   test("welding current uses the current I²R derivative, including one-sided endpoints", () => {
@@ -3640,38 +3643,116 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("Morse telegraph derives magnetizing force, signal current, attenuation, and WPM timing sensitivities", () => {
     const id = "us-1647-morse-telegraph";
+    const h = 1e-4;
 
-    // Current sensitivity
-    const sensCurrent = computeParameterSensitivity(id, "currentMa", {
+    // Current sensitivity compared against central difference of live unrounded magnetic force
+    const currentParams = {
       currentMa: 65,
       wireTurns: 1500,
-    });
+      lineVoltageV: 24,
+      lineLengthMiles: 44,
+      wpmSpeed: 20,
+    };
+    const sensCurrent = computeParameterSensitivity(id, "currentMa", currentParams);
     expect(sensCurrent).toBeDefined();
     expect(sensCurrent?.metricName).toBe("Relay Magnetomotive Force");
     expect(sensCurrent?.derivativeSymbol).toBe("∂F / ∂I_line");
-    expect(sensCurrent?.derivativeValue).toBe(0.045);
     expect(sensCurrent?.derivativeUnit).toBe("N / mA");
 
-    // Voltage sensitivity
-    const sensVolt = computeParameterSensitivity(id, "lineVoltageV", {
-      lineVoltageV: 24,
-      lineLengthMiles: 44,
-    });
+    const fForwardI = stepMorseTelegraph({
+      ...currentParams,
+      currentMa: 65 + h,
+    }).magneticForceNUnrounded;
+    const fBackwardI = stepMorseTelegraph({
+      ...currentParams,
+      currentMa: 65 - h,
+    }).magneticForceNUnrounded;
+    const fdCurrent = (fForwardI - fBackwardI) / (2 * h);
+    expect(sensCurrent?.derivativeValue).toBeCloseTo(fdCurrent, 4);
+
+    // Alias equivalence
+    const sensCurrentAlias = computeParameterSensitivity(id, "lineCurrentMa", currentParams);
+    expect(sensCurrentAlias?.derivativeValue).toBe(sensCurrent?.derivativeValue);
+
+    // Turns sensitivity compared against central difference
+    const sensTurns = computeParameterSensitivity(id, "wireTurns", currentParams);
+    expect(sensTurns).toBeDefined();
+    expect(sensTurns?.metricName).toBe("Relay Magnetomotive Force");
+    expect(sensTurns?.derivativeSymbol).toBe("∂F / ∂N");
+    expect(sensTurns?.derivativeUnit).toBe("N / turn");
+
+    const fForwardN = stepMorseTelegraph({
+      ...currentParams,
+      wireTurns: 1500 + h,
+    }).magneticForceNUnrounded;
+    const fBackwardN = stepMorseTelegraph({
+      ...currentParams,
+      wireTurns: 1500 - h,
+    }).magneticForceNUnrounded;
+    const fdTurns = (fForwardN - fBackwardN) / (2 * h);
+    expect(sensTurns?.derivativeValue).toBeCloseTo(fdTurns, 5);
+
+    // Voltage sensitivity compared against central difference of loop current
+    const sensVolt = computeParameterSensitivity(id, "lineVoltageV", currentParams);
     expect(sensVolt).toBeDefined();
     expect(sensVolt?.metricName).toBe("Loop Signal Current");
     expect(sensVolt?.derivativeSymbol).toBe("∂I / ∂V");
     expect(sensVolt?.derivativeUnit).toBe("mA / V");
-    expect(sensVolt?.derivativeValue).toBeCloseTo(1.43, 2);
 
-    // WPM duration sensitivity
-    const sensWpm = computeParameterSensitivity(id, "wpmSpeed", {
-      wpmSpeed: 20,
-    });
+    const iForwardV = stepMorseTelegraph({
+      ...currentParams,
+      lineVoltageV: 24 + h,
+    }).ohmicCurrentMaUnrounded;
+    const iBackwardV = stepMorseTelegraph({
+      ...currentParams,
+      lineVoltageV: 24 - h,
+    }).ohmicCurrentMaUnrounded;
+    const fdVolt = (iForwardV - iBackwardV) / (2 * h);
+    expect(sensVolt?.derivativeValue).toBeCloseTo(fdVolt, 4);
+
+    // Distance attenuation sensitivity
+    const sensMiles = computeParameterSensitivity(id, "lineLengthMiles", currentParams);
+    expect(sensMiles).toBeDefined();
+    expect(sensMiles?.metricName).toBe("Signal Current Distance Attenuation");
+    expect(sensMiles?.derivativeSymbol).toBe("∂I / ∂x_line");
+    expect(sensMiles?.derivativeUnit).toBe("mA / mi");
+
+    const iForwardMiles = stepMorseTelegraph({
+      ...currentParams,
+      lineLengthMiles: 44 + h,
+    }).ohmicCurrentMaUnrounded;
+    const iBackwardMiles = stepMorseTelegraph({
+      ...currentParams,
+      lineLengthMiles: 44 - h,
+    }).ohmicCurrentMaUnrounded;
+    const fdMiles = (iForwardMiles - iBackwardMiles) / (2 * h);
+    expect(sensMiles?.derivativeValue).toBeCloseTo(fdMiles, 4);
+
+    // Resistance attenuation sensitivity
+    const sensResistance = computeParameterSensitivity(id, "lineResistance", currentParams);
+    expect(sensResistance).toBeDefined();
+    expect(sensResistance?.metricName).toBe("Signal Current Attenuation");
+    expect(sensResistance?.derivativeSymbol).toBe("∂I / ∂R");
+    expect(sensResistance?.derivativeUnit).toBe("mA / Ω");
+    expect(sensResistance?.derivativeValue).toBeLessThan(0);
+
+    // WPM duration sensitivity compared against central difference
+    const sensWpm = computeParameterSensitivity(id, "wpmSpeed", currentParams);
     expect(sensWpm).toBeDefined();
     expect(sensWpm?.metricName).toBe("Code Element Unit Duration");
     expect(sensWpm?.derivativeSymbol).toBe("∂τ_unit / ∂WPM");
-    expect(sensWpm?.derivativeValue).toBe(-3.0);
     expect(sensWpm?.derivativeUnit).toBe("ms / WPM");
+
+    const tauForward = stepMorseTelegraph({
+      ...currentParams,
+      wpmSpeed: 20 + h,
+    }).unitDurationMsUnrounded;
+    const tauBackward = stepMorseTelegraph({
+      ...currentParams,
+      wpmSpeed: 20 - h,
+    }).unitDurationMsUnrounded;
+    const fdWpm = (tauForward - tauBackward) / (2 * h);
+    expect(sensWpm?.derivativeValue).toBeCloseTo(fdWpm, 4);
 
     // Bounds checking
     for (const invalid of [4, 301, Number.NaN]) {
@@ -3920,34 +4001,97 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("De Forest Audion derives transconductance, amplification factor, and stage gain sensitivities", () => {
     const id = "us-879532-de-forest-audion";
+    const h = 1e-4;
 
-    const sensGm = computeParameterSensitivity(id, "gridVoltageV", {
+    const baseParams = {
       gridVoltageV: -1.5,
       plateVoltageV: 45,
-    });
+      filamentCurrentA: 1.0,
+      gridSignalAmplitudeMv: 50,
+      loadResistanceKOhms: 20,
+    };
+
+    // Transconductance gm compared against central difference of plate current
+    const sensGm = computeParameterSensitivity(id, "gridVoltageV", baseParams);
     expect(sensGm).toBeDefined();
     expect(sensGm?.metricName).toBe("Triode Transconductance (gm)");
     expect(sensGm?.derivativeSymbol).toBe("∂I_p / ∂V_g");
-    expect(sensGm?.derivativeValue).toBe(420.0);
     expect(sensGm?.derivativeUnit).toBe("µS");
 
-    const sensMu = computeParameterSensitivity(id, "plateVoltageV", {
-      plateVoltageV: 45,
-    });
-    expect(sensMu).toBeDefined();
-    expect(sensMu?.metricName).toBe("Voltage Amplification Factor (µ)");
-    expect(sensMu?.derivativeSymbol).toBe("∂V_p / ∂V_g");
-    expect(sensMu?.derivativeValue).toBe(8.5);
-    expect(sensMu?.derivativeUnit).toBe("V / V");
+    const ipForwardVg =
+      stepDeForestAudion({ ...baseParams, gridBiasVoltageV: -1.5 + h })
+        .plateCurrentMaUnrounded ?? 0;
+    const ipBackwardVg =
+      stepDeForestAudion({ ...baseParams, gridBiasVoltageV: -1.5 - h })
+        .plateCurrentMaUnrounded ?? 0;
+    const fdGm = ((ipForwardVg - ipBackwardVg) / (2 * h)) * 1000; // mA/V -> µS
+    expect(sensGm?.derivativeValue).toBeCloseTo(fdGm, 1);
 
-    const sensGain = computeParameterSensitivity(id, "loadResistanceKOhms", {
-      loadResistanceKOhms: 20,
+    // Alias equivalence
+    const sensGmAlias = computeParameterSensitivity(id, "gridBiasVoltageV", baseParams);
+    expect(sensGmAlias?.derivativeValue).toBe(sensGm?.derivativeValue);
+
+    // Claim 1 refusal: when grid is absent, gm is 0
+    const sensGmRefused = computeParameterSensitivity(id, "gridVoltageV", {
+      ...baseParams,
+      claim1GridPresent: false,
     });
+    expect(sensGmRefused?.derivativeValue).toBe(0);
+
+    // Cutoff: when grid is sufficiently negative, gm is 0
+    const sensGmCutoff = computeParameterSensitivity(id, "gridVoltageV", {
+      ...baseParams,
+      gridVoltageV: -4.5,
+    });
+    expect(sensGmCutoff?.derivativeValue).toBe(0);
+
+    // Plate voltage sensitivity compared against central difference
+    const sensPlate = computeParameterSensitivity(id, "plateVoltageV", baseParams);
+    expect(sensPlate).toBeDefined();
+    expect(sensPlate?.metricName).toBe("Plate Dynamic Conductance");
+    expect(sensPlate?.derivativeSymbol).toBe("∂I_p / ∂V_p");
+    expect(sensPlate?.derivativeUnit).toBe("mA / V");
+
+    const ipForwardVp =
+      stepDeForestAudion({ ...baseParams, plateVoltageV: 45 + h })
+        .plateCurrentMaUnrounded ?? 0;
+    const ipBackwardVp =
+      stepDeForestAudion({ ...baseParams, plateVoltageV: 45 - h })
+        .plateCurrentMaUnrounded ?? 0;
+    const fdPlate = (ipForwardVp - ipBackwardVp) / (2 * h);
+    expect(sensPlate?.derivativeValue).toBeCloseTo(fdPlate, 3);
+
+    // Load resistance sensitivity compared against central difference of voltage gain
+    const sensGain = computeParameterSensitivity(id, "loadResistanceKOhms", baseParams);
     expect(sensGain).toBeDefined();
     expect(sensGain?.metricName).toBe("Stage Voltage Gain Sensitivity");
     expect(sensGain?.derivativeSymbol).toBe("∂A_v / ∂R_L");
-    expect(sensGain?.derivativeValue).toBe(0.106);
     expect(sensGain?.derivativeUnit).toBe("(V/V) / kΩ");
+
+    const gForwardRl =
+      stepDeForestAudion({ ...baseParams, loadResistanceKOhms: 20 + h })
+        .voltageGainUnrounded ?? 0;
+    const gBackwardRl =
+      stepDeForestAudion({ ...baseParams, loadResistanceKOhms: 20 - h })
+        .voltageGainUnrounded ?? 0;
+    const fdGain = (gForwardRl - gBackwardRl) / (2 * h);
+    expect(sensGain?.derivativeValue).toBeCloseTo(fdGain, 4);
+
+    // Filament current sensitivity compared against central difference of filament power
+    const sensFil = computeParameterSensitivity(id, "filamentCurrentA", baseParams);
+    expect(sensFil).toBeDefined();
+    expect(sensFil?.metricName).toBe("Filament Heating Power Rate");
+    expect(sensFil?.derivativeSymbol).toBe("∂P_fil / ∂I_fil");
+    expect(sensFil?.derivativeUnit).toBe("W / A");
+
+    const pForwardFil =
+      stepDeForestAudion({ ...baseParams, filamentCurrentA: 1.0 + h })
+        .filamentPowerWUnrounded ?? 0;
+    const pBackwardFil =
+      stepDeForestAudion({ ...baseParams, filamentCurrentA: 1.0 - h })
+        .filamentPowerWUnrounded ?? 0;
+    const fdFil = (pForwardFil - pBackwardFil) / (2 * h);
+    expect(sensFil?.derivativeValue).toBeCloseTo(fdFil, 4);
 
     // Bounds checking
     for (const invalid of [4, 201, Number.NaN]) {
@@ -3981,42 +4125,86 @@ describe("Sensitivities follow the current admitted operating point", () => {
 
   test("Farnsworth image dissector TV derives video current, deflection field, and beam velocity sensitivities", () => {
     const id = "us-1773980-farnsworth-tv";
+    const h = 1e-4;
 
-    const sensLux = computeParameterSensitivity(id, "lightIntensityLux", {
+    const baseParams = {
+      anodeVoltage: 1500,
+      coilCurrent: 0.42,
       lightIntensityLux: 500,
-    });
+      horizontalFreqKhz: 15.75,
+      verticalFreqHz: 60,
+      scanLines: 60,
+    };
+
+    // Video current sensitivity compared against central difference
+    const sensLux = computeParameterSensitivity(id, "lightIntensityLux", baseParams);
     expect(sensLux).toBeDefined();
     expect(sensLux?.metricName).toBe("Photo-Dissector Video Current");
     expect(sensLux?.derivativeSymbol).toBe("∂I_video / ∂L_scene");
-    expect(sensLux?.derivativeValue).toBe(0.0042);
     expect(sensLux?.derivativeUnit).toBe("µA / Lux");
 
-    const sensCoil = computeParameterSensitivity(id, "coilCurrent", {
-      coilCurrent: 0.42,
-    });
+    const iForwardLux = FrankenSimEngine.stepFarnsworthTv(
+      1.5,
+      120,
+      500 + h,
+    ).photocathodeCurrentUaUnrounded;
+    const iBackwardLux = FrankenSimEngine.stepFarnsworthTv(
+      1.5,
+      120,
+      500 - h,
+    ).photocathodeCurrentUaUnrounded;
+    const fdLux = (iForwardLux - iBackwardLux) / (2 * h);
+    expect(sensLux?.derivativeValue).toBeCloseTo(fdLux, 4);
+
+    // Deflection coil field sensitivity compared against central difference
+    const sensCoil = computeParameterSensitivity(id, "coilCurrent", baseParams);
     expect(sensCoil).toBeDefined();
     expect(sensCoil?.metricName).toBe("Magnetic Deflection Field Sensitivity");
     expect(sensCoil?.derivativeSymbol).toBe("∂B / ∂I_coil");
-    expect(sensCoil?.derivativeValue).toBe(285.7);
     expect(sensCoil?.derivativeUnit).toBe("G / A");
 
-    const sensAnode = computeParameterSensitivity(id, "anodeVoltage", {
-      anodeVoltage: 1500,
-    });
+    const bForwardCoil = FrankenSimEngine.farnsworthDeflectionGauss(0.42 + h);
+    const bBackwardCoil = FrankenSimEngine.farnsworthDeflectionGauss(0.42 - h);
+    const fdCoil = (bForwardCoil - bBackwardCoil) / (2 * h);
+    expect(sensCoil?.derivativeValue).toBeCloseTo(fdCoil, 3);
+
+    // Anode potential sensitivity compared against central difference of electron velocity
+    const sensAnode = computeParameterSensitivity(id, "anodeVoltage", baseParams);
     expect(sensAnode).toBeDefined();
     expect(sensAnode?.metricName).toBe("Electron Beam Velocity Acceleration Sensitivity");
     expect(sensAnode?.derivativeSymbol).toBe("∂v / ∂V_anode");
-    expect(sensAnode?.derivativeValue).toBe(7.66);
     expect(sensAnode?.derivativeUnit).toBe("km·s⁻¹ / V");
 
+    const vForwardAnode =
+      FrankenSimEngine.stepFarnsworthTv((1500 + h) / 1000, 120).electronVelocityMpsUnrounded / 1000;
+    const vBackwardAnode =
+      FrankenSimEngine.stepFarnsworthTv((1500 - h) / 1000, 120).electronVelocityMpsUnrounded / 1000;
+    const fdAnode = (vForwardAnode - vBackwardAnode) / (2 * h);
+    expect(sensAnode?.derivativeValue).toBeCloseTo(fdAnode, 3);
+
+    // Non-linear voltage dependence: higher anode voltage has lower marginal velocity gain
+    const sensAnodeHigh = computeParameterSensitivity(id, "anodeVoltage", {
+      ...baseParams,
+      anodeVoltage: 3000,
+    });
+    expect(sensAnodeHigh?.derivativeValue).toBeLessThan(sensAnode?.derivativeValue ?? 0);
+
+    // Claim 1 refusal: when raster traversal is withheld, derivatives are refused with 0
+    const sensLuxRefused = computeParameterSensitivity(id, "lightIntensityLux", {
+      ...baseParams,
+      claim1ScanPathPresent: false,
+    });
+    expect(sensLuxRefused?.derivativeValue).toBe(0);
+    expect(sensLuxRefused?.derivativeUnit).toBe("refused");
+
     // Bounds checking
-    for (const invalid of [599, 6001, Number.NaN]) {
+    for (const invalid of [499, 6001, Number.NaN]) {
       expect(computeParameterSensitivity(id, "anodeVoltage", { anodeVoltage: invalid })).toBeNull();
     }
-    for (const invalid of [0.09, 0.81, Number.NaN]) {
+    for (const invalid of [0.09, 1.01, Number.NaN]) {
       expect(computeParameterSensitivity(id, "coilCurrent", { coilCurrent: invalid })).toBeNull();
     }
-    for (const invalid of [99, 2001, Number.NaN]) {
+    for (const invalid of [-1, 2001, Number.NaN]) {
       expect(
         computeParameterSensitivity(id, "lightIntensityLux", { lightIntensityLux: invalid }),
       ).toBeNull();
@@ -4031,7 +4219,7 @@ describe("Sensitivities follow the current admitted operating point", () => {
         computeParameterSensitivity(id, "verticalFreqHz", { verticalFreqHz: invalid }),
       ).toBeNull();
     }
-    for (const invalid of [29, 241, Number.NaN]) {
+    for (const invalid of [0, 241, Number.NaN]) {
       expect(computeParameterSensitivity(id, "scanLines", { scanLines: invalid })).toBeNull();
     }
   });

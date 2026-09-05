@@ -172,6 +172,39 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
     rudderAngleDeg: same("rudderAngle"),
     transmitterFreqKhz: same("rfFrequency"),
   },
+  "us-1647-morse-telegraph": {
+    lineVoltage: same("lineVoltageV"),
+    voltage: same("lineVoltageV"),
+    current: same("currentMa"),
+    lineCurrentMa: same("currentMa"),
+    lineResistance: same("lineLengthMiles"),
+    lineDistance: same("lineLengthMiles"),
+    distanceMiles: same("lineLengthMiles"),
+    wpm: same("wpmSpeed"),
+    speed: same("wpmSpeed"),
+    turns: same("wireTurns"),
+  },
+  "us-1773980-farnsworth-tv": {
+    anodeKv: {
+      canonical: "anodeVoltage",
+      toCanonical: (kv) => kv * 1000,
+      fromCanonical: (v) => v / 1000,
+    },
+    deflectionCoilCurrent: same("coilCurrent"),
+    lightIntensity: same("lightIntensityLux"),
+    lux: same("lightIntensityLux"),
+  },
+  "us-879532-de-forest-audion": {
+    gridVoltage: same("gridBiasVoltageV"),
+    gridVoltageV: same("gridBiasVoltageV"),
+    gridBiasV: same("gridBiasVoltageV"),
+    plateVoltage: same("plateVoltageV"),
+    filamentCurrent: same("filamentCurrentA"),
+    rfInputMv: same("gridSignalAmplitudeMv"),
+    rfInput: same("gridSignalAmplitudeMv"),
+    loadResistance: same("loadResistanceKOhms"),
+    loadResistanceKohm: same("loadResistanceKOhms"),
+  },
 };
 
 export function canonicalizeParam(

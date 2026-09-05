@@ -13,6 +13,7 @@
 import {
   stepBellTelephone,
   stepCorlissEngine,
+  stepDeForestAudion,
   stepDeLavalSeparator,
   stepEinsteinRefrigerator,
   stepEngelbartMouse,
@@ -23,12 +24,14 @@ import {
   stepHewittMercuryLamp,
   stepHollerithTabulating,
   stepLandPolaroidInstantFilm,
+  stepMorseTelegraph,
   stepOttoEngine,
   stepParsonsTurbine,
   stepThomsonWelding,
   stepWozniakApple,
   stepYaleLock,
   stepZeppelinAirship,
+  voltsToKv,
 } from "./catalogKernels";
 import {
   readClavelDeltaRobotControls,
@@ -44,6 +47,7 @@ import {
   EDISON_SOURCE_MIN_RESISTANCE_OHM,
   stepEdisonRadiativeBalance,
 } from "./edisonWasm";
+import { FrankenSimEngine } from "./engine";
 import { fermiKeff } from "./fermiKinetics";
 import {
   readGoertzMasterSlaveControls,
@@ -814,8 +818,8 @@ export function computeParameterSensitivity(
       const current = params.currentMa ?? params.lineCurrentMa ?? params.current ?? 65;
       const turns = params.wireTurns ?? 1200;
       const volts = params.lineVoltageV ?? params.lineVoltage ?? params.voltage ?? 24;
-      const miles = params.lineLengthMiles ?? 44;
-      const wpm = params.wpmSpeed ?? 20;
+      const miles = params.lineLengthMiles ?? params.lineDistance ?? params.distanceMiles ?? 44;
+      const wpm = params.wpmSpeed ?? params.wpm ?? 20;
 
       if (
         !Number.isFinite(current) ||
@@ -837,6 +841,14 @@ export function computeParameterSensitivity(
         return null;
       }
 
+      const morse = stepMorseTelegraph({
+        currentMa: current,
+        wireTurns: turns,
+        lineVoltageV: volts,
+        lineLengthMiles: miles,
+        wpmSpeed: wpm,
+      });
+
       if (
         controlKey === "currentMa" ||
         controlKey === "lineCurrentMa" ||
@@ -845,10 +857,18 @@ export function computeParameterSensitivity(
         return {
           metricName: "Relay Magnetomotive Force",
           derivativeSymbol: "∂F / ∂I_line",
-          derivativeValue: 0.045,
+          derivativeValue: Number(morse.magneticForceSlopeNPerMa.toPrecision(6)),
           derivativeUnit: "N / mA",
-          interpretation:
-            "Electromagnetic pull force on armature from line current excitation ($F \\propto I^2$).",
+          interpretation: `Analytic derivative of electromagnetic pull force on armature ($F = \\mu_0 N^2 I^2 A / (2 g^2)$) at line excitation ${current} mA and ${turns} coil turns.`,
+        };
+      }
+      if (controlKey === "wireTurns" || controlKey === "turns") {
+        return {
+          metricName: "Relay Magnetomotive Force",
+          derivativeSymbol: "∂F / ∂N",
+          derivativeValue: Number(morse.magneticForceSlopeNPerTurn.toPrecision(6)),
+          derivativeUnit: "N / turn",
+          interpretation: `Analytic derivative of electromagnetic pull force with respect to coil winding count at ${turns} turns and ${current} mA.`,
         };
       }
       if (
@@ -856,44 +876,43 @@ export function computeParameterSensitivity(
         controlKey === "lineVoltageV" ||
         controlKey === "voltage"
       ) {
-        const rLine = params.lineResistance ?? miles * 12.5;
-        const rTotal = rLine + 150.0;
-        const dI_dV = (1.0 / rTotal) * 1000.0; // mA / V
         return {
           metricName: "Loop Signal Current",
           derivativeSymbol: "∂I / ∂V",
-          derivativeValue: Number(dI_dV.toFixed(2)),
+          derivativeValue: Number(morse.ohmicCurrentSlopeMaPerV.toPrecision(6)),
           derivativeUnit: "mA / V",
-          interpretation:
-            "Ohm's law current sensitivity driving the electromagnetic relay armature.",
+          interpretation: `Ohm's law current sensitivity ($1 / R_\\text{total}$) driving the electromagnetic relay armature through ${miles} miles (${morse.loopResistanceOhms} Ω total loop).`,
         };
       }
       if (
-        controlKey === "lineResistance" ||
-        controlKey === "resistance" ||
-        controlKey === "lineLengthMiles"
+        controlKey === "lineLengthMiles" ||
+        controlKey === "lineDistance" ||
+        controlKey === "distanceMiles"
       ) {
-        const v = volts;
-        const rLine = params.lineResistance ?? miles * 12.5;
-        const rTotal = rLine + 150.0;
-        const dI_dR = -(v / (rTotal * rTotal)) * 1000.0; // mA / Ohm
+        return {
+          metricName: "Signal Current Distance Attenuation",
+          derivativeSymbol: "∂I / ∂x_line",
+          derivativeValue: Number(morse.ohmicCurrentSlopeMaPerMile.toPrecision(6)),
+          derivativeUnit: "mA / mi",
+          interpretation: `Line attenuation rate with transmission distance (12.5 Ω/mi wire impedance) across ${miles} miles under ${volts} V supply.`,
+        };
+      }
+      if (controlKey === "lineResistance" || controlKey === "resistance") {
         return {
           metricName: "Signal Current Attenuation",
           derivativeSymbol: "∂I / ∂R",
-          derivativeValue: Number(dI_dR.toFixed(3)),
+          derivativeValue: Number(morse.ohmicCurrentSlopeMaPerOhm.toPrecision(6)),
           derivativeUnit: "mA / Ω",
-          interpretation: "Line attenuation rate as wire distance increases.",
+          interpretation: `Line attenuation rate as total circuit resistance increases (${morse.loopResistanceOhms} Ω total loop resistance).`,
         };
       }
-      if (controlKey === "wpmSpeed") {
-        const dTau_dWpm = Number((-1200 / (wpm * wpm)).toFixed(2));
+      if (controlKey === "wpmSpeed" || controlKey === "wpm") {
         return {
           metricName: "Code Element Unit Duration",
           derivativeSymbol: "∂τ_unit / ∂WPM",
-          derivativeValue: dTau_dWpm,
+          derivativeValue: Number(morse.unitDurationSlopeMsPerWpm.toPrecision(6)),
           derivativeUnit: "ms / WPM",
-          interpretation:
-            "Morse timing element duration scaling inversely with words-per-minute transmission rate.",
+          interpretation: `Morse timing element duration scaling inversely with words-per-minute transmission rate (τ = 1200 / WPM ms) at ${wpm} WPM.`,
         };
       }
       break;
@@ -1884,6 +1903,8 @@ export function computeParameterSensitivity(
       const ifil = params.filamentCurrentA ?? params.filamentCurrent ?? 1.0;
       const rfIn = params.gridSignalAmplitudeMv ?? params.rfInputMv ?? 50;
       const rLoad = params.loadResistanceKOhms ?? params.loadResistance ?? 20;
+      const claim1GridPresent =
+        params.claim1GridPresent === undefined ? true : Number(params.claim1GridPresent) >= 0.5;
 
       if (
         !Number.isFinite(plateV) ||
@@ -1905,43 +1926,103 @@ export function computeParameterSensitivity(
         return null;
       }
 
+      const audion = stepDeForestAudion({
+        claim1GridPresent,
+        plateVoltageV: plateV,
+        gridBiasVoltageV: gridV,
+        filamentCurrentA: ifil,
+        gridSignalAmplitudeMv: rfIn,
+        loadResistanceKOhms: rLoad,
+      });
+
       if (
         controlKey === "gridVoltageV" ||
         controlKey === "gridVoltage" ||
         controlKey === "gridBiasVoltageV" ||
         controlKey === "gridBiasV"
       ) {
+        if (!claim1GridPresent) {
+          return {
+            metricName: "Triode Transconductance (gm)",
+            derivativeSymbol: "∂I_p / ∂V_g",
+            derivativeValue: 0,
+            derivativeUnit: "µS",
+            interpretation:
+              "Claim 1 interposed conducting grid is withheld; operating as two-electrode diode with zero grid control transconductance.",
+          };
+        }
+        if (audion.vEffective <= 0) {
+          return {
+            metricName: "Triode Transconductance (gm)",
+            derivativeSymbol: "∂I_p / ∂V_g",
+            derivativeValue: 0,
+            derivativeUnit: "µS",
+            interpretation: `Tube is in cutoff ($V_\\text{eff} = ${audion.vEffective.toFixed(2)}$ V $\\le 0$); space charge cannot overcome negative grid barrier.`,
+          };
+        }
         return {
           metricName: "Triode Transconductance (gm)",
           derivativeSymbol: "∂I_p / ∂V_g",
-          derivativeValue: 420.0,
+          derivativeValue: Number(
+            (
+              audion.transconductanceSlopeMicroMhosPerV ?? audion.transconductanceMicroMhos
+            ).toPrecision(6),
+          ),
           derivativeUnit: "µS",
-          interpretation:
-            "Electrostatic grid potential modulation of thermionic electron flow across vacuum space.",
+          interpretation: `Analytic transconductance ($1.5 k \\sqrt{V_\\text{eff}} \\cdot \\text{emissionFactor}$) at $V_g = ${gridV.toFixed(2)}$ V, $V_p = ${plateV}$ V, and $I_\\text{fil} = ${ifil.toFixed(2)}$ A.`,
         };
       }
+
       if (controlKey === "plateVoltageV" || controlKey === "plateVoltage") {
+        if (!claim1GridPresent) {
+          return {
+            metricName: "Plate Dynamic Conductance",
+            derivativeSymbol: "∂I_p / ∂V_p",
+            derivativeValue: 0,
+            derivativeUnit: "mA / V",
+            interpretation:
+              "Claim 1 interposed grid is withheld; no triode plate transconductance.",
+          };
+        }
         return {
-          metricName: "Voltage Amplification Factor (µ)",
-          derivativeSymbol: "∂V_p / ∂V_g",
-          derivativeValue: 8.5,
-          derivativeUnit: "V / V",
-          interpretation:
-            "Active voltage amplification factor achieved by third-electrode electrostatic control.",
+          metricName: "Plate Dynamic Conductance",
+          derivativeSymbol: "∂I_p / ∂V_p",
+          derivativeValue: Number((audion.plateCurrentSlopeMaPerVPlate ?? 0).toPrecision(6)),
+          derivativeUnit: "mA / V",
+          interpretation: `Plate current sensitivity ($g_m / \\mu = 1 / r_p$) governed by perveance equation at current $V_p = ${plateV}$ V (amplification factor $\\mu = 12.0$).`,
         };
       }
+
       if (
         controlKey === "loadResistanceKOhms" ||
         controlKey === "loadResistance" ||
         controlKey === "loadResistanceKohm"
       ) {
+        if (!claim1GridPresent) {
+          return {
+            metricName: "Stage Voltage Gain Sensitivity",
+            derivativeSymbol: "∂A_v / ∂R_L",
+            derivativeValue: 0,
+            derivativeUnit: "(V/V) / kΩ",
+            interpretation: "Claim 1 interposed grid is withheld; no voltage amplification gain.",
+          };
+        }
         return {
           metricName: "Stage Voltage Gain Sensitivity",
           derivativeSymbol: "∂A_v / ∂R_L",
-          derivativeValue: 0.106,
+          derivativeValue: Number((audion.stageGainSlopePerKohm ?? 0).toPrecision(6)),
           derivativeUnit: "(V/V) / kΩ",
-          interpretation:
-            "Anode stage voltage gain scaling with external resistive plate load impedance.",
+          interpretation: `Analytic derivative of stage gain ($A_v = \\mu R_L / (r_p + R_L)$, $\\partial A_v / \\partial R_L = \\mu r_p / (r_p + R_L)^2$) with plate dynamic resistance $r_p = ${audion.plateResistanceKOhms}$ kΩ and load $R_L = ${rLoad}$ kΩ.`,
+        };
+      }
+
+      if (controlKey === "filamentCurrentA" || controlKey === "filamentCurrent") {
+        return {
+          metricName: "Filament Heating Power Rate",
+          derivativeSymbol: "∂P_fil / ∂I_fil",
+          derivativeValue: Number((audion.filamentPowerSlopeWPerA ?? 0).toPrecision(6)),
+          derivativeUnit: "W / A",
+          interpretation: `Analytic Joule heating rate ($2 I_\\text{fil} R_\\text{fil}$) at current $I_\\text{fil} = ${ifil.toFixed(2)}$ A and declared 5.5 Ω filament cold/hot baseline.`,
         };
       }
       break;
@@ -2389,16 +2470,20 @@ export function computeParameterSensitivity(
       const hFreq = params.horizontalFreqKhz ?? 15.75;
       const vFreq = params.verticalFreqHz ?? 60;
       const lines = params.scanLines ?? 60;
+      const claim1ScanPathPresent =
+        params.claim1ScanPathPresent === undefined
+          ? true
+          : Number(params.claim1ScanPathPresent) >= 0.5;
 
       if (
         !Number.isFinite(anodeV) ||
-        anodeV < 600 ||
+        anodeV < 500 ||
         anodeV > 6000 ||
         !Number.isFinite(coilI) ||
         coilI < 0.1 ||
-        coilI > 0.8 ||
+        coilI > 1.0 ||
         !Number.isFinite(lux) ||
-        lux < 100 ||
+        lux < 0 ||
         lux > 2000 ||
         !Number.isFinite(hFreq) ||
         hFreq < 5 ||
@@ -2407,40 +2492,77 @@ export function computeParameterSensitivity(
         vFreq < 30 ||
         vFreq > 120 ||
         !Number.isFinite(lines) ||
-        lines < 30 ||
+        lines < 1 ||
         lines > 240
       ) {
         return null;
       }
 
+      if (!claim1ScanPathPresent) {
+        if (
+          controlKey === "lightIntensityLux" ||
+          controlKey === "lightIntensity" ||
+          controlKey === "coilCurrent" ||
+          controlKey === "deflectionCoilCurrent" ||
+          controlKey === "anodeVoltage" ||
+          controlKey === "anodeKv"
+        ) {
+          return {
+            metricName: "Scanning Beam Telemetry",
+            derivativeSymbol: "∂ / ∂c",
+            derivativeValue: 0,
+            derivativeUnit: "refused",
+            interpretation:
+              "Claim 1 electrical-image traversal is withheld; no raster telemetry or substitute scanning mechanism is inferred.",
+          };
+        }
+      }
+
+      const beam = FrankenSimEngine.stepFarnsworthTv(
+        voltsToKv(anodeV),
+        FrankenSimEngine.farnsworthDeflectionGauss(coilI),
+        lux,
+        lines,
+        hFreq,
+        vFreq,
+      );
+
       if (controlKey === "lightIntensityLux" || controlKey === "lightIntensity") {
         return {
           metricName: "Photo-Dissector Video Current",
           derivativeSymbol: "∂I_video / ∂L_scene",
-          derivativeValue: 0.0042,
+          derivativeValue: Number(beam.photocathodeCurrentSlopeUaPerLux.toPrecision(6)),
           derivativeUnit: "µA / Lux",
           interpretation:
-            "Linear photoelectric conversion from continuous photocathode electron cloud emission.",
+            "Linear photoelectric conversion from continuous photocathode electron cloud emission under the admitted 0.045 µA/Lux quantum sensitivity model.",
         };
       }
       if (controlKey === "coilCurrent" || controlKey === "deflectionCoilCurrent") {
         return {
           metricName: "Magnetic Deflection Field Sensitivity",
           derivativeSymbol: "∂B / ∂I_coil",
-          derivativeValue: 285.7,
+          derivativeValue: Number(beam.magneticDeflectionSlopeGaussPerA.toPrecision(6)),
           derivativeUnit: "G / A",
           interpretation:
-            "Deflection coil magnetic flux density scaling linearly with drive current (120 G at 0.42 A nominal).",
+            "Deflection coil magnetic flux density scaling linearly with drive current (120 G at 0.42 A nominal; 285.71 G/A).",
         };
       }
-      if (controlKey === "anodeVoltage" || controlKey === "anodeKv") {
+      if (controlKey === "anodeVoltage") {
         return {
           metricName: "Electron Beam Velocity Acceleration Sensitivity",
           derivativeSymbol: "∂v / ∂V_anode",
-          derivativeValue: 7.66,
+          derivativeValue: Number(beam.electronVelocitySlopeKmSPerV.toPrecision(6)),
           derivativeUnit: "km·s⁻¹ / V",
-          interpretation:
-            "Relativistic electron beam velocity scaling with electrostatic anode accelerating potential.",
+          interpretation: `Relativistic electron beam velocity scaling with electrostatic anode accelerating potential ($v = \\sqrt{2 q V / m}$, $\\partial v / \\partial V = v / (2 V)$) at current $V_\\text{anode} = ${anodeV}$ V.`,
+        };
+      }
+      if (controlKey === "anodeKv") {
+        return {
+          metricName: "Electron Beam Velocity Acceleration Sensitivity",
+          derivativeSymbol: "∂v / ∂V_anode_kV",
+          derivativeValue: Number(beam.electronVelocitySlopeKmSPerKv.toPrecision(6)),
+          derivativeUnit: "km·s⁻¹ / kV",
+          interpretation: `Relativistic electron beam velocity scaling per kilovolt ($v = \\sqrt{2 q V / m}$, $\\partial v / \\partial V_\\text{kV} = 1000 \\cdot v / (2 V)$) at current anode potential ${(anodeV / 1000).toFixed(2)} kV.`,
         };
       }
       break;

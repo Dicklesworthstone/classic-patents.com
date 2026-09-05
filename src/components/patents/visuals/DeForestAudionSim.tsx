@@ -2,6 +2,7 @@
 
 import { Radio, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepDeForestAudion } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -437,100 +438,75 @@ export function DeForestAudionSim({
 
       {/* Interactive Control Sliders */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-parchment-100/80 dark:bg-ink-900/60 rounded-xl border border-parchment-200 dark:border-ink-800">
-        {/* B-Battery Plate Voltage */}
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between text-xs font-semibold">
-            <span className="text-amber-400">B-Battery Plate</span>
-            <span className="font-mono text-amber-300">{plateVoltageV} V</span>
-          </div>
-          <input
-            type="range"
-            aria-label="B-battery plate voltage in volts"
-            min={10}
-            max={120}
-            step={5}
-            value={plateVoltageV}
-            onChange={(e) => updateParam("plateVoltageV", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500"
-          />
-          <span className="text-[10px] text-slate-400">High-voltage DC supply</span>
-        </div>
+        <SensitivitySlider
+          id="plateVoltage"
+          patentId="us-879532-de-forest-audion"
+          paramKey="plateVoltageV"
+          label="B-Battery Plate"
+          value={plateVoltageV}
+          min={10}
+          max={120}
+          step={5}
+          unit="V"
+          onChange={(val) => updateParam("plateVoltageV", val)}
+          allParams={params}
+        />
 
-        {/* Grid Bias Voltage */}
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between text-xs font-semibold">
-            <span className="text-cyan-400">Grid Bias Voltage</span>
-            <span className="font-mono text-cyan-300">{gridBiasVoltageV.toFixed(1)} V</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Grid bias voltage in volts"
-            min={-6.0}
-            max={2.0}
-            step={0.25}
-            value={gridBiasVoltageV}
-            onChange={(e) => updateParam("gridBiasVoltageV", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
-          />
-          <span className="text-[10px] text-slate-400">Electrostatic control bias</span>
-        </div>
+        <SensitivitySlider
+          id="gridBiasVoltage"
+          patentId="us-879532-de-forest-audion"
+          paramKey="gridBiasVoltageV"
+          label="Grid Bias Voltage"
+          value={gridBiasVoltageV}
+          min={-6.0}
+          max={2.0}
+          step={0.25}
+          unit="V"
+          onChange={(val) => updateParam("gridBiasVoltageV", val)}
+          allParams={params}
+        />
 
-        {/* Filament Current */}
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between text-xs font-semibold">
-            <span className="text-yellow-400">Filament Current</span>
-            <span className="font-mono text-yellow-300">{filamentCurrentA.toFixed(1)} A</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Filament current in amperes"
-            min={0.5}
-            max={1.5}
-            step={0.1}
-            value={filamentCurrentA}
-            onChange={(e) => updateParam("filamentCurrentA", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-yellow-500"
-          />
-          <span className="text-[10px] text-slate-400">Cathode heating power</span>
-        </div>
+        <SensitivitySlider
+          id="filamentCurrent"
+          patentId="us-879532-de-forest-audion"
+          paramKey="filamentCurrentA"
+          label="Filament Current"
+          value={filamentCurrentA}
+          min={0.5}
+          max={1.5}
+          step={0.1}
+          unit="A"
+          onChange={(val) => updateParam("filamentCurrentA", val)}
+          allParams={params}
+        />
 
-        {/* Input Signal Amplitude */}
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between text-xs font-semibold">
-            <span className="text-emerald-400">Input RF Signal</span>
-            <span className="font-mono text-emerald-300">{gridSignalAmplitudeMv} mV</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Input radio-frequency signal amplitude in millivolts"
-            min={10}
-            max={200}
-            step={5}
-            value={gridSignalAmplitudeMv}
-            onChange={(e) => updateParam("gridSignalAmplitudeMv", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-          />
-          <span className="text-[10px] text-slate-400">Antenna carrier swing</span>
-        </div>
+        <SensitivitySlider
+          id="gridSignalAmplitude"
+          patentId="us-879532-de-forest-audion"
+          paramKey="gridSignalAmplitudeMv"
+          label="Input RF Signal"
+          value={gridSignalAmplitudeMv}
+          min={10}
+          max={200}
+          step={5}
+          unit="mV"
+          onChange={(val) => updateParam("gridSignalAmplitudeMv", val)}
+          allParams={params}
+        />
 
-        {/* Plate Load Resistance */}
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between text-xs font-semibold">
-            <span className="text-purple-400">Load Resistance</span>
-            <span className="font-mono text-purple-300">{loadResistanceKOhms} kΩ</span>
-          </div>
-          <input
-            type="range"
-            aria-label="Headset load resistance in kiloohms"
-            min={5}
-            max={50}
-            step={5}
-            value={loadResistanceKOhms}
-            onChange={(e) => updateParam("loadResistanceKOhms", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
-          />
-          <span className="text-[10px] text-slate-400">Headset coil impedance</span>
-        </div>
+        <SensitivitySlider
+          id="loadResistance"
+          patentId="us-879532-de-forest-audion"
+          paramKey="loadResistanceKOhms"
+          label="Load Resistance"
+          value={loadResistanceKOhms}
+          min={5}
+          max={50}
+          step={5}
+          unit="kΩ"
+          onChange={(val) => updateParam("loadResistanceKOhms", val)}
+          allParams={params}
+        />
       </div>
     </div>
   );

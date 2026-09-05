@@ -258,6 +258,99 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
     }
   });
 
+  test("Morse Telegraph aliases (lineVoltage, current, lineResistance, wpm) update canonical controls and notify subscribers", () => {
+    const id = "us-1647-morse-telegraph";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) => observations.push(params.currentMa));
+    try {
+      setPatentPhysicsParam(id, "current", 85);
+      const params = getPatentPhysicsParams(id);
+      expect(params.currentMa).toBe(85);
+      expect(observations.length).toBe(1);
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Magnetic Pull Force")?.value).not.toBe(
+        initial.find((m) => m.label === "Magnetic Pull Force")?.value,
+      );
+
+      setPatentPhysicsParam(id, "lineVoltage", 36);
+      expect(getPatentPhysicsParams(id).lineVoltageV).toBe(36);
+      expect(getPatentPhysicsParams(id).lineVoltage).toBe(36);
+
+      setPatentPhysicsParam(id, "wpm", 28);
+      expect(getPatentPhysicsParams(id).wpmSpeed).toBe(28);
+      expect(getPatentPhysicsParams(id).wpm).toBe(28);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("De Forest Audion aliases (gridVoltage, plateVoltage, filamentCurrent, loadResistance) update canonical controls and notify subscribers", () => {
+    const id = "us-879532-de-forest-audion";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.gridBiasVoltageV),
+    );
+    try {
+      setPatentPhysicsParam(id, "gridVoltage", -0.5);
+      const params = getPatentPhysicsParams(id);
+      expect(params.gridBiasVoltageV).toBe(-0.5);
+      expect(observations.length).toBe(1);
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Illustrative Plate Current")?.value).not.toBe(
+        initial.find((m) => m.label === "Illustrative Plate Current")?.value,
+      );
+
+      setPatentPhysicsParam(id, "plateVoltage", 60);
+      expect(getPatentPhysicsParams(id).plateVoltageV).toBe(60);
+
+      setPatentPhysicsParam(id, "filamentCurrent", 1.2);
+      expect(getPatentPhysicsParams(id).filamentCurrentA).toBe(1.2);
+
+      setPatentPhysicsParam(id, "loadResistance", 35);
+      expect(getPatentPhysicsParams(id).loadResistanceKOhms).toBe(35);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
+  test("Farnsworth TV aliases (anodeKv, deflectionCoilCurrent, lightIntensity) update canonical controls and notify subscribers", () => {
+    const id = "us-1773980-farnsworth-tv";
+    resetPatentPhysicsParams(id);
+    const initial = PATENT_PHYSICS_REGISTRY[id].computeMetrics(getPatentPhysicsParams(id));
+    const observations: number[] = [];
+    const unsubscribe = subscribePatentPhysics(id, (params) =>
+      observations.push(params.anodeVoltage),
+    );
+    try {
+      setPatentPhysicsParam(id, "anodeKv", 2.5);
+      const params = getPatentPhysicsParams(id);
+      expect(params.anodeVoltage).toBe(2500);
+      expect(observations.length).toBe(1);
+
+      const changed = PATENT_PHYSICS_REGISTRY[id].computeMetrics(params);
+      expect(changed.find((m) => m.label === "Electron Beam Speed")?.value).not.toBe(
+        initial.find((m) => m.label === "Electron Beam Speed")?.value,
+      );
+
+      setPatentPhysicsParam(id, "deflectionCoilCurrent", 0.65);
+      expect(getPatentPhysicsParams(id).coilCurrent).toBe(0.65);
+
+      setPatentPhysicsParam(id, "lightIntensity", 850);
+      expect(getPatentPhysicsParams(id).lightIntensityLux).toBe(850);
+    } finally {
+      unsubscribe();
+      resetPatentPhysicsParams(id);
+    }
+  });
+
   test("shares claim state across subscribers while retaining raw controls and deriving effective topology", () => {
     const goertzId = "us-2846084-goertz-electronic-master-slave-manipulator";
     resetPatentPhysicsParams(goertzId);

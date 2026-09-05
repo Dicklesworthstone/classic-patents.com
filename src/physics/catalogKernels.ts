@@ -2257,25 +2257,45 @@ export function stepMorseTelegraph(params: {
   const volts = params.lineVoltageV ?? 24;
   const ohmsPerMile = 12.5;
   const coilResistanceOhms = 150;
-  const lineResistanceOhms = Math.round(miles * ohmsPerMile);
+  const lineResistanceOhmsUnrounded = miles * ohmsPerMile;
+  const loopResistanceOhmsUnrounded = lineResistanceOhmsUnrounded + coilResistanceOhms;
+  const lineResistanceOhms = Math.round(lineResistanceOhmsUnrounded);
   const loopResistanceOhms = lineResistanceOhms + coilResistanceOhms;
-  const ohmicCurrentMa = Number(((volts / Math.max(1, loopResistanceOhms)) * 1000).toFixed(1));
+  const ohmicCurrentMaUnrounded = (volts / Math.max(1, loopResistanceOhmsUnrounded)) * 1000;
+  const ohmicCurrentMa = Number(ohmicCurrentMaUnrounded.toFixed(1));
   const currentMa = params.currentMa ?? ohmicCurrentMa;
   const i = currentMa / 1000;
-  const forceN = Number(((4e-7 * Math.PI * (n * i) ** 2 * 0.0004) / (2 * 0.0015 ** 2)).toFixed(2));
+  const magneticForceNUnrounded = (4e-7 * Math.PI * (n * i) ** 2 * 0.0004) / (2 * 0.0015 ** 2);
+  const forceN = Number(magneticForceNUnrounded.toFixed(2));
   const wpm = params.wpmSpeed ?? 20;
-  const unitDurationMs = Math.round(1200 / Math.max(1, wpm));
+  const unitDurationMsUnrounded = 1200 / Math.max(1, wpm);
+  const unitDurationMs = Math.round(unitDurationMsUnrounded);
+  const timeConstantMsUnrounded = n * 0.00012 * 10;
   return {
     magneticForceN: forceN,
-    timeConstantMs: Number((n * 0.00012 * 10).toFixed(1)),
+    magneticForceNUnrounded,
+    magneticForceSlopeNPerMa: currentMa > 0 ? (2 * magneticForceNUnrounded) / currentMa : 0,
+    magneticForceSlopeNPerTurn: n > 0 ? (2 * magneticForceNUnrounded) / n : 0,
+    timeConstantMs: Number(timeConstantMsUnrounded.toFixed(1)),
+    timeConstantMsUnrounded,
+    timeConstantSlopeMsPerTurn: 0.0012,
     ampereTurns: Math.round(n * i),
     stylusKpa: Number((forceN * 28).toFixed(0)),
     loopCurrentMa: Number(currentMa.toFixed(1)),
     ohmicCurrentMa,
+    ohmicCurrentMaUnrounded,
+    ohmicCurrentSlopeMaPerV: 1000 / Math.max(1, loopResistanceOhmsUnrounded),
+    ohmicCurrentSlopeMaPerMile:
+      -(volts * 1000 * ohmsPerMile) / Math.max(1, loopResistanceOhmsUnrounded) ** 2,
+    ohmicCurrentSlopeMaPerOhm: -(volts * 1000) / Math.max(1, loopResistanceOhmsUnrounded) ** 2,
     lineResistanceOhms,
+    lineResistanceOhmsUnrounded,
     loopResistanceOhms,
+    loopResistanceOhmsUnrounded,
     wpmSpeed: wpm,
     unitDurationMs,
+    unitDurationMsUnrounded,
+    unitDurationSlopeMsPerWpm: -1200 / Math.max(1, wpm) ** 2,
     ditMs: unitDurationMs,
     dahMs: unitDurationMs * 3,
     intraGapMs: unitDurationMs,
@@ -3552,6 +3572,8 @@ export interface DeForestAudionKernelOutput {
   claim1GridPresent: boolean;
   filamentCurrentA: number;
   filamentPowerW: number;
+  filamentPowerWUnrounded?: number;
+  filamentPowerSlopeWPerA?: number;
   filamentGlowRadiusPx: number;
   filamentTemperatureK: number;
   gridBiasV: number;
@@ -3559,13 +3581,20 @@ export interface DeForestAudionKernelOutput {
   gridCutoffVoltageV: number;
   plateVoltageV: number;
   plateCurrentMa: number;
+  plateCurrentMaUnrounded?: number;
+  plateCurrentSlopeMaPerVPlate?: number;
   vEffective: number;
   effectiveDrivingPotentialV: number;
   amplificationFactorMu: number;
   dynamicTransconductanceMicromhos: number;
   transconductanceMicroMhos: number;
+  transconductanceMicroMhosUnrounded?: number;
+  transconductanceSlopeMicroMhosPerV?: number;
   plateResistanceKOhms: number;
+  plateResistanceKOhmsUnrounded?: number;
   voltageGain: number;
+  voltageGainUnrounded?: number;
+  stageGainSlopePerKohm?: number;
   inputSignalMv: number;
   outputSignalMv: number;
   platePowerMw: number;
@@ -3590,9 +3619,9 @@ export function stepDeForestAudion(
 
   const tFilamentK = Math.round(1600 + 600 * Math.min(1.5, Math.max(0.5, filamentCurrentA)));
   const filamentResistanceOhm = 5.5;
-  const filamentPowerW = Number(
-    (filamentCurrentA * filamentCurrentA * filamentResistanceOhm).toFixed(2),
-  );
+  const filamentPowerWUnrounded = filamentCurrentA * filamentCurrentA * filamentResistanceOhm;
+  const filamentPowerW = Number(filamentPowerWUnrounded.toFixed(2));
+  const filamentPowerSlopeWPerA = 2 * filamentCurrentA * filamentResistanceOhm;
   const filamentGlowRadiusPx = Math.round(8 + (filamentCurrentA / 1.0) * 12);
   const emissionFactor = Math.max(0, Math.min(2.0, (filamentCurrentA / 1.0) ** 4.0));
 
@@ -3605,19 +3634,33 @@ export function stepDeForestAudion(
   // no control-grid transconductance and therefore no active voltage gain.
   const vEff = (claim1GridPresent ? gridBiasV : 0) + plateVoltageV / mu;
   const gridCutoffVoltageV = Number((-plateVoltageV / mu).toFixed(2));
-  const rawCurrentMa = vEff > 0 ? k * vEff ** 1.5 * 1000 * emissionFactor : 0.01 * emissionFactor;
-  const plateCurrentMa = Number(Math.max(0, Math.min(15.0, rawCurrentMa)).toFixed(2));
+  const rawCurrentMaUnrounded =
+    vEff > 0 ? k * vEff ** 1.5 * 1000 * emissionFactor : 0.01 * emissionFactor;
+  const plateCurrentMaUnrounded = Math.max(0, Math.min(15.0, rawCurrentMaUnrounded));
+  const plateCurrentMa = Number(plateCurrentMaUnrounded.toFixed(2));
 
-  const gm_A_per_V = claim1GridPresent && vEff > 0 ? 1.5 * k * Math.sqrt(vEff) * emissionFactor : 0;
-  const transconductanceMicroMhos = Math.round(gm_A_per_V * 1e6);
+  const gm_A_per_V_unrounded =
+    claim1GridPresent && vEff > 0 && rawCurrentMaUnrounded < 15.0
+      ? 1.5 * k * Math.sqrt(vEff) * emissionFactor
+      : 0;
+  const transconductanceMicroMhosUnrounded = gm_A_per_V_unrounded * 1e6;
+  const transconductanceMicroMhos = Math.round(transconductanceMicroMhosUnrounded);
+  const transconductanceSlopeMicroMhosPerV = transconductanceMicroMhosUnrounded;
 
-  const rpOhm = gm_A_per_V > 1e-6 ? mu / gm_A_per_V : 200000;
-  const plateResistanceKOhms = Number((rpOhm / 1000).toFixed(1));
+  const rpOhm = gm_A_per_V_unrounded > 1e-6 ? mu / gm_A_per_V_unrounded : 200000;
+  const plateResistanceKOhmsUnrounded = rpOhm / 1000;
+  const plateResistanceKOhms = Number(plateResistanceKOhmsUnrounded.toFixed(1));
+
+  const plateCurrentSlopeMaPerVPlate = (gm_A_per_V_unrounded * 1000) / mu;
 
   const rLoadOhm = loadResistanceKOhms * 1000;
-  const voltageGain = claim1GridPresent
-    ? Number(((mu * rLoadOhm) / (rpOhm + rLoadOhm)).toFixed(2))
-    : 0;
+  const voltageGainUnrounded = claim1GridPresent ? (mu * rLoadOhm) / (rpOhm + rLoadOhm) : 0;
+  const voltageGain = claim1GridPresent ? Number(voltageGainUnrounded.toFixed(2)) : 0;
+  const stageGainSlopePerKohm =
+    claim1GridPresent && gm_A_per_V_unrounded > 1e-6
+      ? (mu * plateResistanceKOhmsUnrounded) /
+        (plateResistanceKOhmsUnrounded + loadResistanceKOhms) ** 2
+      : 0;
 
   const vInRms = rfInputMv / 1000 / Math.SQRT2;
   const vOutRms = vInRms * voltageGain;
@@ -3640,6 +3683,8 @@ export function stepDeForestAudion(
     claim1GridPresent,
     filamentCurrentA,
     filamentPowerW,
+    filamentPowerWUnrounded,
+    filamentPowerSlopeWPerA,
     filamentGlowRadiusPx,
     filamentTemperatureK: tFilamentK,
     gridBiasV,
@@ -3647,13 +3692,20 @@ export function stepDeForestAudion(
     gridCutoffVoltageV,
     plateVoltageV,
     plateCurrentMa,
+    plateCurrentMaUnrounded,
+    plateCurrentSlopeMaPerVPlate,
     vEffective: Number(vEff.toFixed(2)),
     effectiveDrivingPotentialV: Number(vEff.toFixed(2)),
     amplificationFactorMu: mu,
     dynamicTransconductanceMicromhos: transconductanceMicroMhos,
     transconductanceMicroMhos,
+    transconductanceMicroMhosUnrounded,
+    transconductanceSlopeMicroMhosPerV,
     plateResistanceKOhms,
+    plateResistanceKOhmsUnrounded,
     voltageGain,
+    voltageGainUnrounded,
+    stageGainSlopePerKohm,
     inputSignalMv: rfInputMv,
     outputSignalMv,
     platePowerMw,

@@ -2,6 +2,7 @@
 
 import { Radio, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepMorseTelegraph } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -391,51 +392,35 @@ export function MorseTelegraphSim() {
               />
             </div>
 
-            {/* Line Distance Slider */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Line Loop Current (Line Distance)
-                </span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {currentMa.toFixed(0)} mA · {morse.magneticForceN} N / {morse.stylusKpa} kPa
-                </span>
-              </div>
-              <input
-                type="range"
-                aria-label="Telegraph Line Current"
-                min="20"
-                max="100"
-                step="2"
-                value={currentMa}
-                onChange={(e) => updateParam("currentMa", Number(e.target.value))}
-                className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-              />
-            </div>
+            {/* Line Loop Current Slider */}
+            <SensitivitySlider
+              id="morseCurrent"
+              patentId="us-1647-morse-telegraph"
+              paramKey="currentMa"
+              label="Line Loop Current"
+              value={currentMa}
+              min={20}
+              max={100}
+              step={2}
+              unit="mA"
+              onChange={(val) => updateParam("currentMa", val)}
+              allParams={params}
+            />
 
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  PARIS Words Per Minute
-                </span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {morse.wpmSpeed} WPM · dit {morse.ditMs}/{morse.dahMs} ms
-                </span>
-              </div>
-              <input
-                type="range"
-                aria-label="Morse words per minute"
-                min="5"
-                max="35"
-                step="1"
-                value={morse.wpmSpeed}
-                onChange={(e) => updateParam("wpmSpeed", Number(e.target.value))}
-                className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-              />
-              <div className="text-[10px] font-mono text-ink-500 dark:text-ink-400">
-                unit {morse.unitDurationMs} ms · tape {morse.tapeAdvanceRadPerS} rad/s
-              </div>
-            </div>
+            {/* PARIS Words Per Minute Slider */}
+            <SensitivitySlider
+              id="morseWpmSpeed"
+              patentId="us-1647-morse-telegraph"
+              paramKey="wpmSpeed"
+              label="PARIS Words Per Minute"
+              value={morse.wpmSpeed}
+              min={5}
+              max={35}
+              step={1}
+              unit="WPM"
+              onChange={(val) => updateParam("wpmSpeed", val)}
+              allParams={params}
+            />
 
             {/* Relay Amplifier Toggle */}
             <div className="pt-2 border-t border-parchment-300 dark:border-ink-800">
