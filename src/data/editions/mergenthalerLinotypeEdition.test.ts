@@ -76,7 +76,7 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
     }
   });
 
-  test("records the known figure-preview deficit and validates every attached crop", () => {
+  test("binds every staged figure citation to a visually reviewed source crop", () => {
     const references = mergenthalerLinotypeArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
         ? block.inlines.filter(
@@ -97,10 +97,9 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
           : [],
       ),
     );
-    expect(references).toHaveLength(40);
-    expect(referencesWithPreviews).toHaveLength(13);
-    expect(references.length - referencesWithPreviews.length).toBe(27);
-    expect(uniquePreviewPaths.size).toBe(4);
+    expect(references).toHaveLength(36);
+    expect(referencesWithPreviews).toHaveLength(references.length);
+    expect(uniquePreviewPaths.size).toBeGreaterThanOrEqual(13);
     for (const reference of references) {
       if (reference.kind !== "reference" || reference.referenceType !== "figure") continue;
       for (const preview of reference.figurePreviews ?? []) {
@@ -131,5 +130,48 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
     expect(ledger).not.toContain("13 Sheets-Sheet");
     expect(ledger).not.toContain("Drawing Sheet 1 of 13 illustrating");
     expect(ledger).not.toContain("Application filed February 12, 1884");
+  });
+
+  test("keeps the directly reviewed final specification and execution on their source pages", () => {
+    const ledger = readFileSync(
+      publicFile("/patents/transcripts/us-313224-mergenthaler-linotype-reviewed.txt"),
+      "utf8",
+    );
+    expect(ledger).toContain(
+      "the first to locate spac-\n\n--- REVIEWED TRANSCRIPTION PAGE 31 OF 35 ---\ning-surfaces at suitable points",
+    );
+    expect(ledger).toContain("OTTMAR MERGENTHALER.\n\nWitnesses:\nM. RABENAU,\nJULIEN P. FRIEZ.");
+    expect(ledger).not.toContain("Specification page 18:");
+    expect(ledger).not.toContain("Specification page 19:");
+    expect(ledger).not.toContain("Specification page 20:");
+    expect(ledger).not.toContain("Specification page 21:");
+    expect(ledger).not.toContain("Specification page 22:");
+    expect(ledger).not.toContain("F. E. STEPHENS");
+    expect(ledger).not.toContain("C. E. TULLY");
+  });
+
+  test("uses the directly reviewed opening rather than the later-machine staging copy", () => {
+    const masthead = mergenthalerLinotypeArchivalEdition.blocks[0];
+    const opening = mergenthalerLinotypeArchivalEdition.blocks[2];
+    expect(masthead).toMatchObject({
+      kind: "masthead",
+      lines: expect.arrayContaining([
+        "Application filed August 30, 1884. (No model.)",
+        "OTTMAR MERGENTHALER, OF BALTIMORE, MARYLAND, ASSIGNOR TO THE NATIONAL TYPOGRAPHIC COMPANY, OF WEST VIRGINIA",
+      ]),
+    });
+    expect(opening).toMatchObject({
+      kind: "paragraph",
+      inlines: [
+        {
+          kind: "text",
+          text: expect.stringContaining("To all whom it may concern"),
+        },
+      ],
+    });
+    const stagedText = JSON.stringify(mergenthalerLinotypeArchivalEdition.blocks.slice(0, 11));
+    expect(stagedText).not.toContain("Application filed February 12, 1884");
+    expect(stagedText).not.toContain("Wedge Spacebands");
+    expect(stagedText).not.toContain("mold wheel rotates");
   });
 });

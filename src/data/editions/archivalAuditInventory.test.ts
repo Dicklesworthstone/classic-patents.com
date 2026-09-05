@@ -13,11 +13,11 @@ describe("server-only archival audit inventory", () => {
     );
     expect(inventory.summary).toMatchObject({
       catalogueRecordCount: 103,
-      acceptedRecordCount: 88,
-      nonacceptedRecordCount: 15,
+      acceptedRecordCount: 89,
+      nonacceptedRecordCount: 14,
       primaryReasonCounts: {
         figure: 0,
-        "facsimile-review": 5,
+        "facsimile-review": 4,
         ledger: 0,
         "full-specification": 5,
         "claim-parity": 0,
@@ -28,7 +28,7 @@ describe("server-only archival audit inventory", () => {
       // Fermi and Mergenthaler deliberately route through their complete
       // reviewed ledgers while their stricter editorial packets are repaired.
       // That is a source-reader change, not a loss of primary-source access.
-      readerDeliveryCounts: { edition: 88, transcript: 15, facsimile: 0 },
+      readerDeliveryCounts: { edition: 89, transcript: 11, facsimile: 3 },
       unacceptedFigureOccurrenceCount: 219,
       recordsWithAttestedFiguresMissingLocators: 0,
       recordsMissingFigureAttestationsAndLocators: 2,

@@ -149,20 +149,21 @@ export const fessendenWirelessPatent: Patent = {
     url: "/patents/transcripts/us-706737-fessenden-wireless-reviewed.txt",
     pageCount: 7,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Codex)",
-    reviewedAt: "2026-08-21",
+    reviewedBy: "Classic Patents editorial agent (Codex; direct seven-page facsimile review)",
+    reviewedAt: "2026-09-04",
     sourcePdfSha256: "2098ec6d967d3ab7999da0fb96357328fa68bb8e7639c1863ac600547aff8887",
     pageAnchors: [
       {
         page: 1,
         sourceRelationship: "drawing-sheet",
-        exactSourceText: "FIG. 1. FIG. 2. FIG. 3. FIG. 4. FIG. 5. Reginald A. Fessenden Inventor.",
+        exactSourceText:
+          "R. A. FESSENDEN. WIRELESS TELEGRAPHY. FIG. 1. FIG. 2. FIG. 3. FIG. 4. FIG. 5.",
       },
       {
         page: 2,
         sourceRelationship: "specification-masthead",
         exactSourceText:
-          "UNITED STATES PATENT OFFICE. REGINALD A. FESSENDEN, OF ALLEGHENY, PENNSYLVANIA. WIRELESS TELEGRAPHY. Letters Patent No. 706,737, dated August 12, 1902.",
+          "UNITED STATES PATENT OFFICE. REGINALD A. FESSENDEN, OF ALLEGHENY, PENNSYLVANIA. WIRELESS TELEGRAPHY. SPECIFICATION forming part of Letters Patent No. 706,737, dated August 12, 1902.",
       },
       {
         page: 3,
@@ -174,25 +175,25 @@ export const fessendenWirelessPatent: Patent = {
         page: 4,
         sourceRelationship: "specification-body",
         exactSourceText:
-          "with a sending-conductor of large capacity uniformly distributed it is possible to get a sine-wave and a low resistance—i. e., conditions necessary and favorable for the production of large resonant voltages from small impressed voltages",
+          "Fifth, it is also essential that all iron magnetically influenced by currents in the conductor should be so proportioned and distributed as not to affect the shape of the curve of voltage",
       },
       {
         page: 5,
         sourceRelationship: "specification-body",
         exactSourceText:
-          "A portion of the ground connection of the receiving-conductor 10 is formed by a piece of fine wire 12, held in tension between the poles of a magnet 13",
+          "If the radiating portion be made, as shown in Fig. 5, with varying superficial dimensions—e.g., with a swell or enlargement 17—the electromagnetic waves generated from its different surfaces will have different periodicities",
       },
       {
         page: 6,
         sourceRelationship: "specification-claims",
         exactSourceText:
-          "1. A sending-conductor for electromagnetic waves, having a large capacity distributed with substantial uniformity over its radiating portion, substantially as set forth.",
+          "5. In a system for transmission of energy by electromagnetic waves, the combination of a source of alternating voltage and a conductor in series therewith forming a sending-conductor",
       },
       {
         page: 7,
         sourceRelationship: "claims-and-signatures",
         exactSourceText:
-          "In testimony whereof I have hereunto set my hand. REGINALD A. FESSENDEN. Witnesses: W. B. FEARING, S. C. GRAY.",
+          "In testimony whereof I have hereunto set my hand. REGINALD A. FESSENDEN, Witnesses: W. B. FEARING, S. C. GRAY.",
       },
     ],
   },

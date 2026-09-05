@@ -6,6 +6,93 @@ import { EDISON_DECLARED_FILAMENT_LENGTH_CM, stepEdisonRadiativeBalance } from "
 import { readKamenSegwayControls, stepKamenSegwaySi } from "./kamenSegwayKernel";
 import { computeParameterSensitivity } from "./sensitivityKernel";
 import { PATENT_PHYSICS_REGISTRY } from "./telemetryData";
+import {
+  readWattCondenserControls,
+  stepWattCondenser,
+  WATT_CONTROL_RANGES,
+} from "./wattCondenserKernel";
+
+describe("Watt current-state sensitivities", () => {
+  const id = "gb-913-watt-separate-condenser";
+  const params = {
+    boilerPressurePsi: 6,
+    condenserTempC: 50,
+    cylinderBoreInches: 60,
+    pistonStrokeFeet: 8,
+    strokesPerMinute: 20,
+    hasSeparateCondenser: 1,
+    hasSteamJacket: 1,
+  };
+
+  test("continuous slopes match dimensional power and saturation-pressure derivatives", () => {
+    const volume = (Math.PI / 4) * (60 * 0.0254) ** 2 * (8 * 0.3048);
+    const sat = (10 ** (8.07131 - 1730.63 / (233.426 + 50)) * 101.325) / 760;
+    const hp = (((101.325 + 6 * 6.89476 - sat - 6) * volume * 20) / 60) * 1.34102;
+    const expected: Record<string, [number, string]> = {
+      boilerPressurePsi: [((6.89476 * volume * 20) / 60) * 1.34102, "hp / psi"],
+      cylinderBoreInches: [(2 * hp) / 60, "hp / in"],
+      pistonStrokeFeet: [hp / 8, "hp / ft"],
+      strokesPerMinute: [hp / 20, "hp / spm"],
+      condenserTempC: [(sat * Math.LN10 * 1730.63) / (233.426 + 50) ** 2, "kPa / °C"],
+    };
+    for (const [key, [value, unit]] of Object.entries(expected)) {
+      const sensitivity = computeParameterSensitivity(id, key, params);
+      expect(sensitivity).not.toBeNull();
+      if (!sensitivity) throw new Error(`Missing sensitivity for ${key}`);
+      expect(sensitivity.derivativeUnit).toBe(unit);
+      expect(Math.abs(sensitivity.derivativeValue - value) / value).toBeLessThan(5e-6);
+    }
+    expect(computeParameterSensitivity(id, "boilerPressure", params)).toEqual(
+      computeParameterSensitivity(id, "boilerPressurePsi", params),
+    );
+  });
+
+  test("Newcomen power is pressure-independent and the cold condenser floor is locally flat", () => {
+    expect(
+      computeParameterSensitivity(id, "boilerPressurePsi", { ...params, hasSeparateCondenser: 0 })
+        ?.derivativeValue,
+    ).toBe(0);
+    expect(
+      computeParameterSensitivity(id, "condenserTempC", { ...params, condenserTempC: 20 })
+        ?.derivativeValue,
+    ).toBe(0);
+    const kink = 1730.63 / (8.07131 - Math.log10((3.5 * 760) / 101.325)) - 233.426;
+    expect(
+      computeParameterSensitivity(id, "condenserTempC", { ...params, condenserTempC: kink }),
+    ).toBeNull();
+  });
+
+  test("discrete apparatus effects use the current operating point and explicit units", () => {
+    const controls = readWattCondenserControls(params);
+    const on = stepWattCondenser(controls);
+    const noCondenser = stepWattCondenser({ ...controls, hasSeparateCondenser: false });
+    const noJacket = stepWattCondenser({ ...controls, hasSteamJacket: false });
+    const condenser = computeParameterSensitivity(id, "hasSeparateCondenser", params);
+    const jacket = computeParameterSensitivity(id, "hasSteamJacket", params);
+    if (!condenser || !jacket) throw new Error("Missing discrete sensitivity result");
+    expect(condenser.derivativeValue).toBeCloseTo(
+      on.indicatedHorsepower - noCondenser.indicatedHorsepower,
+      3,
+    );
+    expect(condenser.derivativeUnit).toBe("hp");
+    expect(jacket.derivativeValue).toBeCloseTo(on.heatInputRateKw - noJacket.heatInputRateKw, 2);
+    expect(jacket.derivativeValue).toBeLessThan(0);
+    expect(jacket.derivativeUnit).toBe("kW");
+    expect(jacket.interpretation).toContain("not a continuous derivative");
+    expect(
+      computeParameterSensitivity(id, "hasSteamJacket", { ...params, hasSeparateCondenser: 0 })
+        ?.derivativeValue,
+    ).toBe(0);
+  });
+
+  test("clamped inputs and supported endpoints have no displayed continuous derivative", () => {
+    for (const [key, range] of Object.entries(WATT_CONTROL_RANGES)) {
+      for (const value of [range.min - 1, range.min, range.max, range.max + 1]) {
+        expect(computeParameterSensitivity(id, key, { ...params, [key]: value })).toBeNull();
+      }
+    }
+  });
+});
 
 describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
   test("Wright Flyer computes finite-difference sensitivity for wing warp and airspeed", () => {

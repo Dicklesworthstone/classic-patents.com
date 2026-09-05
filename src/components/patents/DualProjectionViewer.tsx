@@ -478,7 +478,7 @@ export function DualProjectionViewer({
       {viewMode === "split-view" && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column: Plain English */}
-          <div className="space-y-6">
+          <div className="space-y-6" data-patent-projection="plain-english">
             <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-parchment-300 dark:border-ink-800">
               <div className="flex items-center gap-2.5">
                 <Sparkles className="w-5 h-5 text-emerald-600" />
@@ -505,7 +505,7 @@ export function DualProjectionViewer({
           </div>
 
           {/* Right Column: Original Specification */}
-          <div className="space-y-6">
+          <div className="space-y-6" data-patent-projection="original-spec">
             <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-parchment-300 dark:border-ink-800">
               <div className="flex items-center gap-2.5">
                 <Scroll className="w-5 h-5 text-amber-700 dark:text-amber-500" />

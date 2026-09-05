@@ -183,7 +183,7 @@ This table retains all 21 records present when the restoration backlog was gener
 | `us-6120588-eink` | AUDIT_FACSIMILE_REVIEW_PENDING | `classic-patentscom-8vu.29` | `classic-patentscom-8vu.30` |
 | `us-613809-tesla-teleautomaton` | AUDIT_FACSIMILE_REVIEW_PENDING | `classic-patentscom-8vu.31` | `classic-patentscom-8vu.32` |
 | `us-6331181-davinci` | AUDIT_FULL_SPECIFICATION_PENDING | `classic-patentscom-8vu.33` | `classic-patentscom-8vu.34` |
-| `us-706737-fessenden-wireless` | AUDIT_FACSIMILE_REVIEW_PENDING | `classic-patentscom-8vu.35` | `classic-patentscom-8vu.36` |
+| `us-706737-fessenden-wireless` | Accepted after direct complete-facsimile review | `classic-patentscom-8vu.35` | `classic-patentscom-8vu.36` |
 | `us-7479949-multitouch` | AUDIT_FULL_SPECIFICATION_PENDING | `classic-patentscom-8vu.37` | `classic-patentscom-8vu.38` |
 | `us-x1-hopkins-potash` | AUDIT_FACSIMILE_REVIEW_PENDING | `classic-patentscom-8vu.39` | `classic-patentscom-8vu.40` |
 | `us-x72-whitney-cotton-gin` | Accepted during audit; verify landed work | `classic-patentscom-8vu.41` | `classic-patentscom-8vu.42` |

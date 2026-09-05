@@ -95,7 +95,7 @@ function CouplingSummary({
   lastChange,
   sliderSensitivity,
 }: Omit<PhysicsTelemetryMetricsProps, "metrics">) {
-  if (coupleEdges.length === 0) return null;
+  if (coupleEdges.length === 0 && !sliderSensitivity) return null;
 
   return (
     <div className="flex flex-wrap gap-2 pt-1">
@@ -116,8 +116,15 @@ function CouplingSummary({
         </div>
       ))}
       {sliderSensitivity ? (
-        <div className="rounded-lg border border-parchment-300 dark:border-ink-800 bg-white/80 dark:bg-ink-900/80 px-2.5 py-1.5">
-          <div className="text-[9px] uppercase tracking-wider font-mono text-ink-500 dark:text-ink-400">
+        <div
+          className="min-w-0 rounded-lg border border-parchment-300 dark:border-ink-800 bg-white/80 dark:bg-ink-900/80 px-2.5 py-1.5"
+          data-testid="parameter-sensitivity"
+          title={sliderSensitivity.interpretation}
+        >
+          <div className="text-[11px] font-semibold text-ink-900 dark:text-parchment-100">
+            {sliderSensitivity.metricName}
+          </div>
+          <div className="text-[9px] tracking-wider font-mono text-ink-500 dark:text-ink-400">
             {sliderSensitivity.derivativeSymbol} (host sensitivity)
           </div>
           <div className="text-[11px] font-mono font-bold text-ink-900 dark:text-parchment-100">

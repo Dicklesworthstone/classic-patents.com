@@ -1,8 +1,40 @@
 import { describe, expect, test } from "bun:test";
 import { computePortHamiltonianEnergy, measureSteadyPowerBalance } from "./energyLedger";
+import { readWattCondenserControls, stepWattCondenser } from "./wattCondenserKernel";
 import { WRIGHT_GROSS_WEIGHT_N } from "./wrightKernel";
 
 describe("Energy readouts distinguish partial, steady and unavailable evidence", () => {
+  test("Watt power ports follow the shared model without invented stored energy or closure", () => {
+    for (const hasSeparateCondenser of [0, 1]) {
+      for (const hasSteamJacket of [0, 1]) {
+        const params = {
+          boilerPressurePsi: 6,
+          condenserTempC: 50,
+          cylinderBoreInches: 60,
+          pistonStrokeFeet: 8,
+          strokesPerMinute: 20,
+          hasSeparateCondenser,
+          hasSteamJacket,
+        };
+        const state = stepWattCondenser(readWattCondenserControls(params));
+        const report = computePortHamiltonianEnergy("gb-913-watt-separate-condenser", params);
+        // The public report rounds power ports to 0.1 W (at most 0.05 W error).
+        expect(report.inputPowerWatts).toBeCloseTo(state.heatInputRateKw * 1000, 1);
+        expect(report.dissipatedPowerWatts).toBeCloseTo(state.airPumpPowerKw * 1000, 1);
+        expect(report.outputPowerWatts).toBeCloseTo(state.netShaftPowerKw * 1000, 1);
+        expect(report.dissipationLabel).toBe("Air pump");
+        expect(report.storedEnergyAvailable).toBe(false);
+        expect(report.balance.kind).toBe("unavailable");
+        expect(report.runtimeSource).toBe("ts-fallback");
+        expect(report.reason).toContain("Illustrative teaching scenario");
+        const later = computePortHamiltonianEnergy("gb-913-watt-separate-condenser", params, 20);
+        expect(later.inputPowerWatts).toBe(report.inputPowerWatts);
+        expect(later.outputPowerWatts).toBe(report.outputPowerWatts);
+        expect(later.storedEnergyAvailable).toBe(false);
+        expect(later.balance.kind).toBe("unavailable");
+      }
+    }
+  });
   test("Wright kinetic energy follows the canonical mph control and declared mass", () => {
     const slow = computePortHamiltonianEnergy("us-821393-wright-flyer", { airspeed: 28 });
     const fast = computePortHamiltonianEnergy("us-821393-wright-flyer", { airspeed: 40 });

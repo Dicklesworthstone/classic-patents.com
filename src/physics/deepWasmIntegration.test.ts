@@ -109,7 +109,7 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
         "gb-913-watt-separate-condenser",
         "boilerPressurePsi",
         {
-          boilerPressurePsi: 14.7,
+          boilerPressurePsi: 5.0,
           cylinderBoreInches: 24.0,
           pistonStrokeFeet: 6.0,
           strokesPerMinute: 18.0,
@@ -117,7 +117,7 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       );
       expect(sens).not.toBeNull();
       expect(sens?.derivativeValue).toBeGreaterThan(1.0);
-      expect(sens?.derivativeUnit).toContain("HP / PSI");
+      expect(sens?.derivativeUnit).toMatch(/hp \/ psi/i);
     });
 
     test("does not fabricate a Pelton sensitivity beyond the three-sheet source", () => {
@@ -185,12 +185,14 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
 
     test("computes steam enthalpy power balance for Watt separate condenser", () => {
       const ledger = computePortHamiltonianEnergy("gb-913-watt-separate-condenser", {
-        boilerPressurePsi: 14.7,
+        boilerPressurePsi: 5.0,
         hasSeparateCondenser: 1,
         strokesPerMinute: 18,
       });
-      expect(ledger.energy.thermalJoules).toBeGreaterThan(5000);
       expect(ledger.inputPowerWatts).toBeGreaterThan(1000);
+      expect(ledger.outputPowerWatts).not.toBeNull();
+      expect(ledger.dissipatedPowerWatts).toBeGreaterThan(0);
+      expect(ledger.storedEnergyAvailable).toBe(false);
       expect(ledger.balance.kind).toBe("unavailable");
     });
 

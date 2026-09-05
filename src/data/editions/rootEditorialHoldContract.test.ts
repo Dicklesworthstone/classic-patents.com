@@ -16,7 +16,6 @@ const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-2708656-fermi-reactor",
   "us-313224-mergenthaler-linotype",
   "us-6120588-eink",
-  "us-706737-fessenden-wireless",
 ] as const;
 
 const SOURCE_QA_RELEASED_EDITIONS = [
@@ -77,6 +76,7 @@ const SOURCE_QA_RELEASED_EDITIONS = [
   "us-6469-lincoln-buoy",
   "us-6594844-roomba",
   "us-682690-hewitt-mercury-lamp",
+  "us-706737-fessenden-wireless",
   "us-727650-linde-air-liquefaction",
   "us-7479949-multitouch",
   "us-78317-nobel-dynamite",

@@ -123,7 +123,7 @@ export const noyceIcArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 5"),
         {
           kind: "text",
-          text: " shares its sheet with Figs. 3 and 4 without hiding surrounding source matter. Earlier per-figure crops remain preserved as review lineage.",
+          text: " shares its sheet with the third and fourth figures without hiding surrounding source matter. Earlier per-figure crops remain preserved as review lineage.",
         },
       ],
     },

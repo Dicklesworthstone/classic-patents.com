@@ -13,7 +13,7 @@ const paragraph = (inlines: CuratedSpecificationInlines): CuratedSpecificationBl
   inlines,
 });
 
-const term = (text: string, definition: string): CuratedSpecificationInline => ({
+const _term = (text: string, definition: string): CuratedSpecificationInline => ({
   kind: "term",
   text,
   definition,
@@ -26,45 +26,131 @@ const linotypeFigDims: Record<number, { width: number; height: number }> = {
   4: { width: 470, height: 2200 },
 };
 
-const figure = (num: number, label: string): CuratedSpecificationInline => ({
-  kind: "reference",
-  text: label,
-  href: `#mergenthaler-fig-${num}`,
-  referenceType: "figure",
-  label: `Preview ${label} of US 313,224`,
-  ...(linotypeFigDims[num]
-    ? {
-        figurePreviews: [
-          {
-            src: `/patents/figures/us-313224-mergenthaler-linotype/fig-${num}-source-crop-v1.png`,
-            alt: `US 313,224 ${label}`,
-            width: linotypeFigDims[num].width,
-            height: linotypeFigDims[num].height,
-          },
-        ],
-      }
-    : {}),
-});
+/**
+ * Exact source-sheet location for every printed figure. Figures 1–4 retain
+ * their tighter existing crops; later citations use a full, unaltered source
+ * sheet so a visitor can inspect the printed figure label and its neighbors.
+ */
+const linotypeFigureSheets: Record<number, number> = {
+  5: 4,
+  6: 4,
+  7: 4,
+  8: 4,
+  9: 4,
+  10: 4,
+  11: 5,
+  12: 6,
+  13: 6,
+  14: 6,
+  15: 7,
+  16: 8,
+  17: 8,
+  18: 8,
+  19: 9,
+  20: 9,
+  21: 9,
+  22: 9,
+  23: 9,
+  24: 9,
+  25: 9,
+  26: 10,
+  27: 10,
+  28: 10,
+  29: 11,
+  30: 11,
+  31: 11,
+  32: 12,
+  33: 12,
+  34: 13,
+  35: 13,
+  36: 14,
+  37: 14,
+  38: 14,
+  39: 14,
+  40: 14,
+  41: 14,
+  42: 14,
+  43: 14,
+  44: 14,
+  45: 15,
+  46: 16,
+  47: 16,
+  48: 17,
+  49: 15,
+  50: 12,
+  51: 17,
+};
+
+type FigurePreview = {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+};
+
+const figurePreview = (number: number, label: string): FigurePreview | undefined => {
+  const crop = linotypeFigDims[number];
+  if (crop) {
+    return {
+      src: `/patents/figures/us-313224-mergenthaler-linotype/fig-${number}-source-crop-v1.png`,
+      alt: `US 313,224 ${label}`,
+      ...crop,
+    };
+  }
+
+  const sheet = linotypeFigureSheets[number];
+  if (!sheet) return undefined;
+  return {
+    src: `/patents/figures/us-313224-mergenthaler-linotype/sheet-${String(sheet).padStart(2, "0")}-source-crop-v1.png`,
+    alt: `US 313,224 drawing sheet ${sheet}, containing Fig. ${number}`,
+    width: 1547,
+    height: 2272,
+  };
+};
+
+const citationFigureNumbers = (citation: string): number[] => {
+  const numbers = Array.from(citation.matchAll(/\d+/g), (match) => Number(match[0]));
+  if (citation.includes(" to ") && numbers.length === 2) {
+    const [first, last] = numbers;
+    return Array.from({ length: last - first + 1 }, (_, index) => first + index);
+  }
+  return numbers;
+};
+
+const citationPreviews = (citation: string): FigurePreview[] => {
+  const previews = citationFigureNumbers(citation).flatMap((number) => {
+    const preview = figurePreview(number, `Fig. ${number}`);
+    return preview ? [preview] : [];
+  });
+  return previews.filter(
+    (preview, index) => previews.findIndex((candidate) => candidate.src === preview.src) === index,
+  );
+};
+
+const figure = (num: number, label: string): CuratedSpecificationInline => {
+  const preview = figurePreview(num, label);
+  return {
+    kind: "reference",
+    text: label,
+    href: `#mergenthaler-fig-${num}`,
+    referenceType: "figure",
+    label: `Preview ${label} of US 313,224`,
+    ...(preview ? { figurePreviews: [preview] } : {}),
+  };
+};
 
 const sourceFigure = (citation: string): CuratedSpecificationInline => {
-  const number = Number(citation.match(/\d+/)?.[0] ?? 0);
-  const dimensions = linotypeFigDims[number];
+  const number = citationFigureNumbers(citation)[0] ?? 0;
+  const previews = citationPreviews(citation);
   return {
     kind: "reference",
     text: citation,
     href: `#mergenthaler-fig-${number}`,
     referenceType: "figure",
     label: `Source-facsimile reference ${citation} of US 313,224`,
-    ...(dimensions
+    ...(previews.length > 0
       ? {
-          figurePreviews: [
-            {
-              src: `/patents/figures/us-313224-mergenthaler-linotype/fig-${number}-source-crop-v1.png`,
-              alt: `US 313,224 ${citation}`,
-              width: dimensions.width,
-              height: dimensions.height,
-            },
-          ],
+          figurePreviews: previews,
         }
       : {}),
   };
@@ -735,85 +821,65 @@ export const mergenthalerLinotypeArchivalEdition: CuratedSpecificationEdition = 
   sourcePdfSha256: "d85530ab4302e8be7e4c0ac280d438756f1dd21dabc844f2c5b2e76861d7444a",
   preparedBy: "Classic Patents editorial staging draft (CobaltDuck)",
   preparedAt: "2026-08-21",
-  // This draft is deliberately invalid for publication. The 2026-08-30
-  // independent audit found that its opening blocks and the staged ledger's
-  // drawing-page headers do not match the pinned 17-sheet facsimile.
+  // This draft remains deliberately invalid for publication. The opening
+  // below was rechecked against pp. 18–21 on 2026-09-05, but the unreviewed
+  // continuous middle and drawing-crop packet still prevent publication.
   completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",
       lines: [
         "UNITED STATES PATENT OFFICE",
-        "OTTMAR MERGENTHALER, OF BALTIMORE, MARYLAND",
+        "OTTMAR MERGENTHALER, OF BALTIMORE, MARYLAND, ASSIGNOR TO THE NATIONAL TYPOGRAPHIC COMPANY, OF WEST VIRGINIA",
         "MACHINE FOR PRODUCING PRINTING-BARS",
-        "Specification forming part of Letters Patent No. 313,224, dated March 3, 1885",
-        "Application filed February 12, 1884. Serial No. 120,497. (No model.)",
-        "70 Claims. (Cl. 199—1)",
+        "SPECIFICATION forming part of Letters Patent No. 313,224, dated March 3, 1885",
+        "Application filed August 30, 1884. (No model.)",
       ],
     },
-    { kind: "heading", level: 2, text: "Field of the Invention" },
+    { kind: "heading", level: 2, text: "Opening of the Specification" },
     paragraph(
       literal(
-        "Be it known that I, OTTMAR MERGENTHALER, of Baltimore, Maryland, have invented certain new and useful Improvements in Machines for Producing Printing-Bars, of which the following is a specification.",
+        "To all whom it may concern: Be it known that I, OTTMAR MERGENTHALER, of Baltimore, in the State of Maryland, have invented certain Improvements in Machines for Producing Printing-Bars, of which the following is a specification.",
       ),
     ),
     paragraph(
       literal(
-        "This invention relates to an automatic stereotyping apparatus and machine for casting solid printing slugs or type-bars directly from a justified line of matrices composed by an operator at a keyboard, eliminating manual hand-typesetting.",
+        "This invention is directed to the rapid and economical production of letter-press printing, and relates to a machine to be driven by power, and controlled by finger-keys, adapted to produce printing forms or relief surfaces ready for immediate use, thus avoiding the usual operation of type-setting, and also the more recent plan of preparing by machinery matrices from which to cast the forms.",
       ),
     ),
-    { kind: "heading", level: 2, text: "The Matrix-Bar System and Keyboard Assembly" },
-    paragraph([
-      text("The machine employs a plurality of vertically movable "),
-      term(
-        "matrix-bars",
-        "Continuous metal bars each bearing a vertical column of intaglio (recessed) letter and symbol dies on their edge, arranged in order of character width.",
-      ),
-      text(
-        " arranged side-by-side. As the operator depresses character keys on the keyboard, corresponding stop-pins are projected into the path of the falling matrix-bars, arresting each bar at the precise height required to bring the selected character die to the horizontal line of alignment.",
-      ),
-    ]),
-    paragraph([
-      figure(1, "Fig. 1"),
-      text(" shows a general perspective view of the machine, while "),
-      figure(2, "Fig. 2"),
-      text(
-        " illustrates the vertical sectional elevation of the matrix-bar magazine, keyboard escapement mechanism, and stop-pin frame.",
-      ),
-    ]),
-    { kind: "heading", level: 2, text: "Line Justification and Wedge Spacebands" },
-    paragraph([
-      text("Line justification is achieved by interposing expandable "),
-      term(
-        "spacebands",
-        "Sliding wedge pairs inserted between word matrices that expand uniformly when driven upward, spreading words evenly across the exact column width.",
-      ),
-      text(
-        " between the word groups. When a line of matrices is assembled, a justification bar pushes the wedges upward until the entire line expands tightly between the side-vises, producing perfectly flush left and right margins.",
-      ),
-    ]),
-    paragraph([
-      figure(3, "Fig. 3"),
-      text(" details the justification wedge mechanism and matrix-clamping vice, and "),
-      figure(4, "Fig. 4"),
-      text(" shows the individual matrix-bar and spaceband cross-sections."),
-    ]),
-    { kind: "heading", level: 2, text: "Casting and Metal Pump Mechanism" },
-    paragraph([
-      text(
-        "Once justified and aligned, the face of the matrix line is clamped tightly against an open slotted ",
-      ),
-      term(
-        "mold",
-        "A steel slot corresponding to the exact thickness and column width of the desired line-of-type (slug).",
-      ),
-      text(
-        ". A heated melting pot containing molten type-metal (lead, tin, and antimony alloy) is moved forward against the rear of the mold, and a plunger pump injects molten metal under pressure against the recessed matrix dies, instantaneously casting a solid, ready-to-print line of type.",
-      ),
-    ]),
     paragraph(
       literal(
-        "The mold wheel rotates, trimming knives shave the slug to precise type-height, and an ejector blade pushes the finished line-of-type into a galley tray while the matrix-bars are automatically released and returned to their home positions to compose the next line.",
+        "By the use of my machine the operator is enabled to produce with great rapidity printing-bars bearing in relief the selected characters in the sequence and arrangement in which they are to be printed. In short, the machine will produce printing forms or surfaces properly justified, and adapted to be used in the same manner and with precisely the same results as the printing-forms composed of movable type.",
+      ),
+    ),
+    paragraph(
+      literal(
+        "My machine embraces two leading groups of mechanism: first, those which form a temporary and changing matrix representing a number of words; and, second, those by which molten or plastic material is delivered to the matrix and discharged therefrom in the form of printing-bars. These two groups, which will, for convenience of reference, be hereinafter designated as the “matrix mechanism” and the “casting mechanism,” are so combined that the casting of one bar may be carried on while the characters are being designated and the devices adjusted to adapt the matrix for the production of the next bar, whereby time is economized and the capacity of the machine greatly increased.",
+      ),
+    ),
+    paragraph(
+      literal(
+        "The matrix mechanism resembles in many respects the printing mechanism described and shown in my application for Letters Patent filed on the 9th day of July, 1884, No. 137,225, but differs therefrom, among other things, in having intaglio instead of cameo characters.",
+      ),
+    ),
+    paragraph(
+      literal(
+        "The matrix mechanism embraces a series of parallel longitudinal bars or carriers, each containing at one edge a series of letters or characters (one or more entire alphabets, if demanded), and also blank portions representing spaces between the words. These bars are adjustable independently so as to bring the selected characters, one on each bar, side by side in a single line, and so also to bring the blank spaces of the appropriate bars between the groups of characters forming words, the series of bars thus adjusted presenting jointly a matrix adapted for the formation of a line of characters or words properly punctuated and justified.",
+      ),
+    ),
+    paragraph(
+      literal(
+        "The bars are lifted mechanically to their normal position after the formation of each cast, and, descending by gravity when released, are arrested, respectively, by stop-pins at the different points required to bring the selected characters in a common line. The stop-pins, of which there is a vertical row for each printing-bar, are set for action by adjusting-pins, which are in turn operated by the finger-keys. The adjusting-pins are mounted in a laterally-movable frame so as to be presented to the stop-pins of the various matrix-bars in succession, as in my previous machine. The stop-pins are mounted in a frame movable forward and backward, and combined with devices by which they are first moved backward, after being adjusted, in order to arrest the bars, and subsequently moved forward and restored to their original positions preparatory to the designation of the characters for another line.",
+      ),
+    ),
+    paragraph(
+      literal(
+        "After the matrix-bars are stopped in their descent, a pin is thrust through holes in the entire series to bring the selected characters in approximate alignment, after which a transverse blade enters notches in the backs of the bars, and at the same time clamping devices act to close the bars together and confine them in the precise position desired, thus completing the temporary matrix.",
+      ),
+    ),
+    paragraph(
+      literal(
+        "A sectional mold of the form of the required printing-bar closes adjacent to the matrix-bars with its open side in intimate contact therewith opposite the line of selected characters. A force-pump acting in connection with a melting-pot and heater delivers type-metal into the mold and matrix. As soon as the metal has become sufficiently hardened, the mold opens and the printing-bar is delivered therefrom. In due course the various parts assume their normal positions and again operate, as described, to complete the next bar.",
       ),
     ),
     sourceParagraph(`This operation is exceedingly simple, and may with slight practice be rapidly performed. After the completion of the line, the indicator is automatically unlocked and is returned to the left by a spiral spring, k, inclosed in a tube, into which one end of the rod slides. The unlocking of the indicator is accomplished by devices connecting with the alarm mechanism, now to be described.
@@ -945,48 +1011,51 @@ export const mergenthalerLinotypeClaims: PatentClaim[] = mergenthalerLinotypeCla
 
 export const mergenthalerLinotypeParallelReadings: Readonly<Record<number, readonly string[]>> = {
   2: [
-    "The opening formal declaration identifies Ottmar Mergenthaler and the invention title for casting printing slugs directly from assembled matrices.",
+    "The formal opening identifies Mergenthaler in Baltimore and limits this document to improvements in machines for producing printing-bars; it does not name a later commercial Linotype model.",
   ],
   3: [
-    "The specification defines the machine's purpose: replacing manual letter-by-letter hand typesetting with an automatic keyboard-operated linecaster.",
+    "The stated objective is powered, finger-key-controlled letterpress production that avoids both hand composition and a separate machine-made-matrix process.",
+  ],
+  4: [
+    "The promised result is a rapidly made relief printing-bar whose selected characters are already sequenced and justified like a form composed from movable type.",
   ],
   5: [
-    "Vertical matrix bars carry columns of recessed character dies. Depressing keys projects stop pins that catch each bar at the chosen character height.",
+    "The machine is deliberately split into a temporary-matrix mechanism and a casting mechanism. Their overlap is central: selection for the next bar can continue while the current bar is cast.",
   ],
   6: [
-    "Figure 1 provides a perspective view of the linotype machine; Figure 2 shows the vertical cross-section through the keyboard and pin frame.",
+    "Mergenthaler distinguishes this mechanism from his July 1884 application by specifying intaglio, rather than cameo, characters; the earlier application is not silently treated as this grant's filing date.",
+  ],
+  7: [
+    "Independently adjustable longitudinal bars carry both character positions and blank spacing surfaces. Selecting one position on each bar assembles a punctuated and justified temporary matrix.",
   ],
   8: [
-    "Sliding wedge spacebands between word groups expand when pushed upward from below, justifying the assembled line tightly to the column margins.",
+    "The bars reset mechanically, fall by gravity, and are stopped by key-set pins. The movable pin frame first commits the selected stops and later restores them for another line.",
   ],
   9: [
-    "Figure 3 illustrates the justification wedge mechanism and clamping vice; Figure 4 shows matrix-bar profiles and spaceband details.",
+    "A through-pin provides a coarse common alignment, then a transverse blade and clamps make the selected bars a precise temporary matrix before casting.",
+  ],
+  10: [
+    "A sectional mold closes against the selected characters. A melting pot, heater, and force pump supply type metal; the source says the bar is released after hardening but supplies no alloy, temperature, or cycle-time value.",
   ],
   11: [
-    "Molten lead-alloy type metal is pumped under pressure against the justified matrix line inside a slotted mold, casting a solid type slug in one stroke.",
+    "The alarm returns the indicator after a line completes or the operator corrects an error. Its striker, detent, and reversing lever also reset the adjustment parts for a fresh composition cycle.",
   ],
   12: [
-    "The mold rotates to trim the slug to type-height and eject it into a tray, while matrix bars automatically reset for the next line of composition.",
+    "The source's casting section explains the constrained mold: bar-side clamp, sectional mold, melting-pot face, and laterally acting clamps establish the cavity before metal is pumped in.",
   ],
   13: [
-    "This operation is exceedingly simple and fast, allowing continuous composition without waiting for the previous line's cast to cool.",
+    "The alignment sequence uses a through-pin, a friction-held stripper plate, and a notched-bar blade. The rest of this block documents release, edge dressing, wiping, and spring-driven pumping after the cast.",
   ],
   14: [
-    "The formal claims define the 70 patentable mechanical combinations, matrix bar shapes, wedge spacebands, keyboard escapements, and casting systems.",
+    "A common clutch and cam train distributes motion to the pump, pot, clamps, lift head, stop reset, and bar return, coordinating one operating cycle rather than describing an independent later distributor.",
   ],
   15: [
-    "The alarm mechanism unlocks and returns the line-width indicator, gives a preliminary and final bell signal, and lets the reversing lever restore the stop-pin frame, indicator, and adjusting frame after an error.",
+    "The operation block describes selection, spacing correction, alignment, casting, release, and reset as one sequence. It expressly preserves the ability to set a following line while the current bar is cast.",
   ],
   16: [
-    "The casting mechanism aligns and clamps the selected bars against an adjustable sectional mold, then brings a heated melting pot and pump to the mold so molten type metal can form the printing bar.",
-  ],
-  17: [
-    "An aligning pin, friction-held stripper plate, rear notch blade, delivery plate, trimming knife, wiper, and spring-driven pump keep the matrix bars straight, release the cast, dress its base, and force metal into the mold.",
+    "The final specification block records variations, including continuous or linked matrix-bar forms, without changing the source's distinction between the temporary matrix and the cast printing-bar.",
   ],
   18: [
-    "A clutch and cam train gives the machine one timed operating cycle, driving the pump, pot tilt, clamps, lifting head, stop-pin reset, and bar return from the common shaft.",
-  ],
-  20: [
-    "The operating sequence selects characters and spaces, justifies the line, lowers and clamps the chosen bars, injects metal, opens the mold, and resets the pins while the next line is keyed; the final paragraphs preserve alternatives and the continuous matrix-bar distinction.",
+    "The claim introduction precedes seventy staged claim literals. Their legal text remains source-pinned research material until the complete 35-page edition and figure packet pass independent acceptance.",
   ],
 };

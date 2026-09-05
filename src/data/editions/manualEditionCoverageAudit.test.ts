@@ -35,10 +35,7 @@ describe("manual edition coverage audit", () => {
     const violations: string[] = [];
 
     for (const patent of manualPatents()) {
-      const edition = patent.archivalEdition;
-      if (!edition) continue;
-
-      for (const [blockIndex, block] of edition.blocks.entries()) {
+      for (const [blockIndex, block] of (patent.archivalEdition?.blocks ?? []).entries()) {
         for (const [groupIndex, inlines] of inlineGroupsForBlock(block).entries()) {
           for (const [inlineIndex, inline] of inlines.entries()) {
             if (inline.kind !== "text") continue;
@@ -54,7 +51,7 @@ describe("manual edition coverage audit", () => {
     }
 
     // Worked down over time; bounded so the inventory keeps shrinking across all published editions.
-    expect(violations.length).toBeLessThanOrEqual(52);
+    expect(violations.length).toBeLessThanOrEqual(51);
   });
 
   test("gives every authored figure reference a local, source-derived preview", () => {
@@ -62,10 +59,7 @@ describe("manual edition coverage audit", () => {
     const missingPreviews: string[] = [];
 
     for (const patent of manualPatents()) {
-      const edition = patent.archivalEdition;
-      if (!edition) continue;
-
-      for (const [blockIndex, block] of edition.blocks.entries()) {
+      for (const [blockIndex, block] of (patent.archivalEdition?.blocks ?? []).entries()) {
         for (const [groupIndex, inlines] of inlineGroupsForBlock(block).entries()) {
           for (const [inlineIndex, inline] of inlines.entries()) {
             if (inline.kind !== "reference" || inline.referenceType !== "figure") continue;

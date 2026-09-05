@@ -39,8 +39,7 @@ describe("James Watt Rotary Motion 1781 (GB 1306) source-identity hold", () => {
     expect(archivalEditionForPublication(wattRotaryEnginePatent)).toBeUndefined();
 
     const viewerTranscript = reviewedLedgerTextForViewer(wattRotaryEnginePatent);
-    expect(viewerTranscript).toBeDefined();
-    expect(viewerTranscript).toContain("--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---");
+    expect(viewerTranscript).toBeUndefined();
   });
 
   test("retains all 4 staged claim nodes and extracts text dynamically", () => {

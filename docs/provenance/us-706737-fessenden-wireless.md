@@ -36,16 +36,15 @@ The receipt identifies the pinned seven-page grant only. Editorial discussion of
 
 ## Reader-delivery boundary
 
-The canonical record binds the candidate edition and its complete seven-page
-reviewed ledger. The candidate truthfully declares
-`completeFacsimileReviewed: false`, so the source-reader projection delivers
-the page-marked ledger and pinned facsimile instead of presenting the candidate
-as a strictly accepted archival edition. This strict-audit state must never
-withhold, shorten, or otherwise prevent access to the patent instrument.
+The canonical record binds the accepted archival edition, its complete
+seven-page reviewed ledger, and the pinned facsimile. The reader keeps all
+three source forms available: the continuous edition is the source face, while
+the page-marked ledger and PDF remain independently inspectable. No audit state
+may withhold, shorten, or otherwise prevent access to the patent instrument.
 
 ## Cloud-source reconciliation status
 
-The initial candidate ledger and edition were not source-complete. A cloud-authoritative comparison against the public facsimile identified omitted specification matter: the definitions of `sending-conductor`, `receiving-conductor`, and `radiating portion`; the roughly two-million-period prior-art comparison; the armature wire-length, hysteresis, sine-wave, nickel-steel, steam-turbine, and transformer-secondary conditions; the Fig. 2 microphonic contact and relay; the Fig. 5 enlargement and multiple-periodicity discussion; the uniform-capacity sine-wave example; the resonance relation and ninety-thousand-period resistance example; the one-million-period spark comparison; and the closing uniform-conductor capacity observations. Those passages have been restored to the local research ledger and continuous edition as manually authored source prose. They remain subject to independent GPT-5.6 Luna visual comparison against the pinned page images before publication.
+The initial candidate ledger and edition were not source-complete. A cloud-authoritative comparison against the public facsimile identified omitted specification matter: the definitions of `sending-conductor`, `receiving-conductor`, and `radiating portion`; the roughly two-million-period prior-art comparison; the armature wire-length, hysteresis, sine-wave, nickel-steel, steam-turbine, and transformer-secondary conditions; the Fig. 2 microphonic contact and relay; the Fig. 5 enlargement and multiple-periodicity discussion; the uniform-capacity sine-wave example; the resonance relation and ninety-thousand-period resistance example; the one-million-period spark comparison; and the closing uniform-conductor capacity observations. Those passages were restored to the reviewed ledger and continuous edition as manually authored source prose, then independently checked against the pinned page images in the full review recorded below.
 
 All prior crop generations, including the v1-v3 candidates and exploratory v4-v9 files, are preserved. The current held edition binds the following versioned source-pixel candidates from drawing-sheet PDF page 1 rendered at 300 dpi (source render 2320 x 3408 pixels); each rectangle is `x,y,width,height` in that render:
 
@@ -138,7 +137,14 @@ reviewed ledger while the archival edition is independently reviewed.
 
 ## Publication Approval & Verification
 
-The local PDF digest and seven-page structure are verified, and the candidate edition contains all 21 claim blocks and authored figure references. The publication state remains **candidate / independent acceptance withheld** pending Luna visual review of every page, exact claims parity against the facsimile, clean figure crops for Figures 1–5, and root acceptance. The receipt makes no claim for amplitude modulation, carbon-microphone speech transmission, liquid thermal reception, or later Fessenden broadcast history; the current source describes a fine-wire microphonic contact and relay in Figure 2.
+The local PDF digest and seven-page structure are verified. The active edition
+contains all 21 printed claim blocks and thirteen authored figure-reference
+occurrences. Earlier handoff notes in this receipt describe the candidate
+state at their respective dates; the current acceptance is documented below.
+The receipt makes no claim for amplitude modulation, carbon-microphone speech
+transmission, liquid thermal reception, or later Fessenden broadcast history;
+the current source describes a fine-wire microphonic contact and relay in
+Figure 2.
 
 ### Independent source-sheet review (2026-09-04)
 
@@ -154,8 +160,26 @@ with SHA-256
 All thirteen authored figure-reference occurrences now lead with that full
 sheet, whose source rectangle is the entire page (`0,0,2320,3408`). The prior
 versioned figure crops and their detail crops remain preserved as supplemental
-research assets; they were neither replaced nor deleted. This repairs the
-active citation path's incomplete-crop risk, but does not change the separate
-candidate hold: the continuous edition still requires independent review of
-the complete specification and claims before it can be accepted as an
-archival edition.
+research assets; they were neither replaced nor deleted. This repaired the
+active citation path's incomplete-crop risk before the independent full-source
+review below.
+
+### Independent complete-facsimile review (2026-09-04)
+
+The pinned PDF was rendered directly and reviewed page by page: page 1 is the
+single drawing sheet containing the printed Figures 1–5 and numeral callouts;
+page 2 carries the masthead and opening specification; pages 3–5 continue the
+specification and begin Claims 1–5; page 6 continues Claims 5–12; and page 7
+contains Claims 13–21, Fessenden's signature, and the two witnesses. The
+review confirmed the page count (7), source digest
+`2098ec6d967d3ab7999da0fb96357328fa68bb8e7639c1863ac600547aff8887`, the
+twenty-one ordered printed claims, and the source face's 56 literal masthead,
+specification, claim, and attestation sections against the reviewed ledger.
+
+The active figure references use the complete rendered source sheet for every
+one of their thirteen occurrences. Its pinned 2320 × 3408-pixel asset and the
+supplemental historical crop assets were checked against the drawing sheet;
+no source asset was replaced or discarded. With this review, the edition now
+truthfully declares `completeFacsimileReviewed: true` and is accepted by the
+publication contract. The page-marked ledger and pinned PDF remain available
+to every visitor alongside the continuous edition.

@@ -16,6 +16,11 @@ import {
   stepEdisonRadiativeBalance,
 } from "./edisonWasm";
 import { ENERGY_CHANNEL_OMISSION_REASONS } from "./energyChannels";
+import {
+  readWattCondenserControls,
+  stepWattCondenser,
+  WATT_SCENARIO_NOTE,
+} from "./wattCondenserKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 export interface EnergyComponents {
@@ -36,6 +41,10 @@ export interface PortHamiltonianReport {
   energy: EnergyComponents;
   inputPowerWatts: number;
   dissipatedPowerWatts: number;
+  /** Explicit useful output when the model supplies it; null means unavailable. */
+  outputPowerWatts: number | null;
+  dissipationLabel?: string;
+  /** Difference of available ports only; incomplete ports cannot determine dH/dt. */
   netPowerRateWatts: number;
   balance:
     | { kind: "unavailable"; reason: string }
@@ -59,6 +68,8 @@ export function computePortHamiltonianEnergy(
   let thermal = 0;
   let powerIn = 0;
   let dissipated = 0;
+  let outputPower: number | null = null;
+  let dissipationLabel: string | undefined;
   let availability: PortHamiltonianReport["availability"] = "illustrative-snapshot";
   let runtimeSource: PortHamiltonianReport["runtimeSource"] = "host-estimate";
   let reason =
@@ -212,21 +223,16 @@ export function computePortHamiltonianEnergy(
     }
 
     case "gb-913-watt-separate-condenser": {
-      const boilerPsi = params.boilerPressurePsi ?? params.boilerPressureKpa ?? 14.7;
-      const spm = params.strokesPerMinute ?? params.strokeRateSpm ?? 18;
-      const boreIn = params.cylinderBoreInches ?? 24;
-      const strokeFt = params.pistonStrokeFeet ?? 6;
-      const hasCondenser = (params.hasSeparateCondenser ?? 1) > 0.5;
-
-      const areaSqIn = Math.PI * (boreIn / 2) ** 2;
-      const forceLbs = (boilerPsi - (hasCondenser ? 2.5 : 8.5)) * areaSqIn;
-      const workFtLbsPerStroke = forceLbs * strokeFt;
-      const powerHp = (workFtLbsPerStroke * spm) / 33000;
-
-      powerIn = powerHp * 745.7; // Steam thermal enthalpy flow (Watts)
-      kinetic = 0.5 * 3500.0 * ((spm * 2 * Math.PI) / 60) ** 2; // Flywheel kinetic energy
-      thermal = hasCondenser ? 12000.0 : 45000.0; // Stored thermal mass in cylinder iron
-      dissipated = powerIn * (hasCondenser ? 0.72 : 0.94); // Rejection to condenser / ambient
+      const controls = readWattCondenserControls(params);
+      const watt = stepWattCondenser(controls);
+      powerIn = watt.heatInputRateKw * 1000;
+      outputPower = watt.netShaftPowerKw * 1000;
+      dissipated = watt.airPumpPowerKw * 1000;
+      dissipationLabel = "Air pump";
+      availability = "kernel-partial";
+      runtimeSource = "ts-fallback";
+      storedEnergyAvailable = false;
+      reason = `${WATT_SCENARIO_NOTE} Furnace input, net shaft output, and air-pump load come from the shared kernel. Stored energy and complete heat rejection are not supplied.`;
       break;
     }
 
@@ -900,7 +906,7 @@ export function computePortHamiltonianEnergy(
   }
 
   const totalH = kinetic + potential + em + thermal;
-  const netPower = powerIn - dissipated;
+  const netPower = powerIn - dissipated - (outputPower ?? 0);
   if (
     ![kinetic, potential, em, thermal, powerIn, dissipated, totalH, netPower].every(Number.isFinite)
   )
@@ -917,6 +923,7 @@ export function computePortHamiltonianEnergy(
     dissipated,
     netPower,
     simTimeSec,
+    ...(outputPower === null ? [] : [outputPower]),
   ]);
 
   return {
@@ -936,6 +943,8 @@ export function computePortHamiltonianEnergy(
     },
     inputPowerWatts: Number(powerIn.toFixed(1)),
     dissipatedPowerWatts: Number(dissipated.toFixed(1)),
+    outputPowerWatts: outputPower === null ? null : Number(outputPower.toFixed(1)),
+    ...(dissipationLabel ? { dissipationLabel } : {}),
     netPowerRateWatts: Number(netPower.toFixed(1)),
     stateDigest,
     digestKind: "host",
@@ -960,6 +969,7 @@ function unavailableEnergy(reason: string): PortHamiltonianReport {
     },
     inputPowerWatts: 0,
     dissipatedPowerWatts: 0,
+    outputPowerWatts: null,
     netPowerRateWatts: 0,
     balance: { kind: "unavailable", reason },
     stateDigest: "unavailable",

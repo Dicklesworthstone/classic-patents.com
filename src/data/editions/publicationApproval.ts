@@ -31,7 +31,6 @@ export type { ArchivalPublicationDecision, ArchivalPublicationStatus };
 
 export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
   // --- Historical reason: no edition object was bound at entry time ---
-  "us-706737-fessenden-wireless",
   "us-2708656-fermi-reactor",
   "us-313224-mergenthaler-linotype",
   "us-2543181-land-polaroid",

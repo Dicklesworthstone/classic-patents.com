@@ -3,11 +3,13 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fessendenWirelessPatent } from "@/data/patents/fessenden-wireless";
+import { validateReviewedTranscriptionPageAnchors } from "@/data/patents/sourceTextValidation";
 import {
   fessendenWirelessArchivalEdition,
   fessendenWirelessParallelReadings,
   manualFessendenClaimText,
 } from "./fessendenWirelessEdition";
+import { evaluateArchivalPublicationState } from "./publicationApproval";
 import { evaluateReviewedLedgerTextEvidence } from "./reviewedLedgerPublicationEvidence";
 
 const expectedFigureCrops = [
@@ -198,6 +200,16 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     expect(content).toContain("REGINALD A. FESSENDEN,");
     expect(content).toContain("W. B. FEARING,");
     expect(content).toContain("S. C. GRAY.");
+    const originalTextAsset = fessendenWirelessPatent.originalTextAsset;
+    expect(originalTextAsset).toBeDefined();
+    if (!originalTextAsset) throw new Error("Expected originalTextAsset to be defined");
+    expect(
+      validateReviewedTranscriptionPageAnchors(
+        content,
+        originalTextAsset.pageCount,
+        originalTextAsset.pageAnchors,
+      ),
+    ).toEqual({ valid: true });
   });
 
   test("exposes the 21 claims actually printed by the pinned facsimile", () => {
@@ -227,9 +239,16 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     }
   });
 
-  test("publishes the candidate edition with its review maturity disclosed", () => {
-    expect(Boolean(fessendenWirelessArchivalEdition.completeFacsimileReviewed)).toBe(false);
+  test("marks the complete directly reviewed edition as archival-ready", () => {
+    expect(fessendenWirelessArchivalEdition.completeFacsimileReviewed).toBe(true);
     expect(fessendenWirelessPatent.archivalEdition).toBe(fessendenWirelessArchivalEdition);
+
+    const decision = evaluateArchivalPublicationState(fessendenWirelessPatent);
+    expect(decision).toMatchObject({
+      isPublished: true,
+      reasonCode: "ACCEPTED",
+      state: { kind: "accepted" },
+    });
   });
 
   test("pins the cloud-reconciled resonance equation and semantic figure corrections", () => {
@@ -511,13 +530,10 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     expect(energyChannelsFor("us-706737-fessenden-wireless", {})).toEqual([]);
   });
 
-  test("enforces facsimile review pending audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(fessendenWirelessPatent, {
-      hasCompanionReadings: true,
-    });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
+  test("evaluates to accepted in publication state registry", () => {
+    const decision = evaluateArchivalPublicationState(fessendenWirelessPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.state.kind).toBe("accepted");
+    expect(decision.reasonCode).toBe("ACCEPTED");
   });
 });

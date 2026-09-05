@@ -1,7 +1,54 @@
 import { describe, expect, test } from "bun:test";
-import { stepWattCondenser, WATT_DEFAULT_CONTROLS } from "./wattCondenserKernel";
+import {
+  readWattCondenserControls,
+  stepWattCondenser,
+  WATT_DEFAULT_CONTROLS,
+} from "./wattCondenserKernel";
 
 describe("James Watt Separate Condenser Physics Kernel (GB 913 / 1769)", () => {
+  test("shared controls preserve defaults, supported endpoints, and disabled apparatus", () => {
+    expect(readWattCondenserControls({})).toEqual(WATT_DEFAULT_CONTROLS);
+    const controls = readWattCondenserControls({
+      boilerPressurePsi: 30,
+      condenserTempC: 0,
+      cylinderBoreInches: 100,
+      pistonStrokeFeet: 1,
+      strokesPerMinute: 35,
+      hasSteamJacket: 0,
+      hasSeparateCondenser: 0,
+    });
+    expect(controls).toEqual({
+      boilerPressurePsi: 10,
+      condenserTempC: 10,
+      cylinderBoreInches: 72,
+      pistonStrokeFeet: 4,
+      strokesPerMinute: 24,
+      hasSteamJacket: false,
+      hasSeparateCondenser: false,
+    });
+    expect(stepWattCondenser({ boilerPressurePsi: 30 })).toEqual(
+      stepWattCondenser({ boilerPressurePsi: 10 }),
+    );
+  });
+
+  test("net shaft output subtracts air-pump demand at nondefault geometry in both modes", () => {
+    for (const hasSeparateCondenser of [true, false]) {
+      const out = stepWattCondenser({
+        boilerPressurePsi: 6,
+        condenserTempC: 50,
+        cylinderBoreInches: 60,
+        pistonStrokeFeet: 8,
+        strokesPerMinute: 20,
+        hasSeparateCondenser,
+      });
+      expect(out.netShaftPowerKw).toBeCloseTo(out.indicatedPowerKw - out.airPumpPowerKw, 10);
+      expect(out.thermalEfficiencyPct).toBeCloseTo(
+        (100 * out.netShaftPowerKw) / out.heatInputRateKw,
+        10,
+      );
+    }
+  });
+
   test("computes baseline Boulton & Watt pumping engine outputs accurately", () => {
     const out = stepWattCondenser(WATT_DEFAULT_CONTROLS);
 

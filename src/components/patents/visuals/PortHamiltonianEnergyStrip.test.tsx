@@ -3,6 +3,20 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { PortHamiltonianEnergyStrip } from "./PortHamiltonianEnergyStrip";
 
 describe("Energy strip evidence labels", () => {
+  test("Watt displays separate air-pump and shaft power with unknown stored energy", () => {
+    const html = renderToStaticMarkup(
+      <PortHamiltonianEnergyStrip patentId="gb-913-watt-separate-condenser" params={{}} />,
+    );
+    expect(html).toContain("Air pump:");
+    expect(html).toContain("Output:");
+    expect(html).toContain("Stored:");
+    expect(html).toContain("Unknown");
+    expect(html).toContain("Balance unmeasured");
+    expect(html).toContain("Illustrative teaching scenario");
+    expect(html).not.toContain("Steady power balanced");
+    expect(html).not.toContain("Kinetic:");
+    expect(html).not.toContain("0.0 J");
+  });
   test("Wright displays changing kinetic energy with an unmeasured balance", () => {
     const slow = renderToStaticMarkup(
       <PortHamiltonianEnergyStrip patentId="us-821393-wright-flyer" params={{ airspeed: 28 }} />,

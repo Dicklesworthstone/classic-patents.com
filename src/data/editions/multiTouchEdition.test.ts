@@ -3,12 +3,16 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import { multiTouchArchivalEdition } from "@/data/editions/multiTouchEdition";
+import {
+  manualMultiTouchClaimText,
+  multiTouchArchivalEdition,
+} from "@/data/editions/multiTouchEdition";
 import { multiTouchPatent } from "@/data/patents/multitouch";
 import {
   completeArchivalEditionForViewer,
   evaluateArchivalPublicationState,
 } from "./publicationApproval";
+import { evaluateReviewedLedgerTextEvidence } from "./reviewedLedgerPublicationEvidence";
 import { reviewedLedgerTextForViewer } from "./reviewedLedgerPublicationEvidence.server";
 
 const PINNED_SHA256 = "9b29747e60aad27302671e1be32fda99680c474d4e3a5ce0ffc93201460bfe1c";
@@ -50,10 +54,17 @@ describe("US 7,479,949 Apple Multi-Touch Heuristics Archival Edition Contract", 
     for (let i = 1; i <= 20; i++) {
       const claim = claims.find((c) => c.number === i);
       expect(claim).toBeDefined();
+      if (claim?.kind !== "claim") throw new Error(`Missing claim ${i}`);
+      expect(manualMultiTouchClaimText(i)).toBe(
+        claim.inlines.map((inline) => inline.text).join(""),
+      );
+      expect(
+        multiTouchPatent.claims.find((candidate) => candidate.number === i)?.originalText,
+      ).toBe(manualMultiTouchClaimText(i));
     }
   });
 
-  test("all figure preview assets exist on disk with exact pixel dimensions", () => {
+  test("keeps the active held packet source-bounded and preserves figure evidence on disk", () => {
     const figurePreviews = multiTouchArchivalEdition.blocks.flatMap((block) => {
       if (block.kind === "paragraph") {
         return block.inlines.flatMap((inline) =>
@@ -65,20 +76,49 @@ describe("US 7,479,949 Apple Multi-Touch Heuristics Archival Edition Contract", 
       return [];
     });
 
-    expect(figurePreviews.length).toBeGreaterThanOrEqual(3);
+    expect(figurePreviews).toEqual([]);
 
-    for (const preview of figurePreviews) {
-      const relPath = preview.src.replace(/^\//, "");
-      const fullPath = path.join(process.cwd(), "public", relPath);
+    for (const number of [1, 2, 3]) {
+      const fullPath = path.join(
+        process.cwd(),
+        "public",
+        "patents",
+        "figures",
+        "us-7479949-multitouch",
+        `fig-${number}-source-crop-v1.png`,
+      );
       expect(fs.existsSync(fullPath)).toBe(true);
-
       const buf = fs.readFileSync(fullPath);
-      const width = buf.readUInt32BE(16);
-      const height = buf.readUInt32BE(20);
-
-      expect(preview.width).toBe(width);
-      expect(preview.height).toBe(height);
+      expect(buf.readUInt32BE(16)).toBe(2048);
+      expect(buf.readUInt32BE(20)).toBe(2310);
     }
+  });
+
+  test("binds only directly checked front-page metadata and ledger-backed claims", () => {
+    const masthead = multiTouchArchivalEdition.blocks.find((block) => block.kind === "masthead");
+    expect(masthead?.kind).toBe("masthead");
+    if (masthead?.kind !== "masthead") return;
+    expect(masthead.lines).toEqual([
+      "United States Patent",
+      "Jobs et al.",
+      "Patent No.: US 7,479,949 B2",
+      "Date of Patent: *Jan. 20, 2009",
+      "TOUCH SCREEN DEVICE, METHOD, AND GRAPHICAL USER INTERFACE FOR DETERMINING COMMANDS BY APPLYING HEURISTICS",
+      "Assignee: Apple Inc., Cupertino, CA (US)",
+      "Appl. No.: 12/101,832",
+      "Filed: Apr. 11, 2008",
+    ]);
+    const paragraphIndexes = multiTouchArchivalEdition.blocks.flatMap((block, index) =>
+      block.kind === "paragraph" ? [index] : [],
+    );
+    expect(paragraphIndexes).toEqual([1]);
+    expect(multiTouchArchivalEdition.blocks[1]).toMatchObject({
+      kind: "paragraph",
+      inlines: [{ text: "This patent is subject to a terminal disclaimer." }],
+    });
+    const ledger = reviewedLedgerTextForViewer(multiTouchPatent);
+    const evidence = evaluateReviewedLedgerTextEvidence(multiTouchPatent, ledger ?? "");
+    expect(evidence).toMatchObject({ valid: true, coverageFraction: 1, missingClaimNumbers: [] });
   });
 
   test("reviewed transcript ledger exists and contains page markers", () => {
@@ -96,23 +136,12 @@ describe("US 7,479,949 Apple Multi-Touch Heuristics Archival Edition Contract", 
     expect(matches?.length).toBe(364);
   });
 
-  test("figure manifest binds all 6 occurrences to accepted source-pixel crops", () => {
+  test("does not treat preserved research figures as active source citations", () => {
     const decision = evaluateArchivalPublicationState(multiTouchPatent);
     expect(decision.figureManifest).toMatchObject({
-      requiredFigureCount: 6,
-      acceptedFigureCount: 6,
-      attestation: {
-        acceptanceBasis: "direct-facsimile-crop-review",
-        acceptedOccurrenceCount: 6,
-        matchesEdition: true,
-        matchesLocators: true,
-      },
+      requiredFigureCount: 0,
+      acceptedFigureCount: 0,
     });
-    expect(decision.figureManifest.figures.every((f) => f.status === "accepted")).toBe(true);
-    expect(decision.figureManifest.figures.map((f) => f.sourcePdfPage)).toEqual([5, 6, 7, 5, 6, 7]);
-    for (const figure of decision.figureManifest.figures) {
-      expect(figure.sourceRaster).toEqual({ width: 2560, height: 3300 });
-      expect(figure.sourceRectPixels).toEqual({ x: 256, y: 495, width: 2048, height: 2310 });
-    }
+    expect(decision.figureManifest.figures).toEqual([]);
   });
 });

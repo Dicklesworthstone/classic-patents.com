@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-import * as fs from "node:fs";
 import * as path from "node:path";
 import { allPatents } from "../src/data/patents";
 import {
@@ -26,39 +25,18 @@ describe("deployment-target canonical project identity", () => {
   });
 
   test("rejects configuration linked to a mismatched project", () => {
-    const tempDir = path.join(process.cwd(), "artifacts", "test-tmp", `proj-${Date.now()}`);
-    fs.mkdirSync(tempDir, { recursive: true });
-    const wrongFile = path.join(tempDir, "project.json");
-    fs.writeFileSync(
-      wrongFile,
-      JSON.stringify({
-        projectId: "prj_wrong123",
-        projectName: "classic-patents.com",
-        orgId: "team_wrong456",
-      }),
-      "utf8",
+    const wrongFile = path.join(import.meta.dir, "fixtures/deployment-target/wrong-project.json");
+    expect(() => assertCanonicalProjectIdentity(wrongFile)).toThrow(
+      /Deployment target mismatch.*classic-patents/,
     );
-
-    try {
-      expect(() => assertCanonicalProjectIdentity(wrongFile)).toThrow(
-        /Deployment target mismatch.*classic-patents/,
-      );
-    } finally {
-      fs.rmSync(tempDir, { recursive: true, force: true });
-    }
   });
 
   test("rejects corrupt JSON project file", () => {
-    const tempDir = path.join(process.cwd(), "artifacts", "test-tmp", `corrupt-${Date.now()}`);
-    fs.mkdirSync(tempDir, { recursive: true });
-    const corruptFile = path.join(tempDir, "project.json");
-    fs.writeFileSync(corruptFile, "{ not valid json", "utf8");
-
-    try {
-      expect(() => assertCanonicalProjectIdentity(corruptFile)).toThrow(/invalid JSON/);
-    } finally {
-      fs.rmSync(tempDir, { recursive: true, force: true });
-    }
+    const corruptFile = path.join(
+      import.meta.dir,
+      "fixtures/deployment-target/corrupt-project.txt",
+    );
+    expect(() => assertCanonicalProjectIdentity(corruptFile)).toThrow(/invalid JSON/);
   });
 });
 
@@ -170,8 +148,8 @@ describe("patent source route manifest", () => {
     const transcriptCount = manifest.filter((m) => m.expectedDeliveryMode === "transcript").length;
     const facsimileCount = manifest.filter((m) => m.expectedDeliveryMode === "facsimile").length;
 
-    expect(editionCount).toBe(88);
-    expect(transcriptCount).toBe(15);
+    expect(editionCount).toBe(89);
+    expect(transcriptCount).toBe(14);
     expect(facsimileCount).toBe(0);
     expect(editionCount + transcriptCount + facsimileCount).toBe(103);
   });

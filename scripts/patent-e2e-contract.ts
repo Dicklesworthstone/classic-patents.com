@@ -462,6 +462,21 @@ export function assertPatentSourceIdentity(expected: string, actual: string | nu
   }
 }
 
+export function assertSourceHeldVisual(state: {
+  explanation: string;
+  modelCount: number;
+  modeCount: number;
+  unsupportedControls: number;
+}): void {
+  if (state.explanation.trim().length < 40)
+    throw new Error("Held model has no explanatory status.");
+  if (state.modelCount || state.modeCount || state.unsupportedControls) {
+    throw new Error(
+      `Source-held model unexpectedly enabled: surfaces/controls=${state.modelCount}, modes=${state.modeCount}, telemetry controls=${state.unsupportedControls}.`,
+    );
+  }
+}
+
 export function patentE2EExitCode(summary: PatentE2ESummary): number {
   return summary.failedActions === 0 ? 0 : 1;
 }

@@ -46,7 +46,9 @@ are fixed at 1440×900, 768×1024, and 320×800. `phone` also enables touch and
 reduced-motion emulation. A representative record usually takes several
 seconds per viewport; the full catalogue is intentionally a tens-of-minutes
 acceptance run because it reloads every applicable face and operates real
-controls. Use `--fail-fast` only for focused diagnosis, not final catalogue
+controls. Each patent gets a fresh Chromium process to bound graphics-resource
+lifetime; failures are retained and are not automatically retried. Browser
+failure still writes a nonzero summary. Use `--fail-fast` only for focused diagnosis, not final catalogue
 acceptance.
 
 ## What a scenario proves

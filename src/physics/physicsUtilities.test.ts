@@ -178,7 +178,7 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     );
     expect(energyChannelsFor("gb-913-watt-separate-condenser", {}).map((c) => c.name)).toEqual([
       "Furnace",
-      "Indicated",
+      "Net shaft",
       "Air pump",
     ]);
   });

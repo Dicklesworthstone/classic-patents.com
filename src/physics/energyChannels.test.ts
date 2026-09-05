@@ -1,8 +1,36 @@
 import { describe, expect, it } from "bun:test";
 import { allPatents } from "@/data/patents";
 import { ENERGY_CHANNEL_OMISSION_REASONS, energyChannelsFor } from "./energyChannels";
+import { readWattCondenserControls, stepWattCondenser } from "./wattCondenserKernel";
 
 describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
+  it("Watt channels honor condenser and jacket controls without counting air-pump work twice", () => {
+    for (const hasSeparateCondenser of [0, 1]) {
+      for (const hasSteamJacket of [0, 1]) {
+        const params = {
+          boilerPressurePsi: 6,
+          cylinderBoreInches: 60,
+          pistonStrokeFeet: 8,
+          strokesPerMinute: 20,
+          hasSeparateCondenser,
+          hasSteamJacket,
+        };
+        const state = stepWattCondenser(readWattCondenserControls(params));
+        const channels = energyChannelsFor("gb-913-watt-separate-condenser", params);
+        expect(channels.find((c) => c.name === "Furnace")?.watts).toBeCloseTo(
+          state.heatInputRateKw * 1000,
+          6,
+        );
+        expect(channels.find((c) => c.name === "Net shaft")?.watts).toBeCloseTo(
+          state.netShaftPowerKw * 1000,
+          6,
+        );
+        expect(
+          channels.filter((c) => c.tone !== "in").reduce((sum, c) => sum + c.watts, 0),
+        ).toBeCloseTo(state.indicatedPowerKw * 1000, 6);
+      }
+    }
+  });
   it("derives conservative energy flow partitions for the Wright Flyer exemplar", () => {
     const channels = energyChannelsFor("us-821393-wright-flyer", { airspeed: 28 });
     expect(channels.length).toBe(3);

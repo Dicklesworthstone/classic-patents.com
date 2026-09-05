@@ -48,7 +48,9 @@ export const PortHamiltonianEnergyStrip: React.FC<PortHamiltonianEnergyStripProp
             <Gauge className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
             <span className="text-ink-500 dark:text-ink-400 font-sans truncate">
               {/* Touch has no title tooltips: show the identity itself instead. */}
-              {ledger.availability === "kernel-partial" ? "Kinetic:" : "Stored:"}
+              {ledger.availability === "kernel-partial" && ledger.storedEnergyAvailable
+                ? "Kinetic:"
+                : "Stored:"}
             </span>
             <span className="font-bold text-ink-900 dark:text-parchment-100 shrink-0">
               {ledger.storedEnergyAvailable
@@ -75,12 +77,15 @@ export const PortHamiltonianEnergyStrip: React.FC<PortHamiltonianEnergyStripProp
           {/* Dissipated Power */}
           <div
             className="flex items-center gap-1 sm:gap-1.5 min-w-0"
-            title="Positive Semi-Definite Dissipation D(x) >= 0"
+            title={
+              ledger.dissipationLabel
+                ? ledger.reason
+                : "Positive Semi-Definite Dissipation D(x) >= 0"
+            }
           >
             <Flame className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
             <span className="text-ink-500 dark:text-ink-400 font-sans truncate">
-              <span className="[@media(pointer:coarse)]:hidden">Loss:</span>
-              <span className="hidden [@media(pointer:coarse)]:inline">D(x):</span>
+              {ledger.dissipationLabel ? `${ledger.dissipationLabel}:` : "Loss:"}
             </span>
             <span className="font-bold text-rose-800 dark:text-rose-300 shrink-0">
               {ledger.dissipatedPowerAvailable
@@ -88,6 +93,16 @@ export const PortHamiltonianEnergyStrip: React.FC<PortHamiltonianEnergyStripProp
                 : "Unknown"}
             </span>
           </div>
+
+          {ledger.outputPowerWatts !== null && (
+            <div className="flex min-w-0 items-center gap-1 sm:gap-1.5" title={ledger.reason}>
+              <Zap className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <span className="font-sans text-ink-500 dark:text-ink-400">Output:</span>
+              <span className="shrink-0 font-bold text-emerald-800 dark:text-emerald-300">
+                {formatWatts(ledger.outputPowerWatts)}
+              </span>
+            </div>
+          )}
 
           {/* A power closure is not a transient stored-energy conservation test. */}
           <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">

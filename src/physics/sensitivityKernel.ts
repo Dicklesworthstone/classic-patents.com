@@ -44,6 +44,11 @@ import { ROBOT_END_EFFECTOR_TYPICAL_JAW_OPENING_M } from "./robotEndEffectorKern
 import { readSalisburyRobotHandControls } from "./salisburyRobotHandKernel";
 import { stepStackhouseSourceTopology } from "./stackhouseSourceKernel";
 import { stepWatsonRemoteCenterComplianceTopology } from "./watsonRemoteCenterComplianceKernel";
+import {
+  readWattCondenserControls,
+  stepWattCondenser,
+  WATT_CONTROL_RANGES,
+} from "./wattCondenserKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 export interface SensitivityResult {
@@ -402,20 +407,69 @@ export function computeParameterSensitivity(
     }
 
     case "gb-913-watt-separate-condenser": {
-      if (controlKey === "boilerPressurePsi" || controlKey === "boilerPressure") {
-        const _psi = params.boilerPressurePsi ?? params.boilerPressure ?? 14.7;
-        const bore = params.cylinderBoreInches ?? 24.0;
-        const areaSqIn = Math.PI * (bore / 2) ** 2;
-        const strokeFt = params.pistonStrokeFeet ?? 6.0;
-        const spm = params.strokesPerMinute ?? 18.0;
-        // P_hp = (dF * S * spm) / 33000 -> dP/dpsi = (A * S * spm) / 33000
-        const dHp_dpsi = (areaSqIn * strokeFt * spm) / 33000.0;
+      const current: Record<string, number> = {
+        ...params,
+        boilerPressurePsi: params.boilerPressurePsi ?? params.boilerPressure ?? 3,
+      };
+      const controls = readWattCondenserControls(current);
+      const key = controlKey === "boilerPressure" ? "boilerPressurePsi" : controlKey;
+      if (key in WATT_CONTROL_RANGES) {
+        const control = key as keyof typeof WATT_CONTROL_RANGES;
+        const range = WATT_CONTROL_RANGES[control];
+        const condenserPressure = control === "condenserTempC";
+        const slope = kernelDerivative(
+          current[control] ?? controls[control],
+          range.min,
+          range.max,
+          (value) => {
+            const state = stepWattCondenser({ ...controls, [control]: value });
+            return condenserPressure ? state.condenserPressureAbsKpa : state.indicatedHorsepower;
+          },
+        );
+        if (slope === null) return null;
+        const units = {
+          boilerPressurePsi: "psi",
+          condenserTempC: "°C",
+          cylinderBoreInches: "in",
+          pistonStrokeFeet: "ft",
+          strokesPerMinute: "spm",
+        };
+        const symbols = {
+          boilerPressurePsi: "p_boiler",
+          condenserTempC: "T",
+          cylinderBoreInches: "bore",
+          pistonStrokeFeet: "stroke",
+          strokesPerMinute: "cadence",
+        };
         return {
-          metricName: "Engine Power Output",
-          derivativeSymbol: "∂P / ∂P_boiler",
-          derivativeValue: Number(dHp_dpsi.toFixed(2)),
-          derivativeUnit: "HP / PSI",
-          interpretation: "Direct linear power scaling with boiler effective gauge pressure.",
+          metricName: condenserPressure
+            ? "Condenser Saturation Pressure"
+            : "Indicated Engine Power",
+          derivativeSymbol: condenserPressure ? "∂p_condenser / ∂T" : `∂P / ∂${symbols[control]}`,
+          derivativeValue: slope,
+          derivativeUnit: `${condenserPressure ? "kPa" : "hp"} / ${units[control]}`,
+          interpretation:
+            "Local slope of the shared illustrative Watt/Newcomen model at the current dimensions, cadence, condenser and steam-jacket settings. Input clamps and nonsmooth boundaries have no displayed derivative.",
+        };
+      }
+      if (key === "hasSeparateCondenser" || key === "hasSteamJacket") {
+        const on = stepWattCondenser({ ...controls, [key]: true });
+        const off = stepWattCondenser({ ...controls, [key]: false });
+        const condenser = key === "hasSeparateCondenser";
+        return {
+          metricName: condenser
+            ? "Condenser Indicated Power Change"
+            : "Steam-Jacket Furnace Input Change",
+          derivativeSymbol: condenser ? "ΔP_indicated (on − off)" : "ΔQ_furnace (on − off)",
+          derivativeValue: Number(
+            (condenser
+              ? on.indicatedHorsepower - off.indicatedHorsepower
+              : on.heatInputRateKw - off.heatInputRateKw
+            ).toPrecision(6),
+          ),
+          derivativeUnit: condenser ? "hp" : "kW",
+          interpretation:
+            "Finite difference between enabled and disabled apparatus at the same declared operating point. This discrete comparison is not a continuous derivative or a historical measurement.",
         };
       }
       break;
@@ -2348,7 +2402,7 @@ export function computeParameterSensitivity(
         if (derivative === null) return null;
         return {
           metricName: "Volumetric Extrusion Flow Rate",
-          derivativeSymbol: "∂Q / ∂v_{\\text{head}}",
+          derivativeSymbol: "∂Q / ∂v_head",
           derivativeValue: derivative,
           derivativeUnit: "mm³/s / (mm/s)",
           interpretation:

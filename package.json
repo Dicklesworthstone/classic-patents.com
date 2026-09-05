@@ -11,6 +11,7 @@
     "lint": "biome check .",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
+    "test": "bun test --isolate --timeout 60000",
     "pipeline:download": "bun scripts/download-patents.ts",
     "pipeline:ocr": "bun scripts/ocr-patents.ts",
     "pipeline:source-text": "bun scripts/generate-pdf-text-transcripts.ts",

@@ -20,6 +20,7 @@ import { reviewedLedgerTextForViewer } from "@/data/editions/reviewedLedgerPubli
 import { fermiReactorPatent } from "@/data/patents/fermi-reactor";
 import { kwolekKevlarPatent } from "@/data/patents/kwolek-kevlar";
 import { noyceIcPatent } from "@/data/patents/noyce-ic";
+import { stackhouseManipulatorPatent } from "@/data/patents/stackhouse-manipulator-source-bounded";
 import { wrightFlyerPatent } from "@/data/patents/wright-flyer";
 import { DualProjectionViewer } from "./DualProjectionViewer";
 
@@ -132,6 +133,27 @@ describe("DualProjectionViewer component", () => {
     expect(html).toContain("<object");
     expect(html).toContain('type="application/pdf"');
     expect(html).not.toContain('data-testid="source-text-excerpt"');
+  });
+
+  test("uses Stackhouse's pinned facsimile rather than its quarantined legacy transcript", () => {
+    const patent = patentForSourceReader(stackhouseManipulatorPatent);
+    const transcript = reviewedLedgerTextForViewer(stackhouseManipulatorPatent);
+    expect(transcript).toBeUndefined();
+
+    const html = renderToStaticMarkup(
+      <DualProjectionViewer
+        patent={patent}
+        reviewedTranscript={transcript}
+        colorizedEquations={getColorizedEquationsForPatent(stackhouseManipulatorPatent.id)}
+        initialView="original-spec"
+      />,
+    );
+
+    expect(html).toContain('data-source-delivery="facsimile"');
+    expect(html).toContain('data-testid="source-facsimile-fallback"');
+    expect(html).toContain('href="/patents/pdfs/us-4068536-stackhouse-manipulator.pdf"');
+    expect(html).not.toContain("linear invertible matrix transformation");
+    expect(html).not.toContain("solid angle of 2*pi steradians");
   });
 
   test("renders the complete locally available Kwolek instrument despite its editorial hold", () => {

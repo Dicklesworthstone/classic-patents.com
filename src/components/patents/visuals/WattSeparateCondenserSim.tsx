@@ -4,9 +4,10 @@ import { RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
+  readWattCondenserControls,
   stepWattCondenser,
-  WATT_DEFAULT_CONTROLS,
-  type WattCondenserControls,
+  WATT_CONTROL_RANGES,
+  WATT_SCENARIO_NOTE,
 } from "@/physics/wattCondenserKernel";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -17,22 +18,7 @@ const UI_SNAPSHOT_INTERVAL_MS = 80;
 export function WattSeparateCondenserSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("gb-913-watt-separate-condenser");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const controls: WattCondenserControls = useMemo(
-    () => ({
-      boilerPressurePsi: params.boilerPressurePsi ?? WATT_DEFAULT_CONTROLS.boilerPressurePsi,
-      condenserTempC: params.condenserTempC ?? WATT_DEFAULT_CONTROLS.condenserTempC,
-      cylinderBoreInches: params.cylinderBoreInches ?? WATT_DEFAULT_CONTROLS.cylinderBoreInches,
-      pistonStrokeFeet: params.pistonStrokeFeet ?? WATT_DEFAULT_CONTROLS.pistonStrokeFeet,
-      strokesPerMinute: params.strokesPerMinute ?? WATT_DEFAULT_CONTROLS.strokesPerMinute,
-      hasSeparateCondenser:
-        (params.hasSeparateCondenser ?? 1) > 0.5
-          ? true
-          : (params.hasSeparateCondenser ?? 1) === 0
-            ? false
-            : WATT_DEFAULT_CONTROLS.hasSeparateCondenser,
-    }),
-    [params],
-  );
+  const controls = useMemo(() => readWattCondenserControls(params), [params]);
   const [animTime, setAnimTime] = useState(0);
   const animTimeRef = useRef(0);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
@@ -80,6 +66,10 @@ export function WattSeparateCondenserSim() {
   return (
     <div
       ref={rootRef}
+      data-testid="watt-condenser-two"
+      data-watt-condenser={controls.hasSeparateCondenser ? "separate" : "in-cylinder"}
+      data-watt-heat-input-watts={outputs.heatInputRateKw * 1000}
+      data-watt-shaft-output-watts={outputs.netShaftPowerKw * 1000}
       className="w-full bg-stone-900/95 border border-stone-800 rounded-2xl p-6 text-stone-200 shadow-2xl backdrop-blur-xl"
     >
       {/* Header & Mode Badge */}
@@ -96,6 +86,7 @@ export function WattSeparateCondenserSim() {
           <h3 className="text-xl font-bold text-stone-100 mt-1">
             James Watt Steam Engine with Separate Condenser (GB 913)
           </h3>
+          <p className="mt-2 max-w-2xl text-xs text-stone-400">{WATT_SCENARIO_NOTE}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
@@ -590,9 +581,7 @@ export function WattSeparateCondenserSim() {
           <input
             id={boilerId}
             type="range"
-            min="0.5"
-            max="10.0"
-            step="0.5"
+            {...WATT_CONTROL_RANGES.boilerPressurePsi}
             value={controls.boilerPressurePsi ?? 3}
             onChange={(e) => updateParam("boilerPressurePsi", Number.parseFloat(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
@@ -607,9 +596,7 @@ export function WattSeparateCondenserSim() {
           <input
             id={condTempId}
             type="range"
-            min="10"
-            max="60"
-            step="1"
+            {...WATT_CONTROL_RANGES.condenserTempC}
             value={controls.condenserTempC ?? 35}
             onChange={(e) => updateParam("condenserTempC", Number.parseFloat(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
@@ -626,9 +613,7 @@ export function WattSeparateCondenserSim() {
           <input
             id={boreId}
             type="range"
-            min="20"
-            max="72"
-            step="2"
+            {...WATT_CONTROL_RANGES.cylinderBoreInches}
             value={controls.cylinderBoreInches ?? 38}
             onChange={(e) => updateParam("cylinderBoreInches", Number.parseFloat(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
@@ -645,9 +630,7 @@ export function WattSeparateCondenserSim() {
           <input
             id={spmId}
             type="range"
-            min="6"
-            max="24"
-            step="1"
+            {...WATT_CONTROL_RANGES.strokesPerMinute}
             value={controls.strokesPerMinute ?? 14}
             onChange={(e) => updateParam("strokesPerMinute", Number.parseFloat(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-purple-500"

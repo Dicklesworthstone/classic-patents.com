@@ -13,7 +13,6 @@ const EXPECTED_ROOT_QA_WITHHOLDS = [
   "us-2708656-fermi-reactor",
   "us-313224-mergenthaler-linotype",
   "us-6120588-eink",
-  "us-706737-fessenden-wireless",
 ] as const;
 
 const GENERIC_PARALLEL_READING_PATTERNS: readonly RegExp[] = [

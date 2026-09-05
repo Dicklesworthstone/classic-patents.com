@@ -1,5 +1,8 @@
 import type { Patent } from "@/types/patent";
-import { multiTouchArchivalEdition } from "../editions/multiTouchEdition";
+import {
+  manualMultiTouchClaimText,
+  multiTouchArchivalEdition,
+} from "../editions/multiTouchEdition";
 
 export const multiTouchPatent: Patent = {
   id: "us-7479949-multitouch",
@@ -103,26 +106,15 @@ export const multiTouchPatent: Patent = {
       ],
     },
   ],
-  originalText: `UNITED STATES PATENT
+  originalText: `United States Patent
 Jobs et al.
 Patent No.: US 7,479,949 B2
-Date of Patent: Jan. 20, 2009
+Date of Patent: *Jan. 20, 2009
 
 TOUCH SCREEN DEVICE, METHOD, AND GRAPHICAL USER INTERFACE FOR DETERMINING COMMANDS BY APPLYING HEURISTICS
-Inventors: Steven P. Jobs, Scott Forstall, Greg Christie, J. Stephen Lemay, Scott Herz, Marcel Van Os, Bas Ording, Imran Chaudhri
-Assignee: Apple Inc., Cupertino, CA
-
-ABSTRACT
-A computer-implemented method for use in conjunction with a portable multifunction device with a touch screen display includes detecting one or more finger contacts with the touch screen display, applying one or more heuristics to determine commands, and adjusting display views such as scaling an object via a multi-finger pinch gesture.
-
-BACKGROUND OF THE INVENTION
-As portable electronic devices become more compact and capable, user interfaces become increasingly constrained. Traditional physical buttons and single-touch resistive screens are rigid and lack intuitive manipulation for multi-dimensional content such as web pages, photos, and digital maps.
-
-SUMMARY OF THE INVENTION
-The present invention provides intuitive multi-touch gesture interaction. A mutual capacitive touch sensor matrix detects multiple concurrent touch contact points. A gesture heuristic engine evaluates touch vectors and executes affine transformations, allowing users to pinch fingers together to zoom out, spread fingers apart to zoom in, and rotate multiple contact points to reorient digital documents.
-
-CLAIMS
-1. A computer-implemented method for controlling a touch screen display, comprising: displaying a computer-generated graphical object; detecting two or more concurrent physical contact points on the touch screen display; determining a first distance between the concurrent contact points at a first point in time; determining a second distance between the contact points at a subsequent point in time; and scaling the displayed graphical object by a magnification factor derived from a ratio of the second distance to the first distance.`,
+Assignee: Apple Inc., Cupertino, CA (US)
+Appl. No.: 12/101,832
+Filed: Apr. 11, 2008`,
   plainEnglishExplanation: {
     overview:
       "The iPhone multi-touch heuristics patent defined how multi-finger gestures like pinch-to-zoom, two-finger rotation, and inertia scrolling operate seamlessly in software.",
@@ -185,8 +177,7 @@ CLAIMS
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "A computing device, comprising: a touch screen display; one or more processors; memory; and one or more programs, wherein the one or more programs are stored in the memory and configured to be executed by the one or more processors, the one or more programs including: instructions for detecting one or more finger contacts with the touch screen display; instructions for applying one or more heuristics to the one or more finger contacts to determine a command for the device; and instructions for processing the command; wherein the one or more heuristics comprise: a vertical screen scrolling heuristic for determining that the one or more finger contacts correspond to a one-dimensional vertical screen scrolling command rather than a two-dimensional screen translation command based on an angle of initial movement of a finger contact with respect to the touch screen display; a two-dimensional screen translation heuristic for determining that the one or more finger contacts correspond to the two-dimensional screen translation command rather than the one-dimensional vertical screen scrolling command based on the angle of initial movement of the finger contact with respect to the touch screen display; and a next item heuristic for determining that the one or more finger contacts correspond to a command to transition from displaying a respective item in a set of items to displaying a next item in the set of items.",
+      originalText: manualMultiTouchClaimText(1),
       plainEnglish:
         "A computing device with a touch screen display applying vertical scrolling, 2D translation, and next-item heuristics based on initial finger gesture angles.",
       keyInnovations: [
@@ -199,8 +190,7 @@ CLAIMS
     {
       number: 2,
       isIndependent: false,
-      originalText:
-        "The computing device of claim 1, wherein the one or more heuristics comprise a heuristic for determining that the one or more finger contacts correspond to a command to transition from displaying the respective item in the set of items to displaying a previous item in the set of items.",
+      originalText: manualMultiTouchClaimText(2),
       plainEnglish:
         "The computing device heuristic for transitioning to a previous item in a set of items.",
       keyInnovations: ["Previous item heuristic", "Photo transition gesture"],
@@ -208,8 +198,7 @@ CLAIMS
     {
       number: 3,
       isIndependent: false,
-      originalText:
-        "The computing device of claim 1, wherein the one or more heuristics comprise a horizontal screen scrolling heuristic for determining that the one or more finger contacts correspond to a one-dimensional horizontal screen scrolling command rather than the two-dimensional screen translation command based on the angle of initial movement of the finger contact with respect to the touch screen display.",
+      originalText: manualMultiTouchClaimText(3),
       plainEnglish:
         "The horizontal screen scrolling heuristic based on initial finger contact angle.",
       keyInnovations: ["1D horizontal screen scrolling", "Angle disambiguation"],
@@ -217,8 +206,7 @@ CLAIMS
     {
       number: 4,
       isIndependent: false,
-      originalText:
-        "The computing device of claim 1, wherein, in one heuristic of the one or more heuristics, a contact comprising a finger swipe gesture that initially moves within a predetermined angle of being perfectly vertical with respect to the touch screen display corresponds to the one-dimensional vertical screen scrolling command.",
+      originalText: manualMultiTouchClaimText(4),
       plainEnglish:
         "A finger swipe gesture moving within a predetermined angle of vertical issuing vertical scrolling.",
       keyInnovations: ["Vertical swipe gesture", "Threshold angle locking"],
@@ -226,8 +214,7 @@ CLAIMS
     {
       number: 5,
       isIndependent: false,
-      originalText:
-        "The computing device of claim 1, wherein, in one heuristic of the one or more heuristics, a contact comprising a moving finger gesture that initially moves within a predefined range of angles corresponds to the two-dimensional screen translation command.",
+      originalText: manualMultiTouchClaimText(5),
       plainEnglish:
         "A moving finger gesture within a predefined range of angles issuing 2D screen translation.",
       keyInnovations: ["2D translation panning", "Free-angle gesture"],
@@ -235,8 +222,7 @@ CLAIMS
     {
       number: 6,
       isIndependent: false,
-      originalText:
-        "The computing device of claim 1, wherein, in one heuristic of the one or more heuristics, a contact comprising a finger swipe gesture that initially moves within a predetermined angle of being perfectly horizontal with respect to the touch screen display corresponds to a one-dimensional horizontal screen scrolling command rather than the two-dimensional screen translation command.",
+      originalText: manualMultiTouchClaimText(6),
       plainEnglish:
         "A finger swipe gesture within a predetermined angle of horizontal issuing horizontal scrolling.",
       keyInnovations: ["Horizontal swipe gesture", "Threshold angle locking"],
@@ -244,24 +230,21 @@ CLAIMS
     {
       number: 7,
       isIndependent: false,
-      originalText:
-        "The computing device of claim 1, wherein, in one heuristic of the one or more heuristics, a contact comprising a finger tap gesture corresponds to a command to select a user interface object at the location of the finger tap gesture.",
+      originalText: manualMultiTouchClaimText(7),
       plainEnglish: "A finger tap gesture selecting a user interface object at the tap location.",
       keyInnovations: ["Finger tap gesture", "Object selection"],
     },
     {
       number: 8,
       isIndependent: false,
-      originalText:
-        "The computing device of claim 1, wherein, in one heuristic of the one or more heuristics, a contact comprising a two-finger pinch gesture corresponds to a command to zoom in or zoom out on a displayed image or document.",
+      originalText: manualMultiTouchClaimText(8),
       plainEnglish: "A two-finger pinch gesture scaling/zooming a displayed image or document.",
       keyInnovations: ["Two-finger pinch gesture", "Pinch-to-zoom scaling"],
     },
     {
       number: 9,
       isIndependent: false,
-      originalText:
-        "The computing device of claim 1, including: instructions for, while displaying a web browser application, detecting one or more first finger contacts with the touch screen display; instructions for applying a first set of heuristics for the web browser application to the one or more first finger contacts to determine a first command for the device; and instructions for processing the first command; wherein the first set of heuristics comprises: the vertical screen scrolling heuristic; and the two-dimensional screen translation heuristic; and instructions for, while displaying a photo album application, detecting one or more second finger contacts with the touch screen display; instructions for applying a second set of heuristics for the photo album application to the one or more second finger contacts to determine a second command for the device; and instructions for processing the second command; wherein the second set of heuristics comprises: the next item heuristic, wherein the respective item in the set of items is a respective image in a set of images; and a heuristic for determining that the one or more second finger contacts correspond to a command to transition from displaying the respective image in the set of images to displaying a previous image in the set of images.",
+      originalText: manualMultiTouchClaimText(9),
       plainEnglish:
         "Contextual heuristics switching between vertical/2D translation in browser and next/previous in photo album.",
       keyInnovations: [
@@ -272,16 +255,14 @@ CLAIMS
     {
       number: 10,
       isIndependent: false,
-      originalText:
-        "The computing device of claim 9, wherein the first set of heuristics comprises a heuristic for determining that the one or more first finger contacts correspond to a one-dimensional horizontal screen scrolling command rather than the two-dimensional screen translation command based on the angle of initial movement of the finger contact with respect to the touch screen display.",
+      originalText: manualMultiTouchClaimText(10),
       plainEnglish: "Horizontal scrolling heuristic in browser based on initial touch angle.",
       keyInnovations: ["Browser horizontal scrolling", "Angle threshold"],
     },
     {
       number: 11,
       isIndependent: true,
-      originalText:
-        "A computer-implemented method, comprising: at a computing device with a touch screen display, detecting one or more finger contacts with the touch screen display; applying one or more heuristics to the one or more finger contacts to determine a command for the device; and processing the command; wherein the one or more heuristics comprise: a vertical screen scrolling heuristic for determining that the one or more finger contacts correspond to a one-dimensional vertical screen scrolling command rather than a two-dimensional screen translation command based on an angle of initial movement of a finger contact with respect to the touch screen display; a two-dimensional screen translation heuristic for determining that the one or more finger contacts correspond to the two-dimensional screen translation command rather than the one-dimensional vertical screen scrolling command based on the angle of initial movement of the finger contact with respect to the touch screen display; and a next item heuristic for determining that the one or more finger contacts correspond to a command to transition from displaying a respective item in a set of items to displaying a next item in the set of items.",
+      originalText: manualMultiTouchClaimText(11),
       plainEnglish:
         "A computer-implemented method detecting contacts and applying vertical, 2D translation, and next item heuristics.",
       keyInnovations: [
@@ -293,8 +274,7 @@ CLAIMS
     {
       number: 12,
       isIndependent: false,
-      originalText:
-        "The computer-implemented method of claim 11, including: while displaying a web browser application, detecting one or more first finger contacts with the touch screen display; applying a first set of heuristics for the web browser application to the one or more first finger contacts to determine a first command for the device; and processing the first command; wherein the first set of heuristics comprises: the vertical screen scrolling heuristic; and the two-dimensional screen translation heuristic; and while displaying a photo album application, detecting one or more second finger contacts with the touch screen display; applying a second set of heuristics for the photo album application to the one or more second finger contacts to determine a second command for the device; and processing the second command; wherein the second set of heuristics comprises: the next item heuristic, wherein the respective item in the set of items is a respective image in a set of images; and a heuristic for determining that the one or more second finger contacts correspond to a command to transition from displaying the respective image in the set of images to displaying a previous image in the set of images.",
+      originalText: manualMultiTouchClaimText(12),
       plainEnglish:
         "The method applying application-specific heuristic sets in browser and photo album.",
       keyInnovations: ["Multi-application heuristic method", "Application state switching"],
@@ -302,8 +282,7 @@ CLAIMS
     {
       number: 13,
       isIndependent: false,
-      originalText:
-        "The computer-implemented method of claim 12, wherein the first set of heuristics comprises a heuristic for determining that the one or more first finger contacts correspond to a one-dimensional horizontal screen scrolling command rather than the two-dimensional screen translation command based on the angle of initial movement of the finger contact with respect to the touch screen display.",
+      originalText: manualMultiTouchClaimText(13),
       plainEnglish:
         "The method applying horizontal scrolling heuristic based on initial touch angle.",
       keyInnovations: ["Horizontal scrolling method", "Angle discrimination"],
@@ -311,8 +290,7 @@ CLAIMS
     {
       number: 14,
       isIndependent: false,
-      originalText:
-        "The computer-implemented method of claim 11, wherein, in one heuristic of the one or more heuristics, a contact comprising a finger swipe gesture that initially moves within a predetermined angle of being perfectly vertical with respect to the touch screen display corresponds to the one-dimensional vertical screen scrolling command.",
+      originalText: manualMultiTouchClaimText(14),
       plainEnglish:
         "The method recognizing vertical swipe gesture within predetermined angle of vertical.",
       keyInnovations: ["Vertical swipe method"],
@@ -320,8 +298,7 @@ CLAIMS
     {
       number: 15,
       isIndependent: false,
-      originalText:
-        "The computer-implemented method of claim 11, wherein, in one heuristic of the one or more heuristics, a contact comprising a moving finger gesture that initially moves within a predefined range of angles corresponds to the two-dimensional screen translation command.",
+      originalText: manualMultiTouchClaimText(15),
       plainEnglish:
         "The method recognizing 2D translation gesture within predefined range of angles.",
       keyInnovations: ["2D panning method"],
@@ -329,8 +306,7 @@ CLAIMS
     {
       number: 16,
       isIndependent: false,
-      originalText:
-        "The computer-implemented method of claim 11, wherein, in one heuristic of the one or more heuristics, a contact comprising a finger swipe gesture that initially moves within a predetermined angle of being perfectly horizontal with respect to the touch screen display corresponds to a one-dimensional horizontal screen scrolling command rather than the two-dimensional screen translation command.",
+      originalText: manualMultiTouchClaimText(16),
       plainEnglish:
         "The method recognizing horizontal swipe gesture within predetermined angle of horizontal.",
       keyInnovations: ["Horizontal swipe method"],
@@ -338,8 +314,7 @@ CLAIMS
     {
       number: 17,
       isIndependent: true,
-      originalText:
-        "A computer readable storage medium having stored therein instructions, which when executed by a device with a touch screen display, cause the device to: detect one or more finger contacts with the touch screen display; apply one or more heuristics to the one or more finger contacts to determine a command for the device; and process the command; wherein the one or more heuristics comprise: a vertical screen scrolling heuristic for determining that the one or more finger contacts correspond to a one-dimensional vertical screen scrolling command rather than a two-dimensional screen translation command based on an angle of initial movement of a finger contact with respect to the touch screen display; a two-dimensional screen translation heuristic for determining that the one or more finger contacts correspond to the two-dimensional screen translation command rather than the one-dimensional vertical screen scrolling command based on the angle of initial movement of the finger contact with respect to the touch screen display; and a next item heuristic for determining that the one or more finger contacts correspond to a command to transition from displaying a respective item in a set of items to displaying a next item in the set of items.",
+      originalText: manualMultiTouchClaimText(17),
       plainEnglish:
         "A computer-readable storage medium storing instructions for applying vertical, 2D translation, and next item heuristics.",
       keyInnovations: ["Computer-readable medium", "Heuristic execution software"],
@@ -347,8 +322,7 @@ CLAIMS
     {
       number: 18,
       isIndependent: false,
-      originalText:
-        "The computer readable storage medium of claim 17, wherein the computer readable medium has stored therein instructions, which when executed by a device with a touch screen display, cause the device to: while displaying a web browser application, detect one or more first finger contacts with the touch screen display; apply a first set of heuristics for the web browser application to the one or more first finger contacts to determine a first command for the device; and process the first command; wherein the first set of heuristics comprises: the vertical screen scrolling heuristic; and the two-dimensional screen translation heuristic; and while displaying a photo album application, detect one or more second finger contacts with the touch screen display; apply a second set of heuristics for the photo album application to the one or more second finger contacts to determine a second command for the device; and process the second command; wherein the second set of heuristics comprises: the next item heuristic, wherein the respective item in the set of items is a respective image in a set of images; and a heuristic for determining that the one or more second finger contacts correspond to a command to transition from displaying the respective image in the set of images to displaying a previous image in the set of images.",
+      originalText: manualMultiTouchClaimText(18),
       plainEnglish:
         "The storage medium instructions switching heuristic sets between web browser and photo album.",
       keyInnovations: ["Application-specific heuristic software"],
@@ -356,8 +330,7 @@ CLAIMS
     {
       number: 19,
       isIndependent: false,
-      originalText:
-        "The computer readable storage medium of claim 17, wherein, in one heuristic of the one or more heuristics, a contact comprising a finger swipe gesture that initially moves within a predetermined angle of being perfectly vertical with respect to the touch screen display corresponds to the one-dimensional vertical screen scrolling command.",
+      originalText: manualMultiTouchClaimText(19),
       plainEnglish:
         "The storage medium instructions recognizing vertical swipe within predetermined angle.",
       keyInnovations: ["Vertical swipe software"],
@@ -365,8 +338,7 @@ CLAIMS
     {
       number: 20,
       isIndependent: false,
-      originalText:
-        "The computer readable storage medium of claim 17, wherein, in one heuristic of the one or more heuristics, a contact comprising a moving finger gesture that initially moves within a predefined range of angles corresponds to the two-dimensional screen translation command.",
+      originalText: manualMultiTouchClaimText(20),
       plainEnglish:
         "The storage medium instructions recognizing 2D translation gesture within predefined range of angles.",
       keyInnovations: ["2D translation software"],

@@ -101,3 +101,58 @@ to transcribe every diagram label, numeral, signature, or figure region. The
 complete original sheets remain directly readable in the pinned facsimile,
 while literal drawing transcription and crop acceptance remain strict-audit
 work.
+
+The direct visual review also established this figure-to-sheet locator. It is
+an aid to inspecting the source; it is not a reconstructed drawing or a
+claim that each figure has received a separate editorial crop.
+
+| Source sheet (PDF page) | Printed figure labels present |
+| --- | --- |
+| 1 | 1 |
+| 2 | 2 |
+| 3 | 3 |
+| 4 | 4–10 |
+| 5 | 11 |
+| 6 | 12, 12a, 13, 14 |
+| 7 | 15 |
+| 8 | 16–18 |
+| 9 | 19–25 |
+| 10 | 26–28 |
+| 11 | 29–31 |
+| 12 | 32, 33, 50 |
+| 13 | 34, 35 |
+| 14 | 36–44 |
+| 15 | 45, 49 |
+| 16 | 46, 47 |
+| 17 | 48, 51 |
+
+### Bounded opening-specification review (2026-09-05)
+
+Pages 18 through 21 were rendered from the pinned PDF at 180 DPI and read
+directly. They confirm the masthead's assignee, the **August 30, 1884**
+application date, the two-part matrix/casting architecture, the earlier July
+1884 application's distinct intaglio/cameo comparison, and the opening
+matrix-bar description. The staged edition's former February 12 filing date,
+serial number, wedge-spaceband account, and later-commercial-machine wording
+were removed from its opening blocks and replaced with that source text.
+
+This is a bounded repair, not a completeness attestation. Pages 1–17 are
+still drawing sheets requiring literal-drawing and crop acceptance, and the
+remaining continuous specification still requires fresh block-level review.
+The visitor continues to receive the page-complete reviewed ledger and pinned
+facsimile while that work proceeds.
+
+### Bounded closing-specification and claims review (2026-09-05)
+
+Pages 22 through 35 were rendered from the pinned PDF at 180 DPI and read
+directly. The review covers the stop-pin and adjusting-pin frames,
+justification, indicator and alarm, clamping and casting mechanisms, the
+operating sequence, modifications, all seventy numbered claims, execution,
+and witnesses. It corrected the ledger's cross-page continuation at the end
+of printed specification page 13: `spac-` ends the PDF's page 30 image and
+`ing-surfaces` begins its page 31 image. It also removed non-source
+"Specification page" labels and restored the printed witnesses **M. Rabenau**
+and **Julien P. Friez**. These repairs do not accept the record: the seventeen
+drawing sheets still lack literal figure/numeral transcription and accepted
+source crops, and the staged edition still needs an independent continuous
+block-by-block comparison before it can bind to the catalogue record.
