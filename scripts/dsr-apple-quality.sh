@@ -10,6 +10,23 @@ sbh check --need 20G "$build_root"
 command -v xcodegen >/dev/null
 command -v bun >/dev/null
 command -v jq >/dev/null
+
+audio_safety=/Users/jemanuel/.local/bin/ensure-simulator-audio-safe
+prepare_simulator_audio() {
+  local attempt
+  # A cold boot can add SpringBoard/audio processes just after bootstatus
+  # returns. Preserve exact coverage and allow only bounded convergence.
+  for attempt in 1 2 3 4 5 6 7 8 9 10; do
+    if "$audio_safety" prepare; then
+      return 0
+    fi
+    if [[ "$attempt" -lt 10 ]]; then
+      sleep 2
+    fi
+  done
+  return 1
+}
+
 xcodegen generate --spec project.yml
 git diff --exit-code -- FrankenPatents.xcodeproj Sources/Info.plist
 (cd "$repo_root" && bun ios/check-native-parity.ts)
@@ -17,7 +34,7 @@ git ls-files -z -- '*.swift' | xargs -0 xcrun swiftc -parse
 plutil -lint Sources/Info.plist
 plutil -lint Sources/PrivacyInfo.xcprivacy
 plutil -lint FrankenPatents.entitlements
-/Users/jemanuel/.local/bin/ensure-simulator-audio-safe prepare
+prepare_simulator_audio
 TMPDIR="$build_root/tmp" xcodebuild -project FrankenPatents.xcodeproj -scheme FrankenPatents \
   -destination 'generic/platform=iOS Simulator' \
   -derivedDataPath "$build_root/derived-data" \
@@ -27,7 +44,7 @@ TMPDIR="$build_root/tmp" xcodebuild -project FrankenPatents.xcodeproj -scheme Fr
   -derivedDataPath "$build_root/derived-data" \
   CODE_SIGNING_ALLOWED=NO test -only-testing:FrankenPatentsTests
 
-/Users/jemanuel/.local/bin/ensure-simulator-audio-safe prepare
+prepare_simulator_audio
 simulator_json="$(xcrun simctl list devices available --json)"
 iphone_id="${FRANKENPATENTS_IPHONE_SIMULATOR_ID:-$(
   jq -r '
@@ -45,9 +62,9 @@ if [[ -z "$iphone_id" ]]; then
   exit 1
 fi
 
-/Users/jemanuel/.local/bin/ensure-simulator-audio-safe prepare
+prepare_simulator_audio
 xcrun simctl bootstatus "$iphone_id" -b
-/Users/jemanuel/.local/bin/ensure-simulator-audio-safe prepare
+prepare_simulator_audio
 TMPDIR="$build_root/tmp" xcodebuild -project FrankenPatents.xcodeproj -scheme FrankenPatents \
   -destination "platform=iOS Simulator,id=$iphone_id" \
   -derivedDataPath "$build_root/derived-data" \
