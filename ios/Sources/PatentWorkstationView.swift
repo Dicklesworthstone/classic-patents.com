@@ -203,13 +203,13 @@ struct PatentWorkstationView: View {
     private func sectionRail(compact: Bool) -> some View {
         if compact {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 7), count: 4), spacing: 7) {
-                ForEach(WorkstationSection.allCases) { sectionButton($0, compact: true) }
+                ForEach(PatentWorkstationSection.allCases) { sectionButton($0, compact: true) }
             }
             .accessibilityElement(children: .contain)
             .accessibilityLabel("Patent workstation sections")
         } else {
             HStack(spacing: 8) {
-                ForEach(WorkstationSection.allCases) { sectionButton($0, compact: false) }
+                ForEach(PatentWorkstationSection.allCases) { sectionButton($0, compact: false) }
             }
             .accessibilityElement(children: .contain)
             .accessibilityLabel("Patent workstation sections")
