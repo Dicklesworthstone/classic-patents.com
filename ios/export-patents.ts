@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { fileURLToPath } from "node:url";
 import { ALL_COLORIZED_EQUATIONS } from "../src/data/colorizedEquations";
 import { ARCHIVAL_PARALLEL_READINGS } from "../src/data/editions/parallelReadings";
 import { evaluateArchivalPublicationState } from "../src/data/editions/publicationApproval";
@@ -9,6 +10,11 @@ import {
   parseSourceVisualizationRoutes,
   type SourceVisualizationRoute,
 } from "./native-visualization-routes";
+
+// Publication evidence readers resolve pinned files from process.cwd(). Keep
+// the export deterministic when invoked from either the repository root or the
+// `ios/` directory documented in this folder's README.
+process.chdir(fileURLToPath(new URL("..", import.meta.url)));
 
 async function sourceVisualizationRoutes(): Promise<Map<string, SourceVisualizationRoute>> {
   const source = await Bun.file(
@@ -31,6 +37,7 @@ const allPatentAssetPaths = [
   }),
 ]
   .map((path) => `patents/${path}`)
+  .filter((path) => !path.toLowerCase().endsWith(".wip.txt"))
   .sort();
 const allBundledAssetPaths = allPatentAssetPaths.filter(
   (path) => ![...sourceBoundedPatentIds].some((patentId) => path.includes(patentId)),

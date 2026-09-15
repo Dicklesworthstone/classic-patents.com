@@ -63,6 +63,7 @@ targets:
           BUNDLE_ARCHIVE="${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/patents/"
           mkdir -p "${BUNDLE_ARCHIVE}"
           rsync -a --exclude='*.pdf' \
+            --exclude='*.wip.txt' \
             --exclude='figures/us-3671542-kwolek-kevlar/' \
             --exclude='source-text/us-3671542-kwolek-kevlar.txt' \
             --exclude='transcripts/us-3671542-kwolek-kevlar.txt' \

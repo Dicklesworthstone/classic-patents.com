@@ -1,9 +1,14 @@
 import { createHash } from "node:crypto";
+import { fileURLToPath } from "node:url";
 import { ALL_COLORIZED_EQUATIONS } from "../src/data/colorizedEquations";
 import { ARCHIVAL_PARALLEL_READINGS } from "../src/data/editions/parallelReadings";
 import { evaluateArchivalPublicationState } from "../src/data/editions/publicationApproval";
 import { allPatents } from "../src/data/patents/index";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
+
+// Several source-publication checks deliberately read from the repository's
+// public/ tree. Resolve them identically regardless of the caller's directory.
+process.chdir(fileURLToPath(new URL("..", import.meta.url)));
 
 type ExportedPatent = Record<string, any> & { id: string };
 
@@ -765,6 +770,7 @@ const publicRoot = new URL("../public/patents", import.meta.url).pathname;
 const assetGlob = new Bun.Glob("**/*.{png,txt}");
 const sourceAssets = [...assetGlob.scanSync({ cwd: publicRoot, onlyFiles: true })]
   .map((path) => `patents/${path}`)
+  .filter((path) => !path.toLowerCase().endsWith(".wip.txt"))
   .sort();
 const expectedBundledSourceAssets = sourceAssets.filter(
   (path) => !sourceBoundedRecords.some((record) => path.includes(record.id)),
@@ -777,6 +783,10 @@ same(manifest, expectedBundledSourceAssets, "bundled non-PDF asset manifest drif
 assert(
   !manifest.some((path) => path.toLowerCase().endsWith(".pdf")),
   "a PDF was bundled into the app",
+);
+assert(
+  !manifest.some((path) => path.toLowerCase().endsWith(".wip.txt")),
+  "an editorial WIP scratch file was bundled into the app",
 );
 const bundledSourceTextPaths = new Set<string>();
 for (const record of records) {

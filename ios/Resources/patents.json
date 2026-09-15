@@ -103644,8 +103644,8 @@
         {
           "id": "peelAngleDeg",
           "label": "Applied Clamp Direction",
-          "min": 15,
-          "max": 165,
+          "min": 20,
+          "max": 160,
           "step": 5,
           "defaultValue": 90,
           "unit": "deg",
