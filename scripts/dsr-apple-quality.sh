@@ -46,6 +46,8 @@ if [[ -z "$iphone_id" ]]; then
 fi
 
 /Users/jemanuel/.local/bin/ensure-simulator-audio-safe prepare
+xcrun simctl bootstatus "$iphone_id" -b
+/Users/jemanuel/.local/bin/ensure-simulator-audio-safe prepare
 TMPDIR="$build_root/tmp" xcodebuild -project FrankenPatents.xcodeproj -scheme FrankenPatents \
   -destination "platform=iOS Simulator,id=$iphone_id" \
   -derivedDataPath "$build_root/derived-data" \
