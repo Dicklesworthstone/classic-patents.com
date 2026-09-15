@@ -72,6 +72,7 @@
 		798358235AA036E1FF959F0C /* us-586193-marconi-radio.usdz in Resources */ = {isa = PBXBuildFile; fileRef = C35386A4A543ECAD34CEBEFB /* us-586193-marconi-radio.usdz */; };
 		7C7FEC952E6D8CCC69243259 /* PatentPDFStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F9C6CE3C3AA63115989A99F /* PatentPDFStoreTests.swift */; };
 		8117AB03CF8835A20E831DF0 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 652BFF6DEAD8C5CD76D13B0B /* PrivacyInfo.xcprivacy */; };
+		8787985725CDD0AE18F942E1 /* PatentReferenceToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCDFA7E58BA92690E6084F1A /* PatentReferenceToolsView.swift */; };
 		89693EEBF504AE7B6857D313 /* us-942699-baekeland-bakelite.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 7A2C1369ACEDF710DE95CD7C /* us-942699-baekeland-bakelite.usdz */; };
 		896C2AC1458E5F9AE801B774 /* us-4341502-makino-scara.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 3A2C8AA28225E07F1B71EA23 /* us-4341502-makino-scara.usdz */; };
 		898011BABB64E5847F9DCFB3 /* us-3313014-lemelson-automatic-production.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 3997BBDA0C7C7D618036B0BF /* us-3313014-lemelson-automatic-production.usdz */; };
@@ -254,6 +255,7 @@
 		BCA49173D79E0BBDD9C7E989 /* us-2543181-land-polaroid.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-2543181-land-polaroid.usdz"; sourceTree = "<group>"; };
 		BCCE257DEE2FB77FA5A7566B /* NativeDocumentKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeDocumentKit.swift; sourceTree = "<group>"; };
 		BCD6B789D55D18D2CBB99F90 /* us-79265-sholes-typewriter.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-79265-sholes-typewriter.usdz"; sourceTree = "<group>"; };
+		BCDFA7E58BA92690E6084F1A /* PatentReferenceToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentReferenceToolsView.swift; sourceTree = "<group>"; };
 		BE462E30D6932C7473CC5257 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		BFAED83AD16E353D492E3125 /* PatentCollectionStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentCollectionStoreTests.swift; sourceTree = "<group>"; };
 		C35386A4A543ECAD34CEBEFB /* us-586193-marconi-radio.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-586193-marconi-radio.usdz"; sourceTree = "<group>"; };
@@ -323,6 +325,7 @@
 				C561AFAB0032EB2B23CEA356 /* PatentModels.swift */,
 				F8D62ECED5F2FD890A1EE260 /* PatentMuseumView.swift */,
 				31E3789492674087EEAAE801 /* PatentPDFReader.swift */,
+				BCDFA7E58BA92690E6084F1A /* PatentReferenceToolsView.swift */,
 				6205E15F45075AFE8EDAA1CA /* PatentRootView.swift */,
 				F8B4A0EFE3EBA3FB0122D944 /* PatentVisualizationView.swift */,
 				6DD8F5C45785092239E500FA /* PatentWorkstationView.swift */,
@@ -747,6 +750,7 @@
 				A89EDBDCAFD41CFAE21F1997 /* PatentModels.swift in Sources */,
 				2B07D0F41C8210664DE170CD /* PatentMuseumView.swift in Sources */,
 				446A4955BE520AC068B4DFE5 /* PatentPDFReader.swift in Sources */,
+				8787985725CDD0AE18F942E1 /* PatentReferenceToolsView.swift in Sources */,
 				2F5D52B312C7D98639C45424 /* PatentRootView.swift in Sources */,
 				F568D981D52B76AB39BBEB8D /* PatentVisualizationView.swift in Sources */,
 				FF3DE302FFF1BF4879571A25 /* PatentWorkstationView.swift in Sources */,

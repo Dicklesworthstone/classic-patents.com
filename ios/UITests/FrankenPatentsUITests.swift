@@ -85,6 +85,27 @@ final class FrankenPatentsUITests: XCTestCase {
         )
     }
 
+    func testOriginalGlossaryAndCitationToolsAreDiscoverableFromTheWorkstation() {
+        let app = launch(
+            patentID: "us-821393-wright-flyer",
+            section: "Plain English"
+        )
+        let tools = app.buttons["glossary-citation-tools"]
+        XCTAssertTrue(tools.waitForExistence(timeout: 12), "The original glossary and citation tool is missing")
+        tools.tap()
+
+        XCTAssertTrue(app.navigationBars["Glossary & Cite"].waitForExistence(timeout: 12))
+        XCTAssertTrue(app.descendants(matching: .any)["historical-patent-glossary"].exists)
+        app.buttons["Citations"].tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)["citation-text"].waitForExistence(timeout: 12),
+            "The patent-specific citation did not render"
+        )
+        XCTAssertTrue(app.buttons["copy-citation"].exists)
+        XCTAssertTrue(app.buttons["export-citation"].exists)
+        attachScreenshot(of: app, named: "Original glossary and academic citation tools")
+    }
+
     func testLatestCatalogueDeltaRobotExhibitRenders() {
         let app = launch(
             patentID: "us-4976582-clavel-delta-robot",

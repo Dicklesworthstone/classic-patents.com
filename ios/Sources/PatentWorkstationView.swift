@@ -31,6 +31,7 @@ struct PatentWorkstationView: View {
     @EnvironmentObject private var collection: PatentCollectionStore
     @State private var section: PatentWorkstationSection
     @State private var showsPDF: Bool
+    @State private var showsReferenceTools = false
 #if DEBUG
     private let debugInitialSection: PatentWorkstationSection?
 
@@ -88,6 +89,14 @@ struct PatentWorkstationView: View {
                         // two-letter fragments. Use the explicit 4×2 rail
                         // anywhere below a genuinely wide desktop workspace.
                         sectionRail(compact: proxy.size.width < 980)
+                        Button { showsReferenceTools = true } label: {
+                            Label("Archaic Glossary & Cite", systemImage: "books.vertical.fill")
+                                .font(.system(size: Lab.size(11), weight: .bold, design: .rounded))
+                                .frame(maxWidth: .infinity, minHeight: 42)
+                        }
+                        .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.blueprint))
+                        .accessibilityIdentifier("glossary-citation-tools")
+                        .accessibilityHint("Search historical legal terms or create an academic citation for this patent")
                         if displayedSection == .story {
                             hero(compact: proxy.size.width < 600)
                         }
@@ -113,6 +122,7 @@ struct PatentWorkstationView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(hidesNavigationBar ? .hidden : .visible, for: .navigationBar)
         .sheet(isPresented: $showsPDF) { PatentPDFReader(patent: patent) }
+        .sheet(isPresented: $showsReferenceTools) { PatentReferenceToolsView(patent: patent) }
         .onAppear { collection.recordVisit(patent.id) }
     }
 

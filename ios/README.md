@@ -12,6 +12,12 @@ USDZ asset and rendered by SceneKit, so spatial exhibits remain bundled and
 Metal-backed. Only the original patent PDF may be downloaded, after the reader
 explicitly chooses it.
 
+The native workstation also restores the original museum's Archaic Glossary
+and academic citation engine. Every patent face exposes the same eight reviewed
+historical-term translations plus patent-specific BibTeX, RIS, Chicago, and APA
+citations. Citations can be copied, shared, or exported as a local file without
+contacting the website.
+
 ## Regenerate and build
 
 ```bash

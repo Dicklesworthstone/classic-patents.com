@@ -55,4 +55,38 @@ final class PatentLibraryTests: XCTestCase {
         )
         XCTAssertNil(PatentDeepLink(url: try XCTUnwrap(URL(string: "https://example.com/patents/us-821393-wright-flyer"))))
     }
+
+    func testOriginalGlossaryAndCitationFormatsAreAvailableOffline() throws {
+        XCTAssertEqual(PatentReferenceLibrary.glossary.count, 8)
+        XCTAssertEqual(
+            PatentReferenceLibrary.filteredGlossary(query: "airfoil").map(\.term),
+            ["Aeroplane"]
+        )
+        XCTAssertEqual(
+            PatentReferenceLibrary.filteredGlossary(query: "letters").map(\.term),
+            ["Letters Patent"]
+        )
+
+        let wright = try XCTUnwrap(PatentLibrary().records.first { $0.id == "us-821393-wright-flyer" })
+        let bibtex = PatentCitationEngine.text(for: wright, format: .bibtex)
+        XCTAssertTrue(bibtex.contains("@patent{us-821393-wright-flyer,"))
+        XCTAssertTrue(bibtex.contains("author    = {Orville Wright and Wilbur Wright}"))
+        XCTAssertTrue(bibtex.contains("year      = {1906}"))
+
+        let ris = PatentCitationEngine.text(for: wright, format: .ris)
+        XCTAssertTrue(ris.contains("AU  - Wright, Orville"))
+        XCTAssertTrue(ris.contains("DA  - 1906/05/22"))
+        XCTAssertTrue(ris.hasSuffix("ER  - "))
+
+        XCTAssertEqual(
+            PatentCitationEngine.text(for: wright, format: .chicago),
+            "Wright, Orville, and Wilbur Wright. 1906. \"Flying-Machine.\" U.S. Patent US 821,393, filed March 23, 1903, and issued May 22, 1906. https://classic-patents.com/patents/us-821393-wright-flyer."
+        )
+        XCTAssertEqual(
+            PatentCitationEngine.text(for: wright, format: .apa),
+            "Orville Wright, Wilbur Wright. (1906). Flying-Machine (U.S. Patent No. US 821,393). U.S. Patent and Trademark Office. https://classic-patents.com/patents/us-821393-wright-flyer"
+        )
+        XCTAssertEqual(PatentCitationFormat.bibtex.filename(for: wright.id), "us-821393-wright-flyer.bib")
+        XCTAssertEqual(PatentCitationFormat.ris.filename(for: wright.id), "us-821393-wright-flyer.ris")
+    }
 }
