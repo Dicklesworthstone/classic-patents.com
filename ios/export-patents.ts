@@ -24,6 +24,44 @@ async function sourceVisualizationRoutes(): Promise<Map<string, SourceVisualizat
 }
 
 const visualizationRoutes = await sourceVisualizationRoutes();
+
+type NativeFidelity =
+  | "authored-geometry-native-motion-study"
+  | "source-bound-native-relationship"
+  | "source-bound-facsimile-only";
+
+type NativeFidelityContract = {
+  nativeFidelity: NativeFidelity;
+  nativeFidelityDisclosure: string;
+};
+
+function nativeFidelityContract(
+  patentId: string,
+  route: SourceVisualizationRoute,
+): NativeFidelityContract {
+  if (route.kind === "source-bound-pdf-only") {
+    return {
+      nativeFidelity: "source-bound-facsimile-only",
+      nativeFidelityDisclosure:
+        "This native record is limited to the pinned public facsimile and checked catalogue claims. It does not present a model, interactive controls, or quantitative simulation.",
+    };
+  }
+
+  if (patentId === "us-971501-haber-ammonia") {
+    return {
+      nativeFidelity: "source-bound-native-relationship",
+      nativeFidelityDisclosure:
+        "The patent contains no apparatus drawing. This native exhibit visualizes only the source-stated pressure, temperature, catalyst, and equilibrium relationship; it does not reconstruct a later industrial process loop.",
+    };
+  }
+
+  return {
+    nativeFidelity: "authored-geometry-native-motion-study",
+    nativeFidelityDisclosure:
+      "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner.",
+  };
+}
+
 const sourceBoundedPatentIds = new Set<string>();
 for (const [patentId, route] of visualizationRoutes) {
   if (route.kind === "source-bound-pdf-only") sourceBoundedPatentIds.add(patentId);
@@ -133,7 +171,10 @@ const exported = await Promise.all(
       stats: patent.stats,
       equations: equationsFor(patent.id),
       physics: isSourceBounded && physics ? { ...physics, controls: [] } : physics,
-      sourceVisualization,
+      sourceVisualization: {
+        ...sourceVisualization,
+        ...nativeFidelityContract(patent.id, sourceVisualization),
+      },
       bundledAssets: isSourceBounded
         ? []
         : [

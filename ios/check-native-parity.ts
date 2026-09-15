@@ -13,8 +13,14 @@ process.chdir(fileURLToPath(new URL("..", import.meta.url)));
 type ExportedPatent = Record<string, any> & { id: string };
 
 const KWOLEK_ID = "us-3671542-kwolek-kevlar";
+const HABER_ID = "us-971501-haber-ammonia";
 const isSourceBoundPDFOnly = (record: ExportedPatent): boolean =>
   record.sourceVisualization?.kind === "source-bound-pdf-only";
+const expectedNativeFidelity = (record: ExportedPatent): string => {
+  if (isSourceBoundPDFOnly(record)) return "source-bound-facsimile-only";
+  if (record.id === HABER_ID) return "source-bound-native-relationship";
+  return "authored-geometry-native-motion-study";
+};
 const isReconstructionQuarantined = (record: ExportedPatent): boolean =>
   record.archivalPublication?.reasonCode === "FABRICATION_OR_RECONSTRUCTION_QUARANTINE" ||
   record.archivalPublication?.reasonCode === "AUDIT_RECONSTRUCTION_QUARANTINE";
@@ -622,6 +628,15 @@ for (const patent of allPatents) {
       `${patent.id}: missing vector visualization route`,
     );
   }
+  assert(
+    record.sourceVisualization?.nativeFidelity === expectedNativeFidelity(record),
+    `${patent.id}: native fidelity classification is missing or incorrect`,
+  );
+  assert(
+    typeof record.sourceVisualization?.nativeFidelityDisclosure === "string" &&
+      record.sourceVisualization.nativeFidelityDisclosure.trim().length > 0,
+    `${patent.id}: native fidelity disclosure is missing`,
+  );
 
   const claimNumbers = record.claims.map((claim: { number: number }) => claim.number);
   const claimNumberSet = new Set(claimNumbers);
@@ -1096,6 +1111,27 @@ assert(
     nativeVisualizationSource.includes("NativePDFOnlySourceBoundaryExhibit") &&
     nativeVisualizationSource.includes("if isSourceBoundPDFOnly"),
   "native workstation does not route models, no-drawing, and PDF-only boundaries explicitly",
+);
+assert(
+  nativeVisualizationSource.includes('accessibilityIdentifier("patent-native-fidelity")') &&
+    nativeVisualizationSource.includes("nativeFidelityDisclosure"),
+  "native workstation does not expose the generated fidelity disclosure",
+);
+const nativeSceneSource = await Bun.file(
+  new URL("./Sources/NativePatentSceneView.swift", import.meta.url),
+).text();
+assert(
+  nativeSceneSource.includes("nativeFidelity.label.uppercased()") &&
+    !nativeSceneSource.includes("BUNDLED AUTHORED MODEL · METAL 3D"),
+  "native 3D scene still overstates generic SceneKit motion as the authored model",
+);
+const nativeUITestSource = await Bun.file(
+  new URL("./UITests/FrankenPatentsUITests.swift", import.meta.url),
+).text();
+assert(
+  nativeUITestSource.includes('app.descendants(matching: .any)["patent-native-fidelity"]') &&
+    nativeUITestSource.includes("Authored geometry · native motion study"),
+  "iPhone UI coverage does not require the authored-geometry fidelity disclosure",
 );
 const nativeDocumentSource = await Bun.file(
   new URL("./Sources/NativeDocumentKit.swift", import.meta.url),

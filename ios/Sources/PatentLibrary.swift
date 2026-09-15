@@ -111,6 +111,14 @@ private enum PatentCatalogValidator {
                         && !(patent.sourceVisualization.vectorComponent?.isEmpty ?? true),
                     "\(patent.id) is missing its authored model source pair"
                 )
+                let expectedFidelity: PatentSourceVisualization.NativeFidelity =
+                    patent.id == "us-971501-haber-ammonia"
+                        ? .sourceBoundNativeRelationship
+                        : .authoredGeometryNativeMotionStudy
+                try require(
+                    patent.sourceVisualization.nativeFidelity == expectedFidelity,
+                    "\(patent.id) has an invalid native model fidelity classification"
+                )
             case .sourceBoundPDFOnly:
                 try require(patent.originalTextAsset == nil, "\(patent.id) exposes an unreviewed transcript")
                 try require(patent.archivalEdition == nil, "\(patent.id) exposes an unreviewed archival edition")
@@ -136,7 +144,15 @@ private enum PatentCatalogValidator {
                     patent.pinnedPdfSha256.map(PatentPDFStore.isCanonicalSHA256) == true,
                     "\(patent.id) needs a standalone pinned-PDF digest"
                 )
+                try require(
+                    patent.sourceVisualization.nativeFidelity == .sourceBoundFacsimileOnly,
+                    "\(patent.id) has an invalid source-bound fidelity classification"
+                )
             }
+            try require(
+                !patent.sourceVisualization.nativeFidelityDisclosure.isEmpty,
+                "\(patent.id) has no native fidelity disclosure"
+            )
 
             let claimNumbers = patent.claims.map(\.number)
             let claimSet = Set(claimNumbers)

@@ -62,10 +62,29 @@ struct PatentSourceVisualization: Codable, Hashable {
         case sourceBoundPDFOnly = "source-bound-pdf-only"
     }
 
+    enum NativeFidelity: String, Codable, Hashable {
+        case authoredGeometryNativeMotionStudy = "authored-geometry-native-motion-study"
+        case sourceBoundNativeRelationship = "source-bound-native-relationship"
+        case sourceBoundFacsimileOnly = "source-bound-facsimile-only"
+
+        var label: String {
+            switch self {
+            case .authoredGeometryNativeMotionStudy:
+                "Authored geometry · native motion study"
+            case .sourceBoundNativeRelationship:
+                "Source-bound native relationship"
+            case .sourceBoundFacsimileOnly:
+                "Source-bound facsimile only"
+            }
+        }
+    }
+
     let kind: Kind
     let spatialComponent: String?
     let vectorComponent: String?
     let sourceBoundary: String?
+    let nativeFidelity: NativeFidelity
+    let nativeFidelityDisclosure: String
 
     var isSourceBoundPDFOnly: Bool { kind == .sourceBoundPDFOnly }
 }

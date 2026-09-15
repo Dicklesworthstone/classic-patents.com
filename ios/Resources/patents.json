@@ -783,7 +783,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "WattSeparateCondenser3D",
-      "vectorComponent": "WattSeparateCondenserSim"
+      "vectorComponent": "WattSeparateCondenserSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/gb-913-watt-separate-condenser/fig-1-source-crop-v1.png",
@@ -1118,7 +1120,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "ArkwrightWaterFrame3D",
-      "vectorComponent": "ArkwrightWaterFrameSim"
+      "vectorComponent": "ArkwrightWaterFrameSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/gb-931-arkwright-water-frame/fig-1-source-crop-v1.png",
@@ -1554,7 +1558,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "WattRotaryEngine3D",
-      "vectorComponent": "WattRotaryEngineSim"
+      "vectorComponent": "WattRotaryEngineSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/gb-1306-watt-rotary-engine/fig-1-source-crop-v1.png",
@@ -2030,7 +2036,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "CortPuddlingRolling3D",
-      "vectorComponent": "CortPuddlingRollingSim"
+      "vectorComponent": "CortPuddlingRollingSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/gb-1420-cort-puddling-rolling/fig-1-source-crop-v1.png",
@@ -2433,7 +2441,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "HopkinsPotash3D",
-      "vectorComponent": "HopkinsPotashSim"
+      "vectorComponent": "HopkinsPotashSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-x1-hopkins-potash/fig-1-source-crop-v1.png",
@@ -4026,7 +4036,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "WhitneyCottonGin3D",
-      "vectorComponent": "WhitneyCottonGinSim"
+      "vectorComponent": "WhitneyCottonGinSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-x72-whitney-cotton-gin-fig-1-preview.png",
@@ -4758,7 +4770,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "McCormickReaper3D",
-      "vectorComponent": "McCormickReaperSim"
+      "vectorComponent": "McCormickReaperSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-x8277-mccormick-reaper-drawing-preview-v2.png",
@@ -6667,7 +6681,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "ColtRevolver3D",
-      "vectorComponent": "ColtRevolverSim"
+      "vectorComponent": "ColtRevolverSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-x9430-colt-revolver/division-1-pistol-source-crop-v2.png",
@@ -7504,7 +7520,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "DavenportElectricMotor3D",
-      "vectorComponent": "DavenportMotorSim"
+      "vectorComponent": "DavenportMotorSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-132-davenport-electric-motor/drawing-sheet-preview.png",
@@ -8690,7 +8708,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "EricssonPropeller3D",
-      "vectorComponent": "EricssonPropellerSim"
+      "vectorComponent": "EricssonPropellerSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-588-ericsson-propeller-fig-1-preview.png",
@@ -11168,7 +11188,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "MorseTelegraph3D",
-      "vectorComponent": "MorseTelegraphSim"
+      "vectorComponent": "MorseTelegraphSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-1647-morse-telegraph-fig-ex1.png",
@@ -11870,7 +11892,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "RillieuxEvaporator3D",
-      "vectorComponent": "RillieuxEvaporatorSim"
+      "vectorComponent": "RillieuxEvaporatorSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-3237-rillieux-evaporator/plate-1-source-crop-v1.png",
@@ -12578,7 +12602,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "GoodyearRubber3D",
-      "vectorComponent": "GoodyearRubberSim"
+      "vectorComponent": "GoodyearRubberSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/source-text/us-3633-goodyear-rubber.txt",
@@ -14599,7 +14625,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "HoweSewingMachine3D",
-      "vectorComponent": "HoweSewingMachineSim"
+      "vectorComponent": "HoweSewingMachineSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-4750-howe-sewing-machine-fig-1-preview.png",
@@ -15593,7 +15621,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "CorlissSteamEngine3D",
-      "vectorComponent": "CorlissEngineSim"
+      "vectorComponent": "CorlissEngineSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-6162-corliss-steam-engine-fig-1-preview.png",
@@ -16571,7 +16601,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "LincolnBuoy3D",
-      "vectorComponent": "LincolnBuoySim"
+      "vectorComponent": "LincolnBuoySim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-6469-lincoln-buoy-fig-1-hover.png",
@@ -17617,7 +17649,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "OtisHoistingApparatus3D",
-      "vectorComponent": "OtisHoistingApparatusSim"
+      "vectorComponent": "OtisHoistingApparatusSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-31128-otis-elevator/figure-1-oriented-cw.png",
@@ -18929,7 +18963,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "GatlingGun3D",
-      "vectorComponent": "GatlingGunSim"
+      "vectorComponent": "GatlingGunSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-36836-gatling-gun-fig-1-preview-v2.png",
@@ -20682,7 +20718,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "YaleLock3D",
-      "vectorComponent": "YaleLockSim"
+      "vectorComponent": "YaleLockSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-48475-yale-lock/fig-1-source-crop-v1.png",
@@ -21660,7 +21698,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "NobelDynamite3D",
-      "vectorComponent": "NobelDynamiteSim"
+      "vectorComponent": "NobelDynamiteSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/source-text/us-78317-nobel-dynamite.txt",
@@ -23635,7 +23675,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "SholesTypewriter3D",
-      "vectorComponent": "SholesTypewriterSim"
+      "vectorComponent": "SholesTypewriterSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-79265-sholes-typewriter-fig-1-source-crop.png",
@@ -24284,7 +24326,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "HyattCelluloid3D",
-      "vectorComponent": "HyattCelluloidSim"
+      "vectorComponent": "HyattCelluloidSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/source-text/us-105338-hyatt-celluloid.txt",
@@ -26436,7 +26480,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "GrammeDynamo3D",
-      "vectorComponent": "GrammeDynamoSim"
+      "vectorComponent": "GrammeDynamoSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-120057-gramme-dynamo/drawing-sheet-1.png",
@@ -27771,7 +27817,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "WestinghouseAirBrake3D",
-      "vectorComponent": "WestinghouseAirBrakeSim"
+      "vectorComponent": "WestinghouseAirBrakeSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-124404-westinghouse-air-brake-fig-1-preview.png",
@@ -28589,7 +28637,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "PasteurFermentation3D",
-      "vectorComponent": "PasteurFermentationSim"
+      "vectorComponent": "PasteurFermentationSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-135245-pasteur-fermentation/figure-1-v2.png",
@@ -29549,7 +29599,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "GliddenBarbedWire3D",
-      "vectorComponent": "GliddenBarbedWireSim"
+      "vectorComponent": "GliddenBarbedWireSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-157124-glidden-barbed-wire/fig-1-source-crop.png",
@@ -31059,7 +31111,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "BellTelephone3D",
-      "vectorComponent": "BellTelephoneSim"
+      "vectorComponent": "BellTelephoneSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-174465-bell-telephone/fig-1-source-crop.png",
@@ -33113,7 +33167,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "OttoEngine3D",
-      "vectorComponent": "OttoEngineSim"
+      "vectorComponent": "OttoEngineSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-194047-otto-engine/fig-1-source-crop.png",
@@ -34187,7 +34243,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "EdisonPhonograph3D",
-      "vectorComponent": "EdisonPhonographSim"
+      "vectorComponent": "EdisonPhonographSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-200521-edison-phonograph-fig-1-source-crop.png",
@@ -35542,7 +35600,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "EdisonBulb3D",
-      "vectorComponent": "EdisonBulbSim"
+      "vectorComponent": "EdisonBulbSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-223898-edison-lightbulb/fig-1-source-crop-v2.png",
@@ -36286,7 +36346,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "PeltonWheel3D",
-      "vectorComponent": "PeltonWheelSim"
+      "vectorComponent": "PeltonWheelSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-233692-pelton-water-wheel/fig-1-source-crop-v1.png",
@@ -39009,7 +39071,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "BellPhotophone3D",
-      "vectorComponent": "BellPhotophoneSim"
+      "vectorComponent": "BellPhotophoneSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-235199-bell-photophone/fig-1-source-crop-v1.png",
@@ -40103,7 +40167,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "DeLavalSeparator3D",
-      "vectorComponent": "DeLavalSeparatorSim"
+      "vectorComponent": "DeLavalSeparatorSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-247804-delaval-separator/drawing-sheet-source-v1.png",
@@ -40984,7 +41050,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "EdisonIndicator3D",
-      "vectorComponent": "EdisonIndicatorSim"
+      "vectorComponent": "EdisonIndicatorSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-307031-edison-indicator-fig-1.png",
@@ -42030,7 +42098,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "MergenthalerLinotype3D",
-      "vectorComponent": "MergenthalerLinotypeSim"
+      "vectorComponent": "MergenthalerLinotypeSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-313224-mergenthaler-linotype/fig-1-source-crop-v1.png",
@@ -43211,7 +43281,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "MaximMachineGun3D",
-      "vectorComponent": "MaximMachineGunSim"
+      "vectorComponent": "MaximMachineGunSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-319596-maxim-machine-gun/fig-1-source-crop-v1.png",
@@ -45249,7 +45321,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "ThomsonWelding3D",
-      "vectorComponent": "ThomsonWeldingSim"
+      "vectorComponent": "ThomsonWeldingSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-347140-thomson-welding/fig-1-source-crop-v1.png",
@@ -46455,7 +46529,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "DaimlerEngine3D",
-      "vectorComponent": "DaimlerEngineSim"
+      "vectorComponent": "DaimlerEngineSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-361931-daimler-engine-fig-1.png",
@@ -48433,7 +48509,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "TeslaMotor3D",
-      "vectorComponent": "TeslaMotorSim"
+      "vectorComponent": "TeslaMotorSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-381968-tesla-motor/fig-1-source-crop-v2.png",
@@ -50273,7 +50351,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "EastmanKodak3D",
-      "vectorComponent": "EastmanKodakSim"
+      "vectorComponent": "EastmanKodakSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-388850-eastman-kodak/fig-1-source-crop-v1.png",
@@ -52365,7 +52445,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "HollerithTabulating3D",
-      "vectorComponent": "HollerithTabulatingSim"
+      "vectorComponent": "HollerithTabulatingSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-395781-hollerith-tabulating/fig-1-source-crop-v1.png",
@@ -53342,7 +53424,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "HallAluminium3D",
-      "vectorComponent": "HallAluminiumSim"
+      "vectorComponent": "HallAluminiumSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-400766-hall-aluminium-fig-1-preview.png",
@@ -54615,7 +54699,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "RenoEscalator3D",
-      "vectorComponent": "RenoEscalatorSim"
+      "vectorComponent": "RenoEscalatorSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-470918-reno-escalator/fig-1-source-crop-v1.png",
@@ -56672,7 +56758,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "DieselEngine3D",
-      "vectorComponent": "DieselEngineSim"
+      "vectorComponent": "DieselEngineSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-542846-diesel-engine/fig-1-source-crop-v1.png",
@@ -59159,7 +59247,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "MarconiRadio3D",
-      "vectorComponent": "MarconiRadioSim"
+      "vectorComponent": "MarconiRadioSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-586193-marconi-radio/figs-1-to-3-source-crop-v1.png",
@@ -60174,7 +60264,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "TeslaCoil3D",
-      "vectorComponent": "TeslaCoilSim"
+      "vectorComponent": "TeslaCoilSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-593138-tesla-coil/fig-1-source-crop-v2.png",
@@ -61110,7 +61202,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "ParsonsTurbine3D",
-      "vectorComponent": "ParsonsTurbineSim"
+      "vectorComponent": "ParsonsTurbineSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-608969-parsons-turbine/fig-1-source-crop-v1.png",
@@ -62020,7 +62114,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "TeslaTeleautomaton3D",
-      "vectorComponent": "TeslaTeleautomatonSim"
+      "vectorComponent": "TeslaTeleautomatonSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-613809-tesla-teleautomaton/fig-1-source-crop-v1.png",
@@ -63571,7 +63667,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "ZeppelinAirship3D",
-      "vectorComponent": "ZeppelinAirshipSim"
+      "vectorComponent": "ZeppelinAirshipSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-621195-zeppelin-airship/fig-1-source-crop-v1.png",
@@ -64921,7 +65019,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "HewittMercuryLamp3D",
-      "vectorComponent": "HewittMercuryLampSim"
+      "vectorComponent": "HewittMercuryLampSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-682690-hewitt-mercury-lamp/fig-1-source-crop-v1.png",
@@ -66873,7 +66973,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "FessendenWireless3D",
-      "vectorComponent": "FessendenWirelessSim"
+      "vectorComponent": "FessendenWirelessSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-706737-fessenden-wireless/fig-1-source-crop-v1.png",
@@ -67914,7 +68016,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "LindeAirLiquefaction3D",
-      "vectorComponent": "LindeAirLiquefactionSim"
+      "vectorComponent": "LindeAirLiquefactionSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-727650-linde-air-liquefaction/fig-1-left-pipe-source-crop-v2.png",
@@ -68760,7 +68864,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "CarrierAirConditioner3D",
-      "vectorComponent": "CarrierAirConditionerSim"
+      "vectorComponent": "CarrierAirConditionerSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-808897-carrier-air-conditioner/fig-1-source-crop-v1.png",
@@ -70706,7 +70812,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "WrightFlyer3D",
-      "vectorComponent": "WrightFlyerSim"
+      "vectorComponent": "WrightFlyerSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-821393-wright-flyer-fig-1-preview-v2.png",
@@ -72057,7 +72165,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "DeForestAudion3D",
-      "vectorComponent": "DeForestAudionSim"
+      "vectorComponent": "DeForestAudionSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-879532-de-forest-audion/fig-1-source-crop-v1.png",
@@ -72773,7 +72883,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "BaekelandBakelite3D",
-      "vectorComponent": "BaekelandBakeliteSim"
+      "vectorComponent": "BaekelandBakeliteSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/transcripts/us-942699-baekeland-bakelite-reviewed.txt"
@@ -73533,7 +73645,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "HaberAmmonia3D",
-      "vectorComponent": "HaberAmmoniaSim"
+      "vectorComponent": "HaberAmmoniaSim",
+      "nativeFidelity": "source-bound-native-relationship",
+      "nativeFidelityDisclosure": "The patent contains no apparatus drawing. This native exhibit visualizes only the source-stated pressure, temperature, catalyst, and equilibrium relationship; it does not reconstruct a later industrial process loop."
     },
     "bundledAssets": [
       "patents/transcripts/us-971501-haber-ammonia-reviewed.txt"
@@ -74759,7 +74873,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "GoddardRocket3D",
-      "vectorComponent": "GoddardRocketSim"
+      "vectorComponent": "GoddardRocketSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-1102653-goddard-rocket-fig-1-apparatus-source-crop-v9.png",
@@ -76306,7 +76422,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "SundbackZipper3D",
-      "vectorComponent": "SundbackZipperSim"
+      "vectorComponent": "SundbackZipperSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-1219881-sundback-zipper/fig-1-source-crop-v1.png",
@@ -78378,7 +78496,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "FarnsworthTV3D",
-      "vectorComponent": "FarnsworthTVSim"
+      "vectorComponent": "FarnsworthTVSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-1773980-farnsworth-tv/fig-1-source-crop-v1.png",
@@ -79416,7 +79536,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "EinsteinRefrigerator3D",
-      "vectorComponent": "EinsteinRefrigeratorSim"
+      "vectorComponent": "EinsteinRefrigeratorSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-1781541-einstein-refrigerator/fig-1-source-crop-v1.png",
@@ -81006,7 +81128,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "LamarrFrequencyHopping3D",
-      "vectorComponent": "LamarrFrequencyHoppingSim"
+      "vectorComponent": "LamarrFrequencyHoppingSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-2292387-lamarr-frequency-hopping/fig-1.png",
@@ -83837,7 +83961,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "CarlsonElectrophotography3D",
-      "vectorComponent": "CarlsonElectrophotographySim"
+      "vectorComponent": "CarlsonElectrophotographySim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-2297691-carlson-electrophotography/fig-1-source-crop-v1.png",
@@ -85641,7 +85767,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "SikorskyHelicopter3D",
-      "vectorComponent": "SikorskyHelicopterSim"
+      "vectorComponent": "SikorskyHelicopterSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-2318259-sikorsky-helicopter/fig-1-source-crop-v1.png",
@@ -86555,7 +86683,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "SpencerMicrowave3D",
-      "vectorComponent": "SpencerMicrowaveSim"
+      "vectorComponent": "SpencerMicrowaveSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-2495429-spencer-microwave/drawing-sheet-source-v1.png",
@@ -91217,7 +91347,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "BardeenTransistor3D",
-      "vectorComponent": "BardeenTransistorSim"
+      "vectorComponent": "BardeenTransistorSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-2524035-bardeen-transistor/fig-1-source-crop-v1.png",
@@ -96630,7 +96762,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "LandPolaroid3D",
-      "vectorComponent": "LandPolaroidSim"
+      "vectorComponent": "LandPolaroidSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-2543181-land-polaroid/fig-1-source-crop-v1.png",
@@ -102586,7 +102720,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "FermiReactor3D",
-      "vectorComponent": "FermiReactorSim"
+      "vectorComponent": "FermiReactorSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-2708656-fermi-reactor/fig-1-source-crop-v1.png",
@@ -103669,7 +103805,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "MestralVelcro3D",
-      "vectorComponent": "MestralVelcroSim"
+      "vectorComponent": "MestralVelcroSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-2717437-mestral-velcro/fig-1-source-crop-v1.png",
@@ -107238,7 +107376,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "GoertzElectronicMasterSlaveManipulator3D",
-      "vectorComponent": "GoertzElectronicMasterSlaveManipulatorSim"
+      "vectorComponent": "GoertzElectronicMasterSlaveManipulatorSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-2846084-goertz-electronic-master-slave-manipulator/fig-1-source-crop-v1.png",
@@ -108634,7 +108774,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "TownesLaser3D",
-      "vectorComponent": "TownesLaserSim"
+      "vectorComponent": "TownesLaserSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-2929922-townes-laser/fig-1-source-crop-v1.png",
@@ -110842,7 +110984,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "NoycePlanarIC3D",
-      "vectorComponent": "NoycePlanarICSim"
+      "vectorComponent": "NoycePlanarICSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-2981877-noyce-ic/fig-1-source-crop-v1.png",
@@ -112705,7 +112849,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "DevolProgrammedTransfer3D",
-      "vectorComponent": "DevolProgrammedTransferSim"
+      "vectorComponent": "DevolProgrammedTransferSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-2988237-devol-programmed-transfer/fig-1-source-crop-v1.png",
@@ -116062,7 +116208,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "LemelsonMachineVision3D",
-      "vectorComponent": "LemelsonMachineVisionSim"
+      "vectorComponent": "LemelsonMachineVisionSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-3081379-lemelson-machine-vision/fig-1-source-crop-v1.png",
@@ -117350,7 +117498,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "LemelsonAutomaticWarehousing3D",
-      "vectorComponent": "LemelsonAutomaticWarehousingSim"
+      "vectorComponent": "LemelsonAutomaticWarehousingSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-3119501-lemelson-automatic-warehousing/fig-1-source-crop-v1.png",
@@ -120031,7 +120181,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "KilbyIntegratedCircuit3D",
-      "vectorComponent": "KilbyIntegratedCircuitSim"
+      "vectorComponent": "KilbyIntegratedCircuitSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v1.png",
@@ -128450,7 +128602,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "AmfVersatran3D",
-      "vectorComponent": "AmfVersatranSim"
+      "vectorComponent": "AmfVersatranSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-3212649-amf-versatran/fig-1-source-crop-v1.png",
@@ -130940,7 +131094,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "LemelsonAdjustableManipulator3D",
-      "vectorComponent": "LemelsonAdjustableManipulatorSim"
+      "vectorComponent": "LemelsonAdjustableManipulatorSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-3260375-lemelson-adjustable-manipulator/fig-1-source-crop-v1.png",
@@ -132674,7 +132830,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "LemelsonAutomaticProduction3D",
-      "vectorComponent": "LemelsonAutomaticProductionSim"
+      "vectorComponent": "LemelsonAutomaticProductionSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-3313014-lemelson-automatic-production/fig-1-source-crop-v1.png",
@@ -134940,7 +135098,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "MaimanRubyLaser3D",
-      "vectorComponent": "MaimanRubyLaserSim"
+      "vectorComponent": "MaimanRubyLaserSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-3353115-maiman-ruby-laser/fig-1-source-crop-v1.png",
@@ -136858,7 +137018,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "EngelbartMouse3D",
-      "vectorComponent": "EngelbartMouseSim"
+      "vectorComponent": "EngelbartMouseSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-3541541-engelbart-mouse/fig-1-source-crop-v1.png",
@@ -137058,7 +137220,9 @@
     },
     "sourceVisualization": {
       "kind": "source-bound-pdf-only",
-      "sourceBoundary": "The public record is limited to the pinned facsimile and checked claim reading. No reviewed transcription, archival edition, model, controls, quantitative metrics, or USDZ asset is shipped in the native app."
+      "sourceBoundary": "The public record is limited to the pinned facsimile and checked claim reading. No reviewed transcription, archival edition, model, controls, quantitative metrics, or USDZ asset is shipped in the native app.",
+      "nativeFidelity": "source-bound-facsimile-only",
+      "nativeFidelityDisclosure": "This native record is limited to the pinned public facsimile and checked catalogue claims. It does not present a model, interactive controls, or quantitative simulation."
     },
     "bundledAssets": [],
     "withheldAssets": []
@@ -138373,7 +138537,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "BaerOdyssey3D",
-      "vectorComponent": "BaerOdysseySim"
+      "vectorComponent": "BaerOdysseySim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-3728480-baer-odyssey/fig-1-source-crop-v1.png",
@@ -142372,7 +142538,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "BoyleSmithCcd3D",
-      "vectorComponent": "BoyleSmithCcdSim"
+      "vectorComponent": "BoyleSmithCcdSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-3858232-boyle-smith-ccd-fig-10-preview.png",
@@ -144130,7 +144298,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "KamenMedicationInjection3D",
-      "vectorComponent": "KamenMedicationInjectionSim"
+      "vectorComponent": "KamenMedicationInjectionSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-3858581-kamen-medication-injection-device/fig-1-source-crop-v1.png",
@@ -146243,7 +146413,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "MetcalfeEthernet3D",
-      "vectorComponent": "MetcalfeEthernetSim"
+      "vectorComponent": "MetcalfeEthernetSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-4063220-metcalfe-ethernet/fig-1-source-crop-v1.png",
@@ -146646,7 +146818,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "StackhouseManipulator3D",
-      "vectorComponent": "StackhouseManipulatorSim"
+      "vectorComponent": "StackhouseManipulatorSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-4068536-stackhouse-manipulator/fig-1-source-crop-v1.png",
@@ -148040,7 +148214,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "WatsonRemoteCenterCompliance3D",
-      "vectorComponent": "WatsonRemoteCenterComplianceSim"
+      "vectorComponent": "WatsonRemoteCenterComplianceSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-4098001-watson-rcc/fig-1-source-crop-v1.png",
@@ -150132,7 +150308,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "WozniakApple3D",
-      "vectorComponent": "WozniakAppleSim"
+      "vectorComponent": "WozniakAppleSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-4136359-wozniak-apple/fig-1-source-crop-v1.png",
@@ -151244,7 +151422,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "MakinoScara3D",
-      "vectorComponent": "MakinoScaraSim"
+      "vectorComponent": "MakinoScaraSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-4341502-makino-scara/fig-1-source-crop-v1.png",
@@ -153000,7 +153180,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "MilacronRobotToolchanger3D",
-      "vectorComponent": "MilacronRobotToolchangerSim"
+      "vectorComponent": "MilacronRobotToolchangerSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-4512709-milacron-robot-toolchanger/fig-1-source-crop-v1.png",
@@ -156452,7 +156634,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "HullStereolithography3D",
-      "vectorComponent": "HullStereolithographySim"
+      "vectorComponent": "HullStereolithographySim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-4575330-hull-stereolithography/fig-1-source-crop-v1.png",
@@ -158471,7 +158655,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "RobotEndEffector3D",
-      "vectorComponent": "RobotEndEffectorSim"
+      "vectorComponent": "RobotEndEffectorSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-4765668-robot-end-effector/fig-1-source-crop-v1.png",
@@ -160828,7 +161014,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "SalisburyRobotHand3D",
-      "vectorComponent": "SalisburyRobotHandSim"
+      "vectorComponent": "SalisburyRobotHandSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-4921293-salisbury-robot-hand/fig-1-source-crop-v1.png",
@@ -162739,7 +162927,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "ClavelDeltaRobot3D",
-      "vectorComponent": "ClavelDeltaRobotSim"
+      "vectorComponent": "ClavelDeltaRobotSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-4976582-clavel-delta-robot/fig-1-source-crop-v1.png",
@@ -164764,7 +164954,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "CrumpFdm3D",
-      "vectorComponent": "CrumpFdmSim"
+      "vectorComponent": "CrumpFdmSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-5121329-crump-fdm/fig-1-source-crop-v1.png",
@@ -167117,7 +167309,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "KamenTransporter3D",
-      "vectorComponent": "KamenTransporterSim"
+      "vectorComponent": "KamenTransporterSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-5701965-kamen-transporter/fig-1-source-crop-v1.png",
@@ -167801,7 +167995,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "EInk3D",
-      "vectorComponent": "EInkSim"
+      "vectorComponent": "EInkSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-6120588-eink/fig-1-source-crop-v1.png",
@@ -169535,7 +169731,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "PageRank3D",
-      "vectorComponent": "PageRankSim"
+      "vectorComponent": "PageRankSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-6285999-pagerank/fig-1-source-crop-v1.png",
@@ -171163,7 +171361,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "KamenSegway3D",
-      "vectorComponent": "KamenSegwaySim"
+      "vectorComponent": "KamenSegwaySim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-6302230-kamen-segway/fig-1-source-crop-v1.png",
@@ -172170,7 +172370,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "DaVinciInterface3D",
-      "vectorComponent": "DaVinciInterfaceSim"
+      "vectorComponent": "DaVinciInterfaceSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-6331181-davinci/fig-1-source-crop-v1.png",
@@ -173312,7 +173514,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "Roomba3D",
-      "vectorComponent": "RoombaSim"
+      "vectorComponent": "RoombaSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-6594844-roomba/fig-1-source-crop-v1.png",
@@ -174092,7 +174296,9 @@
     "sourceVisualization": {
       "kind": "model",
       "spatialComponent": "MultiTouch3D",
-      "vectorComponent": "MultiTouchSim"
+      "vectorComponent": "MultiTouchSim",
+      "nativeFidelity": "authored-geometry-native-motion-study",
+      "nativeFidelityDisclosure": "The 3D geometry and materials are exported from the website's authored model. Native SceneKit motion and the aggregate Drive control are a presentation study; they do not execute the original web or FrankenSim physics owner."
     },
     "bundledAssets": [
       "patents/figures/us-7479949-multitouch/fig-1-source-crop-v1.png",

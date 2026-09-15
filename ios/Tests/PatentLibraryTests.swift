@@ -17,6 +17,29 @@ final class PatentLibraryTests: XCTestCase {
         })
     }
 
+    func testEveryNativeVisualizationCarriesAnExplicitFidelityContract() throws {
+        let records = PatentLibrary().records
+
+        XCTAssertEqual(records.count, 103)
+        XCTAssertTrue(records.allSatisfy {
+            !$0.sourceVisualization.nativeFidelityDisclosure.isEmpty
+        })
+        XCTAssertEqual(
+            records.filter {
+                $0.sourceVisualization.nativeFidelity == .authoredGeometryNativeMotionStudy
+            }.count,
+            101
+        )
+
+        let haber = try XCTUnwrap(records.first { $0.id == "us-971501-haber-ammonia" })
+        XCTAssertEqual(haber.sourceVisualization.nativeFidelity, .sourceBoundNativeRelationship)
+        XCTAssertTrue(haber.sourceVisualization.nativeFidelityDisclosure.contains("no apparatus drawing"))
+
+        let kwolek = try XCTUnwrap(records.first { $0.id == "us-3671542-kwolek-kevlar" })
+        XCTAssertEqual(kwolek.sourceVisualization.nativeFidelity, .sourceBoundFacsimileOnly)
+        XCTAssertTrue(kwolek.sourceVisualization.nativeFidelityDisclosure.contains("facsimile"))
+    }
+
     func testDeepLinksRouteWebAndNativeFacesWithoutFlatteningWorkstationSections() throws {
         XCTAssertEqual(
             PatentDeepLink(url: try XCTUnwrap(URL(string: "https://classic-patents.com/patents/us-821393-wright-flyer?view=interactive-sim"))),

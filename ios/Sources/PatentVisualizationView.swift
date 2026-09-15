@@ -126,6 +126,8 @@ struct NativePatentVisualization: View {
                             : "Native interactive visualization for \(patent.shortTitle)"
                     )
 
+                    nativeFidelityDisclosure
+
                     if !isSourceBoundPDFOnly, horizontalSizeClass == .compact {
                         DisclosureGroup(isExpanded: $showsMechanismNotes) {
                             mechanismExplanation
@@ -168,6 +170,31 @@ struct NativePatentVisualization: View {
             .foregroundStyle(Lab.secondary)
             .fixedSize(horizontal: false, vertical: true)
             .textSelection(.enabled)
+    }
+
+    private var nativeFidelityDisclosure: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "checkmark.shield.fill")
+                .font(.system(size: Lab.size(13), weight: .bold))
+                .foregroundStyle(Lab.brass)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(patent.sourceVisualization.nativeFidelity.label)
+                    .font(.system(size: Lab.size(10.5), weight: .black, design: .rounded))
+                    .foregroundStyle(Lab.parchment)
+                Text(patent.sourceVisualization.nativeFidelityDisclosure)
+                    .font(.system(size: Lab.size(10.5), design: .rounded))
+                    .foregroundStyle(Lab.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .textSelection(.enabled)
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Lab.panelStrong, in: RoundedRectangle(cornerRadius: 12))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Lab.brass.opacity(0.25)))
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("patent-native-fidelity")
     }
 
     private var animationButton: some View {

@@ -1,10 +1,11 @@
 import SceneKit
 import SwiftUI
 
-/// Metal-backed presentation of the exact procedural model authored for the
-/// website. The export step executes each Three.js model builder and packages
-/// its geometry and materials as USDZ; this view never loads network content or
-/// hosts a browser runtime.
+/// Metal-backed presentation of the source-authored geometry and materials.
+/// The export step executes each Three.js model builder and packages its static
+/// result as USDZ. SceneKit motion is separately classified as a native
+/// presentation study; this view never claims to execute the original physics
+/// owner, load network content, or host a browser runtime.
 struct NativePatentSceneView: View {
     let patent: PatentRecord
     let drive: Double
@@ -64,7 +65,10 @@ struct NativePatentSceneView: View {
 
             VStack {
                 HStack(alignment: .top) {
-                    Label("BUNDLED AUTHORED MODEL · METAL 3D", systemImage: "cube.transparent")
+                    Label(
+                        patent.sourceVisualization.nativeFidelity.label.uppercased(),
+                        systemImage: "cube.transparent"
+                    )
                         .font(.system(size: Lab.size(8.5), weight: .black, design: .rounded))
                         .foregroundStyle(.black)
                         .padding(.horizontal, 9)

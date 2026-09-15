@@ -12,6 +12,13 @@ USDZ asset and rendered by SceneKit, so spatial exhibits remain bundled and
 Metal-backed. Only the original patent PDF may be downloaded, after the reader
 explicitly chooses it.
 
+Every native exhibit also carries a visible fidelity classification. For the
+101 USDZ exhibits, the geometry and materials come from the website's authored
+model builder, while SceneKit motion and the aggregate Drive control are
+explicitly labeled as a native presentation study rather than the original web
+or FrankenSim physics owner. Haber's no-drawing relationship view and Kwolek's
+facsimile-only record retain their stricter source-bound classifications.
+
 The native workstation also restores the original museum's Archaic Glossary
 and academic citation engine. Every patent face exposes the same eight reviewed
 historical-term translations plus patent-specific BibTeX, RIS, Chicago, and APA

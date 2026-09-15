@@ -21,6 +21,15 @@ final class FrankenPatentsUITests: XCTestCase {
             message: "The newly exported Sundback native exhibit did not render",
             screenshotName: "Sundback native spatial exhibit"
         )
+        let fidelity = app.descendants(matching: .any)["patent-native-fidelity"]
+        XCTAssertTrue(
+            fidelity.waitForExistence(timeout: 12),
+            "The authored native exhibit did not disclose its fidelity boundary"
+        )
+        XCTAssertTrue(
+            fidelity.label.contains("Authored geometry · native motion study"),
+            "The native exhibit presented generic SceneKit motion as authored physics: \(fidelity.label)"
+        )
     }
 
     func testAppStoreArchiveOverviewIsAppBound() {
