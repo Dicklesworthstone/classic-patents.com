@@ -1,6 +1,6 @@
 import SwiftUI
 
-private enum WorkstationSection: String, CaseIterable, Identifiable {
+enum PatentWorkstationSection: String, CaseIterable, Identifiable {
     case specification = "Full Patent"
     case story = "Plain English"
     case simulation = "Simulation"
@@ -29,33 +29,39 @@ struct PatentWorkstationView: View {
     let patent: PatentRecord
     private let hidesNavigationBar: Bool
     @EnvironmentObject private var collection: PatentCollectionStore
-    @State private var section: WorkstationSection
-    @State private var showsPDF = false
+    @State private var section: PatentWorkstationSection
+    @State private var showsPDF: Bool
 #if DEBUG
-    private let debugInitialSection: WorkstationSection?
+    private let debugInitialSection: PatentWorkstationSection?
 
-    private var displayedSection: WorkstationSection { debugInitialSection ?? section }
+    private var displayedSection: PatentWorkstationSection { debugInitialSection ?? section }
 #else
-    private var displayedSection: WorkstationSection { section }
+    private var displayedSection: PatentWorkstationSection { section }
 #endif
 
-    init(patent: PatentRecord, hidesNavigationBar: Bool = false) {
+    init(
+        patent: PatentRecord,
+        hidesNavigationBar: Bool = false,
+        initialSection: PatentWorkstationSection = .specification,
+        initiallyShowsPDF: Bool = false
+    ) {
         self.patent = patent
         self.hidesNavigationBar = hidesNavigationBar
+        _showsPDF = State(initialValue: initiallyShowsPDF)
 #if DEBUG
         if let marker = ProcessInfo.processInfo.arguments.firstIndex(of: "-FrankenPatentsUITestSection"),
            ProcessInfo.processInfo.arguments.indices.contains(marker + 1),
-           let requested = WorkstationSection.allCases.first(where: {
+           let requested = PatentWorkstationSection.allCases.first(where: {
                $0.rawValue.caseInsensitiveCompare(ProcessInfo.processInfo.arguments[marker + 1]) == .orderedSame
            }) {
             _section = State(initialValue: requested)
             debugInitialSection = requested
         } else {
-            _section = State(initialValue: .specification)
+            _section = State(initialValue: initialSection)
             debugInitialSection = nil
         }
 #else
-        _section = State(initialValue: .specification)
+        _section = State(initialValue: initialSection)
 #endif
     }
 
@@ -63,7 +69,7 @@ struct PatentWorkstationView: View {
         patent.sourceVisualization.isSourceBoundPDFOnly
     }
 
-    private func title(for section: WorkstationSection) -> String {
+    private func title(for section: PatentWorkstationSection) -> String {
         isSourceBoundPDFOnly && section == .specification ? "Source" : section.rawValue
     }
 
@@ -179,7 +185,7 @@ struct PatentWorkstationView: View {
             Label("Original PDF", systemImage: "doc.richtext")
         }
         .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.blueprint))
-        ShareLink(item: exportText, subject: Text(patent.shortTitle)) {
+        ShareLink(item: webShareURL, subject: Text(patent.shortTitle), message: Text(exportText)) {
             Label("Share record", systemImage: "square.and.arrow.up")
         }
         .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.emerald))
@@ -210,7 +216,7 @@ struct PatentWorkstationView: View {
         }
     }
 
-    private func sectionButton(_ candidate: WorkstationSection, compact: Bool) -> some View {
+    private func sectionButton(_ candidate: PatentWorkstationSection, compact: Bool) -> some View {
         Button {
             withAnimation(.snappy) { section = candidate }
         } label: {
@@ -661,5 +667,26 @@ struct PatentWorkstationView: View {
         WHY IT MATTERS
         \(patent.plainEnglish.whyItMattersToday)
         """
+    }
+
+    private var webShareURL: URL {
+        var components = URLComponents(string: "https://classic-patents.com/patents/\(patent.id)")!
+        components.queryItems = [URLQueryItem(name: "view", value: section.webViewName)]
+        return components.url!
+    }
+}
+
+private extension PatentWorkstationSection {
+    var webViewName: String {
+        switch self {
+        case .specification: "original-spec"
+        case .story: "plain-english"
+        case .simulation: "interactive-sim"
+        case .equations: "equations"
+        case .claims: "claims"
+        case .drawings: "schematic-sheet"
+        case .history: "history"
+        case .record: "record"
+        }
     }
 }

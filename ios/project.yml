@@ -76,6 +76,11 @@ targets:
       path: Sources/Info.plist
       properties:
         CFBundleDisplayName: FrankenPatents
+        CFBundleURLTypes:
+          - CFBundleTypeRole: Editor
+            CFBundleURLName: com.frankenpatents.FrankenPatents
+            CFBundleURLSchemes:
+              - frankenpatents
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         ITSAppUsesNonExemptEncryption: false

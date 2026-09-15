@@ -115,6 +115,25 @@ final class FrankenPatentsUITests: XCTestCase {
         )
     }
 
+    func testDeepLinkOpensRequestedPatentFaceAndKeepsAPathBackToArchive() {
+        let app = launch(
+            deepLink: "frankenpatents://patent/us-2981877-noyce-ic?section=equations"
+        )
+        assertExists(
+            app.descendants(matching: .any)["patent-equation-atlas-heading"],
+            in: app,
+            message: "The app URL did not open the requested patent equation face",
+            screenshotName: "Deep-linked native equation face"
+        )
+        let done = app.buttons["close-deep-linked-patent"]
+        XCTAssertTrue(done.waitForExistence(timeout: 12), "A deep-linked workstation has no route back to the archive")
+        done.tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)["archive-summary"].waitForExistence(timeout: 12),
+            "Closing a deep-linked workstation did not return to the archive"
+        )
+    }
+
     func testQuarantinedSourceBoundaryIsExplicit() {
         let app = launch(
             patentID: "gb-931-arkwright-water-frame",
@@ -178,6 +197,18 @@ final class FrankenPatentsUITests: XCTestCase {
         if let root {
             app.launchArguments = ["-FrankenPatentsUITestRoot", root]
         }
+        app.launch()
+        XCTAssertTrue(
+            app.wait(for: .runningForeground, timeout: 8),
+            "FrankenPatents did not remain in the foreground"
+        )
+        return app
+    }
+
+    @discardableResult
+    private func launch(deepLink: String) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["-FrankenPatentsUITestDeepLink", deepLink]
         app.launch()
         XCTAssertTrue(
             app.wait(for: .runningForeground, timeout: 8),

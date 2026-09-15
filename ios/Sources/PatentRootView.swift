@@ -18,6 +18,80 @@ private enum PatentRootSection: String, CaseIterable, Identifiable {
     }
 }
 
+enum PatentDeepLink: Equatable {
+    case archive(query: String?)
+    case timeline
+    case saved
+    case method
+    case patent(id: String, section: PatentWorkstationSection, showsPDF: Bool)
+
+    init?(url: URL) {
+        let scheme = url.scheme?.lowercased()
+        let isAppURL = scheme == "frankenpatents"
+        let isWebURL = (scheme == "https" || scheme == "http")
+            && url.host.map { ["classic-patents.com", "www.classic-patents.com"].contains($0.lowercased()) } == true
+        guard isAppURL || isWebURL else { return nil }
+
+        var routeParts = url.pathComponents.filter { $0 != "/" }
+        if isAppURL, let host = url.host, !host.isEmpty {
+            routeParts.insert(host, at: 0)
+        }
+        let route = routeParts.first?.lowercased() ?? "archive"
+        let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
+        let value: (String) -> String? = { name in
+            queryItems.first(where: { $0.name.caseInsensitiveCompare(name) == .orderedSame })?.value
+        }
+
+        switch route {
+        case "", "archive", "search":
+            self = .archive(query: value("q") ?? value("query"))
+        case "timeline":
+            self = .timeline
+        case "saved", "bookmarks":
+            self = .saved
+        case "method", "about":
+            self = .method
+        case "patent", "patents":
+            guard routeParts.indices.contains(1) else { return nil }
+            let id = routeParts[1].lowercased()
+            guard !id.isEmpty else { return nil }
+            let requestedFace = value("section") ?? value("view") ?? url.fragment
+            let face = Self.workstationFace(named: requestedFace)
+            self = .patent(id: id, section: face.section, showsPDF: face.showsPDF)
+        default:
+            return nil
+        }
+    }
+
+    private static func workstationFace(
+        named rawValue: String?
+    ) -> (section: PatentWorkstationSection, showsPDF: Bool) {
+        let normalized = rawValue?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+            .replacingOccurrences(of: "_", with: "-")
+        switch normalized {
+        case "plain-english", "story": return (.story, false)
+        case "interactive-sim", "simulation", "sim": return (.simulation, false)
+        case "equation", "equations": return (.equations, false)
+        case "claim", "claims": return (.claims, false)
+        case "schematic-sheet", "drawing", "drawings", "figure", "figures": return (.drawings, false)
+        case "history": return (.history, false)
+        case "record": return (.record, false)
+        case "pdf", "pdf-facsimile", "facsimile": return (.specification, true)
+        default: return (.specification, false)
+        }
+    }
+}
+
+private struct PresentedPatentRoute: Identifiable {
+    let patent: PatentRecord
+    let section: PatentWorkstationSection
+    let showsPDF: Bool
+
+    var id: String { "\(patent.id):\(section.rawValue):\(showsPDF)" }
+}
+
 struct PatentRootView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var systemDynamicTypeSize
@@ -26,6 +100,9 @@ struct PatentRootView: View {
     @StateObject private var library: PatentLibrary
     @StateObject private var collection: PatentCollectionStore
     @State private var section = PatentRootSection.archive
+    @State private var presentedPatentRoute: PresentedPatentRoute?
+    @State private var deepLinkError: String?
+    @State private var handledLaunchDeepLink = false
 
     init() {
         let library = PatentLibrary()
@@ -50,6 +127,16 @@ struct PatentRootView: View {
         guard let marker = ProcessInfo.processInfo.arguments.firstIndex(of: "-FrankenPatentsUITestRoot"),
               ProcessInfo.processInfo.arguments.indices.contains(marker + 1) else { return nil }
         return ProcessInfo.processInfo.arguments[marker + 1].lowercased()
+#else
+        return nil
+#endif
+    }
+
+    private var launchDeepLinkURL: URL? {
+#if DEBUG
+        guard let marker = ProcessInfo.processInfo.arguments.firstIndex(of: "-FrankenPatentsUITestDeepLink"),
+              ProcessInfo.processInfo.arguments.indices.contains(marker + 1) else { return nil }
+        return URL(string: ProcessInfo.processInfo.arguments[marker + 1])
 #else
         return nil
 #endif
@@ -94,6 +181,24 @@ struct PatentRootView: View {
             .accessibilityIdentifier("frankenpatents-masthead")
         }
         .preferredColorScheme((LabAppearance(rawValue: appearance) ?? .dark).colorScheme)
+        .onOpenURL(perform: openDeepLink)
+        .onAppear {
+            guard !handledLaunchDeepLink else { return }
+            handledLaunchDeepLink = true
+            if let launchDeepLinkURL { openDeepLink(launchDeepLinkURL) }
+        }
+        .fullScreenCover(item: $presentedPatentRoute) { route in
+            DeepLinkedPatentView(route: route)
+                .environmentObject(collection)
+        }
+        .alert("Unable to open patent", isPresented: Binding(
+            get: { deepLinkError != nil },
+            set: { if !$0 { deepLinkError = nil } }
+        )) {
+            Button("OK", role: .cancel) { deepLinkError = nil }
+        } message: {
+            Text(deepLinkError ?? "The requested record is unavailable.")
+        }
     }
 
     private var tabbedRoot: some View {
@@ -191,6 +296,55 @@ struct PatentRootView: View {
         .buttonStyle(.plain)
         .foregroundStyle(Lab.brass)
         .accessibilityLabel("Filter patent category")
+    }
+
+    private func openDeepLink(_ url: URL) {
+        guard let destination = PatentDeepLink(url: url) else { return }
+        presentedPatentRoute = nil
+        switch destination {
+        case let .archive(query):
+            library.selectedCategory = nil
+            library.query = query ?? ""
+            section = .archive
+        case .timeline:
+            section = .timeline
+        case .saved:
+            section = .saved
+        case .method:
+            section = .method
+        case let .patent(id, requestedSection, showsPDF):
+            guard let patent = library.records.first(where: { $0.id == id }) else {
+                section = .archive
+                deepLinkError = "No bundled patent record matches “\(id)”."
+                return
+            }
+            presentedPatentRoute = PresentedPatentRoute(
+                patent: patent,
+                section: requestedSection,
+                showsPDF: showsPDF
+            )
+        }
+    }
+}
+
+private struct DeepLinkedPatentView: View {
+    let route: PresentedPatentRoute
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            PatentWorkstationView(
+                patent: route.patent,
+                initialSection: route.section,
+                initiallyShowsPDF: route.showsPDF
+            )
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") { dismiss() }
+                        .accessibilityIdentifier("close-deep-linked-patent")
+                }
+            }
+        }
     }
 }
 
