@@ -276,11 +276,30 @@ final class FrankenPatentsUITests: XCTestCase {
         var frame = app.windows.firstMatch.frame
         for orientation in [UIDeviceOrientation.landscapeLeft, .landscapeRight] {
             XCUIDevice.shared.orientation = orientation
-            let deadline = Date().addingTimeInterval(3)
+            let deadline = Date().addingTimeInterval(5)
+            var previousLandscapeFrame: CGRect?
+            var stableSampleCount = 0
             repeat {
                 RunLoop.current.run(until: Date().addingTimeInterval(0.15))
                 frame = app.windows.firstMatch.frame
-                if frame.width > frame.height { return frame }
+                guard frame.width > frame.height else {
+                    previousLandscapeFrame = nil
+                    stableSampleCount = 0
+                    continue
+                }
+
+                if let previousLandscapeFrame,
+                   abs(previousLandscapeFrame.minX - frame.minX) < 1,
+                   abs(previousLandscapeFrame.maxX - frame.maxX) < 1,
+                   abs(previousLandscapeFrame.width - frame.width) < 1,
+                   abs(previousLandscapeFrame.height - frame.height) < 1
+                {
+                    stableSampleCount += 1
+                    if stableSampleCount >= 3 { return frame }
+                } else {
+                    stableSampleCount = 1
+                }
+                previousLandscapeFrame = frame
             } while Date() < deadline
         }
         return frame
