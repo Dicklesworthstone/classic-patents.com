@@ -29,6 +29,16 @@ prepare_simulator_audio() {
 
 xcodegen generate --spec project.yml
 git diff --exit-code -- FrankenPatents.xcodeproj Sources/Info.plist
+display_name="$(plutil -extract CFBundleDisplayName raw Sources/Info.plist)"
+if [[ "$display_name" != "FrankenPatents" ]]; then
+  echo "FrankenPatents identity drift: expected CFBundleDisplayName=FrankenPatents, got '$display_name'" >&2
+  exit 1
+fi
+bundle_version="$(plutil -extract CFBundleVersion raw Sources/Info.plist)"
+if [[ "$bundle_version" != '$(CURRENT_PROJECT_VERSION)' ]]; then
+  echo "FrankenPatents build-number drift: CFBundleVersion must derive from CURRENT_PROJECT_VERSION, got '$bundle_version'" >&2
+  exit 1
+fi
 (cd "$repo_root" && bun ios/check-native-parity.ts)
 git ls-files -z -- '*.swift' | xargs -0 xcrun swiftc -parse
 plutil -lint Sources/Info.plist
