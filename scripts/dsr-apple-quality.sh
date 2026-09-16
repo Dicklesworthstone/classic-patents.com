@@ -7,6 +7,8 @@ cd "$repo_root/ios"
 build_root="${FRANKEN_APPLE_BUILD_ROOT:-${DSR_QUALITY_RUN_DIR:-$repo_root/ios/build/dsr-apple-quality}}"
 mkdir -p "$build_root/tmp"
 sbh check --need 20G "$build_root"
+result_root="${FRANKEN_APPLE_RESULT_ROOT:-$build_root}"
+mkdir -p "$result_root"
 xcode_product_settings=()
 if [[ -n "${FRANKEN_APPLE_PRODUCT_ROOT:-}" ]]; then
   mkdir -p "$FRANKEN_APPLE_PRODUCT_ROOT"
@@ -59,6 +61,7 @@ TMPDIR="$build_root/tmp" xcodebuild -project FrankenPatents.xcodeproj -scheme Fr
   -destination 'platform=macOS,variant=Mac Catalyst' \
   -derivedDataPath "$build_root/derived-data" \
   "${xcode_product_settings[@]}" \
+  -resultBundlePath "$result_root/frankenpatents-catalyst.xcresult" \
   CODE_SIGNING_ALLOWED=NO test -only-testing:FrankenPatentsTests
 
 prepare_simulator_audio
@@ -86,7 +89,7 @@ TMPDIR="$build_root/tmp" xcodebuild -project FrankenPatents.xcodeproj -scheme Fr
   -destination "platform=iOS Simulator,id=$iphone_id" \
   -derivedDataPath "$build_root/derived-data" \
   "${xcode_product_settings[@]}" \
-  -resultBundlePath "$build_root/frankenpatents-iphone-ui.xcresult" \
+  -resultBundlePath "$result_root/frankenpatents-iphone-ui.xcresult" \
   -parallel-testing-enabled NO \
   CODE_SIGNING_ALLOWED=NO test \
   -only-testing:FrankenPatentsUITests
