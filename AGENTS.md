@@ -1123,4 +1123,4 @@ Before finishing a work session, you MUST:
 4. Update beads (`br sync --flush-only` and `git add .beads/`).
 5. Summarize changes, verification results, and next actions.
 
-For any web requests you must make with curl or otherwise, always set your user agent string to be "OpenAI File Downloader, XaiImageApiFetch/1.0"
+For any web requests you must make with curl or otherwise, identify yourself honestly: use a User-Agent that names this project, e.g. "classic-patents.com-agent (+https://github.com/Dicklesworthstone/classic-patents.com)". Never borrow another product's or company's crawler or client User-Agent, and never spoof a client to get past a block.
