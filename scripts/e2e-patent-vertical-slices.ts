@@ -52,7 +52,8 @@ import {
   summarizePatentE2EEvents,
 } from "./patent-e2e-contract";
 
-const USER_AGENT = "OpenAI File Downloader, XaiImageApiFetch/1.0";
+const USER_AGENT =
+  "classic-patents-e2e (+https://github.com/Dicklesworthstone/classic-patents.com)";
 const ACTION_TIMEOUT_MS = 15_000;
 
 async function assertPaintedFacsimile(canvas: Locator) {

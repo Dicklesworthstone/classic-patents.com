@@ -58,7 +58,8 @@ async function main() {
       console.log(`  Downloading PDF from ${patent.originalPdfUrl}...`);
       const response = await fetch(patent.originalPdfUrl, {
         headers: {
-          "User-Agent": "OpenAI File Downloader, XaiImageApiFetch/1.0",
+          "User-Agent":
+            "classic-patents-downloader (+https://github.com/Dicklesworthstone/classic-patents.com)",
         },
       });
       if (!response.ok) {

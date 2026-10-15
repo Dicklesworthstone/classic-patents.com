@@ -30,7 +30,8 @@ export const PROHIBITED_LOCAL_OCR_COMMANDS = [
   "cuneiform",
 ] as const;
 
-export const LUNA_USER_AGENT = "OpenAI File Downloader, XaiImageApiFetch/1.0";
+export const LUNA_USER_AGENT =
+  "classic-patents-ocr (+https://github.com/Dicklesworthstone/classic-patents.com)";
 export const LUNA_MODEL = "gpt-5.6-luna-ocr";
 
 export function assertNoLocalOcr(): void {
